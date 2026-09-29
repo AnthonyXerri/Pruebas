@@ -523,47 +523,6 @@ td{ border-color:var(--cbd)!important; font-size:12px; color:var(--cnavy); }
 .fbar .btn-outline{ height:30px !important; padding:0 10px !important; font-size:11.5px !important; flex:0 0 auto; }
 .fbar .chev{ width:8px; height:5px; opacity:.5; }
 
-/* ── Previsión ─────────────────────────────────────────────────────── */
-.pv-intro{ padding:14px 18px 12px; }
-.pv-intro h3{ font-size:14px; font-weight:700; color:var(--cnavy); }
-.pv-intro p{ font-size:12px; color:var(--cgy); margin-top:4px; line-height:1.55; max-width:860px; }
-.pv-intro strong{ color:var(--cnavy); font-weight:600; }
-.pv-ctrl{ display:flex; gap:9px; padding:0 18px 13px; flex-wrap:wrap; }
-.pv-p{ border:1px dashed var(--cgy2); border-radius:3px; background:#FAFAFB; padding:8px 12px; min-width:168px; }
-.pv-k{ display:block; font-size:9px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--cgy); }
-.pv-in{ display:flex; align-items:baseline; gap:6px; margin-top:3px; }
-.pv-in input{ width:52px; border:none; outline:none; background:transparent; font-family:var(--f);
-  font-size:20px; font-weight:600; color:var(--blue); }
-.pv-in select{ border:none; outline:none; background:transparent; font-family:var(--f);
-  font-size:13px; font-weight:600; color:var(--blue); cursor:pointer; }
-.pv-in em{ font-style:normal; font-size:11px; color:var(--cgy); }
-.pv-esc{ min-width:230px; }
-.pv-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:9px; padding:0 18px; }
-.pv-card{ border:1px solid var(--cbd); border-radius:3px; padding:12px 16px; background:#fff; }
-.pv-l{ font-size:11.5px; color:var(--cnavy); display:flex; align-items:center; gap:5px; }
-.pv-v{ font-size:34px; font-weight:300; color:var(--cnavy); letter-spacing:-.02em; line-height:1.15; margin-top:2px; }
-.pv-v small{ font-size:15px; font-weight:400; color:var(--cgy); }
-.pv-d{ font-size:10.5px; color:var(--cgy); margin-top:3px; line-height:1.4; }
-.pv-card.ok .pv-v{ color:var(--green); } .pv-card.bad .pv-v{ color:var(--cred); }
-.pv-box{ border:1px solid var(--cbd); border-radius:3px; padding:13px 16px; background:#fff; }
-/* estas clases no existían en este fichero: se definen para las pantallas nuevas */
-#panePrev .g2{ display:grid; grid-template-columns:1fr 1fr; gap:9px; padding:0 18px; }
-@media(max-width:1180px){ #panePrev .g2{ grid-template-columns:1fr; } }
-#panePrev .ct{ font-size:12.5px; font-weight:600; color:var(--cnavy); display:flex; align-items:center; gap:6px; }
-#panePrev .axl{ display:flex; justify-content:space-between; align-items:baseline; gap:12px;
-  font-size:10px; color:var(--cgy); margin-top:7px; }
-#panePrev .axb{ font-size:10px; color:var(--cgy); text-align:right; margin-top:4px; }
-#panePrev .chart-wrap{ margin-top:4px; }
-.pv-esc-box{ margin:9px 18px 0; border:1px solid var(--cbd); border-radius:3px; padding:13px 16px; background:#fff; }
-.pv-esc-h{ font-size:12.5px; font-weight:600; color:var(--cnavy); display:flex; align-items:center; gap:6px; }
-.pv-esc-row{ display:grid; grid-template-columns:repeat(7,1fr); gap:9px; margin-top:11px; }
-.pv-e{ border:1px solid var(--cbd); border-radius:3px; padding:9px 11px; text-align:center; }
-.pv-e .pv-ed{ display:block; font-size:10px; font-weight:700; letter-spacing:.05em; color:var(--cgy); text-transform:uppercase; }
-.pv-e b{ display:block; font-size:26px; font-weight:300; color:var(--cnavy); line-height:1.2; margin-top:2px; }
-.pv-e .pv-eg{ display:block; font-size:10px; color:var(--cgy); }
-.pv-e.on{ border-color:var(--blue); border-width:1.5px; background:#F5F7FF; }
-.pv-e.on b{ color:var(--blue); font-weight:400; }
-@media(max-width:1180px){ .pv-esc-row{ grid-template-columns:repeat(4,1fr); } }
 .pv-note{ margin:11px 18px 16px; border:1px solid var(--cbd); border-left:3px solid var(--blue);
   border-radius:3px; padding:11px 14px; font-size:12px; line-height:1.55; color:var(--cnavy); background:#fff; }
 .pv-note strong{ font-weight:600; }
@@ -894,10 +853,6 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
     <button class="tabb" data-pane="paneCM">
       <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1.6" y="1.6" width="5.4" height="5.4" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="9" y="1.6" width="5.4" height="5.4" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="1.6" y="9" width="5.4" height="5.4" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="9" y="9" width="5.4" height="5.4" rx="1" stroke="currentColor" stroke-width="1.4"/></svg>
       Cuadro de mando
-    </button>
-    <button class="tabb" data-pane="panePrev">
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 12l3.5-4 3 2.5L13 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 4h3v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Objetivo y capacidad<span class="tcount">NUEVO</span>
     </button>
     <button class="tabb" data-pane="paneEco">
       <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 13.4h12M4.2 13.4V7.2M7.4 13.4V3.4M10.6 13.4V9.1M13.8 13.4V5.6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
@@ -1254,72 +1209,6 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
     modelo de formulario y no siempre coinciden con lo que el ciudadano pide de verdad. Mientras no se
     resuelva, la cola de entrada aparece marcada como pendiente en el explorador y en la previsión.
   </div>
-</div>
-<div class="tabpane" id="panePrev">
-  <div class="pv-intro">
-    <h3>Objetivo y capacidad</h3>
-    <p>El cuadro de mando dice cómo ha ido. Esta pantalla responde a la pregunta inversa:
-      <strong>si me fijo un objetivo, ¿qué ritmo de gestión hace falta?</strong>
-      No es una predicción: es la cola de hoy dividida entre el objetivo y entre la capacidad
-      que fijes aquí, la misma cuenta que hoy se hace a mano.</p>
-  </div>
-
-  <div class="pv-ctrl">
-    <div class="pv-p">
-      <span class="pv-k">Objetivo de resolución</span>
-      <div class="pv-in"><input id="pvObj" type="number" min="15" max="240" value="90"><em>días</em></div>
-    </div>
-    <div class="pv-p">
-      <span class="pv-k">Gestores disponibles <i class="ii" data-t="Valor de partida deducido del rendimiento observado en el censo: la cola dividida entre el plazo medio da el ritmo que hoy sostiene el equipo. Hay que confirmarlo con la plantilla real.">i</i></span>
-      <div class="pv-in"><input id="pvGes" type="number" min="1" max="60" value="6"><em>personas</em></div>
-    </div>
-    <div class="pv-p">
-      <span class="pv-k">Expedientes por gestor y día</span>
-      <div class="pv-in"><input id="pvRit" type="number" min="1" max="60" value="10"><em>exp./día</em></div>
-    </div>
-    <div class="pv-p pv-esc">
-      <span class="pv-k">Escenario</span>
-      <div class="pv-in"><select id="pvEsc">
-        <option value="1">Plantilla completa</option>
-        <option value="0.5">Periodo vacacional &middot; la mitad</option>
-        <option value="0.75">Bajas y ausencias &middot; tres cuartos</option>
-      </select></div>
-    </div>
-  </div>
-
-  <div class="pv-grid">
-    <div class="pv-card">
-      <div class="pv-l">Ritmo necesario para el objetivo
-        <i class="ii" data-t="Expedientes que hay que cerrar cada día para que la cola pendiente quede resuelta dentro del objetivo fijado. Se calcula con la cola de hoy y el objetivo en días.">i</i></div>
-      <div class="pv-v" id="pvNec">0 <small>exp./día</small></div>
-      <div class="pv-d" id="pvNecD"></div>
-    </div>
-    <div class="pv-card">
-      <div class="pv-l">Capacidad del equipo
-        <i class="ii" data-t="Gestores disponibles por expedientes que cierra cada uno al día, aplicando el escenario de disponibilidad seleccionado.">i</i></div>
-      <div class="pv-v" id="pvCap">0 <small>exp./día</small></div>
-      <div class="pv-d" id="pvCapD"></div>
-    </div>
-    <div class="pv-card" id="pvCardGap">
-      <div class="pv-l">Diferencia
-        <i class="ii" data-t="Capacidad menos ritmo necesario. En negativo, el objetivo no se alcanza con el equipo y el ritmo actuales.">i</i></div>
-      <div class="pv-v" id="pvGap">0 <small>exp./día</small></div>
-      <div class="pv-d" id="pvGapD"></div>
-    </div>
-    <div class="pv-card">
-      <div class="pv-l">Plazo con esta capacidad
-        <i class="ii" data-t="Días que se tardaría en resolver la cola con la capacidad indicada. Si supera el objetivo, la diferencia es el desfase.">i</i></div>
-      <div class="pv-v" id="pvPlz">0 <small>d</small></div>
-      <div class="pv-d" id="pvPlzD"></div>
-    </div>
-  </div>
-
-  <div class="pv-esc-box">
-    <div class="pv-esc-h">Gestores necesarios seg&uacute;n el objetivo
-      <i class="ii" data-t="Para cada objetivo de resolución, personas que harían falta al ritmo por gestor indicado. El valor resaltado es el objetivo fijado arriba.">i</i></div>
-    <div class="pv-esc-row" id="pvEscala"></div>
-  </div>
-  <div class="pv-note" id="pvNota"></div>
 </div>
 <div class="tabpane" id="paneEco">
 
@@ -2704,8 +2593,6 @@ document.querySelectorAll('.tabb').forEach(b => {
     document.querySelectorAll('.tabb').forEach(x => x.classList.remove('active'));
     b.classList.add('active');
     document.querySelectorAll('.tabpane').forEach(p => p.classList.toggle('active', p.id === b.dataset.pane));
-    if (b.dataset.pane==='panePrev') requestAnimationFrame(()=>{
-      renderPrev(); });
     const pane = b.dataset.pane;
     const vis = (id,on) => { const e=document.getElementById(id); if(e) e.style.display = on ? '' : 'none'; };
     vis('fbarCM',  pane==='paneCM');
@@ -2724,69 +2611,6 @@ document.querySelectorAll('.tabb').forEach(b => {
 });
 window.addEventListener('resize', () => { if (pxReady && document.getElementById('paneEx').classList.contains('active')) pxFit(); });
 
-
-/* ══════════════════════════════════════════════════════════════════════
-   PREVISIÓN DE TRABAJO
-   «fijarme un objetivo de disminuir tiempos que me devolviera información
-   sobre cómo tendríamos que modificar el ritmo de gestión para cumplir esos
-   objetivos… sería como que me lo diera al revés» (Milagros León, 4/09).
-   Todo lo de aquí es aritmética sobre la cola: cola ÷ ritmo = días.
-   ══════════════════════════════════════════════════════════════════════ */
-const OBJ_ESCALA = [30,45,60,90,120,150,180];
-function renderPrev(){
-  if(!document.getElementById('pvEscala')) return;
-  const obj = Math.max(1, +document.getElementById('pvObj').value || 90);
-  const ges = Math.max(1, +document.getElementById('pvGes').value || 1);
-  const rit = Math.max(1, +document.getElementById('pvRit').value || 1);
-  const esc = parseFloat(document.getElementById('pvEsc').value) || 1;
-
-  /* la cola es la población abierta del cuadro de mando: el mismo censo, no otro número */
-  const P = poblacion();
-  const cola = P.filter(e => !e.fin).length;
-  /* entrada semanal media observada en el propio censo */
-  const SEM = Math.max(1, Math.round(P.length / 44));
-
-  const gesEf = ges * esc;
-  const cap   = Math.round(gesEf * rit);            /* expedientes/día que cierra el equipo */
-  const capSem= cap * 5;
-  /* ritmo necesario: vaciar la cola dentro del objetivo, absorbiendo la entrada que sigue llegando */
-  const nec   = Math.ceil((cola / obj) + (SEM / 5));
-  const gap   = cap - nec;
-  /* plazo alcanzable: si la capacidad no supera la entrada, la cola no baja nunca */
-  const neta  = capSem - SEM;
-  const plz   = neta > 0 ? Math.ceil(cola / neta * 7) : null;
-
-  const set=(id,v)=>{const e=document.getElementById(id); if(e) e.innerHTML=v;};
-  set('pvNec', nfmt(nec)+' <small>exp./día</small>');
-  set('pvNecD','cola de '+nfmt(cola)+' expedientes · entran '+nfmt(SEM)+' por semana');
-  set('pvCap', nfmt(cap)+' <small>exp./día</small>');
-  set('pvCapD', (esc<1 ? Math.round(gesEf)+' de '+ges+' gestores efectivos · ' : ges+' gestores · ')
-                + rit+' expedientes cada uno');
-  set('pvGap', (gap>=0?'+':'')+nfmt(gap)+' <small>exp./día</small>');
-  const falta=Math.abs(gap);
-  set('pvGapD', gap>=0 ? 'el objetivo se alcanza con margen'
-                       : 'falta'+(falta===1?'':'n')+' '+nfmt(falta)+' expediente'+(falta===1?'':'s')+' al día');
-  document.getElementById('pvCardGap').className = 'pv-card '+(gap>=0?'ok':'bad');
-  set('pvPlz', plz===null ? '&infin;' : nfmt(plz)+' <small>d</small>');
-  set('pvPlzD', plz===null ? 'la capacidad no absorbe la entrada: la cola no baja'
-              : (plz<=obj ? nfmt(obj-plz)+' días por debajo del objetivo'
-                          : nfmt(plz-obj)+' días por encima del objetivo'));
-
-  /* gestores necesarios para cada objetivo de la escala · una fila de indicadores,
-     que es un componente de lista de KPIs, no una gráfica con eje inventado */
-  const gs = OBJ_ESCALA.map(d => Math.ceil(((cola/d) + SEM/5) / (rit*esc)));
-  document.getElementById('pvEscala').innerHTML = OBJ_ESCALA.map((d,i)=>
-    '<div class="pv-e'+(d===obj?' on':'')+'"><span class="pv-ed">'+d+' d</span>'+
-    '<b>'+gs[i]+'</b><span class="pv-eg">gestores</span></div>').join('');
-
-  document.getElementById('pvNota').innerHTML =
-    '<strong>Cómo se calcula.</strong> Cola pendiente entre el objetivo en días, más la entrada media '+
-    'que sigue llegando, da el ritmo necesario. La capacidad es gestores por expedientes al día, '+
-    'corregida por el escenario. Son cuentas sobre el dato de hoy, no una previsión estadística. '+
-    (plz===null
-      ? '<span style="color:var(--cred)">Con estos parámetros la capacidad no cubre ni la entrada nueva.</span>'
-      : '');
-}
 
 /* ══════════════════════════════════════════════════════════════════════
    HOJA DE DEFINICIÓN DE INDICADORES
@@ -2858,7 +2682,7 @@ function dfClear(){
 
 /* pestaña de entrada */
 pxInit(); requestAnimationFrame(pxFit);
-renderPrev(); dfInit();
+dfInit();
 
 /* ── Una sola fuente para las dos pestañas ────────────────────────────
    El explorador llevaba cifras fijas y el cuadro de mando las calculaba:
@@ -2885,8 +2709,7 @@ renderPrev(); dfInit();
           sv.options[2].textContent='Focalizar retrabajo ('+pRep+'%)'; }
 })();
 aplicarTips();
-['pvObj','pvGes','pvRit','pvEsc'].forEach(id=>{const e=document.getElementById(id);
-  if(e) e.addEventListener('input',renderPrev);});
+
 
 
 
