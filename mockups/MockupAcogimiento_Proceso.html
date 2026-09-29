@@ -1,0 +1,1330 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ANÁLISIS Prestación de acogimiento familiar · Proceso completo</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+/* Paleta muestreada de las capturas reales del entorno Celonis de Madrid Digital */
+:root{
+  --navy:#0A1F44; --teal:#1F3E41; --teal2:#005B60; --plum:#464C6A;
+  --red:#E12E2E; --ora:#D98324; --amb:#9A5B00; --gran:#7A1616;
+  --link:#264AFF; --bd:#D3D3DD; --gy:#8E91AD; --gy2:#B5B6C6;
+  --f:'Inter',-apple-system,'Segoe UI',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--f);background:#fff;color:var(--navy);font-size:13px;}
+.app{max-width:1460px;margin:0 auto;padding:14px 16px 20px;}
+.top{display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;}
+.top-l{display:flex;align-items:center;gap:9px;}
+.top-l h1{font-size:16px;font-weight:700;}
+.ic{width:17px;height:17px;color:var(--link);opacity:.85;}
+.kebab{color:var(--gy);font-weight:700;letter-spacing:1px;font-size:13px;}
+.top-r{display:flex;align-items:center;gap:11px;color:var(--gy);}
+.fn{position:relative;}
+.fn .bdg{position:absolute;top:-5px;right:-7px;background:var(--link);color:#fff;border-radius:9px;
+         font-size:8.5px;font-weight:700;padding:1px 5px;}
+.xx{font-size:19px;font-weight:300;}
+.divv{width:1px;height:18px;background:var(--bd);}
+.box{border:1px solid var(--bd);border-radius:3px;background:#fff;}
+.head{display:grid;grid-template-columns:352px 1fr;margin-bottom:9px;}
+.org{display:flex;align-items:center;gap:11px;padding:14px 16px;}
+.esc{width:42px;height:42px;background:var(--red);display:flex;align-items:center;justify-content:center;
+     color:#fff;font-size:14px;letter-spacing:-1px;flex-shrink:0;}
+.org h2{font-size:11px;font-weight:700;line-height:1.35;}
+.org p{font-size:9px;font-weight:600;margin-top:3px;}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);}
+.kpi{padding:11px 18px;border-left:1px solid var(--bd);}
+.kpi:first-child{border-left:none;}
+.kpi .l{font-size:12px;display:flex;align-items:center;gap:5px;}
+.kpi .v{font-size:44px;font-weight:300;letter-spacing:-.02em;line-height:1.12;margin-top:1px;}
+.kpi .v small{font-size:19px;font-weight:400;color:var(--gy);}
+.kpi .d{font-size:10.5px;color:var(--gy);margin-top:2px;line-height:1.35;}
+.i{width:13px;height:13px;border-radius:50%;border:1px solid var(--gy2);display:inline-flex;
+   align-items:center;justify-content:center;font-size:8px;color:var(--gy);font-style:normal;flex-shrink:0;
+   position:relative;cursor:help;}
+.i::after{content:attr(data-t);position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);
+  background:var(--navy);color:#fff;font-size:10.5px;font-weight:400;font-style:normal;letter-spacing:0;
+  line-height:1.45;text-transform:none;text-align:left;padding:8px 11px;border-radius:3px;width:262px;
+  opacity:0;visibility:hidden;transition:opacity .12s;z-index:40;pointer-events:none;
+  box-shadow:0 2px 8px rgba(10,31,68,.22);}
+.i::before{content:'';position:absolute;bottom:calc(100% + 3px);left:50%;transform:translateX(-50%);
+  border:5px solid transparent;border-top-color:var(--navy);opacity:0;visibility:hidden;transition:opacity .12s;z-index:41;}
+.i:hover::after,.i:hover::before{opacity:1;visibility:visible;}
+.kpis .kpi:last-child .i::after,.g2>div:last-child .ct .i::after{left:auto;right:-6px;transform:none;}
+.kpis .kpi:last-child .i::before,.g2>div:last-child .ct .i::before{left:auto;right:0;transform:none;}
+/* los indicadores de la cabecera despliegan hacia abajo: arriba no hay sitio */
+.head .i::after{bottom:auto;top:calc(100% + 8px);}
+.head .i::before{bottom:auto;top:calc(100% + 3px);border-top-color:transparent;border-bottom-color:var(--navy);}
+.filters{display:flex;gap:8px;margin-bottom:11px;flex-wrap:wrap;}
+.sel{flex:1;min-width:128px;height:36px;border:1px solid var(--bd);border-radius:3px;display:flex;
+     align-items:center;justify-content:space-between;padding:0 11px;font-size:12.5px;background:#fff;}
+.sel select{border:none;outline:none;background:transparent;font-family:var(--f);
+  font-size:12.5px;color:var(--navy);width:100%;cursor:pointer;appearance:none;}
+.btn-red{flex:1.15;min-width:150px;height:36px;background:var(--red);border-radius:3px;display:flex;
+  align-items:center;justify-content:center;gap:7px;color:#fff;font-size:12.5px;font-weight:600;}
+.stitle{border:1px solid var(--bd);border-radius:3px;padding:12px 14px;text-align:center;margin-bottom:9px;
+        display:flex;align-items:center;justify-content:center;gap:16px;}
+.stitle .tw{flex:1;}
+.stitle span.t{font-size:14.5px;font-weight:700;letter-spacing:.02em;}
+/* parámetro de cálculo: NO recorta la población, redefine qué se considera evitable */
+.param{flex-shrink:0;display:flex;align-items:center;gap:9px;
+       border:1px dashed var(--gy2);border-radius:3px;padding:7px 11px;background:#FAFAFB;}
+.param .pl{font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--gy);}
+.param .pt{font-size:11.5px;color:var(--gy);}
+.param input{width:38px;border:none;outline:none;background:transparent;font-family:var(--f);
+             font-size:14px;font-weight:600;color:var(--link);text-align:center;}
+@media(max-width:1180px){.stitle{flex-direction:column;}}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px;}
+.pad{padding:13px 16px;}
+.rei{display:none;}body.cm .rei{display:flex;}
+.ct{font-size:12.5px;font-weight:600;display:flex;align-items:center;gap:6px;}
+.cs{font-size:11px;color:var(--gy);margin-top:3px;}
+.axl{display:flex;justify-content:space-between;font-size:10px;margin-top:9px;}
+.cw{height:200px;margin-top:4px;}
+.axb{font-size:10px;text-align:right;margin-top:2px;}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:13px;}
+.stat{border:1px solid var(--bd);border-radius:3px;padding:9px 12px;}
+.stat b{display:block;font-size:22px;font-weight:300;line-height:1.15;}
+.stat span{font-size:10px;color:var(--gy);}
+.alert{border:1px solid var(--red);border-left-width:3px;border-radius:3px;padding:11px 14px;margin-bottom:9px;
+       display:flex;align-items:center;gap:16px;}
+.alert .n{font-size:32px;font-weight:300;color:var(--red);line-height:1;flex-shrink:0;}
+.alert .t{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--red);font-weight:700;margin-bottom:3px;}
+.alert .p{font-size:12.5px;line-height:1.45;}
+.thead{display:flex;justify-content:space-between;align-items:flex-start;padding:13px 16px 10px;gap:14px;}
+table{width:100%;border-collapse:collapse;}
+th{text-align:left;font-size:11px;font-weight:600;padding:8px 14px;background:#FAFAFB;
+   border-top:1px solid var(--bd);border-bottom:1px solid var(--bd);white-space:nowrap;}
+td{padding:9px 14px;border-bottom:1px solid var(--bd);font-size:12px;}
+tr:last-child td{border-bottom:none;}
+.lk{color:var(--link);text-decoration:underline;font-variant-numeric:tabular-nums;}
+.r{text-align:right;font-variant-numeric:tabular-nums;}
+td.b{font-weight:600;}
+.st{font-size:11.5px;font-weight:600;white-space:nowrap;}
+.dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:6px;vertical-align:1px;}
+.foot{font-size:10.5px;color:var(--gy);padding:10px 16px;line-height:1.55;}
+.foot strong{color:var(--navy);font-weight:600;}
+/* banda inferior: reglas aplicadas y el log de eventos que pide el modelo */
+ .hito.opc i{background:var(--gy2);}
+.attr{display:flex;justify-content:space-between;font-size:10px;color:var(--gy2);padding:12px 2px 0;}
+/* pestañas */
+.tabbar{display:flex;align-items:stretch;gap:0;border-bottom:1px solid var(--bd);margin-bottom:11px;}
+.tabb{position:relative;background:none;border:none;font-family:var(--f);font-size:12.5px;font-weight:600;
+      color:var(--gy);padding:10px 16px 9px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;
+      border-bottom:2px solid transparent;margin-bottom:-1px;}
+.tabb:hover{color:var(--navy);}
+.tabb.on{color:var(--red);border-bottom-color:var(--red);}
+.tabb .tg{font-size:9px;font-weight:700;letter-spacing:.06em;border:1px solid var(--bd);
+          border-radius:3px;padding:2px 5px;color:var(--gy);}
+.tabb.on .tg{border-color:var(--red);color:var(--red);}
+.pane{display:none;} .pane.on{display:block;}
+/* explorador de procesos · estilo del entorno Celonis */
+.px-bar{display:flex;align-items:center;gap:8px;padding:9px 16px;border-bottom:1px solid var(--bd);flex-wrap:wrap;}
+.px-crumb{font-size:11px;color:var(--gy);}
+.px-crumb b{color:var(--navy);font-weight:600;}
+.px-sel{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--bd);border-radius:3px;
+        padding:5px 9px;font-size:11.5px;color:var(--navy);}
+.px-sel span{color:var(--gy);font-size:10.5px;}
+.px-sel select{border:none;outline:none;background:transparent;font-family:var(--f);
+               font-size:11.5px;font-weight:600;color:var(--navy);cursor:pointer;}
+.px-sp{flex:1;}
+.px-chip{font-size:10px;font-weight:600;color:var(--gy);border:1px solid var(--bd);border-radius:3px;padding:4px 9px;}
+.px-stage{position:relative;height:640px;overflow:auto;background:#fff;}
+.px-panel{position:absolute;top:14px;left:14px;width:250px;background:#fff;border:1px solid var(--bd);
+          border-radius:3px;box-shadow:0 2px 10px rgba(10,31,68,.07);z-index:12;}
+.px-panel-h{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--bd);}
+.px-panel-h strong{font-size:11.5px;font-weight:700;}
+.px-panel-h em{font-style:normal;font-size:10px;color:var(--gy);}
+.px-panel-f{padding:9px 12px;border-top:1px solid var(--bd);font-size:10px;color:var(--gy);line-height:1.45;}
+.px-obj{display:flex;align-items:center;gap:9px;padding:8px 12px;cursor:pointer;border-top:1px solid #F1F2F4;}
+.px-obj:first-child{border-top:none;}
+.px-obj:hover{background:#FAFAFB;}
+.px-obj input{margin:0;cursor:pointer;accent-color:var(--teal2);}
+.px-obj .pd{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.px-obj .pn{flex:1;font-size:11.5px;}
+.px-obj .pc{font-size:11px;color:var(--gy);font-variant-numeric:tabular-nums;}
+.pxn .px-card{fill:#fff;stroke:var(--bd);stroke-width:1;}
+.pxn:hover .px-card{stroke:var(--teal2);}
+.px-lbl{font-family:var(--f);font-size:11.5px;font-weight:600;fill:var(--navy);}
+.px-sub{font-family:var(--f);font-size:10px;fill:var(--gy);}
+.px-el{font-family:var(--f);font-size:10px;font-weight:600;fill:var(--gy);}
+.px-lg{display:flex;gap:16px;padding:8px 16px;border-top:1px solid var(--bd);font-size:10px;color:var(--gy);}
+.px-lg span{display:inline-flex;align-items:center;gap:5px;}
+.px-lg i{width:14px;height:3px;display:inline-block;border-radius:2px;}
+@media(max-width:1080px){.g2,.head{grid-template-columns:1fr;}}
+</style></head><body><div class="app">
+<!-- ═══ BARRA DE TÍTULO ═══ -->
+<div class="top">
+  <div class="top-l">
+    <h1>ANÁLISIS Prestación de acogimiento familiar</h1>
+    <svg class="ic" viewBox="0 0 16 16" fill="none"><path d="M6 3H3a1 1 0 00-1 1v9a1 1 0 001 1h10a1 1 0 001-1v-3M10 1l5 5m0 0l-5 5m5-5H6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <svg class="ic" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="9" height="10" rx="1" stroke="currentColor" stroke-width="1.4"/><path d="M5 1h9v10" stroke="currentColor" stroke-width="1.4"/></svg>
+    <span class="kebab">&#8942;</span>
+  </div>
+  <div class="top-r">
+    <div class="fn"><svg width="17" height="17" viewBox="0 0 16 16" fill="none"><path d="M1.5 2.5h13l-5 5.5v5l-3 1.5v-6.5l-5-5.5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg><span class="bdg" id="fnB">0</span></div>
+    <span class="divv"></span><span class="xx">&#10005;</span>
+  </div>
+</div>
+
+<!-- ═══ ORGANISMO + KPIs ═══ -->
+<div class="head box">
+  <div class="org">
+    <div class="esc">&#9733;&#9733;&#9733;&#9733;</div>
+    <div><h2>Dirección General de Infancia y Familia</h2>
+      <p>CONSEJERÍA DE FAMILIA, JUVENTUD Y ASUNTOS SOCIALES</p></div>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><div class="l">Procedimientos tramitados <i class="i" data-t="Procedimientos cerrados con pago en los últimos 24 meses, de los cuatro tipos que comparten el mismo esqueleto: reconocimiento, modificación positiva, modificación negativa y extinción.">i</i></div><div class="v" id="kQ">0</div><div class="d" id="kQD"></div></div>
+    <div class="kpi"><div class="l">Plazo del acuerdo del pleno al pago <i class="i" data-t="Días medianos entre el acuerdo del pleno que origina el hecho y el pago en nómina. Es el plazo que vive la familia, no el que mide cada subdirección por separado.">i</i></div><div class="v" id="kT">0 <small>d</small></div><div class="d" id="kTD"></div></div>
+    <div class="kpi"><div class="l">Plazo a cargo de la unidad <i class="i" data-t="Suma de los tramos cuya duración depende de la propia unidad. El resto son plazos legales, esperas al lote mensual o tiempos de otros organismos.">i</i></div><div class="v" id="kU">0 <small>d</small></div><div class="d" id="kUD"></div></div>
+    <div class="kpi"><div class="l">Procedimientos con retrabajo <i class="i" data-t="Procedimientos que han vuelto atrás al menos una vez: alegaciones que obligan a rehacer, incidencias en la validación de terceros o reparos de Intervención que devuelven al borrador.">i</i></div><div class="v" id="kR" style="color:var(--red)">0 <small>%</small></div><div class="d" id="kRD"></div></div>
+  </div>
+</div>
+
+<div class="tabbar">
+  <button class="tabb on" data-p="paneEx">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="4" cy="4" r="2.2" stroke="currentColor" stroke-width="1.3"/><circle cx="12" cy="12" r="2.2" stroke="currentColor" stroke-width="1.3"/><path d="M4 6.5v4a1.5 1.5 0 001.5 1.5H9" stroke="currentColor" stroke-width="1.3"/></svg>
+    Explorador de procesos <span class="tg">OCPM</span></button>
+  <button class="tabb" data-p="paneSV">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="9" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="2" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="9" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.3"/></svg>
+    Cuadro de mando del servicio</button>
+  <button class="tabb" data-p="paneCM">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 1.6v12.8M11.2 4.2H6.4a2 2 0 000 4h3.2a2 2 0 010 4H4.8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+    Reintegros</button>
+</div>
+
+<!-- ═══ FILTROS ═══ -->
+<div class="filters">
+  <div class="sel"><select id="fGran">
+    <option value="sem">Ver por semana</option>
+    <option value="mes" selected>Ver por mes</option>
+    <option value="tri">Ver por trimestre</option>
+    <option value="ano">Ver por año</option></select></div>
+  <div class="sel rei"><select id="fMot">
+    <option value="">Motivo &middot; todos</option>
+    <option>Cese del acogimiento</option><option>Mayoría de edad</option>
+    <option>Sentencia de adopción</option><option>Sale un menor del expediente</option></select></div>
+  <div class="sel"><select id="fTipo">
+    <option value="">Tipo de acogimiento &middot; todos</option>
+    <option>Familia extensa</option><option>Familia ajena</option><option>Especializado</option></select></div>
+  <div class="sel rei"><select id="fEst"><option value="">Estado &middot; todos</option></select></div>
+  <div class="sel rei"><select id="fUrg">
+    <option value="">Urgencia &middot; todas</option>
+    <option value="0">Con mensualidades ya perdidas</option>
+    <option value="30">Pierde algo en menos de 30 días</option>
+    <option value="90">Pierde algo en menos de 90 días</option>
+    <option value="365">Pierde algo este año</option></select></div>
+  <div class="btn-red"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M5 8.5l2 2 4-4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Análisis del proceso</div>
+  <div class="sel" id="btnClear" style="flex:.4;min-width:96px;justify-content:center;cursor:pointer;color:var(--gy);">&#10005; Limpiar</div>
+</div>
+
+
+<!-- ═══ PESTAÑA · EXPLORADOR ═══ -->
+<div class="pane on" id="paneEx">
+<div class="box">
+  <div class="px-bar">
+    <span class="px-crumb">Modelo objeto-céntrico &middot; <b>Prestación de acogimiento familiar</b></span>
+    <div class="px-sel"><span>Métrica</span>
+      <select id="pxMet"><option value="t">Tiempo mediano entre actividades</option>
+                         <option value="f">Frecuencia de procedimientos</option></select></div>
+    <div class="px-sel"><span>Procedimiento</span>
+      <select id="pxTipo"><option value="">Todos los tipos</option>
+        <option value="rec">Reconocimiento del derecho</option>
+        <option value="mpo">Modificación positiva</option>
+        <option value="mne">Modificación negativa</option>
+        <option value="ext">Extinción del derecho</option></select></div>
+    <div class="px-sp"></div>
+    <span class="px-chip" id="pxA">0 actividades</span>
+    <span class="px-chip" id="pxC">0 conexiones</span>
+    <span class="px-chip" id="pxN">0 procedimientos</span>
+  </div>
+  <div class="px-stage" style="height:772px;">
+    <div class="px-panel">
+      <div class="px-panel-h"><strong>Objetos</strong><em id="pxObjSel">3 seleccionados</em></div>
+      <div id="pxObjList"></div>
+      <div class="px-panel-f">Cada objeto tiene su propio ciclo de vida. Una misma actividad
+        puede afectar a varios a la vez.</div>
+    </div>
+    <svg id="pxSvg" width="1240" height="780"></svg>
+  </div>
+  <div class="px-lg">
+    <span><i style="background:#B5B6C6;"></i>Fuera de la unidad</span>
+    <span><i style="background:#464C6A;"></i>Plazo legal</span>
+    <span><i style="background:#D98324;"></i>Espera al lote mensual</span>
+    <span><i style="background:#E12E2E;"></i>Trabajo de la unidad</span>
+    <span><i style="background:#7A1616;"></i>Retrabajo</span>
+    <span id="pxNota" style="margin-left:auto;"></span>
+  </div>
+  <div class="stats" style="padding:0 16px 14px;">
+    <div class="stat"><b id="s7">0 d</b><span>del acuerdo del pleno al pago</span></div>
+    <div class="stat"><b id="s8">0 d</b><span id="lS8">de trabajo de la unidad</span></div>
+    <div class="stat"><b id="s9">0 %</b><span>del recorrido depende de la unidad</span></div>
+  </div>
+</div>
+</div>
+<!-- ═══ PESTAÑA · CUADRO DE MANDO DEL SERVICIO ═══ -->
+<div class="pane" id="paneSV">
+
+<div class="stitle">
+  <div class="tw"><span class="t">DÓNDE SE VA EL PLAZO</span></div>
+  <div class="param">
+    <span class="pl">Titularidad</span>
+    <span class="pt">tramos contados como propios</span>
+    <select id="pProp" style="border:none;outline:none;background:transparent;font-family:var(--f);font-size:11.5px;color:var(--link);font-weight:600;cursor:pointer;">
+      <option value="propio">solo los de la unidad</option>
+      <option value="propio,lote">y la espera al lote</option>
+      <option value="propio,lote,nexus">y la validación de terceros</option>
+    </select>
+  </div>
+</div>
+
+<div class="g2">
+  <div class="box pad">
+    <div class="ct">Tiempo medio por tramo y titularidad <i class="i" data-t="Cada tramo es el hueco entre dos actividades consecutivas. El color dice de quién depende ese hueco: de la unidad, de un plazo legal, del lote mensual, de Nexus o de otro organismo. Es la misma consulta que alimenta el explorador.">i</i></div>
+    <div class="axl"><span>&uarr; Días medios</span><span id="svN1"></span></div>
+    <div class="cw" style="height:300px;"><canvas id="c4"></canvas></div>
+    <div class="axb">Tramo del procedimiento &rarr;</div>
+    <div class="stats">
+      <div class="stat"><b id="t1">0 d</b><span id="lT1">el tramo más largo</span></div>
+      <div class="stat"><b id="t2">0 d</b><span id="lT2">a cargo de la unidad</span></div>
+      <div class="stat"><b id="t3">0 d</b><span>de espera al lote mensual</span></div>
+    </div>
+  </div>
+  <div class="box pad">
+    <div class="ct">Plazo medio por mes de origen y titularidad <i class="i" data-t="El mismo reparto, mes a mes según cuándo el pleno acordó el hecho. Sirve para ver si el plazo mejora y, sobre todo, cuál de los cinco bloques se mueve cuando mejora.">i</i></div>
+    <div class="axl"><span>&uarr; Días medios acumulados</span><span id="svN2"></span></div>
+    <div class="cw" style="height:300px;"><canvas id="c5"></canvas></div>
+    <div class="axb" id="axG5">Mes del acuerdo del pleno &rarr;</div>
+    <div class="stats">
+      <div class="stat"><b id="t4">0 d</b><span>plazo total medio</span></div>
+      <div class="stat"><b id="t5">0 d</b><span>del primer al último trimestre</span></div>
+      <div class="stat"><b id="t6">0 %</b><span>del plazo no depende de la unidad</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="stitle"><div class="tw"><span class="t">EL LOTE MENSUAL Y EL RETRABAJO</span></div></div>
+
+<div class="g2">
+  <div class="box pad">
+    <div class="ct">Procedimientos por días de espera al lote mensual <i class="i" data-t="Días entre el cierre del plazo de alegaciones y la propuesta mensual en la que el procedimiento entra. Un expediente que cierra el día 2 espera casi un mes; el que cierra el día 28, apenas nada. La espera no depende del expediente, sino del día en que cae.">i</i></div>
+    <div class="axl"><span>&uarr; Procedimientos</span><span id="svN3"></span></div>
+    <div class="cw" style="height:230px;"><canvas id="c6"></canvas></div>
+    <div class="axb">Días de espera hasta la propuesta &rarr;</div>
+    <div class="stats">
+      <div class="stat"><b id="t7">0 d</b><span>espera mediana al lote</span></div>
+      <div class="stat"><b id="t8">0</b><span>esperan más de tres semanas</span></div>
+      <div class="stat"><b id="t9">0 d</b><span>se ahorrarían con dos propuestas al mes</span></div>
+    </div>
+  </div>
+  <div class="box pad">
+    <div class="ct">Procedimientos por tipo y motivo de retrabajo <i class="i" data-t="Un procedimiento con retrabajo ha vuelto atrás en el flujo: alegaciones que hay que contestar, una incidencia de terceros que devuelve el borrador, o un reparo de Intervención que obliga a rehacer el documento contable.">i</i></div>
+    <div class="axl"><span>&uarr; Procedimientos</span><span id="svN4"></span></div>
+    <div class="cw" style="height:230px;"><canvas id="c7"></canvas></div>
+    <div class="axb">Tipo de procedimiento &rarr;</div>
+    <div class="stats">
+      <div class="stat"><b id="t10">0 %</b><span>con al menos una vuelta atrás</span></div>
+      <div class="stat"><b id="t11">0 d</b><span>de más cuando hay reparo</span></div>
+      <div class="stat"><b id="t12">0 d</b><span>de más cuando terceros devuelve</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="box" style="margin-bottom:9px;">
+  <div class="thead">
+    <div>
+      <div class="ct">Plazo por tipo de procedimiento y tramo</div>
+      <div class="cs" id="svSub">Los cuatro tipos recorren el mismo esqueleto &mdash;acuerdo de inicio, notificación,
+        alegaciones, propuesta mensual, terceros, fiscalización, resolución y pago&mdash; y se diferencian
+        sobre todo en el tramo de entrada</div>
+    </div>
+    <div class="cs" id="svBadge"></div>
+  </div>
+  <table><thead><tr>
+    <th>Tipo de procedimiento</th><th class="r">Procedimientos</th><th class="r">Plazo mediano</th>
+    <th class="r">A cargo de la unidad</th><th class="r">Traspaso desde Protección</th>
+    <th class="r">Espera al lote</th><th class="r">Con retrabajo</th></tr></thead>
+    <tbody id="svTb"></tbody></table>
+  <div class="foot" id="svFoot"></div>
+</div>
+
+</div>
+
+<!-- ═══ PESTAÑA · CUADRO DE MANDO ═══ -->
+<div class="pane" id="paneCM">
+
+<div class="box kpis" style="margin-bottom:9px;">
+  <div class="kpi"><div class="l">Expedientes con reintegro <i class="i" data-t="Expedientes con nóminas pagadas después de la fecha de efectos del cese. Cada mensualidad prescribe por separado a los cuatro años de su pago (art. 39 Ley 38/2003) y hay que reclamarla una a una.">i</i></div><div class="v" id="kMen">0</div><div class="d" id="kMenD"></div></div>
+  <div class="kpi"><div class="l">Plazo hasta el cese del pago <i class="i" data-t="Días medianos entre la fecha de efectos del cese y la propuesta mensual en la que se deja de pagar. Cada mes de más genera una mensualidad indebida.">i</i></div><div class="v" id="kPar">0 <small>d</small></div><div class="d" id="kParD"></div></div>
+  <div class="kpi"><div class="l">Importe recuperable <i class="i" data-t="Suma de las mensualidades que todavía se pueden reclamar. Cada una prescribe por separado a los cuatro años de su pago.">i</i></div><div class="v" id="kRec">0 <small>&euro;</small></div><div class="d" id="kRecD"></div></div>
+  <div class="kpi"><div class="l">Importe en riesgo de prescripción <i class="i" data-t="Importe de las mensualidades que pierden sus cuatro años dentro del próximo año si no se notifica antes el acuerdo de inicio. Debajo, lo ya perdido.">i</i></div><div class="v" id="kRie" style="color:var(--red)">0 <small>&euro;</small></div><div class="d" id="kRieD"></div></div>
+</div>
+
+<div class="stitle">
+  <div class="tw"><span class="t">SITUACIÓN DE LA DEUDA</span></div>
+  <div class="param">
+    <div><div class="pl">Horizonte de riesgo</div><div class="pt">para el importe en juego</div></div>
+    <select id="pCierre" style="border:none;outline:none;background:transparent;font-family:var(--f);font-size:13px;font-weight:600;color:var(--link);cursor:pointer;">
+      <option value="5">Próximos 6 meses</option>
+      <option value="11" selected>Próximos 12 meses</option>
+      <option value="23">Próximos 24 meses</option></select>
+  </div>
+</div>
+
+<div class="alert" id="alert"></div>
+
+<div class="box pad" style="margin-bottom:9px;">
+    <div class="ct">Importe indebido por situación y origen <span id="varN" style="font-weight:400;color:var(--gy);"></span> <i class="i" data-t="Situación de cada euro pagado de más, y dentro de cada situación qué parte era inevitable —la nómina en curso— y qué parte nace del retraso en conocer el cese.">i</i></div>
+    <div class="axl"><span>&uarr; Importe indebido</span><span id="varSub"></span></div>
+    <div class="cw" style="height:206px;"><canvas id="c0"></canvas></div>
+    <div class="axb">Situación del importe &rarr;</div>
+    <div class="cs" style="margin-top:7px;">La primera mensualidad es inevitable: la nómina en curso no se puede detener.
+      Las posteriores miden el tiempo que tardó en conocerse el cese. <strong>Sin tramo de cobro efectivo</strong>: resuelto no es
+      cobrado, y requiere confirmar si AME registra la compensación en nómina.</div>
+    <div class="stats">
+      <div class="stat"><b id="r1">0 €</b><span>originados por el retraso en la comunicación</span></div>
+      <div class="stat"><b id="r2">0 €</b><span>prescritos</span></div>
+      <div class="stat"><b id="r3">0 €</b><span>sin acuerdo de inicio notificado</span></div>
+    </div>
+</div>
+
+
+<div class="stitle"><div class="tw"><span class="t">PRESCRIPCIÓN Y CAPACIDAD DE RESOLUCIÓN</span></div></div>
+
+<div class="g2">
+  <div class="box pad">
+    <div class="ct" id="ctGot">Importe en prescripción por mes de vencimiento <i class="i" data-t="Euros de mensualidades que cumplen cuatro años en cada periodo. No es un acantilado: es un goteo que ya ha empezado.">i</i></div>
+    <div class="axl"><span>&uarr; Euros que prescriben</span><span id="sanN"></span></div>
+    <div class="cw"><canvas id="c1"></canvas></div>
+    <div class="axb" id="axG1">Mes en que se cumplen los 4 a&ntilde;os &rarr;</div>
+    <div class="stats">
+      <div class="stat"><b id="s1">0 €</b><span>en prescripción a 90 días</span></div>
+      <div class="stat"><b id="s2">0 €</b><span id="lS2">al mes de media si no se actúa</span></div>
+      <div class="stat"><b id="s3">0</b><span>expedientes con mensualidades prescritas</span></div>
+    </div>
+  </div>
+  <div class="box pad">
+    <div class="ct">Acuerdos notificados y resueltos por mes <i class="i" data-t="La notificación reinicia los cuatro años desde cero (art. 39.3 LGS), pero abre un plazo de caducidad de seis meses. Si no se resuelve dentro de él, la interrupción se pierde y vuelven las fechas originales (art. 95.3 Ley 39/2015).">i</i></div>
+    <div class="axl"><span id="axL2">&uarr; Expedientes al mes</span><span>Ritmo necesario en rojo &uarr;</span></div>
+    <div class="cw"><canvas id="c2"></canvas></div>
+    <div class="axb" id="axG2">Mes &rarr;</div>
+    <div class="stats">
+      <div class="stat"><b id="s4">0</b><span id="lS4">se notifican al mes</span></div>
+      <div class="stat"><b id="s5">0</b><span id="lS5">se resuelven al mes</span></div>
+      <div class="stat"><b id="s6">0</b><span>en riesgo de caducidad</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PRIORIDAD REAL ═══ -->
+<div class="box pad" style="margin-bottom:9px;">
+  <div class="ct">Expedientes por propuesta límite y estado del procedimiento <i class="i" data-t="Cruza la última propuesta mensual en la que todavía da tiempo a notificar con el punto del procedimiento en que está cada expediente. Lo granate y lo rojo a la izquierda es lo que hay que meter en la propuesta más próxima.">i</i></div>
+  <div class="axl"><span>&uarr; # Expedientes</span><span id="priN"></span></div>
+  <div class="cw" style="height:200px;"><canvas id="c3"></canvas></div>
+  <div class="axb">Propuesta límite para notificar &rarr;</div>
+  <div class="cs" id="priNota" style="margin-top:7px;"></div>
+</div>
+
+<!-- ═══ TABLA ═══ -->
+<div class="box" style="margin-bottom:9px;">
+  <div class="thead">
+    <div><div class="ct" id="tbTitle">Expedientes pendientes por fecha de vencimiento <i class="i" data-t="Expedientes sin proteger, ordenados por la fecha en que pierden su siguiente mensualidad.">i</i></div>
+      <div class="cs" id="tbSub">Ordenados por la próxima mensualidad que vence</div></div>
+    <div style="font-size:11px;color:var(--gy);" id="badge"></div>
+  </div>
+  <table>
+    <thead><tr><th>Expediente</th><th>Motivo</th>
+      <th class="r">Mensualidades <i class="i" data-t="Mensualidades todavía reclamables sobre el total de mensualidades indebidamente percibidas del expediente.">i</i></th>
+      <th class="r">Principal</th><th class="r">Ya perdido</th>
+      <th class="r">Sin actuar <i class="i" data-t="Días transcurridos desde que venció el plazo de recurso de la extinción, que es el momento a partir del cual el reintegro ya se puede iniciar.">i</i></th>
+      <th class="r">Vence la próxima</th><th class="r">Faltan</th><th class="r">Estado</th></tr></thead>
+    <tbody id="tb"></tbody>
+  </table>
+  <div class="foot" id="tbFoot"></div>
+</div>
+
+</div>
+
+<div class="attr">
+  <span><strong style="color:var(--gy)">Caso de uso 2</strong> &middot; Prestación de acogimiento familiar</span>
+  <span>Fuente: AME &middot; sin dependencia de Nexus &middot; Contenido ilustrativo &mdash; datos no reales</span>
+</div>
+</div>
+<script>
+const NAVY='#0A1F44', TEAL2='#005B60', TEAL='#1F3E41', PLUM='#464C6A', RED='#E12E2E',
+      ORA='#D98324', GY='#8E91AD', GY2='#B5B6C6', BD='#D3D3DD', GRAN='#7A1616';
+const F={family:'Inter',size:10};
+const MS=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+const DIA=864e5, HOY=Date.UTC(2026,8,22), CIERRE=Date.UTC(2026,11,31);
+
+/* ══════════════════════════════════════════════════════════════════════
+   REGLAS DEL PROCEDIMIENTO · dichas por la unidad en la sesión del 14/08
+   · «hay que por lo menos esperar 2 meses» (Elena): no se puede iniciar el
+     reintegro inmediatamente después de extinguir.
+   · Ese plazo se compone de la notificación de la extinción —«hay veces que
+     se nos va mes, mes y medio en la notificación» (Eva)— más un mes de
+     recurso, y solo entonces entra «en la propuesta inmediatamente siguiente».
+   · El trabajo se ejecuta por PROPUESTA MENSUAL: «no podemos parar la
+     propuesta por un expediente; lo que no entra ya no entra» (Eva).
+   · Prescripción: 4 años por mensualidad desde cada pago indebido.
+   · Objetivo declarado: cerrar los antiguos «antes de diciembre, porque en
+     diciembre prescribe», con la notificación incluida.
+   ══════════════════════════════════════════════════════════════════════ */
+const PRESC_ANOS=4, P_RECURSO=30, CADU_MESES=6;
+const TIPO_DEMORA=0.040625;     /* interés legal + 25 % · art. 38 LGS */
+
+const EST=[
+ {k:'esp',n:'En espera legal',                 c:GY2,  prot:false, legal:true},
+ {k:'pdt',n:'Pendiente de iniciar',            c:RED,  prot:false, legal:false},
+ {k:'ini',n:'Iniciado, sin notificar',         c:ORA,  prot:false, legal:false},
+ {k:'cad',n:'Notificado pero caducado',        c:GRAN, prot:false, legal:false},
+ {k:'not',n:'Notificado · procedimiento vivo', c:TEAL2,prot:true,  legal:false},
+ {k:'res',n:'Resuelto',                        c:TEAL, prot:true,  legal:false}
+];
+const E={}; EST.forEach(e=>E[e.k]=e);
+
+/* ══════════ censo ══════════ */
+let _s=20260922>>>0;
+const rnd=()=>{_s=(_s+0x6D2B79F5)>>>0;let t=_s;t=Math.imul(t^(t>>>15),1|t);
+  t=(t+Math.imul(t^(t>>>7),61|t))^t;return ((t^(t>>>14))>>>0)/4294967296;};
+const pick=a=>{let r=rnd(),c=0;for(const x of a){c+=x[1];if(r<c)return x[0];}return a[a.length-1][0];};
+const entre=(a,b)=>a+Math.floor(rnd()*(b-a));
+const addM=(t,n)=>{const d=new Date(t);d.setUTCMonth(d.getUTCMonth()+n);return d.getTime();};
+const addY=(t,n)=>{const d=new Date(t);d.setUTCFullYear(d.getUTCFullYear()+n);return d.getTime();};
+/* la propuesta es mensual: todo cae el día 1 del mes siguiente */
+const propuesta=t=>{const d=new Date(t);return Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+1,1);};
+
+const MOTIVOS=['Cese del acogimiento','Mayoría de edad','Sentencia de adopción','Sale un menor del expediente'];
+const MOT_P=[['Cese del acogimiento',.46],['Mayoría de edad',.21],
+             ['Sentencia de adopción',.12],['Sale un menor del expediente',.21]];
+const TIPOS=[['Familia extensa',.58],['Familia ajena',.32],['Especializado',.10]];
+const CUANTIA={'Familia extensa':383,'Familia ajena':656,'Especializado':1120};
+/* días que tarda Protección en comunicar el hecho · «a lo mejor nos lo comunican
+   dentro de 3 meses como pasaba antes» (Elena). No depende de la unidad. */
+const COMUNICA={'Mayoría de edad':[2,20],'Sale un menor del expediente':[12,110],
+                'Cese del acogimiento':[18,150],'Sentencia de adopción':[30,210]};
+
+const REI=[];
+(function(){
+  let seq=4180;
+  const nuevo=(ef,est,notRe,resRe)=>{
+    const mot=pick(MOT_P), tp=pick(TIPOS);
+    const neg = mot==='Sale un menor del expediente';
+    const cuota=Math.round(CUANTIA[tp]*(neg?0.45:1));
+    const com=Math.round(COMUNICA[mot][0]+rnd()*rnd()*COMUNICA[mot][1]);
+    /* la extinción entra en la propuesta del mes siguiente a conocerse */
+    const pExt=propuesta(ef+com*DIA);
+    /* notificación de la extinción: entre 15 y 45 días (postal, sobre todo) */
+    const notExt=pExt+entre(15,46)*DIA;
+    /* antes de este momento el reintegro no se puede iniciar: notificación + recurso */
+    const puede=propuesta(notExt+P_RECURSO*DIA);
+    /* Las mensualidades indebidas NO son un dato aparte: son las nóminas que se
+       siguieron pagando entre la fecha de efectos y la propuesta que cortó el pago.
+       Una sola significa que se paró en la propuesta inmediatamente siguiente. */
+    const ms=[]; const n=Math.max(1,Math.round((pExt-ef)/DIA/30.44));
+    for(let j=0;j<n;j++){
+      const pago=addM(Date.UTC(new Date(ef).getUTCFullYear(),new Date(ef).getUTCMonth(),25),j+1);
+      ms.push({pago:pago, presc:addY(pago,PRESC_ANOS), imp:cuota, inev:j===0});
+    }
+    const iniRe = notRe ? propuesta(notRe-entre(18,40)*DIA) : null;
+    return {id:'AF-RE-'+(seq++), mot:mot, tipo:tp, ef:ef, cuota:cuota, com:com,
+            pExt:pExt, notExt:notExt, puede:puede, est:est, ms:ms,
+            notRe:notRe||null, iniRe:iniRe, resRe:resRe||null};
+  };
+  /* ── los antiguos: los que prescriben en esta campaña ── */
+  const poolA=[]; [['pdt',96],['ini',22],['esp',6]].forEach(([k,n])=>{for(let i=0;i<n;i++)poolA.push(k);});
+  let a=0;
+  for(let i=0;i<124;i++) REI.push(nuevo(entre(Date.UTC(2022,6,1),Date.UTC(2023,8,30)), poolA[a++]));
+  /* notificados dentro de la campaña: ya protegidos */
+  [[5,9],[6,13],[7,16],[8,18]].forEach(([m,n])=>{for(let i=0;i<n;i++)
+    REI.push(nuevo(entre(Date.UTC(2022,6,1),Date.UTC(2023,8,30)),'not',
+                   Date.UTC(2026,m,1+Math.floor(rnd()*27))));});
+  /* notificados hace tiempo y sin resolver: caducados */
+  for(let i=0;i<16;i++) REI.push(nuevo(entre(Date.UTC(2022,6,1),Date.UTC(2023,8,30)),'not',
+                                        entre(Date.UTC(2025,2,1),Date.UTC(2026,1,28))));
+  /* ── los corrientes: 4-5 al mes, con su espera legal por delante ── */
+  const poolB=[]; [['pdt',38],['ini',14],['esp',24]].forEach(([k,n])=>{for(let i=0;i<n;i++)poolB.push(k);});
+  let b=0;
+  for(let i=0;i<76;i++) REI.push(nuevo(entre(Date.UTC(2024,6,1),Date.UTC(2026,6,28)), poolB[b++]));
+  /* el flujo corriente se tramita al día: son los 4-5 al mes que citaba la unidad */
+  [[2024,14],[2025,20],[2026,16]].forEach(([y,n])=>{for(let i=0;i<n;i++){
+    const ef=entre(Date.UTC(y,0,1),Date.UTC(y,y===2026?4:11,28));
+    const e=nuevo(ef,'not',0);
+    /* se notifica en la propuesta siguiente a que se pueda, más el tiempo de reparto */
+    e.notRe=propuesta(e.puede)+entre(10,40)*DIA;
+    e.iniRe=propuesta(e.puede);
+    /* y se resuelve dentro del plazo de caducidad: el flujo corriente sí se cierra */
+    if(e.notRe<HOY-150*DIA){ e.est='res'; e.resRe=e.notRe+entre(60,150)*DIA; }
+    if(e.notRe<HOY) REI.push(e);
+  }});
+  /* resueltos del periodo */
+  [[4,3],[5,4],[6,4],[7,5],[8,4]].forEach(([m,n])=>{for(let i=0;i<n;i++){
+    const nr=entre(Date.UTC(2025,6,1),Date.UTC(2026,2,28));
+    REI.push(nuevo(entre(Date.UTC(2022,3,1),Date.UTC(2023,1,28)),'res',nr,
+                   Date.UTC(2026,m,1+Math.floor(rnd()*27))));}});
+})();
+
+/* ══════════════════════════════════════════════════════════════════════
+   VARIANTES DEL PROCEDIMIENTO
+   El camino que sigue cada expediente se reconstruye de la secuencia de
+   hitos, no de un campo de estado. Es lo que distingue una foto de un
+   proceso: el mismo expediente puede pasar dos veces por el mismo sitio.
+   ══════════════════════════════════════════════════════════════════════ */
+const VAR=[
+ {k:'est',n:'Inicio · notificación · resolución', c:TEAL2, rt:false},
+ {k:'ale',n:'Con alegaciones del interesado',     c:PLUM,  rt:false},
+ {k:'cad',n:'Caducado y reiniciado',              c:GRAN,  rt:true },
+ {k:'rep',n:'Notificación devuelta · reintento',  c:ORA,   rt:true },
+ {k:'viv',n:'Sin notificar todavía',              c:GY2,   rt:false}
+];
+const V={}; VAR.forEach(v=>V[v.k]=v);
+REI.forEach(e=>{
+  if(!e.notRe)            e.va='viv';
+  else if(e.est==='not' && (HOY-e.iniRe)/DIA/30.44>CADU_MESES) e.va='cad';
+  else if(rnd()<.14)      e.va='rep';
+  else if(rnd()<.22)      e.va='ale';
+  else                    e.va='est';
+  /* el retrabajo se cuenta: un segundo acuerdo de inicio sobre el mismo cobro indebido */
+  e.reint = e.va==='cad' ? 1+Math.floor(rnd()*2) : (e.va==='rep' ? 1 : 0);
+});
+
+/* ══════════ cuentas por expediente ══════════ */
+REI.forEach(e=>{
+  e.mesesProc = e.iniRe ? (HOY-e.iniRe)/DIA/30.44 : null;
+  e.caducado  = e.est==='not' && e.mesesProc>CADU_MESES;
+  /* mientras no haya vencido el plazo de recurso, el expediente no es demora: está en espera legal */
+  e.estEf = e.caducado ? 'cad' : (e.est==='pdt' && HOY<e.puede ? 'esp' : e.est);
+  e.prot  = E[e.estEf].prot;
+  /* La notificación INTERRUMPE la prescripción: los 4 años vuelven a empezar (art. 39.3 LGS).
+     Si el procedimiento caduca, esa interrupción no cuenta (art. 95.3 Ley 39/2015). */
+  e.ms.forEach(m=>{
+    m.prescEf = (e.prot && m.presc>=e.notRe) ? addY(e.notRe,PRESC_ANOS) : m.presc;
+    m.int = m.imp*TIPO_DEMORA*((HOY-m.pago)/DIA)/365;
+  });
+  e.vivas      = e.ms.filter(m=>m.prescEf>=HOY);
+  e.muertas    = e.ms.filter(m=>m.prescEf< HOY);
+  e.recuperable= e.vivas.reduce((a,m)=>a+m.imp,0);
+  e.intereses  = e.vivas.reduce((a,m)=>a+m.int,0);
+  e.perdido    = e.muertas.reduce((a,m)=>a+m.imp,0);
+  e.prox       = e.vivas.length? Math.min(...e.vivas.map(m=>m.prescEf)) : null;
+  e.diasProx   = e.prox? Math.round((e.prox-HOY)/DIA) : null;
+  /* entra en la campaña de diciembre si pierde algo antes del cierre y no está protegido */
+  e.campana    = !e.prot && e.prox!==null && e.prox<=CIERRE;
+  /* días parado desde que YA SE PODÍA iniciar · descontada la espera legal */
+  e.parado     = (!e.prot && !e.iniRe && HOY>e.puede) ? Math.round((HOY-e.puede)/DIA) : null;
+});
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   CENSO DEL PROCESO COMPLETO
+   AME es objeto-céntrico de serie: «el expediente siempre tiene el mismo
+   número» y dentro de él se van abriendo procedimientos —reconocimiento,
+   modificación, extinción, reintegro— que comparten el mismo esqueleto:
+   acuerdo de inicio, notificación, alegaciones, borrador, terceros,
+   documento contable, fiscalización, resolución y pago (Elena y Eva, 14/08).
+   Tres objetos: EXPEDIENTE · PROCEDIMIENTO · PROPUESTA MENSUAL.
+   ══════════════════════════════════════════════════════════════════════════ */
+const znor=()=>(rnd()+rnd()+rnd()+rnd()+rnd()+rnd()-3)/0.7071;
+const lgn=(m,cv,min)=>{const s=Math.sqrt(Math.log(1+cv*cv));
+  return Math.max(min, Math.exp(Math.log(m)-s*s/2+s*znor()));};
+const dias=n=>n*DIA;
+
+const TP=[
+ {k:'rec',n:'Reconocimiento del derecho', c:TEAL2, ext:true },
+ {k:'mpo',n:'Modificación positiva',      c:PLUM,  ext:false},
+ {k:'mne',n:'Modificación negativa',      c:ORA,   ext:true },
+ {k:'ext',n:'Extinción del derecho',      c:RED,   ext:true },
+];
+const TPN={}; TP.forEach(t=>TPN[t.k]=t);
+/* volumen mensual declarado: «hay meses que tenemos 20 altas, 10 ceses y 3 modificaciones» */
+const VOLMES={rec:20, ext:10, mpo:2, mne:1};
+/* cuánto tarda Protección en comunicar el hecho · el traspaso entre subdirecciones */
+const TRASPASO={rec:[30,.95], ext:[52,1.15], mne:[38,1.0], mpo:[0,0]};
+
+const PROC=[];
+(function(){
+  let seq=10400, nExp=4200;
+  const MESES_HIST=24;
+  /* «el expediente siempre tiene el mismo número y dentro se abren procedimientos».
+     El reconocimiento abre expediente; modificaciones y extinción reutilizan uno vivo,
+     y la extinción lo cierra. Se arranca con la cartera que ya existía. */
+  const VIVOS=[]; for(let i=0;i<430;i++) VIVOS.push('EXP-'+(nExp++));
+  const tomar=(quitar)=>{ if(!VIVOS.length) return 'EXP-'+(nExp++);
+    const j=entre(0,VIVOS.length); return quitar ? VIVOS.splice(j,1)[0] : VIVOS[j]; };
+  for(let m=MESES_HIST; m>=1; m--){
+    const ini=addM(Date.UTC(2026,8,1), -m);            /* mes de origen del hecho */
+    Object.keys(VOLMES).forEach(k=>{
+      const n=Math.round(VOLMES[k]*(0.75+rnd()*0.5));
+      for(let i=0;i<n;i++){
+        const T={}, tp=TPN[k];
+        const exp = k==='rec' ? 'EXP-'+(nExp++) : tomar(k==='ext');
+        /* 1 · el hecho: el pleno acuerda, los miércoles */
+        T.pleno = ini + dias(entre(0,28));
+        /* 2 · Protección lo graba en AME · aquí está el traspaso */
+        T.ame = tp.ext ? T.pleno + dias(Math.round(lgn(TRASPASO[k][0],TRASPASO[k][1],1)))
+                       : T.pleno + dias(entre(0,3));
+        if(T.ame>HOY){ if(k==='rec') VIVOS.push(exp); continue; }
+        if(k==='rec') VIVOS.push(exp);
+        /* 3 · la unidad actúa en cuanto lo tiene: «nosotros actuamos inmediatamente» */
+        T.ini = T.ame + dias(Math.round(lgn(3,.7,1)));
+        /* 4 · notificación · buena parte sigue siendo postal */
+        T.not = T.ini + dias(Math.round(lgn(18,.6,5)));
+        /* 5 · plazo de alegaciones: 10 días hábiles, y no todos alegan */
+        const hayAle = rnd()<.24;
+        T.ale = hayAle ? T.not + dias(entre(8,15)) : null;
+        T.finAle = T.not + dias(14);
+        /* 6 · y después espera a la PROPUESTA MENSUAL: el lote no se para por un expediente */
+        T.prop = propuesta(Math.max(T.finAle, T.ale||0));
+        T.bor  = T.prop + dias(entre(0,2));
+        /* 7 · validación de terceros · ida y vuelta a Nexus, con reintentos */
+        T.ter  = T.bor + dias(1);
+        const reint = rnd()<.17 ? 1+Math.floor(rnd()*2) : 0;
+        T.terFin = T.ter + dias(reint*entre(4,12));
+        /* 8 · documento contable · lo lanza gestión económica de un día para otro */
+        T.dcom = T.terFin + dias(entre(1,3));
+        /* 9 · fiscalización de Intervención · puede devolver reparo */
+        const reparo = rnd()<.09;
+        T.fis  = T.dcom + dias(Math.round(lgn(reparo?16:6,.5,2)));
+        /* 10 · resolución · se redacta tras fiscalizar y va a la firma */
+        T.res  = T.fis + dias(entre(0,2));
+        /* 11 · pago en la nómina del mes */
+        const d=new Date(T.res);
+        T.pago = Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + (d.getUTCDate()>20?1:0), 25);
+        if(T.pago<=HOY) PROC.push({
+          id:'AF-'+(seq++), exp:exp, tipo:k, t:T,
+          ale:hayAle, reint:reint, reparo:reparo,
+          tipoAcog: pick(TIPOS), mesOrigen: ini
+        });
+      }
+    });
+  }
+})();
+/* duraciones de cada tramo, en días */
+const TRAMO=[
+ {k:'tras', n:'Acuerdo del pleno → grabación en AME',      de:'pleno', a:'ame',    quien:'ajeno'},
+ {k:'act',  n:'Grabación → acuerdo de inicio',             de:'ame',   a:'ini',    quien:'propio'},
+ {k:'not',  n:'Acuerdo de inicio → notificación',          de:'ini',   a:'not',    quien:'propio'},
+ {k:'ale',  n:'Notificación → cierre de alegaciones',      de:'not',   a:'finAle', quien:'legal'},
+ {k:'lote', n:'Cierre de alegaciones → propuesta mensual', de:'finAle',a:'prop',   quien:'lote'},
+ {k:'bor',  n:'Propuesta mensual → borrador',              de:'prop',  a:'bor',    quien:'propio'},
+ {k:'ter',  n:'Borrador → validación de terceros',         de:'bor',   a:'terFin', quien:'nexus'},
+ {k:'dcom', n:'Terceros → documento contable',             de:'terFin',a:'dcom',   quien:'propio'},
+ {k:'fis',  n:'Documento contable → fiscalización',        de:'dcom',  a:'fis',    quien:'ajeno'},
+ {k:'res',  n:'Fiscalización → resolución',                de:'fis',   a:'res',    quien:'propio'},
+ {k:'pago', n:'Resolución → pago en nómina',               de:'res',   a:'pago',   quien:'legal'},
+];
+PROC.forEach(p=>{
+  p.d={}; TRAMO.forEach(tr=>{ p.d[tr.k]=Math.round((p.t[tr.a]-p.t[tr.de])/DIA); });
+  p.total=Math.round((p.t.pago-p.t.pleno)/DIA);
+});
+
+/* ══════════ utilidades ══════════ */
+const $=i=>document.getElementById(i);
+const nf=n=>Math.round(n).toLocaleString('es-ES');
+const eu=n=>Math.abs(n)>=1e6?(n/1e6).toFixed(2).replace('.',',')+' M':nf(n);
+const fd=t=>{const x=new Date(t);return ('0'+x.getUTCDate()).slice(-2)+'/'+('0'+(x.getUTCMonth()+1)).slice(-2)+'/'+String(x.getUTCFullYear()).slice(2);};
+const med=a=>{if(!a.length)return 0;const b=[...a].sort((x,y)=>x-y),h=b.length>>1;
+  return b.length%2?b[h]:Math.round((b[h-1]+b[h])/2);};
+const sum=a=>a.reduce((x,e)=>x+e,0);
+/* granularidad temporal · solo afecta a lo que es un flujo, nunca al saldo */
+const truncar=(t,g)=>{const d=new Date(t);
+  if(g==='sem'){const w=(d.getUTCDay()+6)%7; return Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()-w);}
+  if(g==='mes') return Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),1);
+  if(g==='tri') return Date.UTC(d.getUTCFullYear(),Math.floor(d.getUTCMonth()/3)*3,1);
+  return Date.UTC(d.getUTCFullYear(),0,1);};
+const avanzar=(t,g,k)=>{const d=new Date(t);
+  if(g==='sem') return t+k*7*DIA;
+  if(g==='mes'){d.setUTCMonth(d.getUTCMonth()+k);return d.getTime();}
+  if(g==='tri'){d.setUTCMonth(d.getUTCMonth()+3*k);return d.getTime();}
+  d.setUTCFullYear(d.getUTCFullYear()+k);return d.getTime();};
+const etiq=(t,g)=>{const d=new Date(t);
+  if(g==='sem') return ('0'+d.getUTCDate()).slice(-2)+'/'+('0'+(d.getUTCMonth()+1)).slice(-2);
+  if(g==='mes') return MS[d.getUTCMonth()]+' '+String(d.getUTCFullYear()).slice(2);
+  if(g==='tri') return 'T'+(Math.floor(d.getUTCMonth()/3)+1)+' '+String(d.getUTCFullYear()).slice(2);
+  return String(d.getUTCFullYear());};
+const GN={sem:{fwd:14,back:8,nom:'semana',adv:'a la semana',dias:7,Nom:'SEMANA'},
+          mes:{fwd:12,back:6,nom:'mes',adv:'al mes',dias:30.44,Nom:'MES'},
+          tri:{fwd:8,back:6,nom:'trimestre',adv:'al trimestre',dias:91,Nom:'TRIMESTRE'},
+          ano:{fwd:5,back:4,nom:'año',adv:'al año',dias:365,Nom:'AÑO'}};
+
+/* El trabajo se ejecuta por propuesta mensual: «lo que no entra ya no entra» (Eva).
+   Así que la urgencia no se mide en días sueltos, sino en cuál es la última propuesta
+   en la que todavía da tiempo a notificar el acuerdo de inicio. */
+const MESL=['enero','febrero','marzo','abril','mayo','junio','julio','agosto',
+            'septiembre','octubre','noviembre','diciembre'];
+const propSig=k=>{const d=new Date(HOY); return Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+1+k,1);};
+const PRI=(()=>{
+  const p1=propSig(0), p2=propSig(1), p3=propSig(2);
+  const nom=t=>MESL[new Date(t).getUTCMonth()];
+  const d=t=>(t-HOY)/DIA;                       /* los tramos van en días, como diasProx */
+  return [[-1e9,   0,      'Ya perdiendo'],
+          [0,      d(p1),  'No llega a la de '+nom(p1)],
+          [d(p1),  d(p2),  'Propuesta de '+nom(p1)],
+          [d(p2),  d(p3),  'Propuesta de '+nom(p2)],
+          [d(p3),  1e9,    'Más adelante']];
+})();
+
+EST.forEach(e=>{if(e.k!=='res')$('fEst').insertAdjacentHTML('beforeend','<option value="'+e.k+'">'+e.n+'</option>');});
+
+/* ══════════ gráficos ══════════ */
+const ejeX={grid:{display:false},border:{color:BD},ticks:{font:F,color:NAVY}};
+const ejeY={beginAtZero:true,grid:{color:'#EDEEF1'},border:{display:false},ticks:{font:F,color:NAVY}};
+const leyenda={position:'bottom',labels:{boxWidth:9,boxHeight:9,font:F,color:NAVY,padding:11}};
+
+/* una sola mensualidad = se paró en la propuesta siguiente, que es lo inevitable;
+   de la segunda en adelante es retraso acumulado */
+/* Una dimensión —la situación del dinero— y una serie —su origen—, que es como se
+   construye un gráfico en Celonis. Cada mensualidad tiene las dos propiedades, así
+   que el cruce está bien definido y suma el total sin trampa. */
+const SIT=[['per','Prescrito'],['sin','Pendiente de notificar'],
+           ['esp','En plazo de recurso'],['not','Notificado'],['res','Resuelto']];
+const c0=new Chart($('c0'),{type:'bar',
+  data:{labels:SIT.map(x=>x[1]),datasets:[
+    {label:'Primera mensualidad',            data:[],backgroundColor:PLUM,stack:'e',barPercentage:.72},
+    {label:'Mensualidades posteriores',      data:[],backgroundColor:ORA, stack:'e',barPercentage:.72}]},
+  options:{responsive:true,maintainAspectRatio:false,animation:false,
+    scales:{x:{...ejeX,stacked:true},
+            y:{...ejeY,stacked:true,ticks:{font:F,color:NAVY,callback:v=>eu(v)+' €'}}},
+    plugins:{legend:{position:'bottom',labels:{boxWidth:9,boxHeight:9,font:F,color:NAVY,padding:11}}}}});
+
+const c1=new Chart($('c1'),{type:'bar',
+  data:{labels:[],datasets:[{data:[],backgroundColor:[],barPercentage:.82}]},
+  options:{responsive:true,maintainAspectRatio:false,animation:false,
+    scales:{x:ejeX,y:{...ejeY,ticks:{font:F,color:NAVY,callback:v=>eu(v)+' €'}}},
+    plugins:{legend:{display:false}}}});
+
+const c2=new Chart($('c2'),{type:'bar',
+  data:{labels:[],datasets:[
+    {type:'bar',label:'Notificados',data:[],backgroundColor:TEAL2},
+    {type:'bar',label:'Resueltos',data:[],backgroundColor:TEAL},
+    {type:'line',label:'Ritmo necesario',data:[],borderColor:RED,borderDash:[5,4],borderWidth:1.8,pointRadius:0}]},
+  options:{responsive:true,maintainAspectRatio:false,animation:false,
+    scales:{x:ejeX,y:ejeY},plugins:{legend:leyenda}}});
+
+/* prioridad real: el reloj de la prescripción contra el del procedimiento */
+const c3=new Chart($('c3'),{type:'bar',
+  data:{labels:PRI.map(p=>p[2]),datasets:[
+    {label:'Notificado pero caducado',data:[],backgroundColor:GRAN},
+    {label:'Pendiente de iniciar',data:[],backgroundColor:RED},
+    {label:'Iniciado, sin notificar',data:[],backgroundColor:ORA},
+    {label:'En espera legal',data:[],backgroundColor:GY2}]},
+  options:{responsive:true,maintainAspectRatio:false,animation:false,
+    scales:{x:{...ejeX,stacked:true},y:{...ejeY,stacked:true}},plugins:{legend:leyenda}}});
+
+/* ══════════════════════════════════════════════════════════════════════
+   CUADRO DE MANDO DEL SERVICIO
+   Toda gráfica de esta pestaña es una dimensión por una serie: el tramo,
+   el mes o el tipo como dimensión, y la titularidad del tiempo como serie.
+   ══════════════════════════════════════════════════════════════════════ */
+const QUIEN=[['ajeno','Fuera de la unidad','#B5B6C6'],
+             ['legal','Plazo legal','#464C6A'],
+             ['lote','Espera al lote mensual','#D98324'],
+             ['nexus','Validación de terceros','#005B60'],
+             ['propio','Trabajo de la unidad','#E12E2E']];
+/* etiquetas cortas para el eje: el nombre largo ya está en el explorador */
+const TRCORTO={tras:'Traspaso',act:'Acuerdo de inicio',not:'Notificación',ale:'Alegaciones',
+               lote:'Espera al lote',bor:'Borrador',ter:'Terceros',dcom:'Doc. contable',
+               fis:'Fiscalización',res:'Resolución',pago:'Pago'};
+const dsQ=extra=>QUIEN.map(q=>({label:q[1],data:[],backgroundColor:q[2],stack:'q',...extra}));
+
+const c4=new Chart($('c4'),{type:'bar',
+  data:{labels:TRAMO.map(t=>TRCORTO[t.k]),datasets:dsQ({barPercentage:.78})},
+  options:{responsive:true,maintainAspectRatio:false,animation:false,
+    scales:{x:{...ejeX,stacked:true,ticks:{font:F,color:NAVY,maxRotation:52,minRotation:52}},
+            y:{...ejeY,stacked:true,ticks:{font:F,color:NAVY,callback:v=>v+' d'}}},
+    plugins:{legend:leyenda,tooltip:{filter:i=>i.raw>0}}}});
+
+const c5=new Chart($('c5'),{type:'bar',
+  data:{labels:[],datasets:dsQ({barPercentage:.84})},
+  options:{responsive:true,maintainAspectRatio:false,animation:false,
+    scales:{x:{...ejeX,stacked:true},y:{...ejeY,stacked:true,ticks:{font:F,color:NAVY,callback:v=>v+' d'}}},
+    plugins:{legend:leyenda,tooltip:{filter:i=>i.raw>0}}}});
+
+const LOTEB=[[0,5,'0–4'],[5,10,'5–9'],[10,15,'10–14'],[15,20,'15–19'],[20,25,'20–24'],[25,999,'25 o más']];
+const c6=new Chart($('c6'),{type:'bar',
+  data:{labels:LOTEB.map(b=>b[2]),datasets:TP.map(t=>
+    ({label:t.n,data:[],backgroundColor:t.c,stack:'l',barPercentage:.82}))},
+  options:{responsive:true,maintainAspectRatio:false,animation:false,
+    scales:{x:{...ejeX,stacked:true},y:{...ejeY,stacked:true}},plugins:{legend:leyenda}}});
+
+const RT=[['sin','Sin vuelta atrás','#B5B6C6'],['ale','Alegaciones presentadas','#464C6A'],
+          ['inc','Incidencia de terceros','#D98324'],['rep','Reparo de Intervención','#7A1616']];
+const c7=new Chart($('c7'),{type:'bar',
+  data:{labels:TP.map(t=>t.n),datasets:RT.map(r=>
+    ({label:r[1],data:[],backgroundColor:r[2],stack:'r',barPercentage:.7}))},
+  options:{responsive:true,maintainAspectRatio:false,animation:false,
+    scales:{x:{...ejeX,stacked:true,ticks:{font:F,color:NAVY,maxRotation:28,minRotation:28}},
+            y:{...ejeY,stacked:true}},plugins:{legend:leyenda}}});
+
+/* ══════════════════════════════════════════════════════════════════════
+   EXPLORADOR OBJETO-CÉNTRICO
+   Tres objetos con ciclos de vida distintos. Las aristas llevan el tiempo
+   medio o la frecuencia y el color dice de quién es la espera. Las ramas
+   discontinuas son retrabajo.
+   ══════════════════════════════════════════════════════════════════════ */
+const LOTE='#D98324';
+const CT={ajeno:GY2, legal:PLUM, lote:LOTE, propio:RED, nexus:TEAL2};
+const SX=430, BX=830, NW=252, NH=44, GAP=62;
+const Y=i=>18+i*GAP;
+/* ob: objetos que toca cada actividad */
+const PXN=[
+ {k:'ple', n:'Acuerdo del pleno',              x:SX, y:Y(0),  ob:['e']},
+ {k:'ame', n:'Grabación del hecho en AME',     x:SX, y:Y(1),  ob:['e','p']},
+ {k:'ini', n:'Acuerdo de inicio',              x:SX, y:Y(2),  ob:['p']},
+ {k:'not', n:'Notificación del acuerdo',       x:SX, y:Y(3),  ob:['p']},
+ {k:'fin', n:'Cierre del plazo de alegaciones',x:SX, y:Y(4),  ob:['p']},
+ {k:'pro', n:'Entra en la propuesta mensual',  x:SX, y:Y(5),  ob:['p','l']},
+ {k:'bor', n:'Borrador de resolución',         x:SX, y:Y(6),  ob:['p','l']},
+ {k:'ter', n:'Validación de terceros',         x:SX, y:Y(7),  ob:['p','l']},
+ {k:'dco', n:'Documento contable',             x:SX, y:Y(8),  ob:['p','l']},
+ {k:'fis', n:'Fiscalización de Intervención',  x:SX, y:Y(9),  ob:['p','l']},
+ {k:'res', n:'Resolución',                     x:SX, y:Y(10), ob:['e','p','l']},
+ {k:'pag', n:'Pago en nómina',                 x:SX, y:Y(11), ob:['e','l']},
+ {k:'ale', n:'Alegaciones presentadas',        x:BX, y:Y(3),  ob:['p']},
+ {k:'inc', n:'Incidencia en terceros',         x:BX, y:Y(7),  ob:['p']},
+ {k:'rep', n:'Reparo de Intervención',         x:BX, y:Y(9),  ob:['p','l']},
+];
+const NODE={}; PXN.forEach(n=>NODE[n.k]=n);
+/* [origen, destino, tramo del censo, titularidad, retrabajo] */
+const PXE=[
+ ['ple','ame','tras','ajeno',0],['ame','ini','act','propio',0],['ini','not','not','propio',0],
+ ['not','fin','ale','legal',0],['fin','pro','lote','lote',0],['pro','bor','bor','propio',0],
+ ['bor','ter',null,'propio',0],['ter','dco','dcom','propio',0],['dco','fis','fis','ajeno',0],
+ ['fis','res','res','propio',0],['res','pag','pago','legal',0],
+ ['not','ale',null,'legal',0],['ale','fin',null,'legal',0],
+ ['ter','inc',null,'nexus',1],['inc','ter',null,'nexus',1],
+ ['fis','rep',null,'ajeno',1],['rep','bor',null,'propio',1],
+];
+const PXOBJ=[
+ {id:'e', n:'Expediente de prestación', c:TEAL2, on:true},
+ {id:'p', n:'Procedimiento',            c:PLUM,  on:true},
+ {id:'l', n:'Propuesta mensual',        c:LOTE,  on:true},
+];
+let PXM='t', PXT='';
+
+function pxObjList(){
+  const base=PROC.filter(p=>!PXT||p.tipo===PXT);
+  const cnt={e:new Set(base.map(p=>p.exp)).size, p:base.length,
+             l:new Set(base.map(p=>p.t.prop)).size};
+  $('pxObjList').innerHTML=PXOBJ.map((o,i)=>
+    '<label class="px-obj"><input type="checkbox" data-o="'+i+'"'+(o.on?' checked':'')+'>'+
+    '<span class="pd" style="background:'+o.c+'"></span>'+
+    '<span class="pn">'+o.n+'</span><span class="pc">'+nf(cnt[o.id])+'</span></label>').join('');
+  $('pxObjSel').textContent=PXOBJ.filter(o=>o.on).length+' seleccionados';
+  $('pxObjList').querySelectorAll('input').forEach(c=>c.addEventListener('change',e=>{
+    PXOBJ[+e.target.dataset.o].on=e.target.checked; render();}));
+}
+
+function pxDraw(){
+  const svg=$('pxSvg'); if(!svg) return {};
+  const base=PROC.filter(p=>!PXT||p.tipo===PXT);
+  const on=PXOBJ.filter(o=>o.on).map(o=>o.id);
+  const vis=n=>n.ob.some(o=>on.includes(o));
+  if(!base.length){ svg.innerHTML='<text x="300" y="60" class="px-lbl" fill="'+GY+'">Sin procedimientos en esta selección.</text>';
+    ['pxA','pxC','pxN'].forEach(i=>$(i).textContent='0'); return {}; }
+
+  const nAle=base.filter(p=>p.ale).length, nInc=base.filter(p=>p.reint).length,
+        nRep=base.filter(p=>p.reparo).length;
+  const FN={ple:base.length, ame:base.length, ini:base.length, not:base.length, fin:base.length,
+            pro:base.length, bor:base.length, ter:base.length, dco:base.length, fis:base.length,
+            res:base.length, pag:base.length, ale:nAle, inc:nInc, rep:nRep};
+  const FE={'not>ale':nAle,'ale>fin':nAle,'not>fin':base.length-nAle,
+            'ter>inc':nInc,'inc>ter':nInc,'fis>rep':nRep,'rep>bor':nRep,
+            'bor>ter':base.length};
+  const med2=(a)=>a.length?med(a):0;
+  const TE={'bor>ter':1,'not>ale':med2(base.filter(p=>p.ale).map(p=>Math.round((p.t.ale-p.t.not)/DIA))),
+            'ale>fin':med2(base.filter(p=>p.ale).map(p=>Math.round((p.t.finAle-p.t.ale)/DIA))),
+            'ter>inc':2,'inc>ter':med2(base.filter(p=>p.reint).map(p=>p.reint*7)),
+            'fis>rep':4,'rep>bor':6};
+
+  const val=(tr,k)=>{
+    if(PXM==='f') return FE[k]!==undefined?FE[k]:base.length;
+    if(tr) return med2(base.map(p=>p.d[tr]));
+    return TE[k]!==undefined?TE[k]:1;
+  };
+  const mxF=base.length;
+  const mxT=Math.max(...TRAMO.map(t=>med2(base.map(p=>p.d[t.k]))),1);
+
+  let out='<defs>'; let nCon=0;
+  Object.keys(CT).concat(['rt']).forEach(t=>{
+    out+='<marker id="ax'+t+'" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" '+
+         'refX="8" refY="4.5" orient="auto"><path d="M0,0 L8,4.5 L0,9 z" fill="'+(t==='rt'?GRAN:CT[t])+'"/></marker>';});
+  out+='</defs>';
+
+  PXE.forEach(([a,b,tr,q,rt])=>{
+    const A=NODE[a], B=NODE[b], k=a+'>'+b;
+    if(!vis(A)||!vis(B)) return;
+    const v=val(tr,k); if(PXM==='f'&&!v) return;
+    nCon++;
+    const col=rt?GRAN:CT[q];
+    const w = PXM==='f' ? 1.1+4.2*Math.pow((FE[k]!==undefined?FE[k]:base.length)/mxF,.6)
+                        : 1.1+4.2*Math.pow((tr?med2(base.map(p=>p.d[tr])):1)/mxT,.6);
+    const ay=A.y+NH/2, by=B.y+NH/2;
+    let d, lx, ly;
+    if(A.x===B.x){ d='M'+A.x+','+(A.y+NH)+' L'+A.x+','+B.y; lx=A.x+9; ly=(A.y+NH+B.y)/2+4; }
+    else if(B.x>A.x && A.y===B.y){ d='M'+(A.x+NW)+','+ay+' L'+B.x+','+by; lx=(A.x+NW+B.x)/2-16; ly=ay-7; }
+    /* la vuelta atrás comparte línea con la ida: su etiqueta va debajo */
+    else if(B.x<A.x && A.y===B.y){ d='M'+A.x+','+ay+' L'+(B.x+NW)+','+by; lx=(A.x+B.x+NW)/2-16; ly=ay+15; }
+    else if(B.x>A.x){ const m=A.x+NW+34; d='M'+(A.x+NW)+','+ay+' L'+m+','+ay+' L'+m+','+by+' L'+B.x+','+by;
+                      lx=m+7; ly=(ay+by)/2+4; }
+    else { const m=B.x+NW+34; d='M'+A.x+','+ay+' L'+m+','+ay+' L'+m+','+by+' L'+(B.x+NW)+','+by;
+           lx=m+7; ly=(ay+by)/2+4; }
+    out+='<path d="'+d+'" fill="none" stroke="'+col+'" stroke-width="'+w.toFixed(1)+'"'+
+         (rt?' stroke-dasharray="6 4"':'')+' marker-end="url(#ax'+(rt?'rt':q)+')"/>'+
+         '<text class="px-el" x="'+lx+'" y="'+ly+'" fill="'+(rt?GRAN:GY)+'">'+
+         (PXM==='f'?nf(v):nf(v)+' d')+'</text>';
+  });
+
+  let nAct=0;
+  PXN.forEach(n=>{
+    if(!vis(n)) return; nAct++;
+    const ob=n.ob.filter(o=>on.includes(o));
+    out+='<g class="pxn"><rect class="px-card" x="'+n.x+'" y="'+n.y+'" width="'+NW+'" height="'+NH+'" rx="3"/>'+
+         ob.map((o,i)=>'<circle cx="'+(n.x+14+i*9)+'" cy="'+(n.y+NH/2)+'" r="3.6" fill="'+
+           PXOBJ.find(p=>p.id===o).c+'"/>').join('')+
+         '<text class="px-lbl" x="'+(n.x+16+ob.length*9)+'" y="'+(n.y+19)+'">'+n.n+'</text>'+
+         '<text class="px-sub" x="'+(n.x+16+ob.length*9)+'" y="'+(n.y+33)+'">'+nf(FN[n.k])+' procedimientos</text></g>';
+  });
+  svg.innerHTML=out;
+  $('pxA').textContent=nAct+' actividades';
+  $('pxC').textContent=nCon+' conexiones';
+  $('pxN').textContent=nf(base.length)+' procedimientos';
+  return {base:base};
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   RENDER DEL PROCESO COMPLETO
+   Cabecera, explorador objeto-céntrico y cuadro de mando del servicio.
+   El filtro de tipo de procedimiento vive en el explorador y solo afecta
+   a él; el de tipo de acogimiento recorta la población entera.
+   ══════════════════════════════════════════════════════════════════════ */
+/* Los tramos se reparten en media, no en mediana: la mediana de cada tramo no suma
+   el plazo total. El explorador sigue mostrando medianas por conexión, que es lo que
+   hace Celonis, y por eso las dos cifras no tienen que coincidir. */
+const pro=a=>a.length?sum(a)/a.length:0;
+function renderProceso(){
+  const ft=$('fTipo').value, g=$('fGran').value;
+  const pob=PROC.filter(p=>!ft||p.tipoAcog===ft);
+  const propSel=$('pProp').value.split(',');
+
+  /* ── cabecera · el plazo que vive la familia y de quién depende ── */
+  const totMed=med(pob.map(p=>p.total));
+  const tramoM={}; TRAMO.forEach(t=>tramoM[t.k]=pro(pob.map(p=>p.d[t.k])));
+  const sumQ=ks=>sum(TRAMO.filter(t=>ks.includes(t.quien)).map(t=>tramoM[t.k]));
+  const sumTr=sum(TRAMO.map(t=>tramoM[t.k]));
+  const dProp=sumQ(propSel), dUnidad=sumQ(['propio']);
+  const conRt=pob.filter(p=>p.ale||p.reint||p.reparo).length;
+
+  $('kQ').textContent=nf(pob.length);
+  $('kQD').innerHTML=TP.map(t=>nf(pob.filter(p=>p.tipo===t.k).length)+' '+
+    t.n.toLowerCase().replace('del derecho','')).join(' · ');
+  $('kT').innerHTML=nf(sumTr)+' <small>d</small>';
+  $('kTD').innerHTML='media · <strong style="color:var(--navy)">'+nf(totMed)+
+    ' d</strong> la mitad de los procedimientos · '+nf(pro(pob.map(p=>p.total-p.d.tras)))+
+    ' d desde que entra en AME';
+  $('kU').innerHTML=nf(dUnidad)+' <small>d</small>';
+  $('kUD').innerHTML='<strong style="color:var(--navy)">'+
+    Math.round(dUnidad/Math.max(1,sumTr)*100)+' %</strong> del recorrido · el resto son plazos legales, '+
+    'el lote mensual y tiempos de otros';
+  $('kR').innerHTML=Math.round(conRt/Math.max(1,pob.length)*100)+' <small>%</small>';
+  $('kRD').innerHTML=nf(pob.filter(p=>p.ale).length)+' con alegaciones · '+
+    nf(pob.filter(p=>p.reint).length)+' con incidencia de terceros · '+
+    nf(pob.filter(p=>p.reparo).length)+' con reparo';
+
+  /* ── explorador ── */
+  pxObjList(); pxDraw();
+  const ex=PROC.filter(p=>(!ft||p.tipoAcog===ft)&&(!PXT||p.tipo===PXT));
+  const exM={}; TRAMO.forEach(t=>exM[t.k]=pro(ex.map(p=>p.d[t.k])));
+  const exS=sum(TRAMO.map(t=>exM[t.k]));
+  const exU=sum(TRAMO.filter(t=>t.quien==='propio').map(t=>exM[t.k]));
+  $('s7').textContent=ex.length?nf(exS)+' d':'—';
+  $('s8').textContent=ex.length?nf(exU)+' d':'—';
+  $('s9').textContent=ex.length?Math.round(exU/Math.max(1,exS)*100)+' %':'—';
+  $('pxNota').innerHTML=ex.length
+    ? 'Cada conexión lleva '+(PXM==='f'?'el número de procedimientos que pasan por ella'
+      :'los días medianos entre las dos actividades')+'; el grosor es proporcional a ese valor'
+    : '';
+
+  /* ── tiempo mediano por tramo y titularidad ── */
+  QUIEN.forEach((q,i)=>{c4.data.datasets[i].data=TRAMO.map(t=>t.quien===q[0]?tramoM[t.k]:0);});
+  c4.update();
+  const mayor=[...TRAMO].sort((a,b)=>tramoM[b.k]-tramoM[a.k])[0];
+  $('svN1').innerHTML=nf(pob.length)+' procedimientos · plazo medio '+nf(sumTr)+' d';
+  $('t1').textContent=nf(tramoM[mayor.k])+' d';
+  $('lT1').textContent='el tramo más largo · '+TRCORTO[mayor.k].toLowerCase();
+  $('t2').textContent=nf(dProp)+' d';
+  $('lT2').textContent=propSel.length===1?'a cargo de la unidad'
+    :'con '+(propSel.length===2?'el lote':'lote y terceros')+' dentro';
+  $('t3').textContent=nf(tramoM.lote)+' d';
+
+  /* ── evolución del reparto, mes a mes de origen ── */
+  /* los últimos meses solo han llegado a pago los procedimientos rápidos: la cohorte
+     todavía no está cerrada y la barra saldría artificialmente corta. Se dejan fuera. */
+  const todos=[...new Set(pob.map(p=>p.mesOrigen))].sort((a,b)=>a-b);
+  const meses=todos.slice(0,-2), fuera=todos.length-meses.length;
+  const lab5=meses.map(m=>etiq(m,'mes'));
+  QUIEN.forEach((q,i)=>{
+    c5.data.datasets[i].data=meses.map(m=>{
+      const g2=pob.filter(p=>p.mesOrigen===m);
+      return sum(TRAMO.filter(t=>t.quien===q[0]).map(t=>pro(g2.map(p=>p.d[t.k]))));});
+  });
+  c5.data.labels=lab5; c5.update();
+  const tri=(a,b)=>{const s=pob.filter(p=>meses.indexOf(p.mesOrigen)>=a&&meses.indexOf(p.mesOrigen)<b);
+    return s.length?pro(s.map(p=>p.total)):0;};
+  $('svN2').innerHTML=nf(meses.length)+' meses cerrados · los '+fuera+
+    ' últimos quedan fuera, su cohorte aún no ha terminado';
+  $('t4').textContent=nf(sumTr)+' d';
+  const dif=tri(meses.length-3,meses.length)-tri(0,3);
+  $('t5').textContent=(dif>0?'+':'')+nf(dif)+' d';
+  $('t6').textContent=Math.round((1-dUnidad/Math.max(1,sumTr))*100)+' %';
+
+  /* ── el lote mensual: la espera no depende del expediente ── */
+  TP.forEach((t,i)=>{c6.data.datasets[i].data=LOTEB.map(b=>
+    pob.filter(p=>p.tipo===t.k&&p.d.lote>=b[0]&&p.d.lote<b[1]).length);});
+  c6.update();
+  const largos=pob.filter(p=>p.d.lote>21).length;
+  $('svN3').innerHTML='espera mediana '+nf(tramoM.lote)+' d';
+  $('t7').textContent=nf(tramoM.lote)+' d';
+  $('t8').textContent=nf(largos);
+  /* con dos propuestas al mes —día 1 y día 16— cada procedimiento espera hasta el
+     siguiente de los dos cortes, no hasta el día 1 del mes que viene */
+  const ahorro=pro(pob.map(p=>{
+    const ref=Math.max(p.t.finAle, p.t.ale||0), d=new Date(ref);
+    const dia=d.getUTCDate();
+    const ultimo=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+1,0)).getUTCDate();
+    const dos = dia<16 ? 16-dia : ultimo-dia+1;      /* espera con dos cortes */
+    const uno = ultimo-dia+1;                        /* espera con un corte, la de hoy */
+    return uno-dos;}));
+  $('t9').textContent=nf(Math.max(0,ahorro))+' d';
+
+  /* ── retrabajo: una sola categoría por procedimiento, para que la pila sume ── */
+  const clase=p=>p.reparo?'rep':(p.reint?'inc':(p.ale?'ale':'sin'));
+  RT.forEach((r,i)=>{c7.data.datasets[i].data=TP.map(t=>
+    pob.filter(p=>p.tipo===t.k&&clase(p)===r[0]).length);});
+  c7.update();
+  const conR=pob.filter(p=>p.reparo), sinR=pob.filter(p=>!p.reparo);
+  const conI=pob.filter(p=>p.reint),  sinI=pob.filter(p=>!p.reint);
+  $('svN4').innerHTML=nf(conRt)+' con vuelta atrás';
+  $('t10').textContent=Math.round(conRt/Math.max(1,pob.length)*100)+' %';
+  $('t11').textContent='+'+nf(Math.max(0,med(conR.map(p=>p.total))-med(sinR.map(p=>p.total))))+' d';
+  $('t12').textContent='+'+nf(Math.max(0,med(conI.map(p=>p.total))-med(sinI.map(p=>p.total))))+' d';
+
+  /* ── tabla por tipo ── */
+  $('svTb').innerHTML=TP.map(t=>{
+    const s=pob.filter(p=>p.tipo===t.k);
+    if(!s.length) return '';
+    const u=sum(TRAMO.filter(x=>x.quien==='propio').map(x=>med(s.map(p=>p.d[x.k]))));
+    const rt=s.filter(p=>p.ale||p.reint||p.reparo).length;
+    return '<tr><td><span class="st"><span class="dot" style="background:'+t.c+'"></span>'+t.n+'</span></td>'+
+      '<td class="r">'+nf(s.length)+'</td>'+
+      '<td class="r b">'+nf(med(s.map(p=>p.total)))+' d</td>'+
+      '<td class="r">'+nf(u)+' d</td>'+
+      '<td class="r b" style="color:'+(med(s.map(p=>p.d.tras))>20?GRAN:NAVY)+'">'+
+        nf(med(s.map(p=>p.d.tras)))+' d</td>'+
+      '<td class="r">'+nf(med(s.map(p=>p.d.lote)))+' d</td>'+
+      '<td class="r">'+Math.round(rt/s.length*100)+' %</td></tr>';}).join('');
+  $('svBadge').innerHTML=nf(pob.length)+' procedimientos'+(ft?' · '+ft:'');
+  $('svFoot').innerHTML='<strong>Traspaso desde Protección</strong>: días entre el acuerdo del pleno y '+
+    'la grabación del hecho en AME. Es el único tramo que no tramita esta unidad y, en las extinciones, '+
+    'el más largo de todo el recorrido: cada mes que tarda en llegar es una mensualidad pagada de más '+
+    'que después hay que reclamar en la pestaña de reintegros.';
+}
+
+/* ══════════ render ══════════ */
+function render(){
+  renderProceso();
+  const fm=$('fMot').value, ft=$('fTipo').value, fe=$('fEst').value, fu=$('fUrg').value;
+  const g=$('fGran').value, G=GN[g];
+  /* horizonte de riesgo: no es un objetivo de proyecto, es la ventana que se mira */
+  const meses=+$('pCierre').value+1, horiz=addM(HOY,meses);
+
+  const urgOk=e=>{
+    if(fu==='') return true;
+    if(fu==='0') return e.perdido>0;
+    return !e.prot && e.diasProx!==null && e.diasProx<=+fu;
+  };
+  const ambito=REI.filter(e=>(!fm||e.mot===fm)&&(!ft||e.tipo===ft));
+  const sel=ambito.filter(e=>(!fe||e.estEf===fe)&&urgOk(e));
+  $('fnB').textContent=[fm,ft,fe,fu].filter(Boolean).length;
+
+  const abiertos=sel.filter(e=>e.estEf!=='res');
+  const expuestos=sel.filter(e=>!e.prot);
+  const enEspera=sel.filter(e=>e.estEf==='esp');
+  const caducados=sel.filter(e=>e.estEf==='cad');
+  const rec=sum(sel.map(e=>e.recuperable)), per=sum(sel.map(e=>e.perdido));
+  const enRiesgo=sum(expuestos.map(e=>sum(e.vivas.filter(m=>m.prescEf<=horiz).map(m=>m.imp))));
+  const nRiesgo=expuestos.filter(e=>e.prox!==null&&e.prox<=horiz).length;
+
+  /* ── KPIs · el recorrido del euro indebidamente pagado ── */
+  const nMens=sum(sel.map(e=>e.ms.length));
+  const impMens=sum(sel.map(e=>sum(e.ms.map(m=>m.imp))));
+  $('kMen').textContent=nf(sel.length);
+  $('kMenD').innerHTML='<strong style="color:var(--navy)">'+eu(impMens)+' €</strong> pagados de más en '+
+    nf(nMens)+' mensualidades';
+
+  /* tardanza en parar el pago: de la fecha de efectos a la propuesta que lo corta */
+  const dPar=sel.map(e=>Math.round((e.pExt-e.ef)/DIA));
+  const parM=med(dPar), comM=med(sel.map(e=>e.com));
+  $('kPar').innerHTML=nf(parM)+' <small>d</small>';
+  $('kParD').innerHTML=nf(comM)+' d hasta que Protección lo comunica · <strong style="color:var(--navy)">'+
+    nf(Math.max(0,parM-comM))+' d</strong> de ciclo de propuesta';
+
+  $('kRec').innerHTML=eu(rec)+' <small>€</small>';
+  const cerr=e=>e.notRe && e.notRe>e.puede;
+  const notif=sel.filter(cerr);
+  $('kRecD').innerHTML=nf(sum(sel.map(e=>e.vivas.length)))+' mensualidades vivas · <strong style="color:var(--navy)">+'+
+    eu(sum(sel.map(e=>e.intereses)))+' €</strong> de intereses';
+
+  $('kRie').innerHTML=eu(enRiesgo)+' <small>€</small>';
+  $('kRieD').innerHTML=nf(nRiesgo)+' expedientes en '+meses+' meses'+
+    (per>0?' · <strong style="color:'+GRAN+'">'+eu(per)+' € ya perdidos</strong>':'');
+
+  /* ── dónde está el dinero, y de dónde venía ── */
+  /* cada mensualidad tiene situación (según su expediente, o perdida si prescribió)
+     y origen (la primera de cada expediente es inevitable; el resto, retraso) */
+  const SITK={pdt:'sin', ini:'sin', cad:'sin', esp:'esp', not:'not', res:'res'};
+  const M={}; SIT.forEach(x=>M[x[0]]={inev:0, ret:0});
+  sel.forEach(e=>e.ms.forEach(m=>{
+    const k = m.prescEf<HOY ? 'per' : (SITK[e.estEf]||'sin');
+    M[k][m.inev?'inev':'ret'] += m.imp;
+  }));
+  c0.data.datasets[0].data=SIT.map(x=>Math.round(M[x[0]].inev));
+  c0.data.datasets[1].data=SIT.map(x=>Math.round(M[x[0]].ret));
+  c0.update();
+  const evit = sum(SIT.map(x=>M[x[0]].ret));
+  const sinProt = M.sin.inev + M.sin.ret;
+  $('varN').textContent='· '+nf(sel.length)+' expedientes';
+  $('varSub').textContent='Total: '+eu(impMens)+' €';
+  $('r1').textContent=eu(evit)+' €';
+  $('r2').textContent=eu(M.per.inev+M.per.ret)+' €';
+  $('r3').textContent=eu(sinProt)+' €';
+
+
+  /* ── el goteo: importe que prescribe cada periodo ── */
+  const t0=truncar(HOY,g);
+  const lab=['Ya perdido'], vals=[per], cols=[GRAN];
+  for(let k=0;k<G.fwd;k++){
+    const a=avanzar(t0,g,k), b=avanzar(t0,g,k+1);
+    lab.push(etiq(a,g));
+    vals.push(sum(expuestos.map(e=>sum(e.vivas.filter(m=>m.prescEf>=a&&m.prescEf<b).map(m=>m.imp)))));
+    cols.push(a<=horiz?RED:PLUM);
+  }
+  c1.data.labels=lab; c1.data.datasets[0].data=vals; c1.data.datasets[0].backgroundColor=cols;
+  c1.update();
+  const p90=sum(expuestos.map(e=>sum(e.vivas.filter(m=>m.prescEf<=HOY+90*DIA).map(m=>m.imp))));
+  const nMord=sel.filter(e=>e.perdido>0).length;
+  /* lo que vence ahora se pagó hace cuatro años: conviene decirlo, si no hay que deducirlo */
+  const venc=[]; expuestos.forEach(e=>e.vivas.forEach(m=>{
+    if(m.prescEf>=t0 && m.prescEf<avanzar(t0,g,G.fwd)) venc.push(new Date(m.pago).getUTCFullYear());}));
+  const aMin=venc.length?Math.min(...venc):null, aMax=venc.length?Math.max(...venc):null;
+  $('sanN').innerHTML=nf(sel.length)+' expedientes · '+(venc.length
+    ? 'vencen nóminas pagadas en <strong style="color:var(--navy)">'+(aMin===aMax?aMin:aMin+'–'+aMax)+'</strong>'
+    : nf(sum(sel.map(e=>e.ms.length)))+' mensualidades');
+  $('s1').textContent=eu(p90)+' €';
+  $('s2').textContent=eu(sum(vals.slice(1))/G.fwd)+' €';
+  $('lS2').textContent='media por '+G.nom+' en prescripción';
+  $('s3').textContent=nf(nMord);
+  $('axG1').innerHTML=G.Nom.charAt(0)+G.Nom.slice(1).toLowerCase()+' en que se cumplen los 4 años &rarr;';
+  $('ctGot').innerHTML='Importe en prescripción por '+G.nom+' de vencimiento'+
+    ' <i class="i" data-t="Euros de mensualidades que cumplen sus cuatro años en cada periodo. Lo que vence en los próximos meses son nóminas pagadas cuatro años antes, así que la curva de hoy es el reflejo del atraso acumulado entonces.">i</i>';
+
+  /* ── aviso ── */
+  $('alert').style.display='flex';
+  if(caducados.length){
+    $('alert').style.borderColor=GRAN;
+    $('alert').innerHTML='<div class="n" style="color:'+GRAN+'">'+nf(caducados.length)+'</div>'+
+      '<div><div class="t" style="color:'+GRAN+'">procedimientos notificados que han caducado</div>'+
+      '<div class="p">Superaron los '+CADU_MESES+' meses sin resolución. Al caducar se pierde la interrupción y '+
+      eu(sum(caducados.map(e=>e.recuperable)))+' € vuelven a estar expuestos.</div></div>';
+  } else if(nRiesgo){
+    $('alert').style.borderColor=RED;
+    $('alert').innerHTML='<div class="n">'+eu(enRiesgo)+' €</div>'+
+      '<div><div class="t">prescriben en los próximos '+meses+' meses</div>'+
+      '<div class="p">Son '+nf(nRiesgo)+' expedientes sin notificar.</div></div>';
+  } else $('alert').style.display='none';
+
+  /* ── prioridad real: los dos relojes cruzados ── */
+  const bk=(e,i)=>{const d=e.perdido>0?-1:e.diasProx; return d!==null&&d>=PRI[i][0]&&d<PRI[i][1];};
+  const ser=k=>PRI.map((_,i)=>expuestos.filter(e=>e.estEf===k&&bk(e,i)).length);
+  c3.data.datasets[0].data=ser('cad'); c3.data.datasets[1].data=ser('pdt');
+  c3.data.datasets[2].data=ser('ini'); c3.data.datasets[3].data=ser('esp');
+  c3.update();
+  /* la decisión real de cada mes: qué tiene que entrar en la próxima propuesta */
+  const accionable=e=>e.estEf==='cad'||e.estEf==='pdt'||e.estEf==='ini';
+  const limSig=(propSig(1)-HOY)/DIA;                  /* hasta la propuesta siguiente a la próxima */
+  const entra =expuestos.filter(e=>accionable(e) && e.perdido===0 && e.diasProx<limSig);
+  const tarde =expuestos.filter(e=>accionable(e) && (e.perdido>0 || e.diasProx<(propSig(0)-HOY)/DIA));
+  const nomP  =MESL[new Date(propSig(0)).getUTCMonth()];
+  $('priN').innerHTML=nf(expuestos.length)+' con el reloj corriendo'+
+    (caducados.length?' · <span style="color:'+GRAN+'">'+nf(caducados.length)+' caducados</span>':'');
+  $('priNota').innerHTML = (entra.length||tarde.length)
+    ? '<strong style="color:var(--navy)">'+nf(entra.length)+' expedientes</strong> tienen que entrar en la propuesta de '+
+      nomP+' o empiezan a perder mensualidades: '+eu(sum(entra.map(e=>e.recuperable)))+' €. '+
+      (tarde.length?'Otros <strong style="color:'+GRAN+'">'+nf(tarde.length)+'</strong> ya no llegan a esa propuesta y '+
+        'requieren tramitación fuera del lote mensual. ':'')+
+      'Los de la barra gris no cuentan: su plazo de recurso todavía no ha vencido.'
+    : 'Ningún expediente urgente y accionable con los filtros seleccionados.';
+
+  /* ── tabla ── */
+  const cola=[...expuestos].sort((a,b)=>
+    (b.perdido>0)-(a.perdido>0) || (a.diasProx??9e9)-(b.diasProx??9e9) || b.recuperable-a.recuperable);
+  const top=cola.slice(0,12);
+  $('tb').innerHTML=top.length?top.map(e=>{
+    const ES=E[e.estEf], mord=e.perdido>0;
+    const col=mord?GRAN:(e.diasProx<=30?RED:(e.diasProx<=90?ORA:NAVY));
+    return '<tr'+(mord?' style="background:#F7EFEF"':'')+'><td><span class="lk">'+e.id+'</span></td>'+
+      '<td>'+e.mot+'</td>'+
+      '<td class="r">'+e.vivas.length+' <span style="color:'+GY+'">de</span> '+e.ms.length+'</td>'+
+      '<td class="r b">'+nf(e.recuperable)+' €</td>'+
+      '<td class="r" style="color:'+(mord?GRAN:GY2)+'">'+(mord?'−'+nf(e.perdido)+' €':'—')+'</td>'+
+      '<td class="r b" style="color:'+(e.parado===null?GY2:(e.parado>365?GRAN:NAVY))+'">'+
+        (e.parado===null?'en espera legal':nf(e.parado)+' d')+'</td>'+
+      '<td class="r">'+(e.prox?fd(e.prox):'—')+'</td>'+
+      '<td class="r b" style="color:'+col+'">'+(e.prox?e.diasProx+' d':'—')+'</td>'+
+      '<td class="r"><span class="st" style="color:'+(ES.legal?GY:col)+'">'+
+      '<span class="dot" style="background:'+ES.c+'"></span>'+ES.n+'</span></td></tr>';}).join('')
+    : '<tr><td colspan="9" style="color:'+GY+';padding:18px 16px;">Ningún expediente cumple los filtros seleccionados.</td></tr>';
+  $('badge').innerHTML=nf(top.length)+' de '+nf(cola.length)+' con el reloj corriendo'+
+    (nMord?' · <span style="color:'+GRAN+'">'+nf(nMord)+' ya han perdido mensualidades</span>':'');
+  $('tbSub').textContent='Ordenados por la próxima mensualidad que vence · las nóminas se pagan el mismo día '+
+    'de cada mes, así que los vencimientos caen agrupados'+([fm,ft,fe,fu].some(Boolean)?' · filtro aplicado':'');
+  $('tbFoot').innerHTML='<strong>Sin actuar</strong>: días transcurridos desde que venció el plazo de recurso de la extinción, '+
+    'que es el momento a partir del cual el reintegro ya se puede iniciar. Antes de eso el expediente figura en espera legal, no como demora.';
+
+  /* ── notificar no basta ── */
+  const ml=[],nots=[],ress=[];
+  for(let k=G.back-1;k>=0;k--){
+    const a=avanzar(t0,g,-k), b=avanzar(t0,g,-k+1);
+    ml.push(etiq(a,g));
+    nots.push(ambito.filter(e=>e.notRe&&e.notRe>=a&&e.notRe<b).length);
+    ress.push(ambito.filter(e=>e.resRe&&e.resRe>=a&&e.resRe<b).length);
+  }
+  const rNot=Math.round(sum(nots.slice(-3))/3), rRes=Math.round(sum(ress.slice(-3))/3);
+  const vivosNot=sel.filter(e=>e.estEf==='not').sort((a,b)=>b.mesesProc-a.mesesProc);
+  const caducaran=vivosNot.filter((e,i)=>(CADU_MESES-e.mesesProc) < (i+1)/Math.max(1,rRes)).length;
+  const necRes=Math.ceil(vivosNot.length/6*G.dias/30.44);
+  c2.data.labels=ml; c2.data.datasets[0].data=nots; c2.data.datasets[1].data=ress;
+  c2.data.datasets[2].data=ml.map(()=>necRes); c2.update();
+  $('axL2').innerHTML='&uarr; Expedientes '+G.adv;
+  $('axG2').innerHTML=G.Nom.charAt(0)+G.Nom.slice(1).toLowerCase()+' &rarr;';
+  $('s4').textContent=rNot; $('lS4').textContent='se notifican '+G.adv;
+  $('s5').textContent=rRes; $('lS5').textContent='se resuelven '+G.adv;
+  $('s6').textContent=nf(caducaran);
+}
+
+['fGran','fMot','fTipo','fEst','fUrg','pCierre'].forEach(i=>$(i).addEventListener('change',render));
+document.querySelectorAll('.tabb').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.tabb').forEach(x=>x.classList.toggle('on',x===b));
+  document.querySelectorAll('.pane').forEach(x=>x.classList.toggle('on',x.id===b.dataset.p));
+  document.body.classList.toggle('cm',b.dataset.p==='paneCM');
+  render();
+}));
+$('pxMet').addEventListener('change',e=>{PXM=e.target.value; render();});
+$('pxTipo').addEventListener('change',e=>{PXT=e.target.value; render();});
+$('pProp').addEventListener('change',render);
+$('btnClear').addEventListener('click',()=>{
+  $('fMot').value=''; $('fTipo').value=''; $('fEst').value=''; $('fUrg').value=''; render();});
+render();
+</script>
+</body></html>
