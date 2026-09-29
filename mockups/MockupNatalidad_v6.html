@@ -229,7 +229,7 @@ th.col-focus { background:#FFEDD5 !important; color:#9A3412 !important; }
 .bgt-seg { display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:800; color:#fff; border-radius:2px; min-width:0; }
 .bgt-seg:first-child { border-radius:5px 2px 2px 5px; } .bgt-seg:last-child { border-radius:2px 5px 5px 2px; }
 .s-ej { background:var(--green); }
-.s-cm { background:repeating-linear-gradient(135deg,#F5A623 0 5px,#E09214 5px 10px); }
+.s-cm { background:#D98324; }
 .s-dp { background:#E2E8F0; color:var(--g500); }
 .bgt-scale { position:relative; height:15px; font-size:9px; color:var(--g400); font-weight:600; border-top:1px dashed var(--g200); padding-top:3px; }
 .bgt-scale span { position:absolute; top:3px; transform:translateX(-50%); white-space:nowrap; }
@@ -702,7 +702,7 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
 .pz-hero span{font-size:10.5px;color:var(--g500);font-weight:400;}
 .bgt-track{height:26px;}
 .bgt-seg{border-radius:1px!important;font-weight:600;font-size:10.5px;}
-.s-cm{background:repeating-linear-gradient(135deg,#D98324 0 5px,#C0711C 5px 10px);}
+.s-cm{background:#D98324;}
 .s-dp{background:#EDEEF1;color:var(--g500);}
 .bgt-scale span{font-weight:400;color:var(--g500);}
 .bc{border-radius:3px;border-top-width:2px;padding:9px 11px;}
@@ -1204,8 +1204,9 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
       <div class="cap-foot" id="cvCapFoot"></div>
     </div>
     <div class="tr-box">
-      <h4>Beneficiarios por mensualidades ya cobradas</h4>
-      <div class="tr-grid" id="trGrid"></div>
+      <h4>Beneficiarios por mensualidades ya cobradas
+        <i class="ii" data-t="Beneficiarios agrupados según cuántas de las veinticuatro mensualidades han cobrado ya. El importe que queda por pagarles en cada tramo aparece al pasar el ratón por la columna.">i</i></h4>
+      <div class="chart-wrap" style="height:132px;"><canvas id="cTramos"></canvas></div>
       <div class="tr-foot" id="trFoot"></div>
     </div>
   </div>
@@ -1225,7 +1226,7 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
       <h4>Compromiso vivo por convocatoria</h4>
       <p>Pulsa una fila para desglosarla
         <i class="ii" data-t="Las tres convocatorias generan pagos al mismo tiempo: una ayuda concedida en 2024 se sigue pagando hoy. Al pulsar una fila, el panel de la izquierda pasa a desglosar esa convocatoria.">i</i></p>
-      <div id="cmpRows"></div>
+      <div class="chart-wrap" style="height:126px;"><canvas id="cCmp"></canvas></div>
       <div class="cmp-tot" id="cmpTot"></div>
 
     </div>
@@ -1887,16 +1888,11 @@ function renderConv(){
     foot.innerHTML = `Remanente de convocatorias anteriores <strong>${eur(ARRASTRE)}</strong>`;
   }
   /* reparto por tramo: cuántos han cobrado ya cuántas mensualidades y qué queda por pagarles */
-  const MID=[3.5,9.5,15.5,21.5], LBL=['1 – 6','7 – 12','13 – 18','19 – 24'];
-  const mx=Math.max(...c.tramos)||1;
+  const MID=[3.5,9.5,15.5,21.5];
   const pendTr=c.tramos.map((n,i)=>Math.round((DUR-MID[i])*MENS*n));
-  document.getElementById('trGrid').innerHTML = c.tramos.map((n,i)=>
-    `<div class="tr-c" title="${nfmt(n)} beneficiarios llevan entre ${LBL[i].replace(/\s/g,'')} mensualidades cobradas · quedan ${eur(pendTr[i])} por pagarles">
-       <div class="lb">${LBL[i]} meses</div>
-       <div class="nv">${nfmt(n)}</div>
-       <div class="bar"><i style="width:${n/mx*100}%"></i></div>
-       <div class="pd">${n? (pendTr[i]/1e6).toFixed(2).replace('.',',')+' M€' : '—'}</div>
-     </div>`).join('');
+  chTramos.data.datasets[0].data = c.tramos;
+  chTramos.$pend = pendTr;
+  chTramos.update();
   document.getElementById('trFoot').innerHTML = c.agotada
     ? `Todos los beneficiarios han cobrado las ${DUR} mensualidades: pendiente de abono = 0 €.`
     : '';
@@ -1910,26 +1906,26 @@ function renderConv(){
 /* Vista conjunta: cuánto dinero se está manejando a la vez entre convocatorias.
    Responde a «tienen que manejar dinero de varios años a la vez» (Raquel, sesión 1/09). */
 function renderCmp(){
-  const box=document.getElementById('cmpRows'); if(!box) return;
+  if(!chCmp) return;
+  const ys=Object.keys(CONV);
   let T=0,E=0,M2=0,D=0;
-  box.innerHTML = Object.keys(CONV).map(y=>{
+  const ej=[],co=[],di=[],est=[];
+  ys.forEach(y=>{
     const c=CONV[y], disp=c.tot-c.eje-c.com;
     T+=c.tot; E+=c.eje; M2+=c.com; D+=disp;
-    const pe=c.eje/c.tot*100, pc=c.com/c.tot*100, pd=disp/c.tot*100;
-    const est = c.agotada ? 'liquidada'
-              : !c.admite ? nfmt(c.cobrando)+' cobrando · cerrada'
-              : nfmt(c.cobrando)+' cobrando · abierta';
-    return `<div class="cmp-row ${y===convKey?'on':''}" onclick="setConv('${y}')">
-      <div class="cmp-y">${y}</div>
-      <div class="cmp-bar">
-        <div class="cmp-seg s-ej" style="width:${pe}%" title="Ejecutado ${eur(c.eje)}"></div>
-        <div class="cmp-seg s-cm" style="width:${pc}%" title="Comprometido ${eur(c.com)}"></div>
-        <div class="cmp-seg s-dp" style="width:${pd}%" title="Disponible ${eur(disp)}"></div>
-      </div>
-      <div class="cmp-t">${(c.tot/1e6).toFixed(1).replace('.',',')} M€</div>
-      <div class="cmp-s">${est}</div>
-    </div>`;
-  }).join('');
+    ej.push(c.eje); co.push(c.com); di.push(disp);
+    est.push(c.agotada ? 'liquidada' : (!c.admite ? nfmt(c.cobrando)+' cobrando · cerrada'
+                                                  : nfmt(c.cobrando)+' cobrando · abierta'));
+  });
+  chCmp.data.labels=ys;
+  chCmp.data.datasets[0].data=ej;
+  chCmp.data.datasets[1].data=co;
+  chCmp.data.datasets[2].data=di;
+  /* la convocatoria elegida se resalta, como hace una selección en Celonis */
+  chCmp.data.datasets.forEach(d=>{ d.borderColor='#0A1F44';
+    d.borderWidth=ys.map(y=>y===convKey?1.4:0); d.borderSkipped=false; });
+  chCmp.$est=est;
+  chCmp.update();
   const m=v=>(v/1e6).toFixed(2).replace('.',',')+' M€';
   document.getElementById('cmpTot').innerHTML =
     `<div><span>Bajo gestión</span><b>${m(T)}</b></div>`+
@@ -2015,18 +2011,62 @@ const NOM_E = [4812,4958,5041,5096,5158,5290];
 const NOM_I = [1.03,1.07,1.08,1.10,1.11,1.14];
 const chNom = new Chart(document.getElementById('cNomina'), {
   type:'bar',
+  /* Dos medidas sobre la misma dimensión —el mes de nómina—, que es como se
+     construye en Celonis. La última barra no es un color especial: es la otra
+     medida, el compromiso que todavía no se ha pagado. */
   data:{ labels:NOM_M, datasets:[
-    { data:NOM_I, backgroundColor:NOM_I.map((_,i)=> i===NOM_I.length-1 ? 'rgba(46,170,75,.35)' : GRN),
-      borderColor:GRN, borderWidth:NOM_I.map((_,i)=> i===NOM_I.length-1 ? 1.6 : 0),
-      borderRadius:3, barPercentage:.62 } ]},
+    { label:'Nómina liberada', stack:'n', borderRadius:3, barPercentage:.62, backgroundColor:GRN,
+      data:NOM_I.map((v,i)=> i===NOM_I.length-1 ? null : v) },
+    { label:'Compromiso del próximo mes', stack:'n', borderRadius:3, barPercentage:.62,
+      backgroundColor:'rgba(46,170,75,.35)', borderColor:GRN, borderWidth:1.4,
+      data:NOM_I.map((v,i)=> i===NOM_I.length-1 ? v : null) } ]},
   options:{ ...baseOpts,
     plugins:{ ...baseOpts.plugins, tooltip:{ ...(baseOpts.plugins&&baseOpts.plugins.tooltip||{}), callbacks:{
       title:it=>'Nómina de '+it[0].label,
       label:c=>' '+String(c.raw).replace('.',',')+' M€',
       afterBody:it=>['', nfmt(NOM_E[it[0].dataIndex])+' beneficiarios'+(it[0].dataIndex===NOM_I.length-1?' · previsión':'')] }}},
-    scales:{ x:{...axis, grid:{display:false},
-                ticks:{...axis.ticks, callback:(v,i)=>[NOM_M[i], nfmt(NOM_E[i])+' exp.']}},
+    scales:{ x:{...axis, grid:{display:false}},
              y:{...axis, title:{display:true,text:'M€ liberados',font:{family:'Inter',size:9},color:'#8E91AD'}} } }
+});
+
+/* Beneficiarios por tramo de mensualidades cobradas: una dimensión —el tramo—
+   y una medida —los beneficiarios—. El importe pendiente va en el aviso. */
+const TRAMO_LBL=['1 – 6','7 – 12','13 – 18','19 – 24'];
+const chTramos = new Chart(document.getElementById('cTramos'), {
+  type:'bar',
+  data:{ labels:TRAMO_LBL.map(l=>l+' meses'), datasets:[
+    { label:'Beneficiarios', data:[], backgroundColor:ORA, borderRadius:3, barPercentage:.6 }]},
+  options:{ ...baseOpts,
+    plugins:{ ...baseOpts.plugins, legend:{display:false},
+      tooltip:{ ...(baseOpts.plugins&&baseOpts.plugins.tooltip||{}), callbacks:{
+        title:it=>'Llevan '+TRAMO_LBL[it[0].dataIndex]+' mensualidades cobradas',
+        label:c=>' '+nfmt(c.raw)+' beneficiarios',
+        afterBody:it=>{ const p=chTramos.$pend||[]; return ['', 'Pendiente de abono: '+eur(p[it[0].dataIndex]||0)]; } }}},
+    scales:{ x:{...axis, grid:{display:false}},
+             y:{...axis, beginAtZero:true} } }
+});
+
+/* Compromiso vivo: dimensión convocatoria, tres medidas apiladas. Pulsar una
+   barra filtra el panel de la izquierda, igual que una selección en Celonis. */
+const chCmp = new Chart(document.getElementById('cCmp'), {
+  type:'bar',
+  data:{ labels:[], datasets:[
+    { label:'Ejecutado',    data:[], backgroundColor:GRN, stack:'c', barPercentage:.62 },
+    { label:'Comprometido', data:[], backgroundColor:ORA, stack:'c', barPercentage:.62 },
+    { label:'Libre',        data:[], backgroundColor:'#E4E5EC', stack:'c', barPercentage:.62 }]},
+  options:{ ...baseOpts, indexAxis:'y',
+    onClick:(ev,els)=>{ if(els.length) setConv(chCmp.data.labels[els[0].index]); },
+    onHover:(ev,els)=>{ ev.native.target.style.cursor = els.length?'pointer':'default'; },
+    plugins:{ ...baseOpts.plugins,
+      legend:{ position:'bottom', labels:{ boxWidth:9, boxHeight:9, padding:10,
+               font:{family:'Inter',size:10}, color:'#0A1F44' } },
+      tooltip:{ ...(baseOpts.plugins&&baseOpts.plugins.tooltip||{}), callbacks:{
+        title:it=>'Convocatoria '+it[0].label,
+        label:c=>' '+c.dataset.label+': '+eur(c.raw),
+        afterBody:it=>{ const e=chCmp.$est||[]; return ['', e[it[0].dataIndex]||'']; } }}},
+    scales:{ x:{...axis, stacked:true, ticks:{...axis.ticks,
+                callback:v=>(v/1e6).toFixed(0)+' M€'}},
+             y:{...axis, stacked:true, grid:{display:false}} } }
 });
 
 /* ════════ PERÍODOS (afecta al gráfico de evolución) ════════ */
@@ -2494,7 +2534,8 @@ document.querySelectorAll('.tabb').forEach(b => {
     if (pane==='paneEx') { pxInit(); requestAnimationFrame(pxFit); }
     if (pane==='paneCM') requestAnimationFrame(()=>{ [chVar,chTiempo,chBloq].forEach(c=>c.resize()); });
     /* el canvas nace con ancho 0 dentro de una pestaña oculta: hay que remedirlo */
-    if (pane==='paneEco') requestAnimationFrame(()=>{ chNom.resize(); renderConv(); });
+    if (pane==='paneEco') requestAnimationFrame(()=>{
+      chNom.resize(); chTramos.resize(); chCmp.resize(); renderConv(); });
   });
 });
 window.addEventListener('resize', () => { if (pxReady && document.getElementById('paneEx').classList.contains('active')) pxFit(); });
