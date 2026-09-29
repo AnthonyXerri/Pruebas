@@ -326,7 +326,7 @@ th.col-focus { background:#FFEDD5 !important; color:#9A3412 !important; }
 .px-spacer { flex:1; }
 .px-chip { font-size:10px; font-weight:600; color:var(--cgy); background:#fff; border:1px solid var(--cbd); border-radius:3px; padding:4px 9px; }
 
-.px-stage { position:relative; height:900px; background:#fff; border-bottom:1px solid var(--cbd); }
+.px-stage { position:relative; height:1180px; background:#fff; border-bottom:1px solid var(--cbd); }
 .px-canvas { position:absolute; inset:0; overflow:auto; cursor:grab; }
 .px-canvas:active { cursor:grabbing; }
 .px-zoomwrap { transform-origin:0 0; width:1180px; margin:18px 150px 26px 290px; }
@@ -506,6 +506,60 @@ td{ border-color:var(--cbd)!important; font-size:12px; color:var(--cnavy); }
 .ii[data-t]:hover::after,.ii[data-t]:hover::before{ opacity:1; visibility:visible; }
 .px-read > div:last-child .ii[data-t]::after{ left:auto; right:-6px; transform:none; }
 .px-read > div:last-child .ii[data-t]::before{ left:auto; right:0; transform:none; }
+
+/* ── lavado de cara · barra de filtros en una sola horizontal ── */
+.fbar{ flex-wrap:nowrap !important; gap:6px !important; align-items:center; }
+.fbar .fsel,.fbar .fdate{ height:30px !important; padding:0 8px !important; gap:5px;
+  font-size:11.5px !important; flex:0 0 auto; }
+.fbar .fsel span,.fbar .fdate span{ font-size:10.5px !important; color:var(--cgy) !important;
+  font-weight:400 !important; letter-spacing:0 !important; text-transform:none !important; }
+.fbar .fsel select{ font-size:11.5px !important; padding:0; }
+.fbar .fdate input[type=date]{ font-size:11.5px; border:none; outline:none; background:transparent;
+  font-family:var(--f); color:var(--cnavy); width:88px; padding:0; }
+.fbar .fsel.par{ border-style:dashed; border-color:var(--cgy2); background:#FAFAFB; }
+.fbar .fsel.par input{ width:30px; border:none; outline:none; background:transparent;
+  font-family:var(--f); font-size:12.5px; font-weight:600; color:var(--blue); text-align:center; }
+.fbar .fsel.par .ud{ font-size:10.5px; color:var(--cgy); }
+.fbar .btn-outline{ height:30px !important; padding:0 10px !important; font-size:11.5px !important; flex:0 0 auto; }
+.fbar .chev{ width:8px; height:5px; opacity:.5; }
+/* la barra económica hereda el mismo cromado que la del cuadro de mando */
+#fbarECO .fgrp{ display:inline-flex; align-items:center; gap:5px; height:30px; padding:0 8px;
+  border:1px solid var(--cbd); border-radius:3px; background:#fff; }
+#fbarECO .fgrp label{ font-size:10.5px; color:var(--cgy); font-weight:400; }
+#fbarECO .fgrp select,#fbarECO .fgrp input{ border:none; outline:none; background:transparent;
+  font-family:var(--f); font-size:11.5px; color:var(--cnavy); cursor:pointer; padding:0; }
+#fbarECO .eco-note{ font-size:10.5px; color:var(--cgy); display:inline-flex; align-items:center; gap:4px; }
+
+/* ── una sola tipografía en la banda: los variables pesan igual que los fijos ── */
+.ks-pred .ks-val,.ks-fix .ks-val{ font-size:34px !important; font-weight:300 !important;
+  color:var(--cnavy) !important; letter-spacing:-.02em; line-height:1.12; white-space:nowrap; }
+.ks-pred .ks-val .u,.ks-fix .ks-val .u{ font-size:16px; font-weight:400; color:var(--cgy); }
+.ks-pred .ks-lbl,.ks-fix .ks-lbl{ font-size:11.5px !important; color:var(--cnavy) !important;
+  font-weight:400 !important; }
+.ks-pred{ background:transparent !important; }
+.ks-delta{ font-size:10.5px !important; color:var(--cgy) !important; }
+.ks-delta.bad{ color:var(--cred) !important; }
+
+/* ── el icono de ayuda existe fuera de los indicadores: que lleve su círculo ── */
+/* el aviso no lo puede recortar la banda ni heredar su «no partir línea» */
+.kpi-strip{ overflow:visible !important; }
+.hdr,.hdr-top{ overflow:visible; }
+.ii[data-t]::after{ white-space:normal !important; }
+
+.ii{ width:12px; height:12px; border-radius:50%; border:1px solid var(--cgy2); display:inline-flex;
+  align-items:center; justify-content:center; font-size:8px; color:var(--cgy); font-style:normal;
+  font-weight:400; flex-shrink:0; vertical-align:1px; }
+
+/* ── los avisos de la cabecera se abren hacia abajo, si no se cortan ── */
+.hdr .ii[data-t]::after{ bottom:auto; top:calc(100% + 8px); }
+.hdr .ii[data-t]::before{ bottom:auto; top:calc(100% + 3px);
+  border-top-color:transparent; border-bottom-color:var(--cnavy); }
+.sk:last-child .ii[data-t]::after,.ks:last-child .ii[data-t]::after{ left:auto; right:-6px; transform:none; }
+.sk:last-child .ii[data-t]::before,.ks:last-child .ii[data-t]::before{ left:auto; right:0; transform:none; }
+
+/* ── menos ruido: el subtexto del indicador es una cifra, no una frase ── */
+.sk-sub,.ks-delta{ font-weight:400 !important; }
+.sk-sub:empty,.ks-delta:empty{ display:none; }
 
 
 /* ══════════════════════════════════════════════════════════════════
@@ -740,11 +794,7 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
 
     <div class="kpi-strip">
       <div id="kpiGlobal" style="display:flex;align-items:stretch;"></div>
-      <div class="kpi-sep"></div>
-      <div class="kpi-phase">
-        <span class="kpi-phase-lbl" title="Estos dos indicadores cambian con la convocatoria y la etapa seleccionadas">KPI Variables</span>
-        <div id="kpiConv" style="display:flex;align-items:stretch;"></div>
-      </div>
+      <div id="kpiConv" style="display:flex;align-items:stretch;"></div>
     </div>
 
     <div class="hdr-btn">
@@ -785,69 +835,47 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
 
   <!-- Filtros -->
   <div class="fbar" id="fbarCM" style="display:none;">
-    <div class="fdate" title="Solo se analizan los expedientes registrados dentro de este rango">
-      <span class="p-k">Desde</span>
-      <input type="date" id="fDateIni" value="2025-11-01" onchange="onPeriodo()">
-    </div>
-    <div class="fdate" id="fdateFin" title="Solo se analizan los expedientes registrados dentro de este rango">
-      <span class="p-k">Hasta</span>
-      <input type="date" id="fDateFin" value="2026-09-03" onchange="onPeriodo()">
-    </div>
-    <div class="fsel" title="Solo cambia la granularidad del eje de la gráfica de evolución; el rango lo fijan las fechas">
-      <span>Granularidad</span>
+    <div class="fdate"><span>Desde</span>
+      <input type="date" id="fDateIni" value="2025-11-01" onchange="onPeriodo()"></div>
+    <div class="fdate" id="fdateFin"><span>Hasta</span>
+      <input type="date" id="fDateFin" value="2026-09-03" onchange="onPeriodo()"></div>
+    <div class="fsel"><span>Ver por</span>
       <select id="fPeriodo" onchange="onPeriodo()">
-        <option value="sem">Semanal</option>
-        <option value="mes" selected>Mensual</option>
-        <option value="tri">Trimestral</option>
-        <option value="anu">Anual</option>
-      </select>
-      <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-    </div>
+        <option value="sem">Semana</option><option value="mes" selected>Mes</option>
+        <option value="tri">Trimestre</option><option value="anu">A&ntilde;o</option></select>
+      <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
     <div class="fsel"><span>Convocatoria</span>
       <select id="fConv" onchange="setConvCM(this.value)"><option value="2026">2026</option><option value="2025">2025</option><option value="2024">2024</option></select>
-      <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-    </div>
-    <div class="fsel" title="Estado de tramitación del expediente"><span>Estado</span>
+      <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+    <div class="fsel"><span>Estado</span>
       <select id="fEstado" onchange="filtrar()">
         <option value="">Todos</option>
-        <option>En gestión del expediente</option>
+        <option>En gesti&oacute;n del expediente</option>
         <option>En requerimiento</option>
-        <option>Pendiente código de terceros</option>
-        <option>Pendiente envío a Intervención</option>
-        <option>En Intervención</option>
+        <option>Pendiente c&oacute;digo de terceros</option>
+        <option>Pendiente env&iacute;o a Intervenci&oacute;n</option>
+        <option>En Intervenci&oacute;n</option>
         <option>Resuelto favorable</option>
-        <option>Pagado</option>
-      </select>
-      <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-    </div>
-    <div class="fsel"><span>Tipo de resolución</span>
+        <option>Pagado</option></select>
+      <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+    <div class="fsel"><span>Resoluci&oacute;n</span>
       <select id="fRes" onchange="filtrar()">
         <option value="">Todas</option><option>Alta</option><option>Baja</option>
-        <option>Modificación positiva</option><option>Modificación negativa</option><option>Pago único</option>
-      </select>
-      <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-    </div>
-    <div class="fsel"><span>Unidad tramitadora</span>
+        <option>Modificaci&oacute;n positiva</option><option>Modificaci&oacute;n negativa</option><option>Pago &uacute;nico</option></select>
+      <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+    <div class="fsel"><span>Unidad</span>
       <select id="fUnidad" onchange="filtrar()">
-        <option value="">Todas</option><option>Unidad Gestora</option><option>Gestión Económica</option>
-      </select>
-      <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-    </div>
-    <div class="fsel" id="fselObj" title="Fija el objetivo de días de tramitación — el cuadro de mando recalcula el cumplimiento contra esta meta">
-      <span id="objLbl" class="p-k">Objetivo E2E</span>
-      <input id="fObjDays" type="number" min="1" value="60" onchange="onObjDays()"
-             style="width:40px;border:none;outline:none;background:transparent;font-family:var(--f);font-size:14px;font-weight:600;text-align:center;">
-      <span style="font-weight:400;">días</span>
-    </div>
-    <div class="fsel" id="fselAlerta" title="Toda etapa cuyo tiempo medio supere este umbral se marca en rojo en el gráfico de tiempos">
-      <span class="p-k">Alerta etapa</span>
-      <input id="fAlerta" type="number" min="1" value="12" onchange="onAlerta()"
-             style="width:36px;border:none;outline:none;background:transparent;font-family:var(--f);font-size:14px;font-weight:600;text-align:center;">
-      <span style="font-weight:400;">días</span>
-    </div>
+        <option value="">Todas</option><option>Unidad Gestora</option><option>Gesti&oacute;n Econ&oacute;mica</option></select>
+      <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+    <div class="fsel par" id="fselObj">
+      <span id="objLbl">Objetivo</span>
+      <input id="fObjDays" type="number" min="1" value="60" onchange="onObjDays()"><span class="ud">d</span></div>
+    <div class="fsel par" id="fselAlerta">
+      <span>Alerta</span>
+      <input id="fAlerta" type="number" min="1" value="12" onchange="onAlerta()"><span class="ud">d</span></div>
     <div class="fspace"></div>
-    <button class="btn-outline" onclick="limpiar()">✕ Limpiar</button>
-    <button class="btn-outline" onclick="exportCSV()">↓ Exportar CSV</button>
+    <button class="btn-outline" onclick="limpiar()">&#10005;</button>
+    <button class="btn-outline" onclick="exportCSV()">&darr; CSV</button>
   </div>
 </header>
 
@@ -950,8 +978,8 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
   <!-- Tabla B · ciclo de vida -->
   <div class="tbl-section">
     <div class="tbl-hdr">
-      <div class="tbl-title">Ciclo de vida del expediente <span class="badge">Atlantix · cambios de estado</span></div>
-      <div class="tbl-hint">Un expediente por decil de duración · días consumidos en cada tramo</div>
+      <div class="tbl-title">Ciclo de vida del expediente
+        <i class="ii" data-t="Un expediente por cada decil de duración, del más rápido al más lento. Cada celda son los días consumidos en ese tramo, restando fechas de cambios de estado ya registrados en Atlantix.">i</i></div>
     </div>
     <div class="hito-lgd">
       <span><i style="background:#B5B6C6;">1</i>Registro</span>
@@ -985,7 +1013,6 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
       <span><i style="background:#0A1F44;"></i>Dentro de lo esperado</span>
       <span><i style="background:#D98324;"></i>Demora moderada</span>
       <span><i style="background:#E12E2E;"></i>Demora crítica</span>
-      <span style="color:var(--g500);">Restando fechas de cambios de estado ya registrados</span>
     </div>
   </div>
 </div>
@@ -1095,24 +1122,24 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
 
   <div class="px-read">
     <div>
-      <div class="t">Variante mayoritaria <i class="ii" data-t="Porcentaje de expedientes que recorren el camino más frecuente, sin ninguna repetición de actividad.">i</i></div>
+      <div class="t">Variante mayoritaria <i class="ii" data-t="Expedientes que recorren el camino más frecuente: sin requerimiento de subsanación, sin incidencia en la validación de tercero y sin reparo de Intervención.">i</i></div>
       <div class="v" id="pxR1">58%</div>
-      <div class="d" id="pxR1d">2.228 expedientes siguen la ruta sin subsanación, sin incidencia de tercero y sin reparo.</div>
+      <div class="d" id="pxR1d">2.228 expedientes</div>
     </div>
     <div>
-      <div class="t">Trazas con retrabajo <i class="ii" data-t="Expedientes que repiten alguna actividad: la validación en Nexus o la fiscalización de Intervención.">i</i></div>
+      <div class="t">Trazas con retrabajo <i class="ii" data-t="Expedientes que repiten alguna actividad y vuelven atrás en el flujo: 423 por incidencia en la validación de tercero y 288 por reparo de Intervención.">i</i></div>
       <div class="v" id="pxR2">18,5%</div>
-      <div class="d" id="pxR2d">711 expedientes repiten alguna actividad: 423 por incidencia de tercero y 288 por reparo de Intervención.</div>
+      <div class="d" id="pxR2d">711 expedientes</div>
     </div>
     <div>
-      <div class="t">Conexión más lenta <i class="ii" data-t="Transición entre dos actividades con mayor tiempo medio entre ellas.">i</i></div>
+      <div class="t">Conexión más lenta <i class="ii" data-t="Transición con mayor tiempo medio entre dos actividades. Cada corrección de cuenta bancaria devuelve el expediente al principio del trámite de terceros, por eso este bucle es el más caro del proceso.">i</i></div>
       <div class="v" id="pxR3">18 <small style="font-size:16px;color:var(--cgy);">d</small></div>
-      <div class="d" id="pxR3d">De «Error de validación en Nexus» a «Validación en Nexus»: cada corrección de cuenta bancaria devuelve el expediente al principio del trámite de terceros.</div>
+      <div class="d" id="pxR3d">Error de validación &rarr; Validación en Nexus</div>
     </div>
     <div>
-      <div class="t">Actividades distintas <i class="ii" data-t="Número de actividades visibles en el grafo con los filtros aplicados.">i</i></div>
+      <div class="t">Actividades distintas <i class="ii" data-t="Actividades visibles en el grafo con los filtros aplicados, sobre las 34 variantes de recorrido observadas en la convocatoria.">i</i></div>
       <div class="v" id="pxR4">18</div>
-      <div class="d" id="pxR4d">Sobre 34 variantes de recorrido observadas en la convocatoria.</div>
+      <div class="d" id="pxR4d"></div>
     </div>
   </div>
 </div>
@@ -1146,7 +1173,8 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
       <label>Fase contable</label>
       <select><option>Todas</option><option>A · Autorización</option><option>D · Disposición</option><option>O · Obligación</option><option>P · Pago</option></select>
     </div>
-    <span class="eco-note">El crédito es <strong>de la convocatoria</strong> y paga 24 mensualidades: no se filtra por ventana temporal como el proceso.</span>
+    <span class="eco-note">Crédito por convocatoria
+      <i class="ii" data-t="El crédito pertenece a la convocatoria y paga veinticuatro mensualidades por beneficiario, así que no se recorta por la ventana temporal que filtra el proceso.">i</i></span>
   </div>
 
 <!-- ══════════ VISIÓN ECONÓMICA ══════════ -->
@@ -1184,20 +1212,22 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
 
   <div class="pz-col">
     <h3>Importe liberado por nómina</h3>
-    <p>Nómina mensual de <strong>todas las convocatorias vivas</strong> · la última es el compromiso ya adquirido</p>
+    <p>Todas las convocatorias vivas
+      <i class="ii" data-t="Importe liberado en la nómina de cada mes sumando las tres convocatorias con pagos vivos. La última barra no está pagada todavía: es el compromiso ya adquirido para el mes que viene.">i</i></p>
     <div class="chart-wrap" style="height:150px;"><canvas id="cNomina"></canvas></div>
     <div class="legend">
       <div class="leg"><div class="leg-sq" style="background:var(--green);"></div>Nómina liberada</div>
       <div class="leg"><div class="leg-sq" style="background:rgba(46,170,75,.35);border:1px solid var(--green);"></div>Compromiso del próximo mes</div>
-      <div class="leg" style="color:var(--g400);font-style:italic;">Cifra bajo cada mes = beneficiarios de todas las convocatorias · el panel de la izquierda desglosa una sola</div>
+
     </div>
 
     <div class="cmp">
       <h4>Compromiso vivo por convocatoria</h4>
-      <p>Las tres convocatorias generan pagos a la vez · pulsa una fila para desglosarla a la izquierda</p>
+      <p>Pulsa una fila para desglosarla
+        <i class="ii" data-t="Las tres convocatorias generan pagos al mismo tiempo: una ayuda concedida en 2024 se sigue pagando hoy. Al pulsar una fila, el panel de la izquierda pasa a desglosar esa convocatoria.">i</i></p>
       <div id="cmpRows"></div>
       <div class="cmp-tot" id="cmpTot"></div>
-      <div class="cmp-note" id="cmpNote"></div>
+
     </div>
   </div>
 </div>
@@ -1208,15 +1238,12 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
     <span class="p-it">Duración <b id="pDur"></b></span>
     <span class="p-it">Fecha de corte <b id="pCorte"></b></span>
     <span class="p-it">Crédito de la convocatoria <b id="pCred"></b></span>
-    <span class="p-note">Todas las cifras de esta pantalla se derivan de estos parámetros y del registro de pagos.
-      Ninguna es una estimación: ejecutado, comprometido y disponible salen de multiplicar mensualidades abonadas y pendientes por el importe de la ayuda.</span>
+    <i class="ii" data-t="Ninguna cifra de esta pantalla es una estimación: ejecutado, comprometido y disponible salen de multiplicar las mensualidades abonadas y pendientes por el importe de la ayuda.">i</i>
   </div>
-
-  >
 </div>
 
 <div class="attr">
-  <span><strong>Cuadro de Mando de Gobierno del Servicio</strong> · Ayudas a la Natalidad · Iniciativa I4.1 · Minería de procesos con Celonis</span>
+  <span><strong>Ayudas a la Natalidad</strong> · Dirección General de Infancia, Familia y Fomento de la Natalidad</span>
   <span>Fuente: Atlantix / AEFN · Nexus · Contenido ilustrativo — datos no reales</span>
 </div>
 
@@ -1230,14 +1257,14 @@ const RED='#E12E2E', ORA='#D98324', GRN='#005B60', BLU='#264AFF', SLA='#464C6A',
 const STAGES = {
   all: {
     label:'Todo el proceso',
-    meta:'Gemelo digital reconstruido desde <strong>147.328 cambios de estado</strong> · convocatoria 2026',
+    meta:'',
     kpiConv:[['Presupuesto ejecutado','30,7%','ok','4,61 M€ de 15 M€ · convocatoria 2026'],
              ['Nómina comprometida','5.290 exp · 1,14 M€','warn','● 74 en riesgo por bloqueo']],
     s1:{ kpis:[['Variantes detectadas','34','na','caminos distintos'],
                ['Sigue el camino estándar','58<span class="u">%</span>','warn','● 1.614 exp. se desvían'],
                ['Expedientes con reproceso','711','bad','18,5% del total']],
          ttl:'↑ Distribución de expedientes por variante de recorrido',
-         sub:'Camino real seguido, reconstruido desde los cambios de estado',
+         sub:'',
          labels:['Camino estándar','Con requerimiento','Incidencia en terceros','Modificación tras fiscalización','Otras 31 variantes'],
          data:[2228,807,423,288,96], colors:[GRN,ORA,ORA,ORA,GRY],
          leg:[[GRN,'Camino estándar'],[ORA,'Desviación con reproceso'],[GRY,'Otras variantes']] },
@@ -1252,7 +1279,7 @@ const STAGES = {
                ['Pendientes del solicitante','442','na','42% · plazo legal del ciudadano en curso','s3B'],
                ['Antigüedad media del bloqueo','12 <span class="u">d</span>','warn','máx. 34 d','s3C']],
          ttl:'↑ Evolución de los expedientes detenidos, por responsable',
-         sub:'Distingue los bloqueos resolubles por la unidad gestora de los sujetos al plazo del solicitante',
+         sub:'',
          serieA:{c:RED,n:'Unidad gestora'}, serieB:{c:GRY,n:'Solicitante'},
          mes:{a:[578,594,608,619,631,611], b:[394,412,428,436,447,442]} },
     bloq:null, col:null
@@ -1260,7 +1287,7 @@ const STAGES = {
 
   gestion: {
     label:'Gestión del expediente',
-    meta:'<strong>38.412 cambios de estado</strong> en esta etapa · del registro de la solicitud a la propuesta de decisión',
+    meta:'Del registro de la solicitud a la propuesta de decisión',
     kpiConv:[['Expedientes en la etapa','1.284','warn','● 432 en requerimiento'],
              ['Previsión de cierre','17,7 d de media','bad','▲ +3,2 d vs. trimestre anterior']],
     s1:{ kpis:[['Variantes en la etapa','12','na','caminos distintos'],
@@ -1290,7 +1317,7 @@ const STAGES = {
 
   terceros: {
     label:'Validación de terceros',
-    meta:'<strong>24.905 cambios de estado</strong> en esta etapa · obtención y validación del código entre Nexus y Atlantix',
+    meta:'Obtención y validación del código entre Nexus y Atlantix',
     kpiConv:[['Expedientes en el lote','1.248','warn','● 96 con incidencia'],
              ['Riesgo para la nómina','74 exp.','bad','▲ no llegarían a 06/2026']],
     s1:{ kpis:[['Códigos obtenidos','1.102','ok','88,3% del lote'],
@@ -1320,7 +1347,7 @@ const STAGES = {
 
   intervencion: {
     label:'Intervención',
-    meta:'<strong>31.740 cambios de estado</strong> en esta etapa · envío, fiscalización y respuesta de Intervención',
+    meta:'Envío, fiscalización y respuesta de Intervención',
     kpiConv:[['Expedientes en la etapa','742','warn','● 288 devueltos por modificación'],
              ['Impacto del retrabajo','+14 d de media','bad','▲ sobre el plazo del expediente']],
     s1:{ kpis:[['Fiscalizados a la primera','1.985','ok','81,3% de los enviados'],
@@ -1350,7 +1377,7 @@ const STAGES = {
 
   pagos: {
     label:'Resolución y pagos',
-    meta:'<strong>52.271 cambios de estado</strong> en esta etapa · de la resolución favorable a la liberación de la nómina',
+    meta:'De la resolución favorable a la liberación de la nómina',
     kpiConv:[['Expedientes resueltos','2.915','ok','● 2.678 ya pagados'],
              ['Nómina comprometida','5.290 exp · 1,14 M€','warn','● 237 pendientes de incluir']],
     s1:{ kpis:[['Resoluciones emitidas','2.915','ok','76% del total en gestión'],
@@ -1387,11 +1414,45 @@ const KPI_GLOBAL = [
   /* detenidos = el total de la cola, el mismo número que la tabla de abajo */
   ['Expedientes detenidos','0','bad','—','gBloq'],
 ];
+/* Cada indicador explica de dónde sale su número al pasar el ratón; así la cifra
+   puede quedarse sola en la pantalla sin perder el cómo se ha calculado. */
+const TIP = {
+ 'Expedientes en gestión':'Expedientes de la convocatoria seleccionada que todavía no han llegado al pago, dentro del rango de fechas elegido.',
+ 'Plazo medio del expediente':'Días entre el registro de la solicitud y el pago, medidos solo sobre los expedientes que ya han llegado al pago. La mediana va debajo porque el promedio lo estiran unos pocos casos muy largos.',
+ 'Plazo medio de la etapa':'Días medios que consume esta etapa, y qué parte representa del plazo total del expediente.',
+ 'Dentro del objetivo':'Expedientes ya terminados cuyo plazo no superó el objetivo fijado en la barra de filtros. Al cambiar el objetivo, el porcentaje se recalcula.',
+ 'Dentro de objetivo':'Expedientes ya terminados cuyo plazo no superó el objetivo fijado en la barra de filtros. «En riesgo» son los que se acercan a él sin haberlo superado.',
+ 'Expedientes detenidos':'Expedientes sin ningún cambio de estado desde hace más días de lo razonable para su etapa. Debajo, los que la unidad puede desatascar por sí misma.',
+ 'Presupuesto ejecutado':'Crédito ya pagado sobre el total de la convocatoria. Cambia al cambiar de convocatoria en los filtros.',
+ 'Nómina de la convocatoria':'Expedientes con pagos vivos en esta convocatoria y el importe que suman. Una ayuda se paga a lo largo de veinticuatro mensualidades, así que una convocatoria sigue pagando años después.',
+ 'Expedientes en la etapa':'Expedientes que están ahora mismo en esta etapa del proceso.',
+ 'Expedientes en el lote':'Expedientes incluidos en el lote de validación de terceros.',
+ 'Expedientes resueltos':'Expedientes con resolución firmada en el periodo analizado.',
+ 'Variantes detectadas':'Caminos distintos que siguen los expedientes de principio a fin. Cada combinación diferente de actividades cuenta como una variante.',
+ 'Sigue el camino estándar':'Expedientes que recorren el camino mayoritario sin repetir ninguna actividad: sin requerimiento, sin incidencia de terceros y sin reparo.',
+ 'Expedientes con reproceso':'Expedientes que han vuelto atrás al menos una vez, por incidencia en la validación de terceros o por modificación después de fiscalizar.',
+ 'Tramo más lento':'Transición entre dos etapas con mayor tiempo medio. Es donde más días se acumulan, no necesariamente donde hay más expedientes.',
+ 'Gestionables por la unidad':'Expedientes detenidos cuya siguiente acción corresponde a la unidad gestora: sobre estos se puede actuar hoy.',
+ 'Pendientes del solicitante':'Expedientes detenidos esperando documentación o subsanación del ciudadano. El plazo legal está corriendo, pero cabe anticipar un aviso antes de que venza.',
+ 'Antigüedad media del bloqueo':'Días que llevan parados de media los expedientes detenidos, contados desde su último cambio de estado.',
+};
+function tipOf(t){
+  t = t.replace(/\s+/g,' ').trim();
+  return TIP[t] || '';
+}
+/* Se recorre el DOM al final de cada render: así cada icono hereda su explicación
+   sin tener que repetirla en los veinte sitios donde se construye un indicador. */
+function aplicarTips(){
+  document.querySelectorAll('.sk-lbl .ii, .ks-lbl .ii').forEach(i=>{
+    if(i.hasAttribute('data-t')) return;
+    const lbl=(i.parentElement.textContent||'').replace(/\s*i\s*$/,'');
+    const t=tipOf(lbl); if(t) i.setAttribute('data-t',t);
+  });
+}
+
 function ksHtml(a,pred){
-  const tip = pred ? 'Cambia con la convocatoria y la etapa seleccionadas'
-                   : 'Indicador fijo del servicio';
-  return a.map(k=>`<div class="ks ${pred?'ks-pred':'ks-fix'}" title="${tip}">
-    <div class="ks-lbl">${k[0]}${pred?'':' <i class="ii">i</i>'}</div>
+  return a.map(k=>`<div class="ks ${pred?'ks-pred':'ks-fix'}">
+    <div class="ks-lbl">${k[0]} <i class="ii">i</i></div>
     <div class="ks-val"${k[4]?` id="${k[4]}"`:''}>${k[1]}</div>
     <div class="ks-delta ${k[2]}"${k[4]?` id="${k[4]}D"`:''}>${k[3]}</div></div>`).join('');
 }
@@ -1573,9 +1634,9 @@ function renderCM(){
   const C = CONV[FCM.conv] || CONV['2026'];
   document.getElementById('kpiConv').innerHTML = ksHtml([
     ['Presupuesto ejecutado', (C.eje/C.tot*100).toFixed(1).replace('.',',')+'%','ok',
-     (C.eje/1e6).toFixed(2).replace('.',',')+' M€ de '+(C.tot/1e6).toFixed(0)+' M€ · convocatoria '+FCM.conv],
-    ['Nómina de la convocatoria', nfmt(C.cobrando)+' exp · '+((C.cobrando*MENS)/1e6).toFixed(2).replace('.',',')+' M€','warn',
-     C.agotada ? 'convocatoria liquidada' : '● pagos vivos de esta convocatoria'],
+     (C.eje/1e6).toFixed(2).replace('.',',')+' M€ de '+(C.tot/1e6).toFixed(0)+' M€'],
+    ['Nómina de la convocatoria', ((C.cobrando*MENS)/1e6).toFixed(2).replace('.',',')+' <span class="u">M€</span>','na',
+     C.agotada ? 'liquidada' : nfmt(C.cobrando)+' expedientes'],
   ], true);
 
   /* ── vacío: el filtro es real y a veces no queda nada que mirar ── */
@@ -1589,8 +1650,9 @@ function renderCM(){
     set('gExp','0'); set('gBloq','0');
     set('gPlazo','<span style="color:var(--g400);">—</span>');
     set('gCumpl','<span style="color:var(--g400);">—</span>');
-    set('gExpD','convocatoria sin carga de trabajo'); set('gBloqD','—');
-    set('gPlazoD','sin expedientes que medir'); set('gCumplD','sin expedientes que medir');
+    set('gExpD',''); set('gBloqD','');
+    set('gPlazoD',''); set('gCumplD','');
+    aplicarTips();
     return;
   }
   vacio.classList.remove('on');
@@ -1625,24 +1687,24 @@ function renderCM(){
 
   /* ── KPIs de cabecera ── */
   set('gExp', nfmt(n));
-  set('gExpD', stageKey==='all' ? 'convocatoria '+FCM.conv : 'en '+S.label.toLowerCase());
+  set('gExpD','');
   set('gPlazo', plazoExp ? plazoExp+' d' : '—');
   set('gPlazoD', plazoExp>OBJ_E2E ? '▲ +'+(plazoExp-OBJ_E2E)+' d sobre objetivo'
                                   : '▼ '+(OBJ_E2E-plazoExp)+' d bajo objetivo');
   set('gCumpl', dentroPct+'%');
-  set('gCumplD','● '+nfmt(nRef-dentroN)+' de '+nfmt(nRef)+' ya terminados');
+  set('gCumplD', nfmt(nRef-dentroN)+' fuera');
   set('gBloq', nfmt(det.length));
-  set('gBloqD', det.length ? nfmt(adm.length)+' con margen de actuación' : '—');
+  set('gBloqD', det.length ? nfmt(adm.length)+' con margen' : '');
 
   /* ── sección 1 · variantes ── */
   const vs = ['est','req','ter','mod','otr'].map(k => [k, P.filter(e=>e.vr===k).length]);
   const nEst = vs[0][1], nRep = vs[2][1]+vs[3][1];
   const nVar = 4 + Math.max(0, Math.round(vs[4][1]/3));
   set('s1Kpis', skHtml([
-    ['Variantes detectadas', nfmt(nVar), 'na', 'caminos distintos'],
-    ['Sigue el camino estándar', Math.round(nEst/n*100)+'<span class="u">%</span>', 'warn',
-     '● '+nfmt(n-nEst)+' exp. se desvían'],
-    ['Expedientes con reproceso', nfmt(nRep), 'bad', (nRep/n*100).toFixed(1).replace('.',',')+'% del total'],
+    ['Variantes detectadas', nfmt(nVar), 'na', ''],
+    ['Sigue el camino estándar', Math.round(nEst/n*100)+'<span class="u">%</span>', 'na',
+     nfmt(n-nEst)+' se desvían'],
+    ['Expedientes con reproceso', nfmt(nRep), 'bad', (nRep/n*100).toFixed(1).replace('.',',')+'%'],
   ]));
   chVar.data.labels = vs.map(v => v[0]==='otr' ? 'Otras '+Math.max(1,nVar-4)+' variantes' : VAR_N[v[0]]);
   chVar.data.datasets[0].data = vs.map(v=>v[1]);
@@ -1658,32 +1720,31 @@ function renderCM(){
   const durE2E = FASE_TR.all.map(mediaTramo).reduce((a,b)=>a+b,0);
   const kp1 = stageKey==='all'
     ? ['Plazo medio del expediente', plazoExp+' <span class="u">d</span>', 'bad',
-       'mediana '+medianaExp+' d · medido sobre '+nfmt(fin.length)+' expedientes ya pagados']
+       'mediana '+medianaExp+' d']
     : ['Plazo medio de la etapa', durTot.toFixed(0)+' <span class="u">d</span>', 'bad',
-       Math.round(durTot/durE2E*100)+'% de los '+durE2E.toFixed(0)+' d del expediente'];
+       Math.round(durTot/durE2E*100)+'% del expediente'];
   set('s2Kpis', skHtml([
     kp1,
     ['Tramo más lento', TRAMOS[trs[lento]].replace(' → ',' →<br>'), 'bad',
-     mediaTramo(trs[lento]).toFixed(1).replace('.',',')+' d · '+Math.round(mediaTramo(trs[lento])/durTot*100)+'% del plazo','',true],
-    ['Dentro de objetivo', dentroPct+'<span class="u">%</span>', 'warn',
-     nfmt(nRef-dentroN)+' fuera · '+nfmt(riesgoN)+' en riesgo (objetivo '+objetivo+' d)'],
+     mediaTramo(trs[lento]).toFixed(1).replace('.',',')+' d','',true],
+    ['Dentro de objetivo', dentroPct+'<span class="u">%</span>', 'na',
+     nfmt(nRef-dentroN)+' fuera'],
   ]));
   chTiempo.data.labels = trs.map(i=>TRAMOS[i]);
   chTiempo.data.datasets[0].data = gestDias;
   chTiempo.data.datasets[0].backgroundColor = gestDias.map((v,i)=>(v+espDias[i])>=uAl?RED:SLA);
   chTiempo.data.datasets[1].data = espDias;
   chTiempo.update();
-  set('c2Sub','Días entre cambios de estado · <strong>'+durTot.toFixed(0)+' d</strong> de media, de los que '
-    +'<strong>'+espTot.toFixed(1).replace('.',',')+' d</strong> son plazo del solicitante y '
-    +'<strong>'+(durTot-espTot).toFixed(0)+' d</strong> son gestión propia');
+  set('c2Sub','Gestión de la unidad '+(durTot-espTot).toFixed(0)+' d · plazo del solicitante '
+    +espTot.toFixed(1).replace('.',',')+' d');
 
   /* ── sección 3 · detenidos por responsable ── */
   set('s3Kpis', skHtml([
     ['Gestionables por la unidad', nfmt(adm.length), 'bad',
-     (det.length?Math.round(adm.length/det.length*100):0)+'% · con margen de actuación directa','s3A'],
+     (det.length?Math.round(adm.length/det.length*100):0)+'%','s3A'],
     ['Pendientes del solicitante', nfmt(sol.length), 'na',
-     (det.length?Math.round(sol.length/det.length*100):0)+'% · plazo legal del ciudadano en curso','s3B'],
-    ['Antigüedad media del bloqueo', edad+' <span class="u">d</span>', 'warn','máx. '+edadMax+' d','s3C'],
+     (det.length?Math.round(sol.length/det.length*100):0)+'%','s3B'],
+    ['Antigüedad media del bloqueo', edad+' <span class="u">d</span>', 'na','máx. '+edadMax+' d','s3C'],
   ]));
   /* La cola no se ha formado de golpe: la serie termina exactamente en el saldo de hoy,
      que es el mismo número que muestran el KPI y la tabla. */
@@ -1696,6 +1757,7 @@ function renderCM(){
 
   renderBloq(det);
   renderCiclo(P);
+  aplicarTips();
 }
 
 /* ── tabla de expedientes detenidos ───────────────────────────────────── */
@@ -1721,7 +1783,7 @@ function renderBloq(det){
     ? 'Estos expedientes están <strong>a la espera del solicitante</strong>: el requerimiento está notificado y el plazo legal corre. No son demora de la unidad, pero sí se puede actuar con un recordatorio antes de que venza.'
     : respFilter==='adm'
     ? 'Todos estos expedientes son <strong>resolubles por la unidad gestora</strong>: hay margen de actuación directa sobre ellos.'
-    : 'La cola se segmenta por <strong>responsable de resolución</strong>. Días parado, motivo y sistema proceden del registro de cambios de estado; ningún campo se introduce manualmente.';
+    : '';
 }
 function setResp(v){ respFilter = (respFilter===v)?'':v; renderBloq(); }
 
@@ -1790,11 +1852,10 @@ function renderConv(){
   const vc=(document.getElementById('fCorte')||{}).value;
   const fcorte = vc ? vc.split('-').reverse().join('/') : '03/09/2026';
   document.getElementById('cvSub').textContent = (c.agotada
-    ? 'Convocatoria liquidada · sus beneficiarios ya agotaron las 24 mensualidades'
+    ? 'Convocatoria liquidada'
     : c.admite
-    ? 'Convocatoria abierta · su crédito paga a sus beneficiarios durante 24 meses'
-    : 'Convocatoria cerrada a altas nuevas · sigue pagando mensualidades a sus beneficiarios')
-    + ' · reparto a ' + fcorte;
+    ? 'Convocatoria abierta'
+    : 'Convocatoria cerrada a altas nuevas');
   document.getElementById('cvTrack').innerHTML =
     `<div class="bgt-seg s-ej" style="width:${pe}%">${pe.toFixed(1).replace('.',',')}%</div>`+
     `<div class="bgt-seg s-cm" style="width:${pc}%">${pc>6?pc.toFixed(1).replace('.',',')+'%':''}</div>`+
@@ -1808,9 +1869,9 @@ function renderConv(){
      así la cifra del rótulo no puede contradecir al importe que tiene al lado */
   const benCom = pend ? Math.round(c.com/(MENS*pend)) : 0;
   document.getElementById('cvCards').innerHTML =
-    `<div class="bc bc-ej"><span class="bc-l">Ejecutado</span><b>${eur(c.eje)}</b><em>${nfmt(c.cobrando)} ya cobrando · ${c.pagadas} de ${DUR} mensualidades abonadas</em></div>`+
-    `<div class="bc bc-cm"><span class="bc-l">Comprometido</span><b>${eur(c.com)}</b><em>${c.agotada?'sin mensualidades pendientes':'las '+pend+' que faltan a sus '+nfmt(benCom)+' beneficiarios'}</em></div>`+
-    `<div class="bc bc-dp"><span class="bc-l">Disponible</span><b>${eur(disp)}</b><em>sin comprometer a ningún beneficiario</em></div>`;
+    `<div class="bc bc-ej"><span class="bc-l">Ejecutado</span><b>${eur(c.eje)}</b><em>${nfmt(c.cobrando)} beneficiarios · ${c.pagadas} de ${DUR} mensualidades</em></div>`+
+    `<div class="bc bc-cm"><span class="bc-l">Comprometido</span><b>${eur(c.com)}</b><em>${c.agotada?'—':pend+' mensualidades · '+nfmt(benCom)+' beneficiarios'}</em></div>`+
+    `<div class="bc bc-dp"><span class="bc-l">Disponible</span><b>${eur(disp)}</b><em></em></div>`;
   /* capacidad de admisión — hoy se resuelve preguntando a mano a gestión económica */
   const cap=document.getElementById('cvCap'), foot=document.getElementById('cvCapFoot');
   if(!c.admite){
@@ -1821,10 +1882,9 @@ function renderConv(){
   } else {
     const completas=Math.floor(disp/COSTE_COMPLETO);
     cap.innerHTML =
-      `<div class="cap-row"><b>${nfmt(completas)}</b> altas con derecho a las ${DUR} mensualidades completas</div>`+
-      `<div class="cap-formula">${eur(disp)} ÷ ${eur(COSTE_COMPLETO)} por expediente = ${nfmt(completas)}</div>`;
-    foot.innerHTML = `Coste de un expediente completo = mensualidad × duración = <strong>${MENS} €</strong> × <strong>${DUR}</strong> = <strong>${eur(COSTE_COMPLETO)}</strong>. `+
-                     `Remanente sin consumir de convocatorias anteriores: <strong>${eur(ARRASTRE)}</strong>.`;
+      `<div class="cap-row"><b>${nfmt(completas)}</b> altas completas `+
+      `<i class="ii" data-t="Crédito disponible dividido entre lo que cuesta un expediente entero: ${eur(disp)} ÷ ${eur(COSTE_COMPLETO)}. Un expediente completo cuesta la mensualidad por su duración, ${MENS} € × ${DUR}. Hoy este cálculo se resuelve preguntando a mano a gestión económica.">i</i></div>`;
+    foot.innerHTML = `Remanente de convocatorias anteriores <strong>${eur(ARRASTRE)}</strong>`;
   }
   /* reparto por tramo: cuántos han cobrado ya cuántas mensualidades y qué queda por pagarles */
   const MID=[3.5,9.5,15.5,21.5], LBL=['1 – 6','7 – 12','13 – 18','19 – 24'];
@@ -1839,7 +1899,7 @@ function renderConv(){
      </div>`).join('');
   document.getElementById('trFoot').innerHTML = c.agotada
     ? `Todos los beneficiarios han cobrado las ${DUR} mensualidades: pendiente de abono = 0 €.`
-    : `Cifra inferior = pendiente por tramo = (${DUR} − mensualidades cobradas) × ${MENS} € × beneficiarios del tramo.`;
+    : '';
   const pset=(id,v)=>{ const e=document.getElementById(id); if(e) e.textContent=v; };
   pset('pMens', MENS+' €'); pset('pDur', DUR+' mensualidades');
   pset('pCorte', fcorte);   pset('pCred', eur(c.tot));
@@ -1876,10 +1936,6 @@ function renderCmp(){
     `<div><span>Ejecutado</span><b>${m(E)}</b></div>`+
     `<div><span>Comprometido</span><b>${m(M2)}</b></div>`+
     `<div class="free"><span>Libre</span><b>${m(D)}</b></div>`;
-  document.getElementById('cmpNote').innerHTML =
-    `<strong>Bajo gestión</strong> = presupuesto de las tres convocatorias con pagos vivos. `+
-    `<strong>Libre</strong> = bajo gestión − ejecutado − comprometido = <strong>${m(D)}</strong>, `+
-    `un <strong>${(D/T*100).toFixed(1).replace('.',',')}%</strong> del total.`;
 }
 
 /* ════════ CICLO DE VIDA ════════ */
@@ -1981,7 +2037,7 @@ function legHtml(arr,line){
 function renderStage(k){
   stageKey=k;
   const S=STAGES[k];
-  document.getElementById('phaseMeta').innerHTML=S.meta.replace(/convocatoria \d{4}/, 'convocatoria '+FCM.conv);
+  document.getElementById('phaseMeta').innerHTML=S.meta||'';
 
   /* rótulos de las tres secciones · los números los pone renderCM() */
   document.getElementById('c1Ttl').textContent=S.s1.ttl;
