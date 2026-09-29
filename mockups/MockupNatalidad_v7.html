@@ -554,6 +554,16 @@ td{ border-color:var(--cbd)!important; font-size:12px; color:var(--cnavy); }
   font-size:10px; color:var(--cgy); margin-top:7px; }
 #panePrev .axb{ font-size:10px; color:var(--cgy); text-align:right; margin-top:4px; }
 #panePrev .chart-wrap{ margin-top:4px; }
+.pv-esc-box{ margin:9px 18px 0; border:1px solid var(--cbd); border-radius:3px; padding:13px 16px; background:#fff; }
+.pv-esc-h{ font-size:12.5px; font-weight:600; color:var(--cnavy); display:flex; align-items:center; gap:6px; }
+.pv-esc-row{ display:grid; grid-template-columns:repeat(7,1fr); gap:9px; margin-top:11px; }
+.pv-e{ border:1px solid var(--cbd); border-radius:3px; padding:9px 11px; text-align:center; }
+.pv-e .pv-ed{ display:block; font-size:10px; font-weight:700; letter-spacing:.05em; color:var(--cgy); text-transform:uppercase; }
+.pv-e b{ display:block; font-size:26px; font-weight:300; color:var(--cnavy); line-height:1.2; margin-top:2px; }
+.pv-e .pv-eg{ display:block; font-size:10px; color:var(--cgy); }
+.pv-e.on{ border-color:var(--blue); border-width:1.5px; background:#F5F7FF; }
+.pv-e.on b{ color:var(--blue); font-weight:400; }
+@media(max-width:1180px){ .pv-esc-row{ grid-template-columns:repeat(4,1fr); } }
 .pv-note{ margin:11px 18px 16px; border:1px solid var(--cbd); border-left:3px solid var(--blue);
   border-radius:3px; padding:11px 14px; font-size:12px; line-height:1.55; color:var(--cnavy); background:#fff; }
 .pv-note strong{ font-weight:600; }
@@ -887,7 +897,7 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
     </button>
     <button class="tabb" data-pane="panePrev">
       <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 12l3.5-4 3 2.5L13 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 4h3v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Previsión<span class="tcount">NUEVO</span>
+      Objetivo y capacidad<span class="tcount">NUEVO</span>
     </button>
     <button class="tabb" data-pane="paneEco">
       <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 13.4h12M4.2 13.4V7.2M7.4 13.4V3.4M10.6 13.4V9.1M13.8 13.4V5.6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
@@ -1247,10 +1257,11 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
 </div>
 <div class="tabpane" id="panePrev">
   <div class="pv-intro">
-    <h3>Previsión de trabajo</h3>
+    <h3>Objetivo y capacidad</h3>
     <p>El cuadro de mando dice cómo ha ido. Esta pantalla responde a la pregunta inversa:
       <strong>si me fijo un objetivo, ¿qué ritmo de gestión hace falta?</strong>
-      Todo lo que hay debajo se calcula con la cola real y los parámetros que fijes aquí.</p>
+      No es una predicción: es la cola de hoy dividida entre el objetivo y entre la capacidad
+      que fijes aquí, la misma cuenta que hoy se hace a mano.</p>
   </div>
 
   <div class="pv-ctrl">
@@ -1296,30 +1307,18 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
       <div class="pv-d" id="pvGapD"></div>
     </div>
     <div class="pv-card">
-      <div class="pv-l">Plazo alcanzable
+      <div class="pv-l">Plazo con esta capacidad
         <i class="ii" data-t="Días que se tardaría en resolver la cola con la capacidad indicada. Si supera el objetivo, la diferencia es el desfase.">i</i></div>
       <div class="pv-v" id="pvPlz">0 <small>d</small></div>
       <div class="pv-d" id="pvPlzD"></div>
     </div>
   </div>
 
-  <div class="g2" style="margin-top:9px;">
-    <div class="pv-box">
-      <div class="ct">Cola pendiente proyectada por semana
-        <i class="ii" data-t="Evolución de la cola con la capacidad indicada, frente a la trayectoria que haría falta para cumplir el objetivo. La entrada de solicitudes nuevas se mantiene al ritmo medio observado.">i</i></div>
-      <div class="axl"><span>&uarr; Expedientes en cola</span><span id="pvN1"></span></div>
-      <div class="chart-wrap" style="height:210px;"><canvas id="cPrev"></canvas></div>
-      <div class="axb">Semanas desde hoy &rarr;</div>
-    </div>
-    <div class="pv-box">
-      <div class="ct">Gestores necesarios por objetivo de resolución
-        <i class="ii" data-t="Para cada objetivo en días, personas que harían falta al ritmo por gestor indicado. La barra marcada es el objetivo fijado arriba.">i</i></div>
-      <div class="axl"><span>&uarr; Gestores</span><span id="pvN2"></span></div>
-      <div class="chart-wrap" style="height:210px;"><canvas id="cPrevG"></canvas></div>
-      <div class="axb">Objetivo de resolución en días &rarr;</div>
-    </div>
+  <div class="pv-esc-box">
+    <div class="pv-esc-h">Gestores necesarios seg&uacute;n el objetivo
+      <i class="ii" data-t="Para cada objetivo de resolución, personas que harían falta al ritmo por gestor indicado. El valor resaltado es el objetivo fijado arriba.">i</i></div>
+    <div class="pv-esc-row" id="pvEscala"></div>
   </div>
-
   <div class="pv-note" id="pvNota"></div>
 </div>
 <div class="tabpane" id="paneEco">
@@ -2706,7 +2705,7 @@ document.querySelectorAll('.tabb').forEach(b => {
     b.classList.add('active');
     document.querySelectorAll('.tabpane').forEach(p => p.classList.toggle('active', p.id === b.dataset.pane));
     if (b.dataset.pane==='panePrev') requestAnimationFrame(()=>{
-      if(chPrev){chPrev.resize();} if(chPrevG){chPrevG.resize();} renderPrev(); });
+      renderPrev(); });
     const pane = b.dataset.pane;
     const vis = (id,on) => { const e=document.getElementById(id); if(e) e.style.display = on ? '' : 'none'; };
     vis('fbarCM',  pane==='paneCM');
@@ -2734,37 +2733,8 @@ window.addEventListener('resize', () => { if (pxReady && document.getElementById
    Todo lo de aquí es aritmética sobre la cola: cola ÷ ritmo = días.
    ══════════════════════════════════════════════════════════════════════ */
 const OBJ_ESCALA = [30,45,60,90,120,150,180];
-let chPrev=null, chPrevG=null;
-
-function pvInit(){
-  const ejeP={grid:{color:'#EDEEF1'},ticks:{font:{family:'Inter',size:10},color:'#0A1F44'},border:{display:false}};
-  chPrev = new Chart(document.getElementById('cPrev'), {
-    type:'line',
-    data:{labels:[],datasets:[
-      {label:'Con la capacidad indicada',data:[],borderColor:'#264AFF',backgroundColor:'#264AFF',
-       borderWidth:2,pointRadius:0,tension:.15},
-      {label:'Trayectoria para cumplir el objetivo',data:[],borderColor:'#8E91AD',borderDash:[5,4],
-       borderWidth:1.6,pointRadius:0,tension:0}]},
-    options:{responsive:true,maintainAspectRatio:false,animation:false,
-      plugins:{legend:{position:'bottom',labels:{boxWidth:9,boxHeight:9,padding:10,
-               font:{family:'Inter',size:10},color:'#0A1F44'}},
-        tooltip:{callbacks:{title:it=>'Semana '+it[0].label,
-                 label:c=>' '+c.dataset.label+': '+nfmt(Math.max(0,Math.round(c.raw)))+' expedientes'}}},
-      scales:{x:{...ejeP,grid:{display:false}},y:{...ejeP,beginAtZero:true}}}});
-
-  chPrevG = new Chart(document.getElementById('cPrevG'), {
-    type:'bar',
-    data:{labels:OBJ_ESCALA.map(d=>d+' d'),datasets:[
-      {label:'Gestores necesarios',data:[],backgroundColor:[],borderRadius:3,barPercentage:.62}]},
-    options:{responsive:true,maintainAspectRatio:false,animation:false,
-      plugins:{legend:{display:false},
-        tooltip:{callbacks:{title:it=>'Objetivo de '+OBJ_ESCALA[it[0].dataIndex]+' días',
-                 label:c=>' '+c.raw+' gestores al ritmo indicado'}}},
-      scales:{x:{...ejeP,grid:{display:false}},y:{...ejeP,beginAtZero:true}}}});
-}
-
 function renderPrev(){
-  if(!chPrev) return;
+  if(!document.getElementById('pvEscala')) return;
   const obj = Math.max(1, +document.getElementById('pvObj').value || 90);
   const ges = Math.max(1, +document.getElementById('pvGes').value || 1);
   const rit = Math.max(1, +document.getElementById('pvRit').value || 1);
@@ -2802,38 +2772,17 @@ function renderPrev(){
               : (plz<=obj ? nfmt(obj-plz)+' días por debajo del objetivo'
                           : nfmt(plz-obj)+' días por encima del objetivo'));
 
-  /* curva de la cola, semana a semana */
-  const N=26, lab=[], real=[], ideal=[];
-  let q=cola;
-  for(let w=0; w<=N; w++){
-    lab.push(w); real.push(Math.max(0,Math.round(q)));
-    ideal.push(Math.max(0, Math.round(cola * (1 - w/(obj/7)))));
-    q = Math.max(0, q + SEM - capSem);
-  }
-  chPrev.data.labels=lab;
-  chPrev.data.datasets[0].data=real;
-  chPrev.data.datasets[1].data=ideal;
-  chPrev.update();
-  document.getElementById('pvN1').textContent =
-    plz===null ? 'la cola no se vacía con esta capacidad'
-               : 'cola vacía en '+Math.ceil(plz/7)+' semanas';
-
-  /* gestores necesarios para cada objetivo de la escala */
+  /* gestores necesarios para cada objetivo de la escala · una fila de indicadores,
+     que es un componente de lista de KPIs, no una gráfica con eje inventado */
   const gs = OBJ_ESCALA.map(d => Math.ceil(((cola/d) + SEM/5) / (rit*esc)));
-  chPrevG.data.datasets[0].data = gs;
-  chPrevG.data.datasets[0].backgroundColor = OBJ_ESCALA.map(d =>
-    d===obj ? '#264AFF' : (Math.abs(d-obj)<=8 ? '#8E91AD' : '#B5B6C6'));
-  chPrevG.update();
-  const iObj = OBJ_ESCALA.indexOf(obj);
-  document.getElementById('pvN2').textContent =
-    iObj>=0 ? gs[iObj]+' gestores para el objetivo fijado'
-            : 'el objetivo fijado no está en la escala';
+  document.getElementById('pvEscala').innerHTML = OBJ_ESCALA.map((d,i)=>
+    '<div class="pv-e'+(d===obj?' on':'')+'"><span class="pv-ed">'+d+' d</span>'+
+    '<b>'+gs[i]+'</b><span class="pv-eg">gestores</span></div>').join('');
 
   document.getElementById('pvNota').innerHTML =
     '<strong>Cómo se calcula.</strong> Cola pendiente entre el objetivo en días, más la entrada media '+
     'que sigue llegando, da el ritmo necesario. La capacidad es gestores por expedientes al día, '+
-    'corregida por el escenario. No es una simulación de colas con variabilidad: es la misma cuenta '+
-    'que hoy se hace a mano, hecha sobre el dato del proceso. '+
+    'corregida por el escenario. Son cuentas sobre el dato de hoy, no una previsión estadística. '+
     (plz===null
       ? '<span style="color:var(--cred)">Con estos parámetros la capacidad no cubre ni la entrada nueva.</span>'
       : '');
@@ -2909,7 +2858,7 @@ function dfClear(){
 
 /* pestaña de entrada */
 pxInit(); requestAnimationFrame(pxFit);
-pvInit(); renderPrev(); dfInit();
+renderPrev(); dfInit();
 
 /* ── Una sola fuente para las dos pestañas ────────────────────────────
    El explorador llevaba cifras fijas y el cuadro de mando las calculaba:
