@@ -114,8 +114,8 @@ DISCA = [
      '58,8 %', 'de las calificaciones con despistaje',
      'Físico, psicológico o mixto y el tramo de edad deciden el circuito y la agenda.'),
     ('Centros base que no son comparables',
-     '1.466', 'solicitudes del Centro Base 10',
-     'El panel separa los subtotales 01-09 y 01-10: el 10 atiende solo a menores.'),
+     '100 %', 'del Centro Base 10 son menores',
+     'Por eso el panel mantiene los subtotales 01-09 y 01-10 por separado.'),
 ]
 PIE = ('Lectura inversa de los paneles: qué problema resuelve cada cosa que han decidido medir · '
        'Volúmenes sobre centros 01-09 salvo la fila del RD 888/2022 y el Centro Base 10 · '
