@@ -60,6 +60,16 @@ def tarjeta(s, x, y, n, titulo, cifra, unidad, contexto, pregunta=False):
     filete.text_frame.text = ''
 
     txt(s, x + PAD, y + 215000, 400000, 200000, [(f'{n:02d}', True, GRIS, 10)])
+    if cifra is None:
+        W = CARD_W - 2 * PAD
+        txt(s, x + PAD, y + 450000, W, 480000, [(titulo, True, NEGRO, 12)], interlineado=1.15)
+        txt(s, x + PAD, y + 860000, W, 380000, [(unidad, False, GRIS, 9.5)], interlineado=1.25)
+        ln = s.shapes.add_shape(MSO_SHAPE.RECTANGLE, Emu(x + PAD), Emu(y + 1290000), Emu(W), Emu(9525))
+        ln.fill.solid(); ln.fill.fore_color.rgb = BORDE
+        ln.line.fill.background(); ln.shadow.inherit = False; ln.text_frame.text = ''
+        txt(s, x + PAD, y + 1360000, W, 170000, [('CÓMO LO ATACA CELONIS', True, GRANATE, 7.5)])
+        txt(s, x + PAD, y + 1545000, W, 340000, [(contexto, False, PREG, 9.5)], interlineado=1.25)
+        return
     txt(s, x + PAD, y + 450000, CARD_W - 2 * PAD, 480000,
         [(titulo, True, NEGRO, 12)], interlineado=1.15)
     txt(s, x + PAD, y + 940000, CARD_W - 2 * PAD, 400000,
@@ -98,28 +108,26 @@ def slide_dolores(prs, layout, titulo, subtitulo, dolores, pie=None, preguntas=F
 #  Cifras leídas de los paneles de Celonis (PROD), periodo 01/01–30/04/2026.
 # ════════════════════════════════════════════════════════════════════════
 DISCA = [
-    ('Sin una foto única de la demanda',
-     '23.412', 'solicitudes en cuatro meses',
-     'El panel reúne en una pantalla diez centros base y cuatro tipos de solicitud.'),
-    ('El plazo no decía dónde se iba',
-     '44 de 77 d', 'en un solo tramo',
-     'Por eso el panel parte el plazo en cuatro: uno se lleva más de la mitad.'),
-    ('Retrabajo de las reclamaciones previas',
-     '1.249', 'el 5,3 % de las entradas',
-     'Llevan columna propia: vuelven a entrar y consumen capacidad sin generar altas.'),
-    ('La ola de revisiones del RD 888/2022',
-     '984', 'revisiones por el nuevo baremo',
-     'Van en fila aparte para separarlas de la demanda ordinaria; 415 en un solo centro.'),
-    ('Qué equipo de valoración hace falta',
-     '58,8 %', 'de las calificaciones con despistaje',
-     'Físico, psicológico o mixto y el tramo de edad deciden el circuito y la agenda.'),
-    ('Centros base que no son comparables',
-     '100 %', 'del Centro Base 10 son menores',
-     'Por eso el panel mantiene los subtotales 01-09 y 01-10 por separado.'),
+    ('Sin una foto única de la demanda', None,
+     'Las entradas de los diez centros base se consultaban por separado.',
+     'Panel de Entradas con el total por tipo de solicitud y centro en una sola pantalla.'),
+    ('No se sabía dónde se iba el plazo', None,
+     'Se conocía el tiempo total, pero no qué fase lo consumía.',
+     'Tiempos de proceso desglosados por tramos para localizar la fase más lenta.'),
+    ('Retrabajo de las reclamaciones previas', None,
+     'Expedientes que vuelven a entrar sin verse como carga de trabajo.',
+     'Reclamaciones previas separadas del resto de entradas, por tipo y por centro.'),
+    ('Carga añadida por el nuevo baremo', None,
+     'Las revisiones del RD 888/2022 se mezclaban con la demanda ordinaria.',
+     'Fila propia para las revisiones del RD 888/2022, aparte del resto.'),
+    ('Planificación de la valoración', None,
+     'Sin conocer la mezcla de despistaje y edad no se puede ajustar la agenda.',
+     'Desglose por tipo de despistaje y tramo de edad en cada centro base.'),
+    ('Centros con perfiles distintos', None,
+     'Comparar centros con perfiles diferentes lleva a conclusiones erróneas.',
+     'Subtotales con y sin el centro de menores y selector por centro en la vista directiva.'),
 ]
-PIE = ('Lectura inversa de los paneles: qué problema resuelve cada cosa que han decidido medir · '
-       'Volúmenes sobre centros 01-09 salvo la fila del RD 888/2022 y el Centro Base 10 · '
-       'Fuente: Celonis · Discapacidad (PROD) · Panel de Entradas · 01/01/2026 – 30/04/2026.')
+PIE = ('Fuente: paneles de Celonis · Discapacidad (PROD) · Panel de Entradas, vistas ejecutiva y directiva.')
 
 prs = Presentation('entrada.pptx')
 layout = prs.slide_masters[0].slide_layouts[3]
@@ -138,7 +146,7 @@ for par in ph.text_frame.paragraphs:
 
 slide_dolores(prs, layout,
               'Pain points · Discapacidad',
-              'Reconocimiento del grado de discapacidad · los problemas que resuelven los paneles ya construidos',
+              'Reconocimiento del grado de discapacidad · qué dolores ataca la solución de Celonis ya construida',
               DISCA, PIE, preguntas=True)
 
 # ── orden: portada, índice, CU1, CU2, Discapacidad, cierre ──────────────
