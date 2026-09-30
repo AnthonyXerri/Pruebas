@@ -17,6 +17,7 @@ GRIS    = RGBColor(0x76, 0x7C, 0x86)
 BORDE   = RGBColor(0xE6, 0xE6, 0xE6)
 NEGRO   = RGBColor(0x00, 0x00, 0x00)
 BLANCO  = RGBColor(0xFF, 0xFF, 0xFF)
+PREG    = RGBColor(0x2D, 0x2D, 0x2D)   # la pregunta, algo más marcada
 FUENTE  = 'Century Gothic'
 
 MX, GAP, COLS = 697841, 260000, 3
@@ -43,7 +44,7 @@ def txt(cont, x, y, cx, cy, partes, align=PP_ALIGN.LEFT, interlineado=None):
     return tb
 
 
-def tarjeta(s, x, y, n, titulo, cifra, unidad, contexto):
+def tarjeta(s, x, y, n, titulo, cifra, unidad, contexto, pregunta=False):
     card = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE,
                               Emu(x), Emu(y), Emu(CARD_W), Emu(CARD_H))
     card.adjustments[0] = 0.04
@@ -65,11 +66,17 @@ def tarjeta(s, x, y, n, titulo, cifra, unidad, contexto):
         [(cifra, True, GRANATE, 28)])
     txt(s, x + PAD, y + 1320000, CARD_W - 2 * PAD, 200000,
         [(unidad, False, GRIS, 9)])
-    txt(s, x + PAD, y + 1520000, CARD_W - 2 * PAD, 340000,
-        [(contexto, False, GRIS, 9)], interlineado=1.25)
+    if pregunta:
+        ln = s.shapes.add_shape(MSO_SHAPE.RECTANGLE, Emu(x + PAD), Emu(y + 1470000),
+                                Emu(CARD_W - 2 * PAD), Emu(9525))
+        ln.fill.solid(); ln.fill.fore_color.rgb = BORDE
+        ln.line.fill.background(); ln.shadow.inherit = False
+        ln.text_frame.text = ''
+    txt(s, x + PAD, y + 1535000, CARD_W - 2 * PAD, 340000,
+        [(contexto, False, PREG if pregunta else GRIS, 9)], interlineado=1.25)
 
 
-def slide_dolores(prs, layout, titulo, subtitulo, dolores, pie=None):
+def slide_dolores(prs, layout, titulo, subtitulo, dolores, pie=None, preguntas=False):
     s = prs.slides.add_slide(layout)
     for ph in list(s.placeholders):
         if ph.placeholder_format.type != PP_PLACEHOLDER.SLIDE_NUMBER:
@@ -79,7 +86,7 @@ def slide_dolores(prs, layout, titulo, subtitulo, dolores, pie=None):
     for i, (t, c, u, ctx) in enumerate(dolores):
         col, fila = i % COLS, i // COLS
         tarjeta(s, MX + col * (CARD_W + GAP), TOP + fila * (CARD_H + GAP),
-                i + 1, t, c, u, ctx)
+                i + 1, t, c, u, ctx, pregunta=preguntas)
     if pie:
         txt(s, MX, TOP + 2 * (CARD_H + GAP) + 60000, 12192000 - 2 * MX, 300000,
             [(pie, False, GRIS, 9)])
@@ -93,25 +100,26 @@ def slide_dolores(prs, layout, titulo, subtitulo, dolores, pie=None):
 DISCA = [
     ('Plazo de gestión de la solicitud',
      '77 d', 'de media por expediente',
-     'Tiempo promedio de gestión que mide el panel para el periodo analizado.'),
+     '¿Cuál es el plazo objetivo y el máximo normativo para medirlo contra él?'),
     ('Un solo tramo se lleva la mitad',
-     '44 d', 'el mayor de los cuatro tramos',
-     'Más de la mitad del plazo total se consume en una única fase.'),
+     '44 d', 'de los 77 del total',
+     '¿Qué tramo es exactamente y qué ocurre dentro de él?'),
     ('Reclamaciones previas',
      '1.249', 'el 5,3 % de las entradas',
-     'Expedientes que vuelven a entrar y generan retrabajo sobre lo ya resuelto.'),
-    ('Carga desigual entre centros base',
-     '1.712–4.609', 'solicitudes por centro',
-     'El centro más cargado recibe casi el triple que el menos cargado.'),
-    ('Calidad del dato por centro',
-     '100 %', 'del Centro Base 10 como <18',
-     'Un centro entero con el tramo de edad y el despistaje sin informar bien.'),
-    ('Entradas sin despistaje asignado',
-     '44,3 %', 'figuran como «Ninguno»',
-     'Casi la mitad de las solicitudes entran sin tipo de despistaje.'),
+     '¿Es una proporción habitual? ¿Qué las motiva con más frecuencia?'),
+    ('Volumen por centro base',
+     '1.712–4.609', 'solicitudes en el periodo',
+     '¿Responde al tamaño del territorio o hay diferencias de capacidad?'),
+    ('Perfil del Centro Base 10',
+     '100 %', 'de sus solicitudes como <18',
+     '¿Es un centro especializado en menores o el dato no está bien informado?'),
+    ('Despistaje «Ninguno»',
+     '44,3 %', 'de las solicitudes',
+     '¿Es lo esperable en este trámite o señala un campo sin cumplimentar?'),
 ]
-PIE = ('Fuente: Celonis · Discapacidad (PROD) · Panel de Entradas, vistas ejecutiva y directiva · '
-       'periodo 01/01/2026 – 30/04/2026 · Centros base 01 a 10.')
+PIE = ('Lecturas iniciales de los paneles, pendientes de validar con la Dirección General · '
+       'Fuente: Celonis · Discapacidad (PROD) · Panel de Entradas, vistas ejecutiva y directiva · '
+       'periodo 01/01/2026 – 30/04/2026 · selección de centros base 01-09.')
 
 prs = Presentation('entrada.pptx')
 layout = prs.slide_masters[0].slide_layouts[3]
@@ -123,13 +131,15 @@ for par in ph.text_frame.paragraphs:
     t = ''.join(r.text for r in par.runs)
     if t.strip().startswith('4. Próximos pasos'):
         par.runs[0].text = '3. Próximos pasos'
+    if t.strip().startswith('2. Pain points · Discapacidad'):
+        par.runs[0].text = '2. Primeras observaciones · Discapacidad'
         for r in par.runs[1:]:
             r.text = ''
 
 slide_dolores(prs, layout,
-              'Pain points · Discapacidad',
-              'Reconocimiento del grado de discapacidad · solicitudes de entrada en los centros base',
-              DISCA, PIE)
+              'Primeras observaciones · Discapacidad',
+              'Reconocimiento del grado de discapacidad · lo que muestran los paneles y lo que hay que confirmar',
+              DISCA, PIE, preguntas=True)
 
 # ── orden: portada, índice, CU1, CU2, Discapacidad, cierre ──────────────
 lst = prs.slides._sldIdLst
