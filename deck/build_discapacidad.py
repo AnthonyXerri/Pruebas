@@ -98,28 +98,28 @@ def slide_dolores(prs, layout, titulo, subtitulo, dolores, pie=None, preguntas=F
 #  Cifras leídas de los paneles de Celonis (PROD), periodo 01/01–30/04/2026.
 # ════════════════════════════════════════════════════════════════════════
 DISCA = [
-    ('Plazo de gestión de la solicitud',
-     '77 d', 'de media por expediente',
-     '¿Cuál es el plazo objetivo y el máximo normativo para medirlo contra él?'),
-    ('Un solo tramo se lleva la mitad',
-     '44 d', 'de los 77 del total',
-     '¿Qué tramo es exactamente y qué ocurre dentro de él?'),
-    ('Reclamaciones previas',
+    ('Sin una foto única de la demanda',
+     '23.412', 'solicitudes en cuatro meses',
+     'El panel reúne en una pantalla diez centros base y cuatro tipos de solicitud.'),
+    ('El plazo no decía dónde se iba',
+     '44 de 77 d', 'en un solo tramo',
+     'Por eso el panel parte el plazo en cuatro: uno se lleva más de la mitad.'),
+    ('Retrabajo de las reclamaciones previas',
      '1.249', 'el 5,3 % de las entradas',
-     '¿Es una proporción habitual? ¿Qué las motiva con más frecuencia?'),
-    ('Volumen por centro base',
-     '1.712–4.609', 'solicitudes en el periodo',
-     '¿Responde al tamaño del territorio o hay diferencias de capacidad?'),
-    ('Perfil del Centro Base 10',
-     '100 %', 'de sus solicitudes como <18',
-     '¿Es un centro especializado en menores o el dato no está bien informado?'),
-    ('Despistaje «Ninguno»',
-     '44,3 %', 'de las solicitudes',
-     '¿Es lo esperable en este trámite o señala un campo sin cumplimentar?'),
+     'Llevan columna propia: vuelven a entrar y consumen capacidad sin generar altas.'),
+    ('La ola de revisiones del RD 888/2022',
+     '984', 'revisiones por el nuevo baremo',
+     'Van en fila aparte para separarlas de la demanda ordinaria; 415 en un solo centro.'),
+    ('Qué equipo de valoración hace falta',
+     '58,8 %', 'de las calificaciones con despistaje',
+     'Físico, psicológico o mixto y el tramo de edad deciden el circuito y la agenda.'),
+    ('Centros base que no son comparables',
+     '1.466', 'solicitudes del Centro Base 10',
+     'El panel separa los subtotales 01-09 y 01-10: el 10 atiende solo a menores.'),
 ]
-PIE = ('Lecturas iniciales de los paneles, pendientes de validar con la Dirección General · '
-       'Fuente: Celonis · Discapacidad (PROD) · Panel de Entradas, vistas ejecutiva y directiva · '
-       'periodo 01/01/2026 – 30/04/2026 · selección de centros base 01-09.')
+PIE = ('Lectura inversa de los paneles: qué problema resuelve cada cosa que han decidido medir · '
+       'Volúmenes sobre centros 01-09 salvo la fila del RD 888/2022 y el Centro Base 10 · '
+       'Fuente: Celonis · Discapacidad (PROD) · Panel de Entradas · 01/01/2026 – 30/04/2026.')
 
 prs = Presentation('entrada.pptx')
 layout = prs.slide_masters[0].slide_layouts[3]
@@ -132,13 +132,13 @@ for par in ph.text_frame.paragraphs:
     if t.strip().startswith('4. Próximos pasos'):
         par.runs[0].text = '3. Próximos pasos'
     if t.strip().startswith('2. Pain points · Discapacidad'):
-        par.runs[0].text = '2. Primeras observaciones · Discapacidad'
+        par.runs[0].text = '2. Pain points · Discapacidad'
         for r in par.runs[1:]:
             r.text = ''
 
 slide_dolores(prs, layout,
-              'Primeras observaciones · Discapacidad',
-              'Reconocimiento del grado de discapacidad · lo que muestran los paneles y lo que hay que confirmar',
+              'Pain points · Discapacidad',
+              'Reconocimiento del grado de discapacidad · los problemas que resuelven los paneles ya construidos',
               DISCA, PIE, preguntas=True)
 
 # ── orden: portada, índice, CU1, CU2, Discapacidad, cierre ──────────────
