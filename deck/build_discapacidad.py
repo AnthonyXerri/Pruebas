@@ -101,7 +101,7 @@ DISCA = [
      '1.249', 'el 5,3 % de las entradas',
      'Expedientes que vuelven a entrar y generan retrabajo sobre lo ya resuelto.'),
     ('Carga desigual entre centros base',
-     '1.737–4.609', 'solicitudes por centro',
+     '1.712–4.609', 'solicitudes por centro',
      'El centro más cargado recibe casi el triple que el menos cargado.'),
     ('Calidad del dato por centro',
      '100 %', 'del Centro Base 10 como <18',
