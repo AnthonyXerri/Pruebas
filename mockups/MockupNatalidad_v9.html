@@ -795,6 +795,20 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
 
 .blk-ttl{padding:14px 18px 4px;font-size:13px;font-weight:700;color:var(--cnavy);border-top:1px solid var(--cbd);}
 .blk-ttl span{font-size:11px;font-weight:400;color:var(--cgy);margin-left:8px;}
+/* franja de entrada y revisión */
+.ent-strip{display:flex;align-items:stretch;gap:0;border-bottom:1px solid var(--cbd);padding:0 18px;background:#fff;}
+.ent-lbl{align-self:center;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--cgy);width:150px;flex-shrink:0;}
+.ent-it{padding:11px 16px;display:flex;flex-direction:column;gap:2px;border-left:1px solid var(--cbd);flex:1 1 0;min-width:0;}
+.ent-it span{font-size:11.5px;color:var(--cnavy);display:flex;align-items:center;gap:5px;}
+.ent-it b{font-size:24px;font-weight:300;color:var(--cnavy);letter-spacing:-.02em;line-height:1.15;}
+.ent-it em{font-style:normal;font-size:10.5px;color:var(--cgy);}
+.ent-it em strong{color:var(--cred);font-weight:600;}
+.ent-pend{background:#FAFAFB;}
+.ent-pend b{color:var(--cgy2);}
+.ent-arr{align-self:center;color:var(--cgy2);font-size:18px;padding:0 2px;}
+.ent-it .ii[data-t]::after{bottom:auto;top:calc(100% + 8px);}
+.ent-it .ii[data-t]::before{bottom:auto;top:calc(100% + 3px);border-top-color:transparent;border-bottom-color:var(--cnavy);}
+.ent-it:last-child .ii[data-t]::after{left:auto;right:-6px;transform:none;}
 </style>
 </head>
 <body>
@@ -866,6 +880,11 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
     <div class="fsel"><span>Convocatoria</span>
       <select id="fConv" onchange="setConvCM(this.value)"><option value="2026">2026</option><option value="2025">2025</option><option value="2024">2024</option></select>
       <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+    <div class="fsel"><span>Situaci&oacute;n</span>
+      <select id="fRes" onchange="filtrar()">
+        <option value="">Todas</option><option>Alta</option><option>Mantenimiento</option><option>Baja</option>
+        <option>Modificaci&oacute;n positiva</option><option>Modificaci&oacute;n negativa</option><option>Pago &uacute;nico</option></select>
+      <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
     <div class="fsel"><span>Unidad</span>
       <select id="fUnidad" onchange="filtrar()">
         <option value="">Todas</option><option>Unidad Gestora</option><option>Gesti&oacute;n Econ&oacute;mica</option></select>
@@ -898,6 +917,21 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
   <span class="phase-meta" id="phaseMeta"></span>
 </div>
 
+<!-- ══════════ ENTRADA Y REQUERIMIENTOS ══════════
+     Lo que más se discutió el 29/09: cuántas siguen en REC sin tratar y qué pasa
+     con los requeridos (subsanan o desisten). Una línea, sin gráfico. -->
+<div class="ent-strip">
+  <span class="ent-lbl">Entrada y revisión</span>
+  <div class="ent-it ent-pend"><span>Pendientes en REC <i class="ii" data-t="Solicitudes presentadas en REC que todavía no han abierto expediente en AFN. Hoy no están en Atlantix: se mostrarán cuando se conecte REC (en conversación con administración electrónica).">i</i></span><b>—</b><em>pendiente de conectar REC</em></div>
+  <div class="ent-arr">›</div>
+  <div class="ent-it"><span>Recepcionadas <i class="ii" data-t="Solicitudes recepcionadas con expediente abierto en la etapa Gestión del expediente de Atlantix. Es la misma cifra que «Expedientes en gestión».">i</i></span><b id="entRec">—</b><em>en gestión del expediente</em></div>
+  <div class="ent-arr">›</div>
+  <div class="ent-it"><span>Requeridas <i class="ii" data-t="Expedientes que han quedado para requerir en la revisión de documentación. Los subsanados vuelven a revisión; los desistidos se cierran al vencer el plazo del artículo 73.">i</i></span><b>807</b><em>575 subsanan · <strong>232 desisten</strong></em></div>
+  <div class="ent-it"><span>Denegadas <i class="ii" data-t="Expedientes denegados en la revisión de documentación.">i</i></span><b>308</b><em>en la revisión</em></div>
+  <div class="ent-arr">›</div>
+  <div class="ent-it"><span>Propuestas <i class="ii" data-t="Altas y pagos únicos propuestos para la nómina: recepcionadas, menos requeridas que no subsanan y denegadas. Pendiente de confirmar con Soluciones si la propuesta es un cambio de etapa o un campo con fecha y visado.">i</i></span><b id="entProp">—</b><em>pasan a validación de terceros</em></div>
+</div>
+
 <!-- ══════════ 3 SECCIONES ══════════ -->
 <div id="cmVacio" class="cm-vacio"></div>
 <div id="cmBody">
@@ -918,7 +952,7 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
 
   <!-- 2 · TIEMPOS Y CUELLOS -->
   <div class="section">
-    <div class="sec-title" id="s2Title">Tiempos y cuellos de botella</div>
+    <div class="sec-title" id="s2Title">Tiempos y cuellos de botella <i class="ii" data-t="Cada tramo es el tiempo entre dos cambios de etapa en Atlantix. El paso «Propuesta» está por confirmar con Soluciones: puede ser un cambio de etapa o un campo con fecha y visado dentro de Gestión del expediente.">i</i></div>
     <div class="sec-kpis" id="s2Kpis" style="display:none;"></div>
     <div class="sec-chart">
       <div class="c2-bread" id="c2Bread"></div>
@@ -1065,7 +1099,7 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
         <h3>Consumo de la convocatoria</h3>
         <p id="cvSub">Reparto del crédito a 03/09/2026</p>
       </div>
-      <div class="cv-tabs" id="cvTabs">
+      <div class="cv-tabs" id="cvTabs" style="display:none;">
         <button data-cv="2024" onclick="setConv('2024')">2024</button>
         <button data-cv="2025" onclick="setConv('2025')">2025</button>
         <button data-cv="2026" class="on" onclick="setConv('2026')">2026</button>
@@ -1158,7 +1192,7 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
     <strong>Lo que hoy no podemos calcular.</strong> Las solicitudes presentadas que todavía no han
     abierto expediente en AFN no están en Atlantix: habría que leerlas de REC, donde se clasifican por
     modelo de formulario y no siempre coinciden con lo que el ciudadano pide de verdad. Mientras no se
-    resuelva, la cola de entrada aparece marcada como pendiente en el explorador y en la previsión.
+    resuelva, «Pendientes en REC» aparece marcado como pendiente y el plazo se mide desde la recepción.
   </div>
 </div>
 <div class="attr">
@@ -1337,7 +1371,7 @@ const KPI_GLOBAL = [
    puede quedarse sola en la pantalla sin perder el cómo se ha calculado. */
 const TIP = {
  'Expedientes en gestión':'Expedientes de la convocatoria seleccionada que todavía no han llegado al pago, dentro del rango de fechas elegido.',
- 'Plazo medio del expediente':'Días desde la entrada de la solicitud en el registro del órgano competente hasta el pago, medidos sobre los expedientes que ya han llegado al pago. La mediana va debajo porque el promedio lo estiran unos pocos casos largos.',
+ 'Plazo medio del expediente':'Mientras REC no esté conectado se mide desde la recepción en AFN, no desde la entrada en registro: la fecha de REC no está en Atlantix. Definición objetivo: días desde la entrada de la solicitud en el registro del órgano competente hasta el pago, medidos sobre los expedientes que ya han llegado al pago. La mediana va debajo porque el promedio lo estiran unos pocos casos largos.',
  'Plazo medio de la etapa':'Días medios que consume esta etapa, y qué parte representa del plazo total del expediente.',
  'Dentro del objetivo':'Expedientes ya terminados que se resolvieron dentro del objetivo fijado en la barra de filtros. Por defecto es el plazo máximo normativo: 90 días desde la entrada de la solicitud en el registro del órgano competente.',
  'Dentro de objetivo':'Expedientes ya terminados cuyo plazo no superó el objetivo fijado en la barra de filtros. «En riesgo» son los que se acercan a él sin haberlo superado.',
@@ -1462,7 +1496,7 @@ const MOTIVOS = {
   intervencion: [['Sin fecha de primera nómina','Atlantix','adm',.37],
                  ['Reparo de Intervención','Atlantix','adm',.26],
                  ['Modificación del mes de devengo','Atlantix','sol',.37]],
-  pagos: [['Documento contable ADOK pendiente','Nexus','adm',.46],
+  pagos: [['Documento contable ADOK pendiente · por confirmar','Nexus','adm',.46],
           ['Resolución sin notificación','Atlantix','adm',.31],
           ['Orden de pago pendiente de firma','Atlantix','adm',.23]],
 };
@@ -1735,9 +1769,8 @@ function renderCiclo(P){
 
 /* ── los filtros ──────────────────────────────────────────────────────── */
 function filtrar(){
-  FCM.est = document.getElementById('fEstado').value;
-  FCM.res = document.getElementById('fRes').value;
-  FCM.uni = document.getElementById('fUnidad').value;
+  const v=id=>{ const e=document.getElementById(id); return e ? e.value : ''; };
+  FCM.est = v('fEstado'); FCM.res = v('fRes'); FCM.uni = v('fUnidad');
   renderCM();
 }
 function setConvCM(v){ FCM.conv = v; setConv(v); renderCM(); }
@@ -2528,6 +2561,8 @@ window.addEventListener('resize', () => { if (pxReady && document.getElementById
 const DFILAS = [
  ['Solicitudes en cola de entrada','Hoy no se calcula: la solicitud aún no ha abierto expediente',
   'Presentación en REC','Apertura de expediente en AFN','Registro / REC', 1],
+ ['Requeridas, subsanadas y desistidas','Expedientes requeridos en la revisión y cómo terminan',
+  'Requerimiento','Subsanación o desistimiento','—', 1],
  ['Expedientes en gestión','Expedientes con la solicitud recepcionada que no han llegado al pago',
   'Solicitud recepcionada','Pago','Vademécum · CURSO', 1],
  ['Plazo medio del expediente','Días entre la entrada en registro y el pago, solo sobre los ya pagados',
@@ -2540,10 +2575,6 @@ const DFILAS = [
   'Último cambio de estado','Hoy','Tipología de errores de terceros', 1],
  ['Pendientes del solicitante','Detenidos esperando documentación o subsanación del ciudadano',
   'Requerimiento notificado','Respuesta del ciudadano','—', 1],
- ['Variante mayoritaria','Expedientes por el camino más frecuente, sin repetir ninguna actividad',
-  'Solicitud recepcionada','Pago','—', 1],
- ['Expedientes con reproceso','Expedientes que vuelven atrás al menos una vez',
-  'Solicitud recepcionada','Pago','—', 1],
  ['Beneficiarias en alta','No contemplado todavía','—','—','Vademécum', 1],
  ['Beneficiarias en mantenimiento','No contemplado todavía','—','—','Vademécum', 1],
  ['Beneficiarias en baja','No contemplado todavía','—','—','Vademécum', 1],
@@ -2616,6 +2647,12 @@ initEjer(); dfInit(); renderConv();
           sv.options[2].textContent='Focalizar retrabajo ('+pRep+'%)'; }
 })();
 aplicarTips();
+(function franjaEntrada(){
+  const n = poblacion().length;
+  const set=(id,v)=>{const e=document.getElementById(id); if(e) e.textContent=v;};
+  set('entRec', nfmt(n));
+  set('entProp', nfmt(n - (807-575) - 308));
+})();
 
 
 
