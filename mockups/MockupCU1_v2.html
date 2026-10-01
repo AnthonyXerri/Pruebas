@@ -673,6 +673,18 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
 .s-sub{color:var(--cplum)!important;} .s-sub::before{background:var(--cplum)!important;}
 .flow-step .fnum{display:none!important;}
 .flow-step{border:1px solid var(--cbd);}
+/* ── armonía final ── */
+.fsel.f3only{border-color:var(--cbd)!important;background:#fff!important;}
+.bvd-chip{background:transparent!important;padding:0!important;font-weight:600;}
+.bvd-ok{color:var(--cnavy)!important;} .bvd-warn{color:#D98324!important;} .bvd-bad{color:var(--red)!important;}
+.seg-g,.seg-a,.seg-r,.seg-n{background:transparent!important;}
+.ks-pred .ks-val{font-size:20px!important;margin-top:6px;}
+.brand{padding:12px 16px!important;gap:10px!important;}
+.brand-info{max-width:230px;}
+.ks{padding:10px 12px!important;}
+.kpi-phase-lbl{writing-mode:vertical-rl;}
+.sk-lbl{display:flex;align-items:flex-start;gap:5px;}
+.sk-lbl .ii{margin-top:2px;}
 </style>
 </head>
 <body>
@@ -1548,15 +1560,15 @@ function renderSec3(p){
     body.innerHTML=`<div style="display:flex;align-items:center;gap:8px;margin:2px 0 8px;flex-wrap:wrap;">
         <span style="font-size:10px;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.04em;">Analizar por</span>
         <div class="phase-pills" style="padding:2px;">
-          <button class="phase-pill active" data-p3mode="terr" style="background:var(--green);color:#fff;">Territorio · recomendado</button>
+          <button class="phase-pill active" data-p3mode="terr">Territorio · recomendado</button>
           <button class="phase-pill" data-p3mode="tec">Técnico</button>
         </div>
       </div>
       <div style="position:relative;height:210px;margin-top:2px;"><canvas id="cPrest3"></canvas></div>
       <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;font-size:10px;color:var(--g500);">
-        <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:28px;height:8px;background:rgba(204,11,47,.25);border-radius:2px;"></span>Alta variabilidad</span>
-        <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:28px;height:8px;background:rgba(245,166,35,.3);border-radius:2px;"></span>Media</span>
-        <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:28px;height:8px;background:rgba(46,170,75,.25);border-radius:2px;"></span>Baja</span>
+        <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:28px;height:8px;background:rgba(225,46,46,.16);border-radius:2px;"></span>Alta variabilidad</span>
+        <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:28px;height:8px;background:#E4E5EC;border-radius:2px;"></span>Media</span>
+        <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:28px;height:8px;background:#F1F2F5;border-radius:2px;"></span>Baja</span>
         <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:10px;height:10px;background:#374151;border-radius:50%;"></span><span id="p3medlbl">Media Comunidad</span></span>
       </div>`;
     // Datos por TERRITORIO (principales + atípicos) y por TÉCNICO
@@ -1569,12 +1581,12 @@ function renderSec3(p){
       { terr: 'Mancom. THAM', res: { min: 8, max: 20, med: 14 }, sad: { min: 21, max: 29, med: 25 }, tel: { min: 15, max: 22, med: 18 }, atipico: false },
     ];
     const P3_TEC_DATA = [
-      {label:'Residencia',       min:11, max:24, med:14, col:'rgba(245,166,35,.32)'},
-      {label:'SAD',              min:20, max:29, med:24, col:'rgba(46,170,75,.28)'},
-      {label:'Prest. cuidados',  min:16, max:25, med:20, col:'rgba(46,170,75,.28)'},
-      {label:'Teleasistencia',   min:14, max:21, med:18, col:'rgba(46,170,75,.28)'},
-      {label:'Centro de día',    min:8,  max:13, med:10, col:'rgba(46,170,75,.28)'},
-      {label:'Prest. vinculada', min:9,  max:15, med:12, col:'rgba(46,170,75,.28)'},
+      {label:'Residencia',       min:11, max:24, med:14, col:'#E4E5EC'},
+      {label:'SAD',              min:20, max:29, med:24, col:'#F1F2F5'},
+      {label:'Prest. cuidados',  min:16, max:25, med:20, col:'#F1F2F5'},
+      {label:'Teleasistencia',   min:14, max:21, med:18, col:'#F1F2F5'},
+      {label:'Centro de día',    min:8,  max:13, med:10, col:'#F1F2F5'},
+      {label:'Prest. vinculada', min:9,  max:15, med:12, col:'#F1F2F5'},
     ];
 
     const buildP3=mode=>{
@@ -1595,9 +1607,9 @@ function renderSec3(p){
           <tbody>
             ${P3_TERR_DATA.map(t=>`<tr style="border-bottom:1px solid #e5e7eb;${t.atipico?'background:#FEF2F2;':''}">
               <td style="padding:8px;font-weight:${t.atipico?'700':'500'};color:${t.atipico?'#991B1B':'#374151'};border-right:1px solid #e5e7eb;">${t.terr}${t.atipico?' ⚠':''}</td>
-              <td style="padding:6px 8px;"><div style="width:80px;height:16px;background:rgba(204,11,47,.2);border-radius:2px;position:relative;font-size:9px;display:flex;align-items:center;justify-content:center;color:#991B1B;font-weight:600;">${t.res.min}–${t.res.max}%</div></td>
-              <td style="padding:6px 8px;"><div style="width:80px;height:16px;background:rgba(245,166,35,.25);border-radius:2px;position:relative;font-size:9px;display:flex;align-items:center;justify-content:center;color:#92400E;font-weight:600;">${t.sad.min}–${t.sad.max}%</div></td>
-              <td style="padding:6px 8px;"><div style="width:80px;height:16px;background:rgba(46,170,75,.2);border-radius:2px;position:relative;font-size:9px;display:flex;align-items:center;justify-content:center;color:#065F46;font-weight:600;">${t.tel.min}–${t.tel.max}%</div></td>
+              <td style="padding:6px 8px;"><div style="width:80px;height:16px;background:rgba(225,46,46,.16);border-radius:2px;position:relative;font-size:9px;display:flex;align-items:center;justify-content:center;color:#991B1B;font-weight:600;">${t.res.min}–${t.res.max}%</div></td>
+              <td style="padding:6px 8px;"><div style="width:80px;height:16px;background:#E4E5EC;border-radius:2px;position:relative;font-size:9px;display:flex;align-items:center;justify-content:center;color:#92400E;font-weight:600;">${t.sad.min}–${t.sad.max}%</div></td>
+              <td style="padding:6px 8px;"><div style="width:80px;height:16px;background:#F1F2F5;border-radius:2px;position:relative;font-size:9px;display:flex;align-items:center;justify-content:center;color:#065F46;font-weight:600;">${t.tel.min}–${t.tel.max}%</div></td>
             </tr>`).join('')}
           </tbody>
           </table>
