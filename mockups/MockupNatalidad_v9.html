@@ -917,21 +917,6 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
   <span class="phase-meta" id="phaseMeta"></span>
 </div>
 
-<!-- ══════════ ENTRADA Y REQUERIMIENTOS ══════════
-     Lo que más se discutió el 29/09: cuántas siguen en REC sin tratar y qué pasa
-     con los requeridos (subsanan o desisten). Una línea, sin gráfico. -->
-<div class="ent-strip">
-  <span class="ent-lbl">Entrada y revisión</span>
-  <div class="ent-it ent-pend"><span>Pendientes en REC <i class="ii" data-t="Solicitudes presentadas en REC que todavía no han abierto expediente en AFN. Hoy no están en Atlantix: se mostrarán cuando se conecte REC (en conversación con administración electrónica).">i</i></span><b>—</b><em>pendiente de conectar REC</em></div>
-  <div class="ent-arr">›</div>
-  <div class="ent-it"><span>Recepcionadas <i class="ii" data-t="Solicitudes recepcionadas con expediente abierto en la etapa Gestión del expediente de Atlantix. Es la misma cifra que «Expedientes en gestión».">i</i></span><b id="entRec">—</b><em>en gestión del expediente</em></div>
-  <div class="ent-arr">›</div>
-  <div class="ent-it"><span>Requeridas <i class="ii" data-t="Expedientes que han quedado para requerir en la revisión de documentación. Los subsanados vuelven a revisión; los desistidos se cierran al vencer el plazo del artículo 73.">i</i></span><b>807</b><em>575 subsanan · <strong>232 desisten</strong></em></div>
-  <div class="ent-it"><span>Denegadas <i class="ii" data-t="Expedientes denegados en la revisión de documentación.">i</i></span><b>308</b><em>en la revisión</em></div>
-  <div class="ent-arr">›</div>
-  <div class="ent-it"><span>Propuestas <i class="ii" data-t="Altas y pagos únicos propuestos para la nómina: recepcionadas, menos requeridas que no subsanan y denegadas. Pendiente de confirmar con Soluciones si la propuesta es un cambio de etapa o un campo con fecha y visado.">i</i></span><b id="entProp">—</b><em>pasan a validación de terceros</em></div>
-</div>
-
 <!-- ══════════ 3 SECCIONES ══════════ -->
 <div id="cmVacio" class="cm-vacio"></div>
 <div id="cmBody">
@@ -1370,12 +1355,12 @@ const KPI_GLOBAL = [
 /* Cada indicador explica de dónde sale su número al pasar el ratón; así la cifra
    puede quedarse sola en la pantalla sin perder el cómo se ha calculado. */
 const TIP = {
- 'Expedientes en gestión':'Expedientes de la convocatoria seleccionada que todavía no han llegado al pago, dentro del rango de fechas elegido.',
+ 'Expedientes en gestión':'Expedientes de la convocatoria seleccionada que todavía no han llegado al pago, dentro del rango de fechas elegido. Debajo, las solicitudes que siguen en REC sin expediente abierto: se mostrarán cuando se conecte REC, hoy no están en Atlantix.',
  'Plazo medio del expediente':'Mientras REC no esté conectado se mide desde la recepción en AFN, no desde la entrada en registro: la fecha de REC no está en Atlantix. Definición objetivo: días desde la entrada de la solicitud en el registro del órgano competente hasta el pago, medidos sobre los expedientes que ya han llegado al pago. La mediana va debajo porque el promedio lo estiran unos pocos casos largos.',
  'Plazo medio de la etapa':'Días medios que consume esta etapa, y qué parte representa del plazo total del expediente.',
  'Dentro del objetivo':'Expedientes ya terminados que se resolvieron dentro del objetivo fijado en la barra de filtros. Por defecto es el plazo máximo normativo: 90 días desde la entrada de la solicitud en el registro del órgano competente.',
  'Dentro de objetivo':'Expedientes ya terminados cuyo plazo no superó el objetivo fijado en la barra de filtros. «En riesgo» son los que se acercan a él sin haberlo superado.',
- 'Expedientes detenidos':'Expedientes sin ningún cambio de estado desde hace más días de lo razonable para su etapa. Debajo, los que la unidad puede desatascar por sí misma.',
+ 'Expedientes detenidos':'Expedientes sin ningún cambio de estado desde hace más días de lo razonable para su etapa. Debajo, los que la unidad puede desatascar por sí misma. Los del solicitante son casi todos requerimientos: de 807 requeridos en la revisión, 575 subsanan y 232 desisten.',
  'Presupuesto ejecutado':'Crédito ya pagado sobre el total de la convocatoria. Cambia al cambiar de convocatoria en los filtros.',
  'Nómina de la convocatoria':'Expedientes con pagos vivos en esta convocatoria y el importe que suman. Una ayuda se paga a lo largo de veinticuatro mensualidades, así que una convocatoria sigue pagando años después.',
  'Expedientes en la etapa':'Expedientes que están ahora mismo en esta etapa del proceso.',
@@ -1644,7 +1629,7 @@ function renderCM(){
 
   /* ── KPIs de cabecera ── */
   set('gExp', nfmt(n));
-  set('gExpD','');
+  set('gExpD','+ en REC: por conectar');
   set('gPlazo', plazoExp ? plazoExp+' d' : '—');
   set('gPlazoD', plazoExp>OBJ_E2E ? '▲ +'+(plazoExp-OBJ_E2E)+' d sobre objetivo'
                                   : '▼ '+(OBJ_E2E-plazoExp)+' d bajo objetivo');
@@ -2647,12 +2632,6 @@ initEjer(); dfInit(); renderConv();
           sv.options[2].textContent='Focalizar retrabajo ('+pRep+'%)'; }
 })();
 aplicarTips();
-(function franjaEntrada(){
-  const n = poblacion().length;
-  const set=(id,v)=>{const e=document.getElementById(id); if(e) e.textContent=v;};
-  set('entRec', nfmt(n));
-  set('entProp', nfmt(n - (807-575) - 308));
-})();
 
 
 
