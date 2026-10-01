@@ -1,0 +1,2100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cuadro de Mando de Gestión de Equipo | Madrid Digital</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --red:    #CC0B2F;
+  --red2:   #E4222A;
+  --teal:   #1B3A2D;
+  --green:  #2EAA4B;
+  --orange: #F5A623;
+  --blue:   #4A90D9;
+  --purple: #5B21B6;
+  --g900: #111827; --g700: #374151; --g500: #6B7280;
+  --g400: #9CA3AF; --g200: #E5E7EB; --g100: #F9FAFB;
+  --white: #fff;
+  --f: 'Inter', sans-serif;
+  --br: 4px;
+}
+
+body { font-family: var(--f); background: var(--white); color: var(--g900); font-size: 13px; }
+
+/* ═══ HEADER ═══════════════════════════════════════════ */
+.hdr { background: var(--white); border-bottom: 1px solid var(--g200); position: sticky; top: 0; z-index: 200; }
+
+.hdr-top { display: flex; align-items: stretch; min-height: 84px; border-bottom: 1px solid var(--g200); }
+
+.brand { display: flex; align-items: center; gap: 14px; padding: 12px 18px; border-right: 1px solid var(--g200); min-width: 300px; flex-shrink: 0; }
+.logo-svg { flex-shrink: 0; }
+.brand-info { display: flex; flex-direction: column; gap: 3px; }
+.brand-info strong { font-size: 11.5px; font-weight: 600; color: var(--g900); line-height: 1.35; }
+.brand-info em { font-size: 10px; font-style: normal; color: var(--g500); font-weight: 500; text-transform: uppercase; letter-spacing: .03em; }
+
+.kpi-strip { flex: 1; display: flex; align-items: stretch; overflow-x: auto; }
+.kpi-sep { width: 1px; background: var(--g200); flex-shrink: 0; margin: 8px 0; }
+.kpi-phase { display: flex; align-items: stretch; background: #F8F9FF; }
+.kpi-phase .ks { background: transparent; }
+.kpi-phase-lbl { display: flex; align-items: center; padding: 0 10px 0 14px; font-size: 9px; font-weight: 700; color: var(--blue); text-transform: uppercase; letter-spacing: .07em; writing-mode: vertical-rl; transform: rotate(180deg); flex-shrink: 0; }
+.ks { display: flex; flex-direction: column; justify-content: center; padding: 10px 18px; border-right: 1px solid var(--g200); min-width: 105px; cursor: default; }
+.ks-lbl { font-size: 10.5px; color: var(--g500); font-weight: 400; white-space: nowrap; display: flex; align-items: center; gap: 3px; }
+.ks-lbl .ii { width: 12px; height: 12px; border-radius: 50%; border: 1px solid var(--g400); display: inline-flex; align-items: center; justify-content: center; font-size: 7px; color: var(--g400); font-style: normal; flex-shrink: 0; }
+.ks-val { font-size: 26px; font-weight: 700; color: var(--g900); letter-spacing: -.03em; line-height: 1.1; margin-top: 2px; }
+.ks-delta { font-size: 10.5px; font-weight: 500; margin-top: 2px; }
+.ks-delta.ok  { color: var(--green); }
+.ks-delta.warn { color: var(--orange); }
+.ks-delta.bad  { color: var(--red); }
+.ks-pred .ks-val { font-size: 15px; margin-top: 5px; }
+.ks-pred .ks-lbl { font-size: 9.5px; }
+
+.hdr-btn { display: flex; align-items: center; padding: 0 16px; border-left: 1px solid var(--g200); flex-shrink: 0; }
+.btn-red { display: inline-flex; align-items: center; gap: 6px; background: var(--red2); color: white; border: none; border-radius: var(--br); padding: 8px 14px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: var(--f); white-space: nowrap; transition: background .15s; }
+.btn-red:hover { background: #b00e24; }
+
+.title-bar { display: flex; align-items: center; justify-content: space-between; padding: 7px 18px; border-bottom: 1px solid var(--g200); }
+.title-bar-left { display: flex; align-items: center; gap: 10px; }
+.title-bar-left h1 { font-size: 14px; font-weight: 700; color: var(--g900); letter-spacing: -.01em; }
+.icon-btn { color: var(--g400); cursor: pointer; display: flex; }
+.icon-btn:hover { color: var(--g700); }
+
+/* Filter bar */
+.fbar { display: flex; align-items: center; gap: 8px; padding: 7px 18px; border-bottom: 1px solid var(--g200); flex-wrap: wrap; }
+.fsel { display: inline-flex; align-items: center; gap: 5px; border: 1px solid var(--g200); border-radius: var(--br); padding: 5px 8px 5px 10px; font-size: 12px; color: var(--g700); background: var(--white); cursor: pointer; transition: border-color .15s; }
+.fsel:hover { border-color: var(--g400); }
+.fsel select { border: none; outline: none; background: transparent; font-size: 12px; font-family: var(--f); color: var(--g700); cursor: pointer; appearance: none; }
+.fsel span { font-size: 11px; color: var(--g500); white-space: nowrap; }
+.fsel.f3only { border-color: #A7F3D0; background: #ECFDF5; }
+.chev { width: 9px; height: 9px; flex-shrink: 0; color: var(--g400); }
+.fdate { display: inline-flex; align-items: center; gap: 5px; border: 1px solid var(--g200); border-radius: var(--br); padding: 5px 10px; font-size: 12px; color: var(--g700); cursor: pointer; }
+.fdate input { border: none; outline: none; background: transparent; font-size: 12px; font-family: var(--f); color: var(--g700); }
+.fspace { flex: 1; }
+.btn-outline { display: inline-flex; align-items: center; gap: 5px; border: 1px solid var(--g200); border-radius: var(--br); padding: 5px 10px; font-size: 11px; font-weight: 500; color: var(--g700); background: var(--white); cursor: pointer; font-family: var(--f); transition: all .15s; }
+.btn-outline:hover { border-color: var(--g400); background: var(--g100); }
+
+/* Tabs */
+.tabs { display: flex; padding: 0 18px; border-bottom: 1px solid var(--g200); overflow-x: auto; }
+.tab { padding: 9px 16px; font-size: 12px; font-weight: 500; color: var(--g500); cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; margin-bottom: -1px; transition: color .15s; }
+.tab:hover { color: var(--g900); }
+.tab.active { color: var(--g900); border-bottom-color: var(--g900); font-weight: 600; }
+
+/* ═══ PHASE SELECTOR ═══════════════════════════════════ */
+.phase-bar { display: flex; align-items: center; gap: 12px; padding: 11px 18px; border-bottom: 1px solid var(--g200); background: var(--g100); flex-wrap: wrap; }
+.phase-bar .pb-lbl { font-size: 10.5px; font-weight: 700; color: var(--g500); text-transform: uppercase; letter-spacing: .05em; }
+.phase-pills { display: inline-flex; gap: 4px; background: var(--white); border: 1px solid var(--g200); border-radius: 7px; padding: 3px; }
+.phase-pill { padding: 6px 15px; font-size: 12px; font-weight: 600; color: var(--g500); border-radius: 5px; cursor: pointer; border: none; background: transparent; font-family: var(--f); transition: all .15s; white-space: nowrap; }
+.phase-pill.active { color: var(--white); font-weight: 700; }
+.phase-pill.active[data-phase="1"] { background: var(--blue); }
+.phase-pill.active[data-phase="2"] { background: var(--orange); }
+.phase-pill.active[data-phase="3"] { background: var(--green); }
+.phase-meta { font-size: 11px; color: var(--g500); margin-left: auto; }
+.phase-meta strong { color: var(--g900); }
+
+/* ═══ MAIN SECTIONS ═════════ */
+.sections { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid var(--g200); }
+.sections-2col { grid-template-columns: repeat(2, 1fr) !important; }
+.sections-f1 { grid-template-columns: 1fr 2fr !important; }
+.section { border-right: 1px solid var(--g200); }
+.section:last-child { border-right: none; }
+.sec-hidden { display: none !important; }
+.subs-two-tbl { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:4px; }
+.subs-three-tbl { display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; margin-top:4px; }
+.subs-sel { display:inline-flex; align-items:center; gap:5px; border:1px solid var(--g200); border-radius:var(--br); padding:3px 8px 3px 10px; font-size:11px; color:var(--g700); background:var(--g100); margin-bottom:6px; }
+.subs-sel select { border:none; outline:none; background:transparent; font-size:11px; font-family:var(--f); color:var(--g700); cursor:pointer; appearance:none; }
+.sec-title { padding: 13px 18px; font-size: 12px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--g900); border-bottom: 1px solid var(--g200); text-align: center; }
+.sec-kpis { display: flex; border-bottom: 1px solid var(--g200); }
+.sk { flex: 1; padding: 12px 16px 14px; border-right: 1px solid var(--g200); }
+.sk:last-child { border-right: none; }
+.sk-lbl { font-size: 10px; color: var(--g500); font-weight: 400; display: flex; align-items: center; gap: 3px; }
+.sk-lbl .ii { width: 11px; height: 11px; border-radius: 50%; border: 1px solid var(--g400); display: inline-flex; align-items: center; justify-content: center; font-size: 7px; color: var(--g400); font-style: normal; flex-shrink: 0; }
+.sk-val { font-size: 26px; font-weight: 700; color: var(--g900); letter-spacing: -.03em; line-height: 1.1; margin-top: 3px; }
+.sk-sub { font-size: 10.5px; font-weight: 600; margin-top: 3px; }
+.sec-chart { padding: 14px 16px 16px; }
+.chart-ttl { font-size: 11px; color: var(--g700); font-weight: 500; margin-bottom: 3px; }
+.chart-sub { font-size: 10px; color: var(--g400); margin-bottom: 10px; }
+.chart-wrap { position: relative; height: 190px; }
+.chart-xlabel { text-align: center; font-size: 10px; color: var(--g400); margin-top: 5px; }
+.legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+.leg { display: flex; align-items: center; gap: 4px; font-size: 10px; color: var(--g500); }
+.leg-sq { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+.leg-ln { width: 16px; height: 2px; border-radius: 1px; flex-shrink: 0; }
+
+/* BVD / prestación tables */
+.bvd-wrap { overflow-x: auto; margin-top: 8px; }
+.bvd-tbl { width: 100%; border-collapse: collapse; font-size: 11px; }
+.bvd-tbl thead th { padding: 6px 8px; text-align: left; font-size: 10px; font-weight: 600; color: var(--g500); background: var(--g100); border-bottom: 1px solid var(--g200); letter-spacing: .02em; }
+.bvd-tbl tbody td { padding: 7px 8px; color: var(--g700); border-bottom: 1px solid var(--g200); }
+.bvd-tbl tbody tr:last-child td { border-bottom: none; }
+.bvd-tbl tbody tr:hover { background: #F8F8FB; }
+.bvd-ref td { color: var(--g500); font-style: italic; background: var(--g100); }
+.bvd-chip { display: inline-flex; align-items: center; font-size: 10px; font-weight: 600; padding: 1px 7px; border-radius: 10px; white-space: nowrap; }
+.bvd-ok   { background: #ECFDF5; color: #065F46; }
+.bvd-warn { background: #FFFBEB; color: #92400E; }
+.bvd-bad  { background: #FEF2F2; color: #991B1B; }
+
+/* ═══ TABLA PRINCIPAL ══════════════════════════════════ */
+.tbl-section { border-bottom: 1px solid var(--g200); }
+.tbl-hdr { display: flex; align-items: center; justify-content: space-between; padding: 10px 18px; border-bottom: 1px solid var(--g200); }
+.tbl-title { font-size: 12px; font-weight: 600; color: var(--g900); display: flex; align-items: center; gap: 8px; }
+.badge { background: var(--g100); border: 1px solid var(--g200); border-radius: 12px; padding: 1px 8px; font-size: 10px; color: var(--g500); font-weight: 500; }
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+thead th { padding: 8px 12px; text-align: left; font-size: 10.5px; font-weight: 600; color: var(--g500); background: var(--g100); border-bottom: 1px solid var(--g200); white-space: nowrap; cursor: pointer; user-select: none; letter-spacing: .02em; }
+thead th:hover { color: var(--g900); }
+thead th .si { margin-left: 3px; color: var(--g200); font-size: 9px; }
+thead th.asc .si, thead th.desc .si { color: var(--red2); }
+tbody tr { border-bottom: 1px solid var(--g200); transition: background .1s; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: #F8F8FB; }
+td { padding: 10px 12px; font-size: 12px; color: var(--g700); vertical-align: middle; }
+td.nm { font-weight: 600; color: var(--g900); }
+
+.status { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.s-opt  { color: #065F46; } .s-opt::before  { background: var(--green); }
+.s-rev  { color: #92400E; } .s-rev::before  { background: var(--orange); }
+.s-sub  { color: #1E40AF; } .s-sub::before  { background: var(--blue); }
+.s-crit { color: #991B1B; } .s-crit::before { background: var(--red); }
+
+.grade { display: inline-flex; align-items: center; justify-content: center; border-radius: 3px; font-size: 11px; font-weight: 700; padding: 1px 6px; }
+.gT { background: #EFF6FF; color: #1E40AF; }
+.gV { background: #ECFDF5; color: #065F46; }
+.gA { background: #F5F3FF; color: #5B21B6; }
+
+.var-chip { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 10px; white-space: nowrap; }
+.vc-ok   { background: #ECFDF5; color: #065F46; }
+.vc-warn { background: #FFFBEB; color: #92400E; }
+.vc-bad  { background: #FEF2F2; color: #991B1B; }
+.vc-na   { background: var(--g100); color: var(--g400); }
+
+/* ═══ TABLAS SECUNDARIAS · flujo de hitos ═══════════════ */
+.flow-strip { display:flex; align-items:center; gap:6px; flex-wrap:wrap; padding:12px 18px 2px; }
+.flow-step { display:inline-flex; align-items:center; gap:7px; padding:5px 11px 5px 8px; border-radius:20px; font-size:11px; font-weight:600; color:var(--g700); background:var(--g100); border:1px solid var(--g200); }
+.flow-step .fnum { width:17px; height:17px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; color:#fff; flex-shrink:0; }
+.flow-step small { font-weight:400; color:var(--g400); font-size:9.5px; }
+.flow-step.gen { border-style:dashed; opacity:.85; }
+.flow-arrow { color:var(--g400); flex-shrink:0; }
+.seg-cell { min-width:60px; }
+.seg-pill { display:inline-block; padding:2px 9px; border-radius:20px; font-size:11px; font-weight:700; line-height:1.4; }
+.seg-g { background:#ECFDF5; color:#065F46; } .seg-a { background:#FFFBEB; color:#92400E; } .seg-r { background:#FEF2F2; color:#991B1B; } .seg-n { background:var(--g100); color:var(--g400); font-weight:500; }
+.mbar { display:flex; height:9px; width:130px; border-radius:5px; overflow:hidden; background:var(--g100); }
+.mbar > span { height:100%; }
+.tbl-total td { background:#F8F9FF; font-weight:700; }
+.mini-lgd { display:flex; gap:12px; flex-wrap:wrap; padding:2px 18px 10px; font-size:9.5px; color:var(--g500); }
+.mini-lgd span { display:inline-flex; align-items:center; gap:4px; }
+.mini-lgd i { width:10px; height:10px; border-radius:2px; display:inline-block; }
+.two-tbl-note { padding:9px 18px 2px; font-size:10.5px; color:var(--g500); line-height:1.55; }
+.pill-count { display:inline-block; font-weight:700; }
+.pc-r{color:var(--red);} .pc-a{color:var(--orange);} .pc-g{color:var(--green);} .pc-n{color:var(--g500);}
+/* timestamps + duraciones entre cambios de estado (estilo Celonis) */
+.ts { line-height:1.22; white-space:nowrap; }
+.ts b { font-size:12px; font-weight:700; color:var(--g900); }
+.ts small { display:block; font-size:9px; color:var(--g400); font-weight:500; }
+#tHitos2 td { padding:9px 12px; }
+.durcol { text-align:center; background:#FCFCFD; padding-left:6px !important; padding-right:6px !important; }
+.durflow { display:inline-flex; align-items:center; gap:5px; }
+.durarrow { color:#CBD5E1; flex-shrink:0; }
+th.durcol-h { text-align:center; background:#FCFCFD; white-space:nowrap; }
+th.durcol-h small { display:block; font-weight:400; color:var(--g400); font-size:8.5px; text-transform:none; letter-spacing:0; margin-top:1px; white-space:nowrap; }
+.tot-chip { font-size:13px; font-weight:800; }
+
+/* ═══ TAB PANES ═══════════════════════════════════════ */
+.tabpane { display: none; }
+.tabpane.active { display: block; animation: fadeUp .25s ease; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+/* Plazos tab */
+.pz-general { display: flex; align-items: center; gap: 24px; padding: 18px; border-bottom: 1px solid var(--g200); flex-wrap: wrap; }
+.pz-big { font-size: 46px; font-weight: 800; letter-spacing: -.04em; color: var(--orange); line-height: 1; }
+.pz-big .u { font-size: 15px; color: var(--g500); font-weight: 600; }
+.pz-note { font-size: 12px; color: var(--g700); line-height: 1.7; }
+.pz-note strong.bad { color: var(--red); }
+.pz-grid { display: grid; grid-template-columns: 1.25fr 1fr; border-bottom: 1px solid var(--g200); }
+.pz-col { padding: 16px 18px; border-right: 1px solid var(--g200); }
+.pz-col:last-child { border-right: none; }
+.pz-col h3 { font-size: 11px; font-weight: 700; color: var(--g700); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 3px; }
+.pz-col p { font-size: 10.5px; color: var(--g400); margin-bottom: 12px; }
+
+/* predictive cards */
+.pred-cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.pred-card { border: 1px solid var(--g200); border-radius: 6px; padding: 12px; position: relative; }
+.pred-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; border-radius: 5px 5px 0 0; }
+.pred-card.p1::before { background: var(--blue); } .pred-card.p2::before { background: var(--orange); } .pred-card.p3::before { background: var(--green); }
+.pred-name { font-size: 10px; font-weight: 700; color: var(--g500); text-transform: uppercase; letter-spacing: .03em; }
+.pred-flow { font-size: 10px; color: var(--g500); margin-top: 8px; line-height: 1.5; }
+.pred-flow b { color: var(--g900); }
+.pred-arrow { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.pred-ico { font-size: 30px; font-weight: 800; line-height: 1; }
+.pred-txt { font-size: 11px; font-weight: 700; }
+.pa-worse .pred-ico, .pa-worse .pred-txt { color: var(--red); }
+.pa-better .pred-ico, .pa-better .pred-txt { color: var(--green); }
+.pa-stable .pred-ico, .pa-stable .pred-txt { color: var(--g500); }
+
+/* footer */
+.footer-btns { display: grid; grid-template-columns: repeat(3, 1fr); }
+.fbtn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 12px; background: var(--red2); color: white; font-size: 12px; font-weight: 600; cursor: pointer; font-family: var(--f); border: none; border-right: 1px solid rgba(255,255,255,.2); transition: background .15s; letter-spacing: .01em; }
+.fbtn:last-child { border-right: none; }
+.fbtn:hover { background: #b00e24; }
+.fbtn .wip { font-size: 9px; font-weight: 500; opacity: .9; display: inline-flex; align-items: center; gap: 5px; text-transform: none; letter-spacing: 0; }
+.fbtn .wip::before { content:''; width:5px; height:5px; border-radius:50%; background:#FDE68A; }
+
+.attr { padding: 8px 18px; display: flex; justify-content: space-between; font-size: 10px; color: var(--g400); border-top: 1px solid var(--g200); gap: 12px; flex-wrap: wrap; }
+
+.placeholder { padding: 60px 20px; text-align: center; color: var(--g400); font-size: 13px; }
+.placeholder .ph-ico { font-size: 30px; margin-bottom: 10px; }
+
+@media (max-width: 960px) {
+  .sections { grid-template-columns: 1fr; }
+  .section { border-right: none; border-bottom: 1px solid var(--g200); }
+  .pz-grid, .pred-cards, .footer-btns { grid-template-columns: 1fr; }
+  .kpi-strip { display: none; }
+}
+
+/* ══ variables de la paleta Celonis que el CU1 no traía ══ */
+:root{ --cnavy:#0A1F44; --cteal:#005B60; --cteal2:#1F3E41; --cplum:#464C6A;
+  --cbd:#D3D3DD; --cgy:#8E91AD; --cgy2:#B5B6C6; --clink:#264AFF; --cred:#E12E2E; }
+/* ═══════════════════════════════════════════════════════════
+   CAPA CELONIS · paleta y tipografía muestreadas del entorno
+   real de Madrid Digital (sobrescribe los estilos anteriores)
+   ═══════════════════════════════════════════════════════════ */
+:root{
+  --red:#E12E2E; --red2:#E12E2E; --blue:#264AFF; --purple:#464C6A;
+  --green:#005B60; --orange:#D98324; --teal:#1F3E41;
+  --g900:#0A1F44; --g700:#0A1F44; --g500:#8E91AD; --g400:#B5B6C6;
+  --g200:#D3D3DD; --g100:#FAFAFB; --br:3px;
+}
+body{ color:var(--cnavy); }
+/* cabecera y KPIs */
+.hdr-top{ min-height:78px; }
+.brand-info strong{ font-size:11px; font-weight:700; }
+.brand-info em{ font-size:9px; font-weight:600; color:var(--cnavy); letter-spacing:.01em; }
+.kpi-strip{ overflow:visible; }
+.ks{ padding:11px 18px; min-width:132px; border-right:1px solid var(--cbd); }
+.ks-lbl{ font-size:12px; color:var(--cnavy); font-weight:400; }
+.ks-lbl .ii{ width:13px; height:13px; border-color:var(--cgy2); color:var(--cgy); font-size:8px; }
+.ks-val{ font-size:38px; font-weight:300; letter-spacing:-.02em; color:var(--cnavy); margin-top:0; }
+.ks-val .u{ font-size:17px; font-weight:400; color:var(--cgy); }
+.ks-delta{ font-size:10.5px; font-weight:400; color:var(--cgy); }
+.ks-delta.ok{ color:var(--cteal); } .ks-delta.warn{ color:#D98324; } .ks-delta.bad{ color:var(--cred); }
+.ks-fix{ background:#F3F4F6; }
+.ks-pred .ks-val{ font-size:17px; font-weight:400; }
+.kpi-phase-lbl{ color:var(--cgy); font-size:8px; }
+/* botón rojo de Celonis */
+.btn-red{ background:var(--cred); border-radius:3px; padding:9px 15px; font-size:12.5px; font-weight:600; }
+.btn-red:hover{ background:#c62222; }
+/* barras de título y filtros */
+.title-bar-left h1{ font-size:15px; font-weight:700; }
+.scope-chip{ background:#fff; border:1px solid var(--cbd); color:var(--cgy); border-radius:3px; font-weight:500; }
+.fsel,.fdate,.btn-outline{ border-radius:3px; border-color:var(--cbd); height:34px; }
+.fsel,.fdate{ padding:0 11px; }
+.fsel span,.fdate span{ color:var(--cgy); font-size:12px; }
+.fsel select,.fdate input,.fsel{ font-size:12.5px; color:var(--cnavy); }
+.btn-outline{ color:var(--cnavy); font-size:12px; padding:0 12px; }
+/* pestañas */
+.tabb{ font-size:13px; }
+.tabb .tcount{ background:#fff; border:1px solid var(--cbd); color:var(--cgy); border-radius:3px; font-weight:600; }
+.tabb.active .tcount{ background:#fff; border-color:var(--cred); color:var(--cred); }
+/* selector de etapa */
+.phase-bar{ background:#fff; border-bottom:1px solid var(--cbd); }
+.phase-bar .pb-lbl{ color:var(--cgy); font-weight:700; }
+.phase-pills{ border:none; background:transparent; padding:0; gap:6px; }
+.phase-pill{ border:1px solid var(--cbd); border-radius:3px; background:#fff; color:var(--cgy); font-size:11.5px; font-weight:600; padding:7px 14px; }
+.phase-pill.active{ background:var(--cnavy); border-color:var(--cnavy); color:#fff; }
+.phase-meta{ font-size:10.5px; color:var(--cgy); }
+.phase-meta strong{ color:var(--cnavy); font-weight:600; }
+/* secciones y gráficos */
+.sections,.section{ border-color:var(--cbd); }
+.sec-title{ font-size:13px; font-weight:700; letter-spacing:.02em; color:var(--cnavy); border-bottom:1px solid var(--cbd); }
+.sk{ border-right:1px solid var(--cbd); padding:11px 16px 13px; }
+.sk-lbl{ font-size:11.5px; color:var(--cnavy); }
+.sk-lbl .ii{ width:12px; height:12px; border-color:var(--cgy2); color:var(--cgy); }
+.sk-val{ font-size:31px; font-weight:300; color:var(--cnavy); letter-spacing:-.02em; }
+.sk-val .u{ font-size:15px; font-weight:400; color:var(--cgy); }
+.sk-sub{ font-size:10.5px; font-weight:400; }
+.chart-ttl{ font-size:12.5px; font-weight:600; color:var(--cnavy); }
+.chart-sub{ font-size:11px; color:var(--cgy); }
+.chart-xlabel{ font-size:10px; color:var(--cnavy); text-align:right; }
+.leg{ font-size:10px; color:var(--cgy); }
+.leg-sq{ border-radius:0; }
+/* tablas */
+th{ background:#FAFAFB; border-color:var(--cbd)!important; color:var(--cnavy); font-size:11px; font-weight:600; }
+td{ border-color:var(--cbd)!important; font-size:12px; color:var(--cnavy); }
+/* franja de lectura del explorador */
+.px-read .t .ii{ width:13px; height:13px; border-radius:50%; border:1px solid var(--cgy2);
+  display:inline-flex; align-items:center; justify-content:center; font-size:8px; color:var(--cgy); font-style:normal; }
+
+/* tooltip de los indicadores, como en el resto de cuadros */
+.ii[data-t]{ position:relative; cursor:help; }
+.ii[data-t]::after{ content:attr(data-t); position:absolute; bottom:calc(100% + 8px); left:50%; transform:translateX(-50%);
+  background:var(--cnavy); color:#fff; font-size:10.5px; font-weight:400; font-style:normal; letter-spacing:0;
+  line-height:1.45; text-transform:none; text-align:left; padding:7px 10px; border-radius:3px; width:218px;
+  opacity:0; visibility:hidden; transition:opacity .12s; z-index:60; pointer-events:none;
+  box-shadow:0 2px 8px rgba(10,31,68,.22); }
+.ii[data-t]::before{ content:''; position:absolute; bottom:calc(100% + 3px); left:50%; transform:translateX(-50%);
+  border:5px solid transparent; border-top-color:var(--cnavy); opacity:0; visibility:hidden; transition:opacity .12s; z-index:61; }
+.ii[data-t]:hover::after,.ii[data-t]:hover::before{ opacity:1; visibility:visible; }
+.px-read > div:last-child .ii[data-t]::after{ left:auto; right:-6px; transform:none; }
+.px-read > div:last-child .ii[data-t]::before{ left:auto; right:0; transform:none; }
+
+/* ── lavado de cara · barra de filtros en una sola horizontal ── */
+.fbar{ flex-wrap:nowrap !important; gap:6px !important; align-items:center; }
+.fbar .fsel,.fbar .fdate{ height:30px !important; padding:0 8px !important; gap:5px;
+  font-size:11.5px !important; flex:0 0 auto; }
+.fbar .fsel span,.fbar .fdate span{ font-size:10.5px !important; color:var(--cgy) !important;
+  font-weight:400 !important; letter-spacing:0 !important; text-transform:none !important; }
+.fbar .fsel select{ font-size:11.5px !important; padding:0; }
+.fbar .fdate input[type=date]{ font-size:11.5px; border:none; outline:none; background:transparent;
+  font-family:var(--f); color:var(--cnavy); width:88px; padding:0; }
+.fbar .fsel.par{ border-style:dashed; border-color:var(--cgy2); background:#FAFAFB; }
+.fbar .fsel.par input{ width:30px; border:none; outline:none; background:transparent;
+  font-family:var(--f); font-size:12.5px; font-weight:600; color:var(--blue); text-align:center; }
+.fbar .fsel.par .ud{ font-size:10.5px; color:var(--cgy); }
+.fbar .btn-outline{ height:30px !important; padding:0 10px !important; font-size:11.5px !important; flex:0 0 auto; }
+.fbar .chev{ width:8px; height:5px; opacity:.5; }
+
+.pv-note{ margin:11px 18px 16px; border:1px solid var(--cbd); border-left:3px solid var(--blue);
+  border-radius:3px; padding:11px 14px; font-size:12px; line-height:1.55; color:var(--cnavy); background:#fff; }
+.pv-note strong{ font-weight:600; }
+
+/* ── Hoja de trabajo · definición de indicadores ────────────────────── */
+.tabb-work{ margin-left:auto; }
+.tabb-work .tcount{ background:#FFF4E5; color:#8A5200; border-color:#F0D9B5; }
+.df-head{ padding:14px 18px 12px; }
+.df-head h3{ font-size:14px; font-weight:700; color:var(--cnavy); }
+.df-head p{ font-size:12px; color:var(--cgy); margin-top:4px; line-height:1.55; max-width:900px; }
+.df-bar{ display:flex; gap:8px; align-items:center; padding:0 18px 12px; }
+.df-wrap{ margin:0 18px 14px; border:1px solid var(--cbd); border-radius:3px; overflow:hidden; background:#fff; }
+table.df{ width:100%; border-collapse:collapse; }
+table.df th{ font-size:10px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--cgy);
+  background:#FAFAFB; text-align:left; padding:9px 12px; border-bottom:1px solid var(--cbd); white-space:nowrap; }
+table.df td{ font-size:11.5px; padding:9px 12px; border-bottom:1px solid #EDEEF1; vertical-align:top; line-height:1.45; }
+table.df tr:last-child td{ border-bottom:none; }
+table.df td.ind{ font-weight:600; color:var(--cnavy); width:180px; }
+table.df td.et{ color:var(--cnavy); white-space:nowrap; }
+.df-ed{ width:100%; min-height:30px; border:1px solid transparent; border-radius:3px; padding:4px 6px;
+  font-family:var(--f); font-size:11.5px; color:var(--cnavy); background:#FCFCFD; outline:none; resize:vertical; }
+.df-ed:focus{ border-color:var(--blue); background:#fff; }
+.df-ed::placeholder{ color:var(--cgy2); }
+.chip-tbc{ display:inline-block; font-size:9px; font-weight:700; letter-spacing:.05em; text-transform:uppercase;
+  color:#8A5200; background:#FFF4E5; border:1px solid #F0D9B5; border-radius:2px; padding:1px 5px; margin-left:5px; }
+.chip-ok{ color:#0A6B3D; background:#E8F6EE; border-color:#BFE3CE; }
+/* la barra económica hereda el mismo cromado que la del cuadro de mando */
+#fbarECO .fgrp{ display:inline-flex; align-items:center; gap:5px; height:30px; padding:0 8px;
+  border:1px solid var(--cbd); border-radius:3px; background:#fff; }
+#fbarECO .fgrp label{ font-size:10.5px; color:var(--cgy); font-weight:400; }
+#fbarECO .fgrp select,#fbarECO .fgrp input{ border:none; outline:none; background:transparent;
+  font-family:var(--f); font-size:11.5px; color:var(--cnavy); cursor:pointer; padding:0; }
+#fbarECO .eco-note{ font-size:10.5px; color:var(--cgy); display:inline-flex; align-items:center; gap:4px; }
+
+/* ── una sola tipografía en la banda: los variables pesan igual que los fijos ── */
+.ks-pred .ks-val,.ks-fix .ks-val{ font-size:34px !important; font-weight:300 !important;
+  color:var(--cnavy) !important; letter-spacing:-.02em; line-height:1.12; white-space:nowrap; }
+.ks-pred .ks-val .u,.ks-fix .ks-val .u{ font-size:16px; font-weight:400; color:var(--cgy); }
+.ks-pred .ks-lbl,.ks-fix .ks-lbl{ font-size:11.5px !important; color:var(--cnavy) !important;
+  font-weight:400 !important; }
+.ks-pred{ background:transparent !important; }
+.ks-delta{ font-size:10.5px !important; color:var(--cgy) !important; }
+.ks-delta.bad{ color:var(--cred) !important; }
+
+/* ── el icono de ayuda existe fuera de los indicadores: que lleve su círculo ── */
+/* el aviso no lo puede recortar la banda ni heredar su «no partir línea» */
+.kpi-strip{ overflow:visible !important; }
+.hdr,.hdr-top{ overflow:visible; }
+.ii[data-t]::after{ white-space:normal !important; }
+
+.ii{ width:12px; height:12px; border-radius:50%; border:1px solid var(--cgy2); display:inline-flex;
+  align-items:center; justify-content:center; font-size:8px; color:var(--cgy); font-style:normal;
+  font-weight:400; flex-shrink:0; vertical-align:1px; }
+
+/* ── los avisos de la cabecera se abren hacia abajo, si no se cortan ── */
+.hdr .ii[data-t]::after{ bottom:auto; top:calc(100% + 8px); }
+.hdr .ii[data-t]::before{ bottom:auto; top:calc(100% + 3px);
+  border-top-color:transparent; border-bottom-color:var(--cnavy); }
+.sk:last-child .ii[data-t]::after,.ks:last-child .ii[data-t]::after{ left:auto; right:-6px; transform:none; }
+.sk:last-child .ii[data-t]::before,.ks:last-child .ii[data-t]::before{ left:auto; right:0; transform:none; }
+
+/* ── menos ruido: el subtexto del indicador es una cifra, no una frase ── */
+.sk-sub,.ks-delta{ font-weight:400 !important; }
+.sk-sub:empty,.ks-delta:empty{ display:none; }
+
+
+/* ══════════════════════════════════════════════════════════════════
+   CAPA CELONIS · reescribe el aspecto del cuadro para igualarlo a los
+   mockups de acogimiento: tipografía ligera en las cifras, bordes de
+   1 px en #D3D3DD, radio 3 px, nada de pastillas pastel ni emojis.
+   Solo toca presentación: ni un dato ni un comportamiento cambian.
+   ══════════════════════════════════════════════════════════════════ */
+:root{
+  --g900:#0A1F44; --g700:#0A1F44; --g500:#8E91AD; --g400:#B5B6C6;
+  --g200:#D3D3DD; --g100:#FAFAFB;
+  --red:#E12E2E; --red2:#E12E2E; --green:#005B60; --orange:#D98324;
+  --blue:#264AFF; --purple:#464C6A; --teal:#1F3E41;
+  --br:3px;
+}
+body{color:#0A1F44;}
+
+/* ── cabecera y KPIs ─────────────────────────────────────────────── */
+.hdr-top{min-height:0;}
+.brand-info strong{font-size:11px;font-weight:700;line-height:1.35;}
+.brand-info em{font-size:9px;font-weight:600;letter-spacing:0;color:#0A1F44;}
+.ks{padding:11px 18px;min-width:132px;}
+.ks-fix{background:#fff;}
+.ks-lbl{font-size:12px;color:#0A1F44;font-weight:400;}
+.ks-fix .ks-lbl{color:#0A1F44;}
+.ks-lbl .ii{width:13px;height:13px;border-color:var(--g400);font-size:8px;color:var(--g500);}
+.ks-val{font-size:44px;font-weight:300;letter-spacing:-.02em;line-height:1.12;margin-top:1px;}
+.ks-val .u{font-size:19px;font-weight:400;color:var(--g500);}
+.ks-delta{font-size:10.5px;font-weight:400;color:var(--g500);margin-top:2px;line-height:1.35;}
+.ks-delta.ok,.ks-delta.warn{color:var(--g500);}
+.ks-delta.bad{color:var(--red);}
+/* el grupo variable se distingue por un fondo tenue, no por tamaño */
+.kpi-phase{background:#FAFAFB;}
+.kpi-phase .ks{background:transparent;min-width:0;padding:9px 16px;}
+.kpi-phase-lbl{font-size:8px;color:var(--g500);font-weight:700;}
+.ks-pred .ks-val{font-size:17px;font-weight:600;margin-top:4px;letter-spacing:0;}
+.ks-pred .ks-lbl{font-size:10.5px;color:var(--g500);}
+.btn-red{background:var(--red);border-radius:3px;font-weight:600;padding:9px 15px;font-size:12.5px;}
+.btn-red:hover{background:#c52525;}
+
+.title-bar-left h1{font-size:16px;font-weight:700;letter-spacing:0;}
+.scope-chip{background:#fff;border:1px solid var(--g200);border-radius:3px;color:var(--g500);
+            font-weight:400;font-size:10.5px;padding:4px 9px;}
+.scope-chip::before{content:none;}
+
+/* ── filtros ─────────────────────────────────────────────────────── */
+.fbar{gap:8px;padding:9px 18px;}
+.fsel,.fdate{border-radius:3px;height:36px;padding:0 11px;font-size:12.5px;color:#0A1F44;}
+.fsel select,.fdate input{font-size:12.5px;color:#0A1F44;}
+.fsel span{font-size:12px;color:var(--g500);}
+.btn-outline{border-radius:3px;height:36px;padding:0 12px;font-size:12px;color:var(--g500);}
+.btn-outline:hover{background:#fff;border-color:var(--g400);color:#0A1F44;}
+/* parámetro de cálculo: no recorta la población, redefine el umbral.
+   Borde discontinuo para que no se confunda con un filtro. */
+#fObjDays,#fAlerta{color:var(--blue);}
+.fsel .p-k{font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--g500);}
+.fbar .fsel:has(#fObjDays),.fbar .fsel:has(#fAlerta),
+.fbar .fdate:has(#fObjDays),.fbar .fdate:has(#fAlerta){
+  border-style:dashed;border-color:var(--g400);background:#FAFAFB;}
+
+/* ── selector de etapa ───────────────────────────────────────────── */
+.phase-bar{background:#fff;padding:10px 18px;}
+.phase-bar .pb-lbl{font-size:10px;letter-spacing:.07em;color:var(--g500);}
+.phase-pills{border-radius:3px;padding:2px;background:#fff;}
+.phase-pill{border-radius:2px;font-weight:600;font-size:12px;padding:6px 14px;}
+.phase-pill.active{background:var(--red);}
+.phase-meta{font-size:10.5px;color:var(--g500);}
+.phase-meta strong{color:#0A1F44;font-weight:600;}
+
+/* ── secciones y gráficos ────────────────────────────────────────── */
+.sec-title{font-size:14.5px;font-weight:700;letter-spacing:.02em;padding:12px 14px;}
+.sk{padding:12px 16px 14px;}
+.sk-lbl{font-size:12px;color:#0A1F44;}
+.sk-lbl .ii{width:13px;height:13px;font-size:8px;color:var(--g500);border-color:var(--g400);}
+.sk-val{font-size:31px;font-weight:300;letter-spacing:-.02em;margin-top:2px;}
+.sk-val .u{font-size:15px;font-weight:400;color:var(--g500);}
+.sk-sub{font-size:10.5px;font-weight:400;color:var(--g500);margin-top:3px;line-height:1.35;}
+.sk-sub.bad{color:var(--red);}
+.sec-chart{padding:13px 16px 15px;}
+.chart-ttl{font-size:12.5px;font-weight:600;color:#0A1F44;margin-bottom:2px;}
+.chart-sub{font-size:11px;color:var(--g500);margin-bottom:9px;}
+.chart-xlabel{text-align:right;font-size:10px;color:var(--g500);margin-top:7px;}
+.leg{font-size:10px;color:#0A1F44;}
+.leg-sq{border-radius:1px;width:9px;height:9px;}
+.c2-bread .bk{color:var(--blue);}
+.c2-bread .cnt{border-radius:3px;background:#fff;}
+
+/* ── tablas ──────────────────────────────────────────────────────── */
+.tbl-title{font-size:12.5px;font-weight:600;}
+.badge{border-radius:3px;background:#fff;font-size:10.5px;color:var(--g500);}
+.tbl-hint{font-size:10.5px;color:var(--g500);}
+thead th{background:#fff;font-size:10.5px;font-weight:600;color:var(--g500);letter-spacing:.02em;
+         border-bottom:1px solid var(--g200);padding:9px 12px;}
+thead th .si{color:var(--g400);}
+thead th.asc .si,thead th.desc .si{color:var(--red);}
+td{font-size:12px;color:#0A1F44;padding:9px 12px;}
+td.nm{font-weight:600;}
+tbody tr:hover{background:#FAFAFB;}
+.row-crit td{background:#FDF6F6;}
+.row-crit:hover td{background:#FBEDED;}
+
+/* en Celonis un estado es un punto de color y texto, no una pastilla */
+.chip{background:transparent!important;border-radius:0;padding:0;font-size:11px;font-weight:600;}
+.c-ok{color:var(--green);} .c-warn{color:var(--orange);} .c-bad{color:var(--red);}
+.c-na{color:var(--g500);} .c-blue{color:var(--blue);} .c-pur{color:var(--purple);}
+.seg-pill{background:transparent!important;padding:0;border-radius:0;font-weight:600;font-size:12px;}
+.seg-g{color:#0A1F44;} .seg-a{color:var(--orange);} .seg-r{color:var(--red);}
+.tot-chip{font-size:12.5px;font-weight:700;}
+.status{font-weight:600;font-size:11.5px;}
+.s-opt{color:var(--green);} .s-rev{color:var(--orange);}
+.s-crit{color:var(--red);} .s-sub{color:var(--blue);}
+.resp-chip{background:transparent!important;padding:0;font-size:11px;font-weight:600;}
+.r-adm{color:var(--red);} .r-sol{color:var(--g500);}
+.r-sol::before{background:var(--g400);}
+.resp-tabs{background:#fff;border-radius:3px;padding:2px;}
+.resp-tabs button{border-radius:2px;font-size:11px;}
+.resp-tabs button.on{box-shadow:none;background:#0A1F44;color:#fff;}
+/* identificador de expediente: enlace azul, como en el resto de mockups */
+.exp-link{font-family:var(--f);font-size:12px;font-weight:400;color:var(--blue);
+          border-bottom:none;text-decoration:underline;}
+.exp-link:hover{color:#1a37cc;}
+.exp-link::after{opacity:.55;font-size:9px;}
+.durcol,th.durcol-h{background:#fff;}
+.col-focus{background:#FAFAFB!important;box-shadow:inset 1px 0 0 var(--g200),inset -1px 0 0 var(--g200);}
+th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
+.stage-note{background:#fff;color:var(--g500);font-size:10.5px;}
+.flow-step{border-radius:3px;background:#fff;font-weight:600;font-size:11px;color:#0A1F44;}
+.mini-lgd i{border-radius:1px;}
+.hito-lgd span{color:#0A1F44;}
+
+/* ── económica ───────────────────────────────────────────────────── */
+.pz-col h3{font-size:12.5px;font-weight:600;text-transform:none;letter-spacing:0;color:#0A1F44;}
+.pz-col p{font-size:11px;color:var(--g500);margin-bottom:11px;}
+.cv-tabs{background:#fff;border-radius:3px;}
+.cv-tabs button{border-radius:2px;font-weight:600;}
+.cv-tabs button.on{background:#0A1F44;color:#fff;box-shadow:none;}
+.cv-tabs button:hover{color:#0A1F44;}
+.cv-tabs button.on:hover{color:#fff;}
+.pz-hero b{font-size:31px;font-weight:300;letter-spacing:-.02em;}
+.pz-hero span{font-size:10.5px;color:var(--g500);font-weight:400;}
+.bgt-track{height:26px;}
+.bgt-seg{border-radius:1px!important;font-weight:600;font-size:10.5px;}
+.s-cm{background:#D98324;}
+.s-dp{background:#EDEEF1;color:var(--g500);}
+.bgt-scale span{font-weight:400;color:var(--g500);}
+.bc{border-radius:3px;border-top-width:2px;padding:9px 11px;}
+.bc-ej{border-top-color:var(--green);} .bc-cm{border-top-color:var(--orange);}
+.bc-dp{border-top-color:var(--g400);}
+.bc-l{font-size:9.5px;font-weight:700;letter-spacing:.06em;color:var(--g500);}
+.bc b{font-size:22px;font-weight:300;letter-spacing:-.02em;margin:4px 0 2px;}
+.bc em{font-size:10px;color:var(--g500);}
+.cap-box{border:1px solid var(--g200);background:#FAFAFB;border-radius:3px;padding:11px 13px;}
+.cap-box h4{color:#0A1F44;font-size:10px;font-weight:700;letter-spacing:.06em;}
+.cap-row{font-size:11.5px;color:#0A1F44;}
+.cap-row b{font-size:22px;font-weight:300;color:#0A1F44;min-width:52px;}
+.cap-foot{border-top:1px solid var(--g200);color:var(--g500);font-size:10px;}
+.cap-formula{font-size:10.5px;color:var(--g500);}
+.tr-box h4,.cmp h4{font-size:10px;letter-spacing:.06em;color:var(--g500);font-weight:700;}
+.cmp h4{text-transform:uppercase;}
+.cmp p{font-size:10.5px;color:var(--g500);}
+.tr-c .lb{font-size:10px;font-weight:400;color:var(--g500);}
+.tr-c .nv{font-size:22px;font-weight:300;letter-spacing:-.02em;}
+.tr-c .bar{border-radius:0;height:5px;background:#EDEEF1;}
+.tr-c .bar i{border-radius:0;background:var(--orange);}
+.tr-c .pd{font-size:10px;color:var(--g500);}
+.tr-foot{font-style:normal;font-size:10px;color:var(--g500);}
+.cmp-row{border-radius:3px;}
+.cmp-row.on{background:#FAFAFB;box-shadow:inset 2px 0 0 var(--blue);}
+.cmp-y{font-size:12px;font-weight:600;}
+.cmp-seg{border-radius:1px!important;}
+.cmp-t{font-size:12px;font-weight:600;color:#0A1F44;}
+.cmp-s{font-size:10px;color:var(--g500);}
+.cmp-tot b{font-size:22px;font-weight:300;letter-spacing:-.02em;margin-top:3px;}
+.cmp-tot span{font-size:9.5px;color:var(--g500);letter-spacing:.06em;}
+.cmp-tot .free b{color:var(--red);}
+.cmp-note{background:#fff;border:1px solid var(--g200);border-radius:3px;font-size:10.5px;color:var(--g500);}
+.eco-note{font-size:10.5px;color:var(--g500);}
+.eco-note strong{color:#0A1F44;font-weight:600;}
+.params{background:#FAFAFB;}
+.params .p-lbl{font-weight:700;letter-spacing:.07em;color:var(--g500);}
+.params .p-it{font-size:11.5px;color:var(--g500);}
+.params .p-it b{color:#0A1F44;font-weight:600;}
+.params .p-note{font-size:10px;color:var(--g500);}
+
+/* ── alertas y pie ───────────────────────────────────────────────── */
+.alert-card{border-radius:3px;}
+.alert-card::before{height:2px;border-radius:0;}
+.alert-ttl{font-size:12px;font-weight:600;}
+.alert-txt{font-size:10.5px;color:var(--g500);}
+.alert-txt b{color:#0A1F44;font-weight:600;}
+.attr{font-size:10px;color:var(--g500);}
+
+/* ── estado vacío: el filtro es real y a veces no queda nada ── */
+.cm-vacio{display:none;padding:26px 18px;font-size:12.5px;color:var(--g500);line-height:1.6;
+          border-bottom:1px solid var(--g200);}
+.cm-vacio.on{display:block;}
+.cm-vacio b{color:#0A1F44;font-weight:600;}
+.cm-vacio em{font-style:normal;color:var(--blue);}
+/* ── pestañas ────────────────────────────────────────────────────── */
+.tabb{font-size:12.5px;font-weight:600;border-bottom-width:2px;}
+.tabb:hover{background:#fff;color:#0A1F44;}
+.tabb.active{color:var(--red);border-bottom-color:var(--red);}
+.tabb .tcount{border-radius:3px;background:#fff;border:1px solid var(--g200);
+              color:var(--g500);font-weight:600;font-size:9.5px;}
+.tabb.active .tcount{background:#fff;border-color:var(--red);color:var(--red);}
+
+.x-blk{padding:14px 18px 4px;font-size:13px;font-weight:700;color:var(--cnavy);border-top:1px solid var(--cbd);}
+/* ══ CU1 · ajustes propios del lavado de cara ══ */
+#metNota{display:none!important;}
+.two-tbl-note{display:none!important;}
+.tbl-title .ii,.phase-meta .ii,.chart-ttl .ii,.pz-col h3 .ii{margin-left:5px;}
+.tbl-title .ii[data-t]::after,.phase-meta .ii[data-t]::after{width:300px;}
+.phase-meta .ii[data-t]::after{left:auto;right:-6px;transform:none;bottom:auto;top:calc(100% + 8px);}
+.phase-meta .ii[data-t]::before{left:auto;right:0;transform:none;bottom:auto;top:calc(100% + 3px);border-top-color:transparent;border-bottom-color:var(--cnavy);}
+.tbl-title .ii[data-t]::after{left:0;transform:none;bottom:auto;top:calc(100% + 8px);}
+.tbl-title .ii[data-t]::before{bottom:auto;top:calc(100% + 3px);border-top-color:transparent;border-bottom-color:var(--cnavy);}
+.badge{border:1px solid var(--cbd)!important;background:#fff!important;color:var(--cgy)!important;}
+.badge.b-ok{color:var(--cteal)!important;} .badge.b-warn{color:#D98324!important;}
+.sk-sub{color:var(--g500)!important;} .sk-sub.bad{color:var(--red)!important;}
+.vc{background:transparent!important;padding:0!important;font-weight:600;}
+.pz-big{font-weight:300;color:var(--cnavy);} .pz-note .bad{color:var(--red);}
+.pred-card{border-radius:3px;border:1px solid var(--cbd);background:#fff;box-shadow:none;}
+.pred-card::before{display:none;}
+.pa-better{color:var(--cteal);} .pa-worse{color:var(--red);} .pa-stable{color:var(--cgy);}
+.flow-step .fnum{background:var(--cnavy)!important;}
+.bvd-tbl th{color:var(--cgy);font-weight:600;}
+/* la página no se sale de pantalla: los filtros bajan de línea y las cifras caben */
+.fbar{flex-wrap:wrap!important;}
+.kpi-strip{flex-wrap:nowrap;}
+.ks{min-width:0!important;padding:10px 14px!important;}
+.ks-val{font-size:32px!important;white-space:nowrap;}
+.ks-val .u{font-size:15px!important;}
+.hdr-top{max-width:100%;}
+.kpi-strip{flex:1 1 auto;min-width:0;}
+#kpiGlobal,#kpiPhaseCards{flex:1 1 auto;min-width:0;}
+.kpi-phase{flex:1 1 auto;min-width:0;display:flex;}
+.ks{flex:1 1 0;}
+.ks-val{font-size:28px!important;}
+.ks-lbl{font-size:11px!important;white-space:normal!important;line-height:1.25;}
+.ks-delta{font-size:10px!important;}
+.brand{min-width:0!important;}
+.hdr-btn{padding:0 14px!important;}
+/* una sola marca para la fase activa, en todas las fases */
+.phase-pill.active,.phase-pill.active[data-phase]{background:var(--cnavy)!important;border-color:var(--cnavy)!important;color:#fff!important;}
+/* etiquetas y valoraciones como texto, sin pastillas de colores */
+.grade{background:transparent!important;color:var(--cnavy)!important;padding:0!important;font-weight:500;font-size:11.5px;}
+.vc-ok,.vc-na{background:transparent!important;color:var(--g500)!important;}
+.vc-warn{background:transparent!important;color:#D98324!important;}
+.vc-bad{background:transparent!important;color:var(--red)!important;}
+.s-sub{color:var(--cplum)!important;} .s-sub::before{background:var(--cplum)!important;}
+.flow-step .fnum{display:none!important;}
+.flow-step{border:1px solid var(--cbd);}
+</style>
+</head>
+<body>
+
+<!-- ══════════ HEADER ══════════ -->
+<header class="hdr">
+  <div class="hdr-top">
+    <div class="brand">
+      <svg class="logo-svg" viewBox="0 0 90 118" width="58" height="76" xmlns="http://www.w3.org/2000/svg">
+        <!-- Fondo rojo -->
+        <rect width="90" height="90" fill="#CC0B2F"/>
+        <!-- Fila superior: 4 estrellas equiespaciadas -->
+        <polygon fill="white" points="11,20 13.2,26.8 20.3,26.8 14.6,31 16.8,37.8 11,33.5 5.2,37.8 7.4,31 1.7,26.8 8.8,26.8"/>
+        <polygon fill="white" points="33,20 35.2,26.8 42.3,26.8 36.6,31 38.8,37.8 33,33.5 27.2,37.8 29.4,31 23.7,26.8 30.8,26.8"/>
+        <polygon fill="white" points="57,20 59.2,26.8 66.3,26.8 60.6,31 62.8,37.8 57,33.5 51.2,37.8 53.4,31 47.7,26.8 54.8,26.8"/>
+        <polygon fill="white" points="79,20 81.2,26.8 88.3,26.8 82.6,31 84.8,37.8 79,33.5 73.2,37.8 75.4,31 69.7,26.8 76.8,26.8"/>
+        <!-- Fila inferior: 3 estrellas -->
+        <polygon fill="white" points="22,52 24.2,58.8 31.3,58.8 25.6,63 27.8,69.8 22,65.5 16.2,69.8 18.4,63 12.7,58.8 19.8,58.8"/>
+        <polygon fill="white" points="45,52 47.2,58.8 54.3,58.8 48.6,63 50.8,69.8 45,65.5 39.2,69.8 41.4,63 35.7,58.8 42.8,58.8"/>
+        <polygon fill="white" points="68,52 70.2,58.8 77.3,58.8 71.6,63 73.8,69.8 68,65.5 62.2,69.8 64.4,63 58.7,58.8 65.8,58.8"/>
+        <!-- Texto -->
+        <text x="45" y="101" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-size="10" font-weight="900" fill="#111827" letter-spacing="-0.3">Comunidad</text>
+        <text x="45" y="114" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-size="10" font-weight="900" fill="#111827" letter-spacing="-0.3">de Madrid</text>
+      </svg>
+      <div class="brand-info">
+        <strong>Dirección General de Atención al Mayor y a la Dependencia</strong>
+        <em>Consejería de Familia, Juventud y Asuntos Sociales · CU1</em>
+      </div>
+    </div>
+
+    <div class="kpi-strip">
+      <div id="kpiGlobal" style="display:flex;align-items:stretch;"></div>
+      <div class="kpi-sep"></div>
+      <div class="kpi-phase" id="kpiPhase">
+        <span class="kpi-phase-lbl">Esta fase</span>
+        <div id="kpiPhaseCards" style="display:flex;align-items:stretch;"></div>
+      </div>
+    </div>
+
+    <div class="hdr-btn">
+      <button class="btn-red" onclick="actualizarDatos()">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="14" height="14" rx="2" stroke="white" stroke-width="1.4"/><path d="M4 8h8M8 4v8" stroke="white" stroke-width="1.4" stroke-linecap="round"/></svg>
+        Análisis del proceso
+      </button>
+    </div>
+  </div>
+
+  <div class="title-bar">
+    <div class="title-bar-left">
+      <h1>Cuadro de Mando de Gestión de Equipo</h1>
+      <span class="icon-btn" title="Compartir"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M6 3H3a1 1 0 00-1 1v9a1 1 0 001 1h10a1 1 0 001-1v-3M10 1l5 5m0 0l-5 5m5-5H6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <span class="icon-btn" title="Guardar vista"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 3h8l2 2v8H3V3z" stroke="currentColor" stroke-width="1.3"/><path d="M6 3v3h5M6 9h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></span>
+    </div>
+    <div style="display:flex;gap:6px;align-items:center;">
+      <span style="font-size:10px;color:var(--g400);">Actualizado: 30/06/2025 08:00</span>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="fbar">
+    <div class="fdate" title="Por defecto el cuadro carga todo el histórico disponible. Puedes fijar tu propio rango en Periodo → «Rango personalizado» y guardar la vista para que se abra siempre con él.">
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="2" width="13" height="12" rx="2" stroke="#9CA3AF" stroke-width="1.3"/><path d="M1.5 6h13M5.5 1v2.5M10.5 1v2.5" stroke="#9CA3AF" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <input type="date" id="fDateIni" value="2025-06-01">
+    </div>
+    <div class="fdate" id="fdateFin" style="display:none;" title="Fecha de fin del período (rango personalizado)">
+      <span style="color:var(--g400);font-size:11px;">→ Fin</span>
+      <input type="date" id="fDateFin" value="2025-07-31">
+    </div>
+    <div class="fsel" title="Granularidad temporal del análisis">
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="#9CA3AF" stroke-width="1.3"/><path d="M8 4.5V8l2.5 2" stroke="#9CA3AF" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <span>Periodo</span>
+      <select id="fPeriodo" onchange="onPeriodo()">
+        <option value="sem">Semanal</option>
+        <option value="mes" selected>Mensual</option>
+        <option value="tri">Trimestral</option>
+        <option value="anu">Anual</option>
+        <option value="rango">Rango personalizado (fecha fin)…</option>
+        <option value="obj">Objetivo propuesto</option>
+      </select>
+      <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+    </div>
+    <div class="fsel"><span>Estado</span>
+      <select id="fEstado" onchange="filtrar()">
+        <option value="">Todos</option>
+      </select>
+      <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+    </div>
+    <div class="fsel" title="Municipio o mancomunidad de servicios sociales del expediente. La mancomunidad se deriva del municipio informado en SIDEMA (Susana, sesión 27/08)"><span>Territorio</span>
+      <select id="fTerr" onchange="onTerr()">
+        <option value="">Todas</option>
+        <optgroup label="Mancomunidades de servicios sociales">
+          <option>Mancom. Sierra Norte</option><option>Mancom. THAM</option><option>Mancom. Las Vegas</option>
+          <option>Mancom. Vega del Henares</option><option>Mancom. Suroeste</option><option>Mancom. Alberche</option>
+          <option>Mancom. 2016</option><option>Mancom. Sierra Oeste</option>
+          <option disabled style="font-style:italic;color:#9CA3AF;">… se construye a partir del municipio de la solicitud</option>
+        </optgroup>
+        <optgroup label="Zonas de citación">
+          <option>Metropolitana</option>
+          <option>Periferia</option>
+        </optgroup>
+        <optgroup label="Municipios (Comunidad de Madrid)">
+          <option>Madrid capital</option><option>Móstoles</option><option>Alcalá de Henares</option><option>Fuenlabrada</option><option>Leganés</option><option>Getafe</option><option>Alcorcón</option><option>Torrejón de Ardoz</option><option>Parla</option><option>Alcobendas</option><option>Las Rozas de Madrid</option><option>San Sebastián de los Reyes</option><option>Pozuelo de Alarcón</option><option>Rivas-Vaciamadrid</option><option>Coslada</option><option>Valdemoro</option><option>Majadahonda</option><option>Collado Villalba</option><option>Aranjuez</option><option>Arganda del Rey</option><option>Mancom. Sierra Norte</option><option>Mancom. THAM</option>
+          <option disabled style="font-style:italic;color:#9CA3AF;">… catálogo completo (179 municipios) desde el aplicativo</option>
+        </optgroup>
+      </select>
+      <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+    </div>
+    <div class="fsel"><span>Edad</span>
+      <select id="fEdad" onchange="filtrar()">
+        <option value="">Todas las edades</option><option>Menores de 3 años (EVE)</option><option>De 3 a 6 años</option><option>De 7 a 10 años</option><option>De 11 a 17 años</option><option>Mayores de 18 años</option><option>Mayores de 90 años</option>
+      </select>
+      <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+    </div>
+    <div class="fsel" id="fselVal"><span>Tipo de valoración</span>
+      <select id="fVal" onchange="filtrar()">
+        <option value="">Todas</option><option>Presencial</option><option>Telemática</option><option>BVD</option><option>EVE</option><option>Inicial</option>
+      </select>
+      <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+    </div>
+    <div class="fsel" id="fselOrigen" style="display:none;" title="Canal de entrada de la solicitud — campo «origen» en SIDEMA (pendiente de confirmar si persiste tras la grabación)"><span>Origen ⚠</span>
+      <select id="fOrigen" onchange="filtrar()">
+        <option value="">Todos</option><option>Telemática</option><option>ORBE / presencial</option><option>Registro / papel</option>
+      </select>
+      <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+    </div>
+    <div class="fsel f3only" id="fselPrest" style="display:none;" title="Filtra los plazos de tramitación por el tipo de prestación resuelta"><span>Tipo de prestación</span>
+      <select id="fPrest" onchange="onPrest()">
+        <option value="">Todas</option><option>Residencia</option><option>SAD</option><option>Teleasistencia</option><option>Prest. cuidados</option><option>Centro de día</option><option>Prest. vinculada</option>
+      </select>
+      <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+    </div>
+    <div class="fsel" id="fselRes" style="display:none;" title="Resultado de la resolución del grado (se cierra en Fase 2 · Valoración tras el comité)"><span>Resolución de grado</span>
+      <select id="fRes" onchange="filtrar()">
+        <option value="">Todas</option><option>Grado 0</option><option>Grado I-III con PIA</option><option>Desistimiento</option><option>Denegatoria</option><option>Caducidad</option>
+      </select>
+      <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+    </div>
+    <div class="fsel" id="fselObj" title="Fija tu propio objetivo de días para esta fase — el dashboard recalcula cumplimiento contra esta meta"><span>Objetivo</span>
+      <input id="fObjDays" type="number" min="1" style="width:48px;border:none;outline:none;background:transparent;font-family:var(--f);font-size:12px;font-weight:700;color:var(--blue);" value="120" onchange="onObjDays()">
+      <span style="font-weight:400;">días</span>
+    </div>
+    <div class="fspace"></div>
+    <button class="btn-outline" onclick="limpiar()">
+      <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M12 4L4 12M4 4l8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      Limpiar
+    </button>
+    <button class="btn-outline" onclick="exportCSV()">
+      <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M3 12h10M8 2v8M5 7l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Exportar CSV
+    </button>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs" style="display:none;"></div>
+</header>
+
+<!-- ══════════ TAB 1 — SEGUIMIENTO INDIVIDUAL ══════════ -->
+<div class="tabpane active" id="t1">
+
+  <!-- PHASE SELECTOR -->
+  <div class="phase-bar">
+    <span class="pb-lbl">Fase del proceso</span>
+    <div class="phase-pills">
+      <button class="phase-pill" data-phase="1">Fase 1 · Grabación de solicitudes</button>
+      <button class="phase-pill active" data-phase="2">Fase 2 · Valoración</button>
+      <button class="phase-pill" data-phase="3">Fase 3 · Resolución de PIA</button>
+    </div>
+    <span class="phase-meta">Equipos independientes por fase · <strong id="phCount">150 valoradores</strong> · objetivo <strong id="phObj">≤120 días</strong></span>
+  </div>
+
+  <!-- Aviso metodológico pedido en la sesión del 27/08 -->
+  <div id="metNota" style="display:flex;align-items:flex-start;gap:8px;padding:8px 18px;background:#EFF6FF;border-bottom:1px solid #BFDBFE;font-size:10.5px;color:#1E40AF;line-height:1.5;">
+    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style="flex-shrink:0;margin-top:1px;"><circle cx="8" cy="8" r="6.5" stroke="#1E40AF" stroke-width="1.3"/><path d="M8 7.2v4M8 4.8v.9" stroke="#1E40AF" stroke-width="1.6" stroke-linecap="round"/></svg>
+    <span id="metNotaTxt"></span>
+  </div>
+
+  <!-- SECCIONES -->
+  <div class="sections" id="sectionsGrid">
+    <div class="section" id="sec1">
+      <div class="sec-title" id="sec1Title">Productividad y Carga</div>
+      <div class="sec-kpis" id="sec1Kpis"></div>
+      <div class="sec-chart">
+        <div class="chart-ttl" id="c1Ttl">↑ Distribución de expedientes activos por rango de carga</div>
+        <div class="chart-sub" id="c1Sub"># Trabajadores agrupados por tramo de carga</div>
+        <div class="chart-wrap"><canvas id="cCarga"></canvas></div>
+        <div class="chart-xlabel">Rango de expedientes por trabajador →</div>
+        <div class="legend">
+          <div class="leg"><div class="leg-sq" style="background:#B5B6C6;"></div>Nº trabajadores</div>
+          <div class="leg"><div class="leg-sq" style="background:#464C6A;"></div>Carga óptima</div>
+          <div class="leg"><div class="leg-sq" style="background:var(--red);"></div>Sobrecarga</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="sec2">
+      <div class="sec-title" id="sec2Title">Plazos de Tramitación</div>
+      <div class="sec-kpis" id="sec2Kpis"></div>
+      <div class="sec-chart">
+        <div class="chart-ttl" id="c2Ttl">↑ Evolución plazo medio mensual</div>
+        <div class="chart-sub" id="c2Sub">Días medios de tramitación vs objetivo de fase</div>
+        <div class="chart-wrap"><canvas id="cPlazo"></canvas></div>
+        <div class="chart-xlabel" id="c2Xlabel">Ene → Jun 2025</div>
+        <div class="legend" id="c2Legend">
+          <div class="leg"><div class="leg-sq" style="background:#64748B;"></div>Plazo medio (días)</div>
+          <div class="leg"><div class="leg-ln" style="background:var(--red);border-top:2px dashed var(--red);"></div><span id="c2ObjLeg">Objetivo SLA</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="sec3">
+      <div class="sec-title" id="sec3Title">Variabilidad de Criterio BVD</div>
+      <div class="sec-kpis" id="sec3Kpis"></div>
+      <div class="sec-chart" style="padding-bottom:16px;">
+        <div class="chart-ttl" id="c3Ttl">Distribución de Grados BVD por Valorador</div>
+        <div class="chart-sub" id="c3Sub">% asignación G0 / G1 / G2 / G3 — desviación vs media del equipo</div>
+        <div id="sec3Body"><!-- rendered by JS --></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLA DE TRABAJADORES -->
+  <div class="tbl-section">
+    <div class="tbl-hdr">
+      <div class="tbl-title">Detalle por Trabajador — <span id="tblPhaseLbl">Valoración</span> <span class="badge" id="countBadge"></span> <span class="badge" id="userScopeBadge"></span></div>
+      <button class="btn-outline" onclick="exportCSV()">↓ CSV</button>
+    </div>
+    <div class="two-tbl-note" id="userScopeNote"></div>
+    <div class="tbl-wrap">
+      <table id="tWorkers">
+        <thead>
+          <tr>
+            <th onclick="sortT(0)">Trabajador <span class="si">↕</span></th>
+            <th onclick="sortT(1)">Tipo <span class="si">↕</span></th>
+            <th onclick="sortT(2)" id="thTerr" title="Zona de trabajo del valorador (toda la Comunidad de Madrid)">Zona de geolocalización <span class="si">↕</span></th>
+            <th onclick="sortT(3)">Expedientes <span class="si">↕</span></th>
+            <th onclick="sortT(4)">Carga <span class="si">↕</span></th>
+            <th onclick="sortT(5)">Plazo medio <span class="si">↕</span></th>
+            <th onclick="sortT(6)">vs equipo <span class="si">↕</span></th>
+            <th onclick="sortT(7)" id="thVar">Canal / Criterio <span class="si">↕</span></th>
+            <th onclick="sortT(8)">Estado <span class="si">↕</span></th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TABLA DE HITOS FRACCIONADOS — solo Fase 2 (Valoración) -->
+  <div class="tbl-section" id="tblHitos2" style="display:none;">
+    <div class="tbl-hdr">
+      <div class="tbl-title">Plazos fraccionados por hito — <span id="hitos2Scope">Valoración individual</span>
+        <span class="badge">SIDEMA · cambios de estado</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="subs-sel" style="margin:0;">
+          <span style="color:var(--g500);">Ver por</span>
+          <select id="hitosMode" onchange="renderHitos2()">
+            <option value="trab">Trabajador</option>
+            <option value="exp">Expediente</option>
+          </select>
+          <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        </div>
+        <div class="subs-sel" id="hitosCitWrap" style="margin:0;display:none;" title="Filtra por cualquiera de los 3 estados «pendiente de citación» para detectar desfases entre tipos de valoración">
+          <span style="color:var(--g500);">Estado citación</span>
+          <select id="hitosCitFilter" onchange="renderHitos2()">
+            <option value="">Todos</option>
+            <option>Pendiente de citación</option>
+            <option>En proceso de valoración en centros</option>
+            <option>Citación manual</option>
+          </select>
+          <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        </div>
+        <button class="btn-outline" onclick="exportHitos2()">↓ CSV</button>
+      </div>
+    </div>
+    <div id="hitos2Flow" class="flow-strip"></div>
+    <div id="hitos2Note" class="two-tbl-note"></div>
+    <div class="tbl-wrap">
+      <table id="tHitos2">
+        <thead id="hitos2Head"></thead>
+        <tbody id="tbodyHitos2"></tbody>
+      </table>
+    </div>
+    <div id="hitos2Lgd" class="mini-lgd"></div>
+  </div>
+
+  <!-- TABLA EQUIPO DE SUBSANACIÓN — solo Fase 1 -->
+  <div class="tbl-section" id="tblSubsana" style="display:none;">
+    <div class="tbl-hdr">
+      <div class="tbl-title">Detalle por Trabajador — Equipo de Subsanación <span class="badge" id="subsCountBadge"></span> <span class="badge b-warn">⚠ por confirmar vía login</span></div>
+      <button class="btn-outline" onclick="exportSubsana()">↓ CSV</button>
+    </div>
+    <div class="two-tbl-note">
+      Equipo <strong>diferenciado</strong> del de grabación (Roberto, sesión 3): el equipo que graba no subsana. Aquí se mide la <strong>carga de subsanación</strong> y el ritmo diario del equipo que resuelve subsanaciones y AVC.
+    </div>
+    <div class="tbl-wrap">
+      <table id="tSubsana">
+        <thead>
+          <tr>
+            <th onclick="sortS(0)">Trabajador <span class="si">↕</span></th>
+            <th onclick="sortS(1)">Tipo <span class="si">↕</span></th>
+            <th onclick="sortS(2)">Exp. subsanados <span class="si">↕</span></th>
+            <th onclick="sortS(3)">Subsanaciones/día <span class="si">↕</span></th>
+            <th onclick="sortS(4)">AVC en bucle <span class="si">↕</span></th>
+            <th onclick="sortS(5)">Carga <span class="si">↕</span></th>
+            <th onclick="sortS(6)">Estado <span class="si">↕</span></th>
+          </tr>
+        </thead>
+        <tbody id="tbodySubsana"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TABLA EVALUACIÓN INDIVIDUAL PIA — solo Fase 3 -->
+  <div class="tbl-section" id="tblPia3" style="display:none;">
+    <div class="tbl-hdr">
+      <div class="tbl-title">Evaluación individual del tramitador — Gestión del PIA
+        <span class="badge">SIDEMA · cambios de estado</span>
+        <span class="badge b-warn">⚠ por confirmar vía login</span>
+      </div>
+      <button class="btn-outline" onclick="exportPia3()">↓ CSV</button>
+    </div>
+    <div class="two-tbl-note">
+Mide lo que <strong>está en la mano del tramitador</strong>: el plazo desde que el expediente entra en <em>«consulta al beneficiario»</em> (ya con capacidad económica completa) hasta la <strong>resolución del PIA</strong>, más el <strong>% con requerimiento</strong> y las <strong>llamadas registradas</strong> por expediente.<br>
+      <span style="color:#92400E;">En PIA no existe asignación formal de tramitador, pero el sistema guarda el <strong>login que genera la propuesta</strong> (Roberto, sesión 27/08). Esta vista queda condicionada a confirmar que ese login sea explotable; si no lo fuera, el análisis se mantendría a nivel de expediente.</span>
+    </div>
+    <div class="tbl-wrap">
+      <table id="tPia3">
+        <thead>
+          <tr>
+            <th onclick="sortP(0)">Tramitador <span class="si">↕</span></th>
+            <th onclick="sortP(1)">Exp. resueltos <span class="si">↕</span></th>
+            <th onclick="sortP(2)">Plazo imputable <span class="si">↕</span></th>
+            <th onclick="sortP(3)">vs equipo <span class="si">↕</span></th>
+            <th onclick="sortP(4)">% con requerimiento <span class="si">↕</span></th>
+            <th onclick="sortP(5)">Llamadas/exp <span class="si">↕</span></th>
+            <th onclick="sortP(6)">Perfil de gestión <span class="si">↕</span></th>
+          </tr>
+        </thead>
+        <tbody id="tbodyPia3"></tbody>
+      </table>
+    </div>
+    <div class="mini-lgd">
+      <span style="color:var(--g400);font-style:italic;">Plazo imputable: «consulta al beneficiario» → resolución · media del equipo requerimiento 24% · llamadas 2,1/exp · datos existentes en SIDEMA hoy no explotados</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════ TAB 2 — PLAZOS DE TRAMITACIÓN (vista global) ══════════ -->
+<div class="tabpane" id="t2">
+  <div class="phase-bar">
+    <span class="pb-lbl">Vista global de plazos</span>
+    <span style="font-size:11px;color:var(--g500);">Proceso completo: la resolución del grado se cierra en Fase 2 (Valoración) y el PIA en Fase 3 · el CU1 termina aquí (no incluye prestación posterior)</span>
+  </div>
+
+  <div class="pz-general">
+    <div class="pz-big">214 <span class="u">días medios</span></div>
+    <div class="pz-note">
+      <div><strong class="bad">+34 días sobre el objetivo legal</strong> de 180 días (RD Dependencia / 6 meses normativos).</div>
+      <div style="color:var(--g500);">Cuello de botella principal: <strong style="color:var(--g900);">Fase 2 · Valoración</strong>, que concentra el <strong style="color:var(--g900);">56%</strong> del plazo total del proceso.</div>
+    </div>
+  </div>
+
+  <div class="pz-grid">
+    <div class="pz-col">
+      <h3>Subplazos por fase vs objetivo</h3>
+      <p>Cada fase es un equipo distinto · barras comparadas frente a su propio SLA (30 / 120 / 180 días)</p>
+      <div class="chart-wrap" style="height:230px;"><canvas id="cSubplazos"></canvas></div>
+    </div>
+    <div class="pz-col">
+      <h3>Indicador predictivo de tendencia</h3>
+      <p>Con lo que entra mensualmente vs lo que se resuelve, ¿el plazo mejora o empeora?</p>
+      <div class="pred-cards">
+        <div class="pred-card p1">
+          <div class="pred-name">Fase 1 · Grabación</div>
+          <div class="pred-arrow pa-better"><span class="pred-ico">▼</span><span class="pred-txt">Mejora</span></div>
+          <div class="pred-flow">Entran <b>142/sem</b><br>Resuelven <b>158/sem</b></div>
+        </div>
+        <div class="pred-card p2">
+          <div class="pred-name">Fase 2 · Valoración</div>
+          <div class="pred-arrow pa-worse"><span class="pred-ico">▲</span><span class="pred-txt">Empeora</span></div>
+          <div class="pred-flow">Entran <b>158/sem</b><br>Resuelven <b>131/sem</b></div>
+        </div>
+        <div class="pred-card p3">
+          <div class="pred-name">Fase 3 · Resolución de PIA</div>
+          <div class="pred-arrow pa-stable"><span class="pred-ico">→</span><span class="pred-txt">Estable</span></div>
+          <div class="pred-flow">Entran <b>131/sem</b><br>Resuelven <b>129/sem</b></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════ TAB 3 — VARIABILIDAD DE CRITERIO ══════════ -->
+<div class="tabpane" id="t3">
+  <div class="phase-bar">
+    <span class="pb-lbl">Variabilidad de criterio</span>
+    <div class="phase-pills">
+      <button class="phase-pill active" data-vtoggle="bvd">Fase 2 · Grados BVD</button>
+      <button class="phase-pill" data-vtoggle="prest">Fase 3 · Tipo de prestación</button>
+    </div>
+  </div>
+  <div class="pz-col" style="border:none;" id="v3bvd">
+    <h3>Distribución de Grados BVD por valorador</h3>
+    <p>Un valorador que otorga sistemáticamente grados más altos/bajos que la media indica criterio no homogéneo (&gt;2σ = sesgo)</p>
+    <div class="chart-wrap" style="height:260px;"><canvas id="cBvd"></canvas></div>
+  </div>
+  <div class="pz-col" style="border:none;display:none;" id="v3prest">
+    <h3>Distribución de tipo de prestación por técnico PIA</h3>
+    <p>En los PIA la variabilidad no va por grado, sino por servicio reconocido (residencia, SAD, teleasistencia, prestación por cuidados…)</p>
+    <div class="chart-wrap" style="height:260px;"><canvas id="cPrest"></canvas></div>
+  </div>
+</div>
+
+<!-- ══════════ TAB 4 & 5 — PLACEHOLDER ══════════ -->
+<div class="tabpane" id="t4">
+  <div class="placeholder"><div class="ph-ico">📊</div>Evaluación del Desempeño<br><span style="font-size:11px;">Pendiente de definición funcional con el equipo gestor.</span></div>
+</div>
+<div class="tabpane" id="t5">
+  <div class="placeholder"><div class="ph-ico">🎯</div>Detección de Outliers<br><span style="font-size:11px;">Pendiente de definición funcional con el equipo gestor.</span></div>
+</div>
+
+<div class="attr">
+  <span><strong>Madrid Digital</strong> · Cuadro de Mando de Gestión de Equipo · CU1 Reconocimiento de la Dependencia</span>
+  <span>Consejería de Digitalización · Comunidad de Madrid · Process Intelligence</span>
+</div>
+
+<script>
+/* ════════ PALETA ════════ */
+/* paleta reducida, la del entorno Celonis: azul noche, pizarra, gris; rojo solo para lo que falla */
+const TEAL_A='#B5B6C6', RED='#E12E2E', ORA='#D98324', GRN='#005B60', BLU='#464C6A', PUR='#464C6A', NAVY='#0A1F44';
+
+/* ════════ DATOS POR FASE ════════ */
+const PHASES = {
+  1: {
+    name:'Grabación de solicitudes', team:'~50 tramitadores', obj:'≤30 días', objDays:30,
+    kpiStrip:[
+      ['Trabajadores','50','ok','personal administrativo'],
+      ['Solicitudes grabadas','1 240','ok','altas registradas en el periodo'],
+      ['Plazo medio','24 d','ok','▼ −6d vs objetivo 30d'],
+      ['% Cumplimiento SLA','78%','warn','22% fuera de plazo'],
+      ['Tendencia','↓ Mejora','ok','resuelven más de lo que entra'],
+      ['Desviaciones','11','warn','▲ +2 esta semana'],
+    ],
+    sec1:[['Total trabajadores','50','#2EAA4B','18 empresa externa · 32 propios'],['Media solic./persona','24.8','#F5A623','● Rango: 11 – 42'],['Sobrecargados','4','#CC0B2F','▲ >115% de la media']],
+    carga:[5,9,18,11,5,2],
+    sec2:[['Solicitudes grabadas','1 300','#4A90D9','total del periodo · por fecha de grabación'],
+          ['Grabadas en plazo','1 240','#2EAA4B','✓ 95,4% · ≤30 d desde la solicitud'],
+          ['Grabadas fuera de plazo','60','#CC0B2F','▲ 4,6% · >30 d desde la solicitud'],
+          ['Pendientes de grabar (bandeja) ⚠','—','#9CA3AF','origen del dato por confirmar']],
+    sec2chart:{completados:[198,201,207,214,213,207],fuera:[14,12,10,9,8,7]},
+    plazo:[27,26,25,24,24,23], plazoTerr:{'Móstoles':[29,28,28,27,27,26],'Madrid capital':[24,23,22,22,21,21],'Alcalá de Henares':[26,25,25,24,24,23],'Mancom. Sierra Norte':[31,30,30,29,29,28]},
+    sec3:'gestion',
+    workers:[
+      ['Raúl Díaz Campos','Subcontrata','Madrid capital',212,'128%',RED,'34d','+6d',RED,'crit',18,'68','#F5A623','Crítico — sobrecarga',''],
+      ['Patricia Romero Sáez','Subcontrata','Alcalá de Henares',118,'96%',GRN,'27d','−1d',GRN,'opt',6,'88','#2EAA4B','Óptimo',''],
+      ['Nuria Ortega Bravo','Adscrito','Mancom. Sierra Norte',64,'58%',BLU,'31d','+3d',ORA,'sub',14,'74','#F5A623','Subcarga — reasignar',''],
+      ['Jorge Vega Nieto','Subcontrata','Getafe',142,'108%',ORA,'29d','+2d',ORA,'opt',9,'80','#2EAA4B','Óptimo',''],
+      ['Beatriz Solá Marín','Subcontrata','Móstoles',88,'74%',GRN,'25d','−4d',GRN,'opt',5,'85','#2EAA4B','Óptimo',''],
+      ['Iván Cano Prieto','Adscrito','Madrid capital',55,'52%',BLU,'33d','+5d',ORA,'sub',12,'70','#F5A623','Subcarga — reasignar',''],
+    ],
+  },
+  2: {
+    name:'Valoración', team:'~150 valoradores', obj:'≤120 días', objDays:120,
+    kpiStrip:[
+      ['Trabajadores','150','ok','▲ +5'], ['Expedientes activos','1 842','warn','● 94 sin asignar'],
+      ['Plazo medio','118 d','ok','▼ −2d vs obj.'], ['Desviaciones','47','bad','▲ +6'],
+      ['Sobrecargados','12','bad','▲ >115%'], ['Criterio sesgado','3','warn','● Valoradores'],
+    ],
+    sec1:[['Total trabajadores','150','#2EAA4B','valoradores BVD'],['Media exp/persona','12.3','#F5A623','● Rango: 6 – 22'],['Sobrecargados','12','#CC0B2F','▲ >115% de la media']],
+    carga:[29,90,20,11],
+    sec2:[['Expedientes valorados','1 842','#4A90D9','total del periodo · por fecha de dictamen'],
+          ['Valorados en plazo','1 795','#2EAA4B','✓ 97,4% · ≤120 d'],
+          ['Valorados fuera de plazo','47','#CC0B2F','▲ 2,6% · >120 d']],
+    sec2chart:{completados:[285,295,300,305,305,305],fuera:[12,10,8,7,5,5]},
+    plazo:[126,124,122,120,119,118], plazoTerr:{'Móstoles':[138,136,135,134,133,134],'Madrid capital':[112,110,109,108,107,105],'Alcalá de Henares':[118,116,115,114,113,112],'Mancom. Sierra Norte':[150,149,150,148,150,149]},
+    sec3:'bvd',
+    workers:[
+      ['María López García','Valorador','Madrid capital',192,'98%',GRN,'112d','−6d',GRN,'opt','vc-ok|Alineada','91','#2EAA4B','Óptimo','Presencial'],
+      ['Carlos Martínez López','Valorador','Móstoles',188,'90%',GRN,'118d','−1d',GRN,'rev','vc-bad|Sesgo G3 (+21pp)','60','#F5A623','Revisar criterio','BVD'],
+      ['Sofía Romero Jiménez','Valorador','Getafe',176,'100%',GRN,'114d','−2d',GRN,'opt','vc-ok|Alineada','88','#2EAA4B','Óptimo','Telemática'],
+      ['A. Sánchez Moro','Valorador','Mancom. Sierra Norte',165,'104%',ORA,'149d','+25d',RED,'rev','vc-bad|Sesgo G3 (+24pp)','58','#F5A623','Revisar criterio','Inicial'],
+      ['Roberto Sánchez Gil','Valorador','Alcalá de Henares',96,'62%',BLU,'108d','−5d',GRN,'sub','vc-warn|Leve (+2σ G0)','82','#2EAA4B','Subcarga — reasignar','EVE'],
+      ['Patricia Fernández Ruiz','Valorador','Madrid capital',210,'132%',RED,'140d','+18d',RED,'crit','vc-ok|Alineada','64','#F5A623','Crítico — sobrecarga','Inicial'],
+    ],
+  },
+  3: {
+    name:'Resolución de PIA', team:'~80 técnicos PIA', obj:'≤180 días', objDays:180,
+    kpiStrip:[
+      ['Trabajadores','80','ok','▲ +3'], ['Expedientes activos','920','warn','● 41 en revisión'],
+      ['Plazo medio','152 d','ok','▼ −28d vs obj.'], ['Desviaciones','18','warn','▲ +4'],
+      ['Sobrecargados','3','bad','▲ >115%'], ['Subcargados','8','warn','● <70%'],
+    ],
+    sec1:[['Total trabajadores','80','#2EAA4B','gestión · elaboración · supervisión'],['Media exp/persona','11.5','#F5A623','● Rango: 4 – 19'],['Sobrecargados','3','#CC0B2F','▲ >115% de la media']],
+    carga:[18,46,10,6],
+    sec2:[['PIA resueltos','928','#4A90D9','total del periodo · por fecha de resolución'],
+          ['Resueltos en plazo','910','#2EAA4B','✓ 98,1% · ≤180 d'],
+          ['Resueltos fuera de plazo','18','#CC0B2F','▲ 1,9% · >180 d']],
+    sec2chart:{completados:[140,145,150,155,160,160],fuera:[5,4,3,2,2,2]},
+    plazo:[168,164,160,156,154,152], plazoTerr:{'Móstoles':[178,176,174,172,171,170],'Madrid capital':[148,146,145,144,142,140],'Alcalá de Henares':[158,156,155,154,152,150],'Mancom. Sierra Norte':[185,184,182,181,180,179]},
+    sec3:'prest',
+    workers:[
+      ['Sergio Molina Reyes','Gestión/tramitación','Madrid capital',132,'96%',GRN,'144d','−8d',GRN,'opt','vc-na|N/A','92','#2EAA4B','Óptimo',''],
+      ['Daniel Herrera Luna','Elaboración PIA','Móstoles',158,'126%',RED,'172d','+22d',RED,'crit','vc-bad|Sobre-prescribe residencia','62','#F5A623','Crítico — sobrecarga',''],
+      ['Verónica Castro Peña','Supervisor/resolución','Alcalá de Henares',58,'54%',BLU,'150d','+0d',ORA,'sub','vc-na|N/A','78','#F5A623','Subcarga — reasignar',''],
+      ['Elena Pardo Gil','Elaboración PIA','Getafe',124,'102%',GRN,'148d','−4d',GRN,'opt','vc-ok|Homogéneo','86','#2EAA4B','Óptimo',''],
+      ['Marcos Ibáñez Roca','Elaboración PIA','Mancom. Sierra Norte',96,'88%',GRN,'179d','+12d',ORA,'rev','vc-warn|Sesgo SAD (+15pp)','70','#F5A623','Revisar criterio',''],
+      ['Lucía Ferrer Adán','Supervisor/resolución','Madrid capital',88,'80%',GRN,'146d','−6d',GRN,'opt','vc-na|N/A','84','#2EAA4B','Óptimo',''],
+    ],
+  },
+};
+
+const CARGA_LABELS = ['Baja (<70%)','Media (70–115%)','Alta (115–130%)','Sobrecarga (>130%)'];
+const F1_MESES = ['Ene','Feb','Mar','Abr','May','Jun'];
+const F1_VOLUMEN   = [195,208,184,215,222,204];
+const F1_PLAZO_MES = [32,31,29,27,26,24];
+const F1_FUERA_MES = [18,14,9,null,null,null];
+
+function buildCargaChart(phase){
+  if(chCarga){ chCarga.destroy(); chCarga=null; }
+  const ctx = document.getElementById('cCarga');
+  const cargaColors=['#B5B6C6','#464C6A','#8E91AD',RED];
+  chCarga = new Chart(ctx,{type:'bar',
+    data:{labels:CARGA_LABELS,datasets:[{label:'Trabajadores',data:PHASES[phase].carga,backgroundColor:cargaColors,borderRadius:4}]},
+    options:{...baseOpt,plugins:{legend:{display:false},tooltip:{...TT,callbacks:{label:c=>` ${c.raw} trabajadores`}}}}});
+}
+
+function buildPlazoChart(phase){
+  if(chPlazo){ chPlazo.destroy(); chPlazo=null; }
+  const ctx = document.getElementById('cPlazo');
+  const d=PHASES[phase];
+  const LBL={
+    1:{done:'Grabadas en plazo', notWord:'Grabadas fuera de plazo', axis:'Solicitudes grabadas', totalLbl:'grabadas'},
+    2:{done:'Valorados en plazo', notWord:'Valorados fuera de plazo', axis:'Expedientes valorados', totalLbl:'valorados'},
+    3:{done:'Resueltos en plazo', notWord:'Resueltos fuera de plazo', axis:'PIA resueltos', totalLbl:'resueltos'},
+  }[phase];
+  const meses=['Ene','Feb','Mar','Abr','May','Jun'];
+  const sc = d.sec2chart || {completados:d.plazo.map(()=>0),fuera:d.plazo.map(()=>0)};
+  const wrap=ctx.closest?ctx.closest('.chart-wrap'):ctx.parentElement;
+  if(wrap) wrap.style.height='220px';
+  chPlazo = new Chart(ctx,{
+    data:{labels:meses,datasets:[
+      {type:'bar',label:LBL.done,data:sc.completados,backgroundColor:'#464C6A',stack:'v',yAxisID:'yVol',order:3},
+      {type:'bar',label:LBL.notWord,data:sc.fuera,backgroundColor:RED,stack:'v',yAxisID:'yVol',order:3,borderRadius:{topLeft:3,topRight:3}},
+      {type:'line',label:'Plazo medio (días)',data:d.plazo,borderColor:NAVY,borderWidth:2,fill:false,tension:.35,pointBackgroundColor:NAVY,pointBorderColor:'#fff',pointBorderWidth:2,pointRadius:4,pointHoverRadius:6,yAxisID:'yDias',order:1},
+      {type:'line',label:'Objetivo SLA '+d.objDays+'d',data:Array(6).fill(d.objDays),borderColor:RED,borderWidth:1.5,borderDash:[6,4],pointRadius:0,fill:false,yAxisID:'yDias',order:2},
+    ]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{legend:{display:false},
+        tooltip:{...TT,mode:'index',intersect:false,callbacks:{
+          title:items=>items[0].label+' 2025',
+          label:c=>{
+            if(c.datasetIndex===2) return ` Plazo medio: ${c.raw}d`;
+            if(c.datasetIndex===3) return ` Objetivo SLA: ${c.raw}d`;
+            return ` ${c.dataset.label}: ${c.raw} exp.`;
+          },
+          afterBody:items=>{const t=(items.find(i=>i.datasetIndex===0)?.raw||0)+(items.find(i=>i.datasetIndex===1)?.raw||0);return['',`Total ${LBL.totalLbl}: ${t} exp.`];}
+        }}},
+      scales:{
+        x:{stacked:true,grid:{display:false},border:{display:false},ticks:{font:{size:11,family:'Inter'},color:'#9CA3AF'}},
+        yVol:{stacked:true,type:'linear',position:'left',min:0,grid:{color:'#F3F4F6'},border:{display:false},ticks:{font:{size:10,family:'Inter'},color:'#9CA3AF'},title:{display:true,text:LBL.axis,font:{size:9,family:'Inter'},color:'#9CA3AF'}},
+        yDias:{type:'linear',position:'right',min:0,max:Math.ceil(Math.max(...d.plazo,d.objDays)*1.2),grid:{display:false},border:{display:false},ticks:{font:{size:10,family:'Inter'},color:BLU,callback:v=>v+'d'},title:{display:true,text:'Plazo (días)',font:{size:9,family:'Inter'},color:BLU}}
+      }
+    }
+  });
+  document.getElementById('c2Ttl').textContent='↑ '+LBL.axis+': dentro vs fuera del plazo objetivo';
+  document.getElementById('c2Sub').textContent='El reparto se calcula comparando la fecha de solicitud con la fecha de '+({1:'grabación',2:'dictamen',3:'resolución'}[phase])+', no por el estado actual del expediente';
+  document.getElementById('c2Xlabel').textContent='Ene → Jun 2025';
+  document.getElementById('c2Legend').innerHTML=`
+    <div class="leg"><div class="leg-sq" style="background:#464C6A"></div>${LBL.done}</div>
+    <div class="leg"><div class="leg-sq" style="background:#E12E2E"></div>${LBL.notWord}</div>
+    <div class="leg"><div class="leg-ln" style="background:#0A1F44"></div>Plazo medio (días)</div>
+    <div class="leg"><div class="leg-ln" style="background:${RED};border-top:2px dashed ${RED}"></div><span id="c2ObjLeg">Objetivo SLA ${d.objDays}d</span></div>`;
+}
+
+/* BVD por valorador (fase 2) */
+const BVD = {
+  labels:['Media equipo','M. López','S. Romero','P. Fernández','R. Sánchez','C. Martínez','A. Sánchez'],
+  g0:[8,9,8,7,11,3,4], g1:[22,23,21,24,26,14,12], g2:[36,35,37,34,32,28,30], g3:[34,33,34,35,31,55,54],
+};
+/* Tipo de prestación por técnico (fase 3) — % */
+const PREST = {
+  tipos:['Residencia','SAD','Teleasistencia','Prest. cuidados','Centro de día','Prest. vinculada','Prom. autonomía','Otros'],
+  media:[14,24,18,20,10,7,5,2],
+  herrera:[31,18,12,16,9,7,5,2],   // sobre-prescribe residencia
+  molina:[13,25,19,21,10,6,4,2],
+};
+
+let currentPhase = 2;
+let chCarga, chPlazo, chSub, chBvd, chPrest;
+
+/* ════════ DATOS POR PERIODO ════════ */
+const PERIODO_DATA = {
+  sem: { labels:['L','M','X','J','V','S','D'], plazo:{ 1:[25,24,25,23,24,24,23], 2:[119,118,120,117,118,119,118], 3:[153,152,154,151,152,153,152] } },
+  mes: { labels:['Ene','Feb','Mar','Abr','May','Jun'], plazo:{ 1:[27,26,25,24,24,23], 2:[126,124,122,120,119,118], 3:[168,164,160,156,154,152] } },
+  tri: { labels:['1T24','2T24','3T24','4T24','1T25','2T25'], plazo:{ 1:[30,29,28,27,26,24], 2:[134,130,128,126,122,118], 3:[180,176,172,168,162,152] } },
+  anu: { labels:['2021','2022','2023','2024','2025'], plazo:{ 1:[33,31,29,27,24], 2:[145,140,135,128,118], 3:[195,190,182,172,152] } },
+};
+
+function onPeriodo(){
+  const p = document.getElementById('fPeriodo').value;
+  // Rango personalizado: muestra el calendario de fecha fin
+  const fin=document.getElementById('fdateFin'); if(fin) fin.style.display = (p==='rango') ? 'inline-flex' : 'none';
+  if(!chPlazo) return;
+  const ph=PHASES[currentPhase], objDays=ph.objDays;
+  const propObj={1:20,2:100,3:150}[currentPhase];
+  const n = chPlazo.data.labels.length;
+
+  // Objetivo propuesto: superpone una meta interna más ambiciosa que el SLA
+  if(p==='obj'){
+    chPlazo.data.datasets[3].data = Array(n).fill(propObj);
+    chPlazo.data.datasets[3].label = 'Objetivo propuesto '+propObj+'d';
+    chPlazo.update();
+    document.getElementById('c2Xlabel').textContent = 'Objetivo propuesto: '+propObj+' días';
+    document.getElementById('c2Sub').textContent = 'Escenario «objetivo propuesto» — meta interna más ambiciosa que el SLA de '+objDays+'d';
+    return;
+  }
+
+  // Cambia granularidad temporal (todas las fases)
+  const dd = PERIODO_DATA[p];
+  if(!dd) return;
+  const sc = ph.sec2chart || {completados:[],fuera:[]};
+  const n2 = dd.labels.length;
+  const fit = a => Array.from({length:n2},(_,i)=> a[Math.min(i,a.length-1)] ?? 0);
+  chPlazo.data.labels = dd.labels;
+  chPlazo.data.datasets[0].data = fit(sc.completados);
+  chPlazo.data.datasets[1].data = fit(sc.fuera);
+  chPlazo.data.datasets[2].data = dd.plazo[currentPhase];
+  chPlazo.data.datasets[3].data = Array(n2).fill(objDays);
+  chPlazo.data.datasets[3].label = 'Objetivo SLA '+objDays+'d';
+  chPlazo.update();
+  document.getElementById('c2Xlabel').textContent = { sem:'Esta semana', mes:'Ene → Jun 2025', tri:'Últimos 6 trimestres', anu:'Histórico anual' }[p];
+}
+
+function onSubsAtrib(){
+  const v=(document.getElementById('subsAtrib')||{}).value||'terr';
+  const el=document.getElementById('subsAtribBody');
+  if(!el) return;
+  if(v==='terr'){
+    el.innerHTML=`<table class="bvd-tbl"><thead><tr><th>Territorio</th><th>Exp.</th><th>% sub.</th><th>Plazo +</th><th title="Días medios que el expediente permanece detenido por el trámite de subsanación. No incluye caducidad ni otros trámites (Roberto, sesión 27/08)">Días bloq. subs.</th></tr></thead><tbody>
+      <tr><td>Madrid capital</td><td>124</td><td>28%</td><td><span class="bvd-chip bvd-ok">+8 d</span></td><td>18 d</td></tr>
+      <tr><td>Alcorcón</td><td>87</td><td>35%</td><td><span class="bvd-chip bvd-warn">+12 d</span></td><td>14 d</td></tr>
+      <tr><td>Mancom. Sierra Norte</td><td>52</td><td>41%</td><td><span class="bvd-chip bvd-bad">+18 d</span></td><td>21 d</td></tr>
+      <tr><td>Móstoles</td><td>63</td><td>29%</td><td><span class="bvd-chip bvd-ok">+9 d</span></td><td>8 d</td></tr>
+      <tr><td>Getafe</td><td>58</td><td>31%</td><td><span class="bvd-chip bvd-warn">+11 d</span></td><td>7 d</td></tr>
+    </tbody></table>`;
+  } else if(v==='origen'){
+    el.innerHTML=`<table class="bvd-tbl"><thead><tr><th>Origen ⚠</th><th>Exp.</th><th>% sub.</th><th>Plazo +</th><th title="Días medios que el expediente permanece detenido por el trámite de subsanación. No incluye caducidad ni otros trámites (Roberto, sesión 27/08)">Días bloq. subs.</th></tr></thead><tbody>
+      <tr><td>Telemática</td><td>241</td><td>24%</td><td><span class="bvd-chip bvd-ok">+7 d</span></td><td>22 d</td></tr>
+      <tr><td>ORBE / presencial</td><td>118</td><td>39%</td><td><span class="bvd-chip bvd-bad">+16 d</span></td><td>34 d</td></tr>
+      <tr><td>Registro / papel</td><td>25</td><td>44%</td><td><span class="bvd-chip bvd-bad">+19 d</span></td><td>12 d</td></tr>
+      <tr class="bvd-ref"><td colspan="5" style="font-style:italic;">Campo «origen» pendiente de confirmar si persiste tras la grabación (Agustina, sesión 3)</td></tr>
+    </tbody></table>`;
+  } else {
+    el.innerHTML=`<table class="bvd-tbl"><thead><tr><th>Rango edad</th><th>Exp.</th><th>% sub.</th><th>Plazo +</th><th title="Días medios que el expediente permanece detenido por el trámite de subsanación. No incluye caducidad ni otros trámites (Roberto, sesión 27/08)">Días bloq. subs.</th></tr></thead><tbody>
+      <tr><td>General (&gt;18 años)</td><td>298</td><td>29%</td><td><span class="bvd-chip bvd-ok">+9 d</span></td><td>41 d</td></tr>
+      <tr><td>Menores 18</td><td>64</td><td>38%</td><td><span class="bvd-chip bvd-warn">+14 d</span></td><td>19 d</td></tr>
+      <tr><td>Menores 3 — EVES</td><td>22</td><td>44%</td><td><span class="bvd-chip bvd-bad">+19 d</span></td><td>8 d</td></tr>
+    </tbody></table>`;
+  }
+}
+
+/* ════════ GLOSARIO DE INDICADORES ════════
+   Pedido por Susana en la sesión del 27/08: cada campo con icono «i» debe explicar
+   qué mide, para que el equipo gestor pueda explicarlo a su vez. */
+const DEF = {
+  /* cabecera */
+  'Solicitudes activas':'Expedientes que aún no han terminado el proceso completo (fases 1 a 3) a la fecha de consulta.',
+  'Plazo proceso completo':'Suma de los plazos medios extremo a extremo de las tres fases: grabación + valoración + resolución de PIA.',
+  'Cumplimiento SLA global':'Porcentaje de expedientes cuyo recorrido completo se cierra dentro del plazo legal de 180 días (RD de Dependencia).',
+  'Altas / mes':'Media mensual de solicitudes grabadas en el periodo seleccionado.',
+  'Personas involucradas':'Efectivos asignados a la fase. En Valoración es dato de SIDEMA; en Grabación y PIA es una estimación facilitada por el equipo gestor.',
+  'Tiempo E2E':'Días medios que tarda un expediente en atravesar esta fase, de su primer a su último cambio de estado dentro de ella.',
+  '% del equipo total':'Peso de los efectivos de esta fase sobre el total de personas que intervienen en el procedimiento.',
+  '🔮 Previsión carga próx. mes':'Comparación entre expedientes que entran y expedientes que se resuelven por semana. Si entran más de los que salen, la cola crece.',
+  /* sección 1 · carga */
+  'Total trabajadores':'Personas activas en la fase durante el periodo seleccionado.',
+  'Media solic./persona':'Solicitudes grabadas divididas entre el número de personas del equipo de grabación.',
+  'Media exp/persona':'Expedientes tramitados divididos entre el número de personas de la fase.',
+  'Sobrecargados':'Personas con una carga superior al 115% de la media del equipo.',
+  /* sección 2 · plazos */
+  'Solicitudes grabadas':'Solicitudes de reconocimiento de dependencia con fecha de grabación dentro del periodo. Se cuentan por FECHA DE GRABACIÓN, no por el estado actual del expediente.',
+  'Grabadas en plazo':'Solicitudes en las que la diferencia entre la fecha de solicitud y la fecha de grabación es igual o menor al objetivo fijado en el filtro (30 días por defecto).',
+  'Grabadas fuera de plazo':'Solicitudes en las que la diferencia entre la fecha de solicitud y la fecha de grabación supera el objetivo fijado en el filtro.',
+  'Pendientes de grabar (bandeja)':'Solicitudes registradas que todavía no se han grabado en SIDEMA. Pendiente de confirmar si el dato de bandeja es explotable (sesión 27/08).',
+  'Expedientes valorados':'Expedientes con dictamen técnico emitido dentro del periodo, contados por fecha de dictamen.',
+  'Valorados en plazo':'Expedientes valorados en 120 días o menos desde el alta del expediente.',
+  'Valorados fuera de plazo':'Expedientes cuya valoración ha superado los 120 días desde el alta del expediente.',
+  'PIA resueltos':'Expedientes con resolución de PIA emitida dentro del periodo, contados por fecha de resolución.',
+  'Resueltos en plazo':'PIA resueltos en 180 días o menos, dentro del plazo legal del procedimiento.',
+  'Resueltos fuera de plazo':'PIA resueltos por encima de los 180 días del plazo legal.',
+  /* sección 3 */
+  'Valoradores activos':'Técnicos valoradores con al menos una valoración registrada en el periodo. Es el único perfil vinculado nominalmente al expediente en SIDEMA.',
+  'Criterio sesgado':'Valoradores cuya distribución de grados se desvía más de 2 sigma de la media del equipo.',
+  '% Alineación':'Porcentaje de valoradores cuya distribución de grados se mantiene dentro de la banda normal del equipo.',
+  'Municipios':'Municipios, distritos y mancomunidades de servicios sociales de la Comunidad de Madrid sobre los que se puede segmentar.',
+  'Territorios atípicos':'Territorios cuya distribución de prestaciones se aparta significativamente de la media de la Comunidad.',
+  'Mayor dispersión':'Diferencia en puntos porcentuales entre el territorio que más y el que menos prescribe un mismo tipo de prestación.',
+  'Tasa subsanación':'Porcentaje de solicitudes que requieren subsanación. Se produce una única vez por expediente.',
+  'Número de subsanaciones':'Expedientes que entran en bucle de AVC tras la subsanación.',
+  'Iteraciones/AVC':'Número medio de vueltas que da un expediente en bucle de AVC antes de resolverse.',
+  'Territorios clave':'Territorios principales analizados en el detalle de dispersión.',
+  'Tipos de prestación':'Servicios reconocidos en el PIA sobre los que se mide la dispersión.',
+};
+
+/* Las notas metodológicas y de fuente pasan a un icono de ayuda junto a su título:
+   el contenido sigue ahí, pero ya no ocupa pantalla. */
+function txtPlano(el){ return (el.innerText||el.textContent||'').replace(/\s+/g,' ').trim(); }
+function ponTip(dest, texto, id){
+  if(!dest || !texto) return;
+  let i = dest.querySelector(':scope > .ii.nota'+(id?'[data-n="'+id+'"]':''));
+  if(!i){ i=document.createElement('i'); i.className='ii nota'; i.textContent='?'; if(id) i.dataset.n=id; dest.appendChild(i); }
+  i.dataset.t = texto;
+}
+function notasATips(){
+  ponTip(document.querySelector('.phase-meta'), txtPlano(document.getElementById('metNotaTxt')), 'met');
+  document.querySelectorAll('.tbl-section').forEach(sec=>{
+    const t = sec.querySelector('.tbl-title');
+    sec.querySelectorAll('.two-tbl-note').forEach((n,k)=> ponTip(t, txtPlano(n), 'n'+k));
+  });
+  /* el resto de títulos nativos del navegador, al mismo aviso */
+  document.querySelectorAll('.fbar [title], th[title], .subs-sel[title]').forEach(el=>{
+    if(el.classList.contains('icon-btn')) return;
+    const lbl = el.matches('th') ? el : (el.querySelector('span') || el);
+    ponTip(lbl, el.getAttribute('title'), 'tt'); el.removeAttribute('title');
+  });
+}
+function aplicarTooltips(){
+  document.querySelectorAll('.ks-lbl .ii, .sk-lbl .ii').forEach(i=>{
+    const lbl = i.parentElement.textContent.replace(/\s*i\s*$/,'').replace(/\s*⚠\s*$/,'').trim();
+    const d = DEF[lbl];
+    i.dataset.t = d || 'Definición pendiente de detallar en el documento funcional.';
+    i.removeAttribute('title');
+  });
+  notasATips();
+}
+
+/* ════════ RENDER FASE ════════ */
+function renderPhase(p){
+  currentPhase = p;
+  const d = PHASES[p];
+
+  // pills + meta
+  document.querySelectorAll('.phase-pill[data-phase]').forEach(b=>b.classList.toggle('active', +b.dataset.phase===p));
+  document.getElementById('phCount').textContent = d.team;
+  document.getElementById('phObj').textContent = d.obj;
+  document.getElementById('tblPhaseLbl').textContent = d.name;
+  document.getElementById('thVar').firstChild.textContent = p===1 ? 'Subsanaciones ' : (p===3 ? 'Variabilidad prescrip. ' : 'Variabilidad criterio ');
+
+  // KPI strip — phase dynamic section
+  const PHASE_KPIS = {
+    1: [['Personas involucradas','50','ok','18 empresa externa · 32 propios · sede única'],['Tiempo E2E','24 d','ok','▼ −6d vs objetivo 30d'],['% del equipo total','18%','ok','sobre 280 trabajadores'],['🔮 Previsión carga próx. mes','Media','warn','● entran ≈ resuelven · carga estable']],
+    2: [['Personas involucradas','150','warn','valoradores activos'],['Tiempo E2E','118 d','ok','▼ −2d vs objetivo 120d'],['% del equipo total','54%','ok','sobre 280 trabajadores'],['🔮 Previsión carga próx. mes','Alta','bad','▲ entran 158 &gt; resuelven 131/sem']],
+    3: [['Personas involucradas','80','ok','gestión · elaboración · supervisión'],['Tiempo E2E','152 d','ok','▼ −28d vs objetivo 180d'],['% del equipo total','29%','ok','sobre 280 trabajadores'],['🔮 Previsión carga próx. mes','Media','ok','→ flujo equilibrado 131≈129/sem']],
+  };
+  document.getElementById('kpiPhaseCards').innerHTML = PHASE_KPIS[p].map(k=>{
+    const pred = String(k[0]).startsWith('🔮');
+    return `<div class="ks${pred?' ks-pred':''}"><div class="ks-lbl">${String(k[0]).replace('🔮 ','')} <i class="ii">i</i></div><div class="ks-val">${k[1]}</div><div class="ks-delta ${k[2]}">${k[3]}</div></div>`;
+  }).join('');
+
+  // section KPIs
+  const skHtml = arr => arr.map(s=>`<div class="sk"><div class="sk-lbl">${s[0]} <i class="ii">i</i></div><div class="sk-val">${s[1]}</div><div class="sk-sub" style="color:${s[2]}">${s[3]}</div></div>`).join('');
+  document.getElementById('sec1Kpis').innerHTML = skHtml(d.sec1);
+  document.getElementById('sec2Kpis').innerHTML = skHtml(d.sec2);
+
+  // layout según fase: F1 = 1/3 tramitación + 2/3 subsanación; F2/F3 = 3 columnas
+  const grid=document.getElementById('sectionsGrid'), sec1=document.getElementById('sec1');
+  if(p===1){ grid.classList.add('sections-f1'); grid.classList.remove('sections-2col'); sec1.classList.add('sec-hidden'); }
+  else { grid.classList.remove('sections-f1'); grid.classList.remove('sections-2col'); sec1.classList.remove('sec-hidden'); }
+
+  // filtro resolución de grado: ahora en fase 2 (Valoración cierra el grado tras el comité)
+  document.getElementById('fselRes').style.display = p===2 ? 'inline-flex' : 'none';
+  // filtro tipo de prestación: solo en fase 3 (PIA)
+  document.getElementById('fselPrest').style.display = p===3 ? 'inline-flex' : 'none';
+  // filtro tipo de valoración: solo aplica en fase 2 (valoración); no en alta ni en PIA
+  document.getElementById('fselVal').style.display = p===2 ? 'inline-flex' : 'none';
+  // filtro origen: solo en fase 1 (alta) — pendiente de confirmar en sistemas
+  document.getElementById('fselOrigen').style.display = p===1 ? 'inline-flex' : 'none';
+  // Estado: estados de tramitación propios de cada fase (expediente)
+  const fEst=document.getElementById('fEstado');
+  if(fEst){
+    const prev=fEst.value;
+    const estadosFase={
+      1:['Alta de solicitud','Pendiente de subsanación','En bucle de AVC','Completa · pasa a valoración'],
+      2:['Pendiente de citación de valoración','En proceso de valoración en centros','Citación manual','Pendiente de valoración','Pendiente de realizar dictamen técnico','Pendiente de Comisión de Valoración','Pendiente de resolución de grado','Grado resuelto'],
+      3:['Pendiente de propuesta de PIA','Pendiente de resolución de PIA','PIA resuelto y notificado']
+    }[p]||[];
+    fEst.innerHTML='<option value="">Todos</option>'+estadosFase.map(e=>`<option>${e}</option>`).join('');
+    if([...fEst.options].some(o=>o.value===prev)) fEst.value=prev;
+  }
+  // Cabecera de la tabla de detalle: en Valoración el valorador cubre toda la CM
+  const thT=document.getElementById('thTerr');
+  if(thT){ thT.firstChild.textContent = (p===2?'Zona de geolocalización ':'Territorio '); }
+  // objetivo configurable: sincroniza con el objetivo de la fase
+  document.getElementById('fObjDays').value = d.objDays;
+
+  // ── aviso metodológico: el cálculo se hace por fecha, no por estado (Susana, 27/08) ──
+  const MET = {
+    1:'Los plazos se calculan comparando la <strong>fecha de solicitud</strong> con la <strong>fecha de grabación</strong>, no por el estado actual del expediente: una solicitud puede grabarse y pasar el mismo día a «Pendiente de valoración». «Alta de solicitud» es el primer estado <em>posterior</em> a la grabación.',
+    2:'Los plazos se calculan entre <strong>fechas de cambio de estado</strong> registradas en SIDEMA, no por el estado en que se encuentra hoy el expediente.',
+    3:'Los plazos se calculan entre <strong>fechas de cambio de estado</strong> registradas en SIDEMA, no por el estado en que se encuentra hoy el expediente.'
+  };
+  document.getElementById('metNotaTxt').innerHTML = MET[p];
+
+  // ── hasta dónde llega el detalle por trabajador en cada fase ──
+  const USR = {
+    1:['⚠ por confirmar vía login','El equipo de grabación y subsanación <strong>no está asignado al expediente en SIDEMA</strong>. Roberto apuntó que toda actuación deja <strong>rastro de login</strong>, así que este detalle está <em>pendiente de confirmar</em> que sea recuperable. Mientras tanto, el análisis garantizado de esta fase es <strong>a nivel de expediente</strong>.'],
+    2:['✓ valorador vinculado en SIDEMA','La solicitud de valoración <strong>sí está vinculada a un técnico valorador</strong> con nombre y apellidos (Susana, sesión 27/08). Es la única fase donde el detalle por persona está garantizado hoy.'],
+    3:['⚠ por confirmar vía login','En PIA <strong>no hay asignación formal de tramitador</strong>, pero el sistema registra el <strong>login que genera la propuesta</strong>. Roberto señaló esta fase como la de mayor interés para bajar a nivel de persona; queda <em>pendiente de confirmar</em> que el login sea explotable en el modelo de datos.']
+  };
+  document.getElementById('userScopeBadge').textContent = USR[p][0];
+  document.getElementById('userScopeBadge').className = 'badge '+(p===2?'b-ok':'b-warn');
+  document.getElementById('userScopeNote').innerHTML = USR[p][1];
+
+  // carga chart (solo fases 2/3)
+  if(p!==1){ buildCargaChart(p); }
+  if(p!==1){
+    document.getElementById('c1Ttl').textContent = p===2?'↑ Distribución de expedientes activos por rango de carga':'↑ Distribución de expedientes activos por rango de carga';
+    document.getElementById('c1Sub').textContent = p===2?'# Valoradores por tramo de carga':'# Técnicos PIA por tramo de carga';
+  }
+
+  // plazo chart (rebuild per phase)
+  buildPlazoChart(p);
+
+  renderSec3(p);
+  renderTable();
+
+  // etiqueta tabla principal — en Fase 1 es el equipo de grabación
+  document.getElementById('tblPhaseLbl').textContent = p===1 ? 'Equipo de Grabación' : d.name;
+
+  // tablas secundarias por fase
+  const th2=document.getElementById('tblHitos2');
+  if(th2){ th2.style.display = p===2 ? 'block' : 'none'; if(p===2) renderHitos2(); }
+  const tSub=document.getElementById('tblSubsana');
+  if(tSub){ tSub.style.display = p===1 ? 'block' : 'none'; if(p===1) renderSubsana(); }
+  const tP3=document.getElementById('tblPia3');
+  if(tP3){ tP3.style.display = p===3 ? 'block' : 'none'; if(p===3) renderPia3(); }
+
+  aplicarTooltips();
+}
+
+/* ════════ SECCIÓN 3 (adaptable) ════════ */
+function renderSec3(p){
+  const title=document.getElementById('sec3Title'), ttl=document.getElementById('c3Ttl'), sub=document.getElementById('c3Sub'), body=document.getElementById('sec3Body');
+  const k3=document.getElementById('sec3Kpis'), thVar=document.getElementById('thVar');
+
+  if(p===2){ // BVD
+    title.textContent='Variabilidad de Criterio BVD'; thVar.firstChild.textContent='Variabilidad criterio ';
+    ttl.textContent='Distribución de Grados BVD por valorador';
+    sub.textContent='% asignación G0 / G1 / G2 / G3 — desviación vs media del equipo';
+    k3.innerHTML=`<div class="sk"><div class="sk-lbl">Valoradores activos <i class="ii">i</i></div><div class="sk-val">150</div><div class="sk-sub" style="color:var(--g500)">acceso SIDEMA</div></div>
+      <div class="sk"><div class="sk-lbl">Criterio sesgado <i class="ii">i</i></div><div class="sk-val">3</div><div class="sk-sub" style="color:var(--orange)">● &gt;2σ desviación</div></div>
+      <div class="sk"><div class="sk-lbl">% Alineación <i class="ii">i</i></div><div class="sk-val">98.0%</div><div class="sk-sub" style="color:var(--green)">✓ homogeneidad</div></div>`;
+    body.innerHTML=`<div class="bvd-wrap"><table class="bvd-tbl"><thead><tr><th>Valorador</th><th>G0</th><th>G1</th><th>G2</th><th>G3</th><th>Desviación</th></tr></thead><tbody>
+      <tr class="bvd-ref"><td>Media equipo</td><td>8%</td><td>22%</td><td>36%</td><td>34%</td><td><span class="bvd-chip bvd-ok">Referencia</span></td></tr>
+      <tr><td>M. López García</td><td>9%</td><td>23%</td><td>35%</td><td>33%</td><td><span class="bvd-chip bvd-ok">Alineado</span></td></tr>
+      <tr><td>S. Romero Jiménez</td><td>8%</td><td>21%</td><td>37%</td><td>34%</td><td><span class="bvd-chip bvd-ok">Alineado</span></td></tr>
+      <tr><td>R. Sánchez Gil</td><td>11%</td><td>26%</td><td>32%</td><td>31%</td><td><span class="bvd-chip bvd-warn">Leve (+2σ G0)</span></td></tr>
+      <tr><td>A. Sánchez Moro</td><td>4%</td><td>12%</td><td>30%</td><td><strong>54%</strong></td><td><span class="bvd-chip bvd-bad">Sesgo G3 (+24pp)</span></td></tr>
+      <tr><td>C. Martínez López</td><td>3%</td><td>14%</td><td>28%</td><td><strong>55%</strong></td><td><span class="bvd-chip bvd-bad">Sesgo G3 (+21pp)</span></td></tr>
+      </tbody></table></div>`;
+  } else if(p===3){ // prestación — range chart (por territorio recomendado)
+    title.textContent='Variabilidad — Tipo de Prestación'; thVar.firstChild.textContent='Variabilidad prescrip. ';
+    ttl.textContent='Dispersión del % de prescripción por tipo de prestación';
+    sub.textContent='En PIA el técnico apenas decide (verifica requisitos): la dispersión es relevante por TERRITORIO, no por persona (Roberto/Susana, sesión 3)';
+    k3.innerHTML=`<div class="sk"><div class="sk-lbl" id="p3k1lbl">Municipios <i class="ii">i</i></div><div class="sk-val" id="p3k1val">179</div><div class="sk-sub" style="color:var(--g500)">municipio y mancomunidad</div></div>
+      <div class="sk"><div class="sk-lbl" id="p3k2lbl">Territorios atípicos <i class="ii">i</i></div><div class="sk-val" id="p3k2val">3</div><div class="sk-sub" style="color:var(--orange)">● se desvían de la media CM</div></div>
+      <div class="sk"><div class="sk-lbl">Mayor dispersión <i class="ii">i</i></div><div class="sk-val">22pp</div><div class="sk-sub" style="color:var(--red)">Residencia (9–31%)</div></div>`;
+    body.innerHTML=`<div style="display:flex;align-items:center;gap:8px;margin:2px 0 8px;flex-wrap:wrap;">
+        <span style="font-size:10px;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.04em;">Analizar por</span>
+        <div class="phase-pills" style="padding:2px;">
+          <button class="phase-pill active" data-p3mode="terr" style="background:var(--green);color:#fff;">Territorio · recomendado</button>
+          <button class="phase-pill" data-p3mode="tec">Técnico</button>
+        </div>
+      </div>
+      <div style="position:relative;height:210px;margin-top:2px;"><canvas id="cPrest3"></canvas></div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;font-size:10px;color:var(--g500);">
+        <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:28px;height:8px;background:rgba(204,11,47,.25);border-radius:2px;"></span>Alta variabilidad</span>
+        <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:28px;height:8px;background:rgba(245,166,35,.3);border-radius:2px;"></span>Media</span>
+        <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:28px;height:8px;background:rgba(46,170,75,.25);border-radius:2px;"></span>Baja</span>
+        <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:10px;height:10px;background:#374151;border-radius:50%;"></span><span id="p3medlbl">Media Comunidad</span></span>
+      </div>`;
+    // Datos por TERRITORIO (principales + atípicos) y por TÉCNICO
+    const P3_TERR_DATA = [
+      { terr: 'Madrid capital', res: { min: 12, max: 18, med: 14 }, sad: { min: 22, max: 26, med: 24 }, tel: { min: 16, max: 20, med: 18 }, atipico: false },
+      { terr: 'Móstoles', res: { min: 9, max: 15, med: 12 }, sad: { min: 20, max: 28, med: 24 }, tel: { min: 14, max: 22, med: 18 }, atipico: false },
+      { terr: 'Getafe', res: { min: 11, max: 17, med: 14 }, sad: { min: 23, max: 27, med: 25 }, tel: { min: 17, max: 21, med: 19 }, atipico: false },
+      { terr: 'Alcalá de Henares', res: { min: 13, max: 22, med: 17 }, sad: { min: 19, max: 30, med: 24 }, tel: { min: 13, max: 23, med: 18 }, atipico: true },
+      { terr: 'Mancom. Sierra Norte', res: { min: 18, max: 31, med: 24 }, sad: { min: 15, max: 27, med: 21 }, tel: { min: 12, max: 22, med: 17 }, atipico: true },
+      { terr: 'Mancom. THAM', res: { min: 8, max: 20, med: 14 }, sad: { min: 21, max: 29, med: 25 }, tel: { min: 15, max: 22, med: 18 }, atipico: false },
+    ];
+    const P3_TEC_DATA = [
+      {label:'Residencia',       min:11, max:24, med:14, col:'rgba(245,166,35,.32)'},
+      {label:'SAD',              min:20, max:29, med:24, col:'rgba(46,170,75,.28)'},
+      {label:'Prest. cuidados',  min:16, max:25, med:20, col:'rgba(46,170,75,.28)'},
+      {label:'Teleasistencia',   min:14, max:21, med:18, col:'rgba(46,170,75,.28)'},
+      {label:'Centro de día',    min:8,  max:13, med:10, col:'rgba(46,170,75,.28)'},
+      {label:'Prest. vinculada', min:9,  max:15, med:12, col:'rgba(46,170,75,.28)'},
+    ];
+
+    const buildP3=mode=>{
+      if(chPrest){chPrest.destroy();chPrest=null;}
+      const canvas = document.getElementById('cPrest3');
+      const container = canvas.parentElement;
+
+      if(mode==='terr'){
+        // Modo territorio: tabla de barras rangos por territorio
+        container.innerHTML = `<div style="overflow-y:auto;max-height:250px;border:1px solid var(--g200);border-radius:4px;">
+          <table style="width:100%;border-collapse:collapse;font-size:10px;">
+          <thead style="position:sticky;top:0;background:#f9fafb;border-bottom:1px solid #e5e7eb;">
+            <tr><th style="padding:8px;text-align:left;font-weight:600;color:#374151;border-right:1px solid #e5e7eb;">Territorio</th>
+            <th style="padding:8px;text-align:center;font-weight:600;color:#374151;">Residencia</th>
+            <th style="padding:8px;text-align:center;font-weight:600;color:#374151;">SAD</th>
+            <th style="padding:8px;text-align:center;font-weight:600;color:#374151;">Teleasistencia</th></tr>
+          </thead>
+          <tbody>
+            ${P3_TERR_DATA.map(t=>`<tr style="border-bottom:1px solid #e5e7eb;${t.atipico?'background:#FEF2F2;':''}">
+              <td style="padding:8px;font-weight:${t.atipico?'700':'500'};color:${t.atipico?'#991B1B':'#374151'};border-right:1px solid #e5e7eb;">${t.terr}${t.atipico?' ⚠':''}</td>
+              <td style="padding:6px 8px;"><div style="width:80px;height:16px;background:rgba(204,11,47,.2);border-radius:2px;position:relative;font-size:9px;display:flex;align-items:center;justify-content:center;color:#991B1B;font-weight:600;">${t.res.min}–${t.res.max}%</div></td>
+              <td style="padding:6px 8px;"><div style="width:80px;height:16px;background:rgba(245,166,35,.25);border-radius:2px;position:relative;font-size:9px;display:flex;align-items:center;justify-content:center;color:#92400E;font-weight:600;">${t.sad.min}–${t.sad.max}%</div></td>
+              <td style="padding:6px 8px;"><div style="width:80px;height:16px;background:rgba(46,170,75,.2);border-radius:2px;position:relative;font-size:9px;display:flex;align-items:center;justify-content:center;color:#065F46;font-weight:600;">${t.tel.min}–${t.tel.max}%</div></td>
+            </tr>`).join('')}
+          </tbody>
+          </table>
+        </div>`;
+        document.getElementById('p3k1lbl').firstChild.textContent = 'Territorios clave';
+        document.getElementById('p3k1val').textContent = '6';
+        document.getElementById('p3k2lbl').firstChild.textContent = 'Territorios atípicos';
+        document.getElementById('p3k2val').textContent = '2';
+        document.getElementById('p3medlbl').textContent = 'Rango Comunidad';
+        ttl.textContent = 'Variabilidad de prestación por territorio (6 principales)';
+      } else {
+        // Modo técnico: gráfica de barras rangos por técnico
+        const data = P3_TEC_DATA;
+        const rangeBars=data.map(d=>[d.min,d.max]);
+        const medPts=data.map((d,i)=>({x:d.med,y:i}));
+        const barColors=data.map(d=>d.col);
+        const barBorders=data.map(d=>d.col.replace(/[\d.]+\)$/,'0.8)'));
+        chPrest=new Chart(canvas,{
+          type:'bar',
+          data:{labels:data.map(d=>d.label),datasets:[
+            {label:'Rango',data:rangeBars,backgroundColor:barColors,borderColor:barBorders,borderWidth:1,borderRadius:3,borderSkipped:false},
+            {type:'scatter',label:'Media',data:medPts,backgroundColor:'#374151',pointRadius:6,pointHoverRadius:8,pointStyle:'circle'},
+          ]},
+          options:{
+            indexAxis:'y',responsive:true,maintainAspectRatio:false,
+            plugins:{legend:{display:false},
+              tooltip:{...TT,mode:'index',intersect:false,callbacks:{
+                title:ctx=>ctx[0].label,
+                label:ctx=>ctx.datasetIndex===0?` Rango: ${data[ctx.dataIndex].min}% – ${data[ctx.dataIndex].max}%`:` Media: ${data[ctx.dataIndex].med}%`
+              }}},
+            scales:{
+              x:{min:0,max:40,grid:{color:'#F3F4F6'},border:{display:false},ticks:{font:{size:10,family:'Inter'},color:'#9CA3AF',callback:v=>v+'%'}},
+              y:{grid:{display:false},border:{display:false},ticks:{font:{size:10.5,family:'Inter'},color:'#374151'}}
+            }
+          }
+        });
+        document.getElementById('p3k1lbl').firstChild.textContent = 'Técnicos PIA';
+        document.getElementById('p3k1val').textContent = '80';
+        document.getElementById('p3k2lbl').firstChild.textContent = 'Técnicos atípicos';
+        document.getElementById('p3k2val').textContent = '2';
+        document.getElementById('p3medlbl').textContent = 'Media equipo';
+        ttl.textContent = 'Dispersión del % de prescripción por técnico';
+      }
+    };
+    buildP3('terr');
+    setTimeout(()=>{document.querySelectorAll('[data-p3mode]').forEach(b=>b.addEventListener('click',()=>{
+      document.querySelectorAll('[data-p3mode]').forEach(x=>{x.classList.remove('active');x.style.background='transparent';x.style.color='var(--g500)';});
+      b.classList.add('active'); b.style.background='var(--green)'; b.style.color='#fff';
+      buildP3(b.dataset.p3mode);
+    }));},0);
+  } else { // fase 1 — subsanaciones vs AVC
+    title.textContent='Subsanaciones y AVC'; thVar.firstChild.textContent='Subsanaciones ';
+    ttl.textContent='Reprocesos: subsanación (1 por exp.) vs AVC (en bucle)';
+    sub.textContent='La subsanación no se repite; el reproceso real está en las AVC, que pueden iterar varias veces (Roberto, sesión 3)';
+    k3.innerHTML=`<div class="sk"><div class="sk-lbl">Tasa subsanación <i class="ii">i</i></div><div class="sk-val">31%</div><div class="sk-sub" style="color:var(--orange)">1 subsanación por exp. (no se repite)</div></div>
+      <div class="sk"><div class="sk-lbl">Número de subsanaciones <i class="ii">i</i></div><div class="sk-val">96</div><div class="sk-sub" style="color:var(--red)">● entran en bucle</div></div>
+      <div class="sk"><div class="sk-lbl">Iteraciones/AVC <i class="ii">i</i></div><div class="sk-val">2.4</div><div class="sk-sub" style="color:var(--red)">▲ vueltas medias por AVC en bucle</div></div>`;
+    body.innerHTML=`<div class="subs-three-tbl">
+      <div>
+        <p style="font-size:10px;font-weight:600;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Subsanación · por motivo <span style="font-weight:400;text-transform:none;letter-spacing:0;">(1 vez por exp.)</span></p>
+        <div style="overflow-x:auto;"><table class="bvd-tbl"><thead><tr><th>Motivo</th><th>Exp.</th><th>%</th><th>Plazo +</th></tr></thead><tbody>
+          <tr><td>Formulario de solicitud mal cumplimentado</td><td>134</td><td>35%</td><td><span class="bvd-chip bvd-warn">+9 d</span></td></tr>
+          <tr><td>Informe social de ayuntamiento pendiente</td><td>115</td><td>30%</td><td><span class="bvd-chip bvd-bad">+14 d</span></td></tr>
+          <tr><td>Errores en datos personales (DNI, domicilio)</td><td>77</td><td>20%</td><td><span class="bvd-chip bvd-ok">+6 d</span></td></tr>
+          <tr><td>Certificado de empadronamiento no válido</td><td>58</td><td>15%</td><td><span class="bvd-chip bvd-warn">+8 d</span></td></tr>
+          <tr class="bvd-ref"><td>Total subsanación</td><td>384</td><td>31%</td><td>+9.8 d medios</td></tr>
+        </tbody></table></div>
+      </div>
+      <div>
+        <p style="font-size:10px;font-weight:600;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">AVC · reproceso en bucle</p>
+        <div style="overflow-x:auto;"><table class="bvd-tbl"><thead><tr><th>Nº de vueltas AVC</th><th>Exp.</th><th>%</th><th>Plazo +</th></tr></thead><tbody>
+          <tr><td>1 vuelta</td><td>44</td><td>46%</td><td><span class="bvd-chip bvd-ok">+11 d</span></td></tr>
+          <tr><td>2 vueltas</td><td>31</td><td>32%</td><td><span class="bvd-chip bvd-warn">+23 d</span></td></tr>
+          <tr><td>3+ vueltas <span style="color:var(--red);font-weight:700;">bucle</span></td><td>21</td><td>22%</td><td><span class="bvd-chip bvd-bad">+41 d</span></td></tr>
+          <tr class="bvd-ref"><td>Total AVC</td><td>96</td><td>—</td><td>2.4 vueltas medias</td></tr>
+        </tbody></table></div>
+      </div>
+      <div>
+        <p style="font-size:10px;font-weight:600;color:var(--g500);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Flujo por atributo</p>
+        <div class="subs-sel" style="margin-bottom:8px;">
+          <select id="subsAtrib" onchange="onSubsAtrib()"><option value="terr">Territorio</option><option value="edad">Edad</option><option value="origen">Origen</option></select>
+          <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        </div>
+        <div id="subsAtribBody" style="overflow-x:auto;"></div>
+      </div>
+    </div>
+    <p style="font-size:10px;color:var(--g500);margin-top:10px;line-height:1.5;font-style:italic;">Subsanación = 1 por expediente (asunción validada en sesión 3). El ratio de iteraciones aplica solo a las AVC. Cifras pendientes de validar específicamente para Fase 1.</p>`;
+    setTimeout(onSubsAtrib,0);
+  }
+}
+
+/* ════════ TABLA ════════ */
+function vcChip(v){
+  if(!v) return '<span class="var-chip vc-na">N/A</span>';
+  const [cls,txt]=v.split('|'); return `<span class="var-chip ${cls}">${txt}</span>`;
+}
+function renderTable(){
+  const d=PHASES[currentPhase];
+  // Estado = estado de tramitación del EXPEDIENTE (no del trabajador): filtra los KPIs/expedientes, no la plantilla
+  const fTerr=document.getElementById('fTerr').value;
+  const fVal=(currentPhase===2)?((document.getElementById('fVal')||{}).value||''):'';
+  let rows=d.workers.filter(w=>(!fTerr||w[2]===fTerr)&&(!fVal||w[14]===fVal));
+  document.getElementById('tbody').innerHTML=rows.map(w=>`
+    <tr data-estado="${w[9]}">
+      <td class="nm">${w[0]}${w[14]?`<div style="font-size:10px;color:var(--g400);font-weight:400;margin-top:2px;">Val.: ${w[14]}</div>`:''}</td>
+      <td><span class="grade ${/Subcontrat|Tram|Gesti/.test(w[1])?'gT':/Adscrit|Admin|Juríd|Supervis/.test(w[1])?'gA':'gV'}">${w[1]}</span></td>
+      <td style="color:var(--g500);font-size:11px;">${w[2]}</td>
+      <td>${w[3]}</td>
+      <td><span style="font-size:12px;font-weight:700;color:${w[5]}">${w[4]}</span></td>
+      <td>${w[6]}</td>
+      <td><span style="font-size:11px;font-weight:700;color:${w[8]}">${w[7]} ${w[7].startsWith('+')?'▲':w[7].startsWith('−')?'▼':''}</span></td>
+      <td>${currentPhase===1
+        ? `<span style="font-size:12px;font-weight:700;color:${w[10]>=15?RED:w[10]>=10?ORA:'#374151'}">${w[10]}</span>`
+        : vcChip(w[10])}</td>
+      <td><span class="status s-${w[9]}">${w[13]}</span></td>
+    </tr>`).join('');
+  document.getElementById('countBadge').textContent=`${rows.length} de ${d.workers.length}`;
+}
+function filtrar(){ renderTable(); }
+
+/* ════════ HITOS FRACCIONADOS (Fase 2) ════════ */
+function segCls(v, mid, hi){ return v>=hi?'seg-r':v>=mid?'seg-a':'seg-g'; }
+
+/* Datos = cambios de estado en SIDEMA (timestamps reales) */
+/* Por trabajador: [valorador, citación, FECHA DE VALORACIÓN, grabación valoración, dictamen técnico] */
+const H2_TRAB = [
+  ['María López García',      '2025-04-02T09:14','2025-04-07T10:00','2025-04-09T11:30','2025-04-13T10:00'],
+  ['Carlos Martínez López',   '2025-04-05T10:00','2025-04-11T09:00','2025-04-14T09:20','2025-04-20T12:10'],
+  ['Sofía Romero Jiménez',    '2025-04-03T11:00','2025-04-09T10:00','2025-04-11T10:15','2025-04-16T09:45'],
+  ['A. Sánchez Moro',         '2025-03-28T08:40','2025-04-08T09:30','2025-04-13T13:00','2025-04-24T11:20'],
+  ['Roberto Sánchez Gil',     '2025-04-08T10:30','2025-04-12T09:00','2025-04-14T09:00','2025-04-18T10:05'],
+  ['Patricia Fernández Ruiz', '2025-04-01T09:20','2025-04-10T09:00','2025-04-15T12:40','2025-04-24T10:00'],
+];
+/* Por expediente — ciclo de vida en 9 estados (feedback Fase 2 · nueva ley: la resolución del grado se cierra en Valoración):
+   [id, valorador, estadoCitación, ①registro, ②alta, ③pdteCitación, ④citación(pdteValoración), ⑤fechaValoración, ⑥grabación, ⑦dictamen, ⑧comisión, ⑨resoluciónGrado] */
+const H2_EXP = [
+  ['EXP-2025-04412','María López García',      'Pendiente de citación',            '2025-02-18T09:00','2025-02-28T10:05','2025-03-02T14:00','2025-04-02T09:14','2025-04-07T10:00','2025-04-09T11:30','2025-04-13T10:00','2025-04-18T12:30','2025-04-23T10:00'],
+  ['EXP-2025-04520','Carlos Martínez López',   'En proceso de valoración en centros','2025-02-10T08:40','2025-02-20T11:00','2025-02-22T11:00','2025-04-05T10:00','2025-04-11T09:00','2025-04-14T09:20','2025-04-20T12:10','2025-04-27T13:00','2025-05-02T10:00'],
+  ['EXP-2025-04633','Sofía Romero Jiménez',    'Citación manual',                  '2025-02-20T09:00','2025-03-01T09:00','2025-03-02T10:30','2025-04-03T11:00','2025-04-09T10:00','2025-04-11T10:15','2025-04-16T09:45','2025-04-21T12:00','2025-04-25T11:00'],
+  ['EXP-2025-04711','A. Sánchez Moro',         'Pendiente de citación',            '2025-02-01T08:30','2025-02-10T08:30','2025-02-12T15:40','2025-04-05T09:00','2025-04-14T09:00','2025-04-18T10:00','2025-04-29T11:20','2025-05-06T12:00','2025-05-12T12:00'],
+  ['EXP-2025-04788','Roberto Sánchez Gil',     'En proceso de valoración en centros','2025-03-01T09:30','2025-03-10T09:30','2025-03-11T09:50','2025-04-08T10:30','2025-04-12T09:00','2025-04-14T09:00','2025-04-18T10:05','2025-04-22T11:00','2025-04-25T09:00'],
+  ['EXP-2025-04850','Patricia Fernández Ruiz', 'Citación manual',                  '2025-02-15T08:15','2025-02-25T10:40','2025-02-27T10:40','2025-04-01T09:20','2025-04-10T09:00','2025-04-15T12:40','2025-04-24T10:00','2025-04-30T12:15','2025-05-05T12:00'],
+];
+
+const MES3=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+function fmtTS(iso){
+  const d=new Date(iso), p=n=>String(n).padStart(2,'0');
+  return `<div class="ts"><b>${p(d.getDate())} ${MES3[d.getMonth()]}</b><small>${d.getFullYear()} · ${p(d.getHours())}:${p(d.getMinutes())}</small></div>`;
+}
+function dDays(a,b){ return Math.round((new Date(b)-new Date(a))/86400000); }
+function durTd(days, customColor){
+  let cls;
+  if(customColor==='#F59E0B'){ cls=days>=30?'seg-r':days>=14?'seg-a':'seg-g'; }
+  else { cls=days>=25?'seg-r':days>=12?'seg-a':'seg-g'; }
+  return `<td class="durcol"><div class="durflow"><svg class="durarrow" width="20" height="8" viewBox="0 0 20 8" fill="none"><path d="M1 4h15M13 1l4 3-4 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="seg-pill ${cls}">${days} d</span></div></td>`;
+}
+function fStep(color,label,sub){ return `<span class="flow-step"><span class="fnum" style="background:${color};">${label.split(' ·')[0]}</span>${label.replace(/^\d+\s·\s/,'')}${sub?` <small>${sub}</small>`:''}</span>`; }
+function fArrow(lbl){ return `<span style="display:inline-flex;flex-direction:column;align-items:center;gap:1px;justify-content:center;"><svg class="flow-arrow" width="16" height="10" viewBox="0 0 16 10" fill="none"><path d="M1 5h11M9 1l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>${lbl?`<small style="font-size:8px;color:var(--g400);white-space:nowrap;">${lbl}</small>`:''}</span>`; }
+
+function renderHitos2(){
+  const mode=(document.getElementById('hitosMode')||{}).value||'trab';
+  const scope=document.getElementById('hitos2Scope');
+  const head=document.getElementById('hitos2Head');
+  const body=document.getElementById('tbodyHitos2');
+  const flow=document.getElementById('hitos2Flow');
+  const note=document.getElementById('hitos2Note');
+  const lgd=document.getElementById('hitos2Lgd');
+  if(!body) return;
+
+  // El filtro de estado de citación solo aplica a la vista por expediente
+  const citWrap=document.getElementById('hitosCitWrap'); if(citWrap) citWrap.style.display = (mode==='exp')?'inline-flex':'none';
+
+  if(mode==='exp'){
+    scope.textContent='Ciclo de vida del expediente (9 estados)';
+    flow.innerHTML =
+      fStep('#9CA3AF','① Registro') + fArrow() +
+      fStep('#6366F1','② Alta') + fArrow() +
+      fStep('#0EA5E9','③ Pdte. citación') + fArrow() +
+      fStep(BLU,'④ Citación') + fArrow() +
+      fStep('#EC4899','⑤ Fecha valoración') + fArrow() +
+      fStep(ORA,'⑥ Grabación') + fArrow() +
+      fStep('#8B5CF6','⑦ Dictamen') + fArrow() +
+      fStep(GRN,'⑧ Comisión') + fArrow() +
+      fStep('#0F9D58','⑨ Resolución del grado');
+    note.innerHTML=`Ciclo de vida completo del expediente en 9 estados: <strong>Registro → Alta (SIDMA) → Pendiente de citación → Citación (Pendiente de valoración) → Fecha de valoración → Grabación → Dictamen → Comisión → Resolución del grado</strong>. La <strong>resolución del grado</strong> se cierra ahora en la Fase 2 (nueva ley); la Fase 3 pasa a ser solo la resolución del PIA. Los tramos en <strong>naranja</strong> son plazo <em>general del procedimiento — no imputable</em> al valorador; los tramos <strong>Fecha de valoración → Grabación → Dictamen</strong> son la gestión técnica imputable.`;
+    head.innerHTML=`<tr>
+      <th onclick="sortH(0)">Expediente <span class="si">↕</span></th>
+      <th onclick="sortH(1)">Valorador <span class="si">↕</span></th>
+      <th onclick="sortH(2)">Estado citación <span class="si">↕</span></th>
+      <th>① Registro (fecha)</th>
+      <th class="durcol-h">→② Alta</th>
+      <th class="durcol-h">→③ Pdte. citación</th>
+      <th class="durcol-h">→④ Citación</th>
+      <th class="durcol-h">→⑤ Fecha valoración</th>
+      <th class="durcol-h">→⑥ Grabación</th>
+      <th class="durcol-h">→⑦ Dictamen</th>
+      <th class="durcol-h">→⑧ Comisión</th>
+      <th class="durcol-h">→⑨ Resolución grado</th>
+      <th onclick="sortH(12)">Total E2E <span class="si">↕</span></th>
+    </tr>`;
+    const citF=(document.getElementById('hitosCitFilter')||{}).value||'';
+    body.innerHTML=H2_EXP.filter(r=>!citF||r[2]===citF).map(r=>{
+      const [id,nm,cst,reg,alta,pcit,cit,fval,grab,dict,com,resg]=r;
+      const a=dDays(reg,alta), b=dDays(alta,pcit), c=dDays(pcit,cit), d=dDays(cit,fval), e=dDays(fval,grab), f=dDays(grab,dict), g=dDays(dict,com), h=dDays(com,resg), tot=dDays(reg,resg);
+      return `<tr>
+        <td class="nm">${id}</td>
+        <td style="color:var(--g500);font-size:11px;">${nm}</td>
+        <td style="font-size:10px;color:var(--g500);">${cst}</td>
+        <td>${fmtTS(reg)}</td>
+        ${durTd(a,'#F59E0B')}
+        ${durTd(b,'#F59E0B')}
+        ${durTd(c,'#F59E0B')}
+        ${durTd(d,'#F59E0B')}
+        ${durTd(e)}
+        ${durTd(f)}
+        ${durTd(g,'#F59E0B')}
+        ${durTd(h,'#F59E0B')}
+        <td><span class="tot-chip" style="color:${tot>=70?RED:tot>=50?ORA:GRN}">${tot} d</span></td>
+      </tr>`;
+    }).join('');
+    lgd.innerHTML=`<span><i style="background:#ECFDF5;border:1px solid #A7F3D0;"></i>&lt;30 d</span>
+      <span><i style="background:#FFFBEB;border:1px solid #FDE68A;"></i>30–60 d</span>
+      <span><i style="background:#FEF2F2;border:1px solid #FECACA;"></i>≥61 d</span>
+      <span style="color:var(--g400);font-style:italic;">Plazo general (naranja) = no imputable al valorador · Imputable = Fecha valoración → Grabación → Dictamen · Total E2E = ciclo completo</span>`;
+  } else {
+    scope.textContent='Valoración individual (tiempos imputables)';
+    flow.innerHTML =
+      fStep('#9CA3AF','① Citación') + fArrow('no imputable') +
+      fStep('#EC4899','② Fecha Valoración') + fArrow('grabación') +
+      fStep(BLU,'③ Grabación') + fArrow('dictamen') +
+      fStep(ORA,'④ Dictamen');
+    note.innerHTML=`Se añade el hito <strong>Fecha de Valoración</strong>. El tramo <strong>Citación → Fecha de Valoración</strong> depende de la agenda/centro y <em>no es imputable</em> al valorador. Sí son imputables <strong>Fecha de Valoración → Grabación</strong> y <strong>Grabación → Dictamen técnico</strong>; el total imputable se mide desde la fecha de valoración.`;
+    head.innerHTML=`<tr>
+      <th onclick="sortH(0)">Valorador <span class="si">↕</span></th>
+      <th>Citación (inicio)</th>
+      <th>Fecha de Valoración</th>
+      <th class="durcol-h" onclick="sortH(3)">Días a grabación <span class="si">↕</span></th>
+      <th class="durcol-h" onclick="sortH(4)">Días a dictamen <span class="si">↕</span></th>
+      <th onclick="sortH(5)">Total imputable <span class="si">↕</span></th>
+    </tr>`;
+    body.innerHTML=H2_TRAB.map(r=>{
+      const [nm,c,v,g,d]=r;
+      const noimp=dDays(c,v), g1=dDays(v,g), g2=dDays(g,d), tot=dDays(v,d);
+      return `<tr>
+        <td class="nm">${nm}</td>
+        <td>${fmtTS(c)}</td>
+        <td>${fmtTS(v)}<div style="font-size:9px;color:var(--g400);font-style:italic;margin-top:2px;">cita → val.: ${noimp} d (no imputable)</div></td>
+        ${durTd(g1)}
+        ${durTd(g2)}
+        <td><span class="tot-chip" style="color:${tot>=25?RED:tot>=16?ORA:GRN}">${tot} d</span></td>
+      </tr>`;
+    }).join('');
+    lgd.innerHTML=`<span><i style="background:#ECFDF5;border:1px solid #A7F3D0;"></i>&lt;15 d (Óptimo)</span>
+      <span><i style="background:#FFFBEB;border:1px solid #FDE68A;"></i>15–25 d (Aceptable)</span>
+      <span><i style="background:#FEF2F2;border:1px solid #FECACA;"></i>≥26 d (Crítico)</span>
+      <span style="color:var(--g400);font-style:italic;">Citación → Fecha de valoración = no imputable · Timestamps = cambios de estado en SIDEMA</span>`;
+  }
+}
+
+/* ════════ FASE 1 · EQUIPO DE SUBSANACIÓN ════════ */
+/* [trabajador, tipo, exp.subsanados, subs/día, AVC en bucle, carga%, estadoClass, estadoTxt] */
+const SUBSANA = [
+  ['Ana Belén Ruiz Toro','Propio',312,14.2,6,'104%','opt','Óptimo'],
+  ['Óscar Delgado Vega','Propio',288,13.1,4,'96%','opt','Óptimo'],
+  ['Lorena Prieto Sanz','Empresa externa',196,8.9,11,'128%','crit','Crítico — AVC en bucle'],
+  ['Hugo Ramos Gil','Propio',264,12.0,7,'88%','opt','Óptimo'],
+  ['Silvia Nieto Cano','Empresa externa',142,6.5,3,'62%','sub','Subcarga — reasignar'],
+];
+function renderSubsana(){
+  const body=document.getElementById('tbodySubsana'); if(!body) return;
+  body.innerHTML=SUBSANA.map(s=>{
+    const [nm,tp,exp,sd,obc,carga,est,txt]=s;
+    const cargaN=parseInt(carga);
+    const cargaCol=cargaN>=125?RED:cargaN>=70?GRN:BLU;
+    const obcCol=obc>=10?'pc-r':obc>=6?'pc-a':'pc-g';
+    return `<tr>
+      <td class="nm">${nm}</td>
+      <td><span class="grade ${tp==='Propio'?'gV':'gT'}">${tp}</span></td>
+      <td>${exp}</td>
+      <td><strong>${sd.toFixed(1)}</strong></td>
+      <td><span class="pill-count ${obcCol}">${obc}</span></td>
+      <td><span style="font-weight:700;color:${cargaCol}">${carga}</span></td>
+      <td><span class="status s-${est}">${txt}</span></td>
+    </tr>`;
+  }).join('');
+  const b=document.getElementById('subsCountBadge'); if(b) b.textContent=`${SUBSANA.length} trabajadores`;
+}
+function exportSubsana(){ exportTbl('#tSubsana','equipo_subsanacion.csv'); }
+
+/* ════════ FASE 3 · EVALUACIÓN INDIVIDUAL PIA ════════ */
+/* [tramitador, exp.resueltos, plazoImputable(d), vsEquipo(d), %requerimiento, llamadas/exp] */
+const PIA3 = [
+  ['Sergio Molina Reyes',132, 96, -12, 18, 1.6],
+  ['Daniel Herrera Luna',158,142, 34, 47, 4.8],
+  ['Verónica Castro Peña',58,108,  0, 22, 2.0],
+  ['Elena Pardo Gil',124,101,  -7, 20, 1.9],
+  ['Marcos Ibáñez Roca',96,131, 23, 39, 3.7],
+  ['Lucía Ferrer Adán',88, 99,  -9, 16, 1.4],
+];
+const REQ_MEDIA=24, LLAM_MEDIA=2.1;
+function renderPia3(){
+  const body=document.getElementById('tbodyPia3'); if(!body) return;
+  body.innerHTML=PIA3.map(p=>{
+    const [nm,exp,plazo,vs,req,ll]=p;
+    const vsCol=vs>5?RED:vs>0?ORA:GRN;
+    const vsTxt=(vs>0?'+':'')+vs+' d '+(vs>0?'▲':vs<0?'▼':'●');
+    const reqCol=req>=REQ_MEDIA+8?'seg-r':req>=REQ_MEDIA?'seg-a':'seg-g';
+    const llCol=ll>=LLAM_MEDIA+1?'pc-r':ll>=LLAM_MEDIA?'pc-a':'pc-g';
+    const agil = (req<REQ_MEDIA && ll<=LLAM_MEDIA);
+    const perfil = (req>=REQ_MEDIA+8||ll>=LLAM_MEDIA+1)
+      ? '<span class="var-chip vc-bad">Sobre-requiere</span>'
+      : agil ? '<span class="var-chip vc-ok">Ágil</span>'
+      : '<span class="var-chip vc-warn">En la media</span>';
+    return `<tr>
+      <td class="nm">${nm}</td>
+      <td>${exp}</td>
+      <td><strong style="color:${plazo>=130?RED:plazo>=115?ORA:GRN}">${plazo} d</strong></td>
+      <td><span style="font-size:11px;font-weight:700;color:${vsCol}">${vsTxt}</span></td>
+      <td><span class="seg-pill ${reqCol}">${req}%</span> <span style="font-size:9px;color:var(--g400);">(m.${REQ_MEDIA}%)</span></td>
+      <td><span class="pill-count ${llCol}">${ll.toFixed(1)}</span> <span style="font-size:9px;color:var(--g400);">(m.${LLAM_MEDIA})</span></td>
+      <td>${perfil}</td>
+    </tr>`;
+  }).join('');
+}
+function exportPia3(){ exportTbl('#tPia3','evaluacion_pia_individual.csv'); }
+
+function exportTbl(sel,name){
+  const rows=Array.from(document.querySelectorAll(sel+' tr'));
+  const csv=rows.map(r=>Array.from(r.querySelectorAll('th,td')).map(c=>`"${c.textContent.replace(/\s+/g,' ').trim()}"`).join(',')).join('\n');
+  const a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'})),download:name});
+  a.click();
+}
+
+/* filtro tipo de prestación (fase 3) — ajusta plazo medio simulado */
+const PREST_PLAZO={ 'Residencia':1.18,'SAD':0.92,'Teleasistencia':0.85,'Prest. cuidados':1.05,'Centro de día':0.98,'Prest. vinculada':1.10 };
+function onPrest(){
+  const t=document.getElementById('fPrest').value;
+  const d=PHASES[currentPhase];
+  if(chPlazo && chPlazo.data.datasets[2]){
+    const f=t?PREST_PLAZO[t]:1;
+    const n=chPlazo.data.labels.length;
+    chPlazo.data.datasets[2].data=Array.from({length:n},(_,i)=>Math.round(d.plazo[Math.min(i,d.plazo.length-1)]*f));
+    chPlazo.update();
+  }
+  document.getElementById('c2Sub').textContent = t?`Plazo medio para resoluciones de «${t}» vs objetivo de fase`:'Composición mensual de expedientes y plazo medio vs objetivo de fase';
+}
+/* objetivo configurable por el cliente (fase 2/3) */
+function onObjDays(){
+  const v=parseInt(document.getElementById('fObjDays').value);
+  if(!v||!chPlazo) return;
+  const n=chPlazo.data.labels.length;
+  chPlazo.data.datasets[3].data=Array(n).fill(v);
+  chPlazo.data.datasets[3].label='Objetivo propuesto '+v+'d';
+  chPlazo.update();
+  document.getElementById('c2Sub').textContent='Objetivo interno fijado en '+v+' días — cumplimiento recalculado sobre esta meta';
+}
+let ssS={col:-1,asc:true}, ssP={col:-1,asc:true};
+function sortGeneric(tbodyId,tableSel,state,col){
+  const tbody=document.getElementById(tbodyId), rows=Array.from(tbody.querySelectorAll('tr'));
+  const ths=document.querySelectorAll(tableSel+' thead th');
+  ths.forEach(th=>{th.classList.remove('asc','desc');const si=th.querySelector('.si');if(si)si.textContent='↕';});
+  state.asc=state.col===col?!state.asc:true; state.col=col;
+  ths[col].classList.add(state.asc?'asc':'desc'); const si=ths[col].querySelector('.si'); if(si)si.textContent=state.asc?'↑':'↓';
+  rows.sort((a,b)=>{const va=a.cells[col].textContent.trim(),vb=b.cells[col].textContent.trim();
+    const na=parseFloat(va),nb=parseFloat(vb);
+    if(!isNaN(na)&&!isNaN(nb))return state.asc?na-nb:nb-na;
+    return state.asc?va.localeCompare(vb,'es'):vb.localeCompare(va,'es');});
+  rows.forEach(r=>tbody.appendChild(r));
+}
+function sortS(col){ sortGeneric('tbodySubsana','#tSubsana',ssS,col); }
+function sortP(col){ sortGeneric('tbodyPia3','#tPia3',ssP,col); }
+function exportHitos2(){
+  const rows=Array.from(document.querySelectorAll('#tHitos2 tr'));
+  const csv=rows.map(r=>Array.from(r.querySelectorAll('th,td')).map(c=>`"${c.textContent.replace(/\s+/g,' ').trim()}"`).join(',')).join('\n');
+  const a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'})),download:'valoracion_hitos_fraccionados.csv'});
+  a.click();
+}
+let ssH={col:-1,asc:true};
+function sortH(col){
+  const tbody=document.getElementById('tbodyHitos2'), rows=Array.from(tbody.querySelectorAll('tr'));
+  const ths=document.querySelectorAll('#tHitos2 thead th');
+  ths.forEach(th=>{th.classList.remove('asc','desc');const si=th.querySelector('.si');if(si)si.textContent='↕';});
+  ssH.asc=ssH.col===col?!ssH.asc:true; ssH.col=col;
+  ths[col].classList.add(ssH.asc?'asc':'desc'); const si=ths[col].querySelector('.si'); if(si)si.textContent=ssH.asc?'↑':'↓';
+  rows.sort((a,b)=>{const va=a.cells[col].textContent.trim(),vb=b.cells[col].textContent.trim();
+    const na=parseFloat(va),nb=parseFloat(vb);
+    if(!isNaN(na)&&!isNaN(nb))return ssH.asc?na-nb:nb-na;
+    return ssH.asc?va.localeCompare(vb,'es'):vb.localeCompare(va,'es');});
+  rows.forEach(r=>tbody.appendChild(r));
+}
+function onTerr(){
+  // recalcula la línea de plazo medio por territorio
+  const t=document.getElementById('fTerr').value;
+  const d=PHASES[currentPhase];
+  const serie = (t && d.plazoTerr[t]) ? d.plazoTerr[t] : d.plazo;
+  if(chPlazo && chPlazo.data.datasets[2]){
+    const n=chPlazo.data.labels.length;
+    chPlazo.data.datasets[2].data = Array.from({length:n},(_,i)=> serie[Math.min(i,serie.length-1)]);
+    chPlazo.update();
+  }
+  document.getElementById('c2Sub').textContent = t?`Días medios en ${t} vs objetivo de fase`:'Composición mensual de expedientes y plazo medio vs objetivo de fase';
+  renderTable();
+}
+function limpiar(){
+  ['fEstado','fTerr','fEdad','fVal','fRes','fPrest','fOrigen'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  onTerr(); onPrest();
+}
+
+/* ════════ SORT ════════ */
+let ss={col:-1,asc:true};
+function sortT(col){
+  const tbody=document.getElementById('tbody'), rows=Array.from(tbody.querySelectorAll('tr'));
+  const ths=document.querySelectorAll('#tWorkers thead th');
+  ths.forEach(th=>{th.classList.remove('asc','desc');const si=th.querySelector('.si');if(si)si.textContent='↕';});
+  ss.asc=ss.col===col?!ss.asc:true; ss.col=col;
+  ths[col].classList.add(ss.asc?'asc':'desc'); const si=ths[col].querySelector('.si'); if(si)si.textContent=ss.asc?'↑':'↓';
+  rows.sort((a,b)=>{const va=a.cells[col].textContent.trim(),vb=b.cells[col].textContent.trim();
+    const na=parseFloat(va),nb=parseFloat(vb);
+    if(!isNaN(na)&&!isNaN(nb))return ss.asc?na-nb:nb-na;
+    return ss.asc?va.localeCompare(vb,'es'):vb.localeCompare(va,'es');});
+  rows.forEach(r=>tbody.appendChild(r));
+}
+
+/* ════════ EXPORT / MISC ════════ */
+function exportCSV(){
+  const rows=Array.from(document.querySelectorAll('#tWorkers tr')).filter(r=>r.style.display!=='none');
+  const csv=rows.map(r=>Array.from(r.querySelectorAll('th,td')).map(c=>`"${c.textContent.replace(/\s+/g,' ').trim()}"`).join(',')).join('\n');
+  const a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'})),download:`gestion_equipo_fase${currentPhase}.csv`});
+  a.click();
+}
+function actualizarDatos(){document.querySelectorAll('.btn-red').forEach(b=>{b.style.opacity='.7';});setTimeout(()=>document.querySelectorAll('.btn-red').forEach(b=>{b.style.opacity='1';}),700);}
+
+/* ════════ TABS ════════ */
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.tabpane').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active'); document.getElementById(t.dataset.tab).classList.add('active');
+  setTimeout(()=>[chCarga,chPlazo,chSub,chBvd,chPrest].forEach(c=>c&&c.resize()),60);
+}));
+document.querySelectorAll('.phase-pill[data-phase]').forEach(b=>b.addEventListener('click',()=>renderPhase(+b.dataset.phase)));
+document.querySelectorAll('[data-vtoggle]').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('[data-vtoggle]').forEach(x=>{x.classList.remove('active');x.style.background='transparent';x.style.color='var(--g500)';});
+  b.classList.add('active'); const bvd=b.dataset.vtoggle==='bvd';
+  b.style.background=bvd?'var(--orange)':'var(--green)'; b.style.color='#fff';
+  document.getElementById('v3bvd').style.display=bvd?'block':'none';
+  document.getElementById('v3prest').style.display=bvd?'none':'block';
+  setTimeout(()=>(bvd?chBvd:chPrest)&&(bvd?chBvd:chPrest).resize(),60);
+}));
+
+/* ════════ CHARTS ════════ */
+const baseOpt={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+  scales:{x:{grid:{display:false},border:{display:false},ticks:{font:{size:10,family:'Inter'},color:'#9CA3AF'}},
+          y:{grid:{color:'#F3F4F6'},border:{display:false},ticks:{font:{size:10,family:'Inter'},color:'#9CA3AF'}}}};
+const TT={backgroundColor:'#0A1F44',titleColor:'#fff',bodyColor:'#D3D3DD',padding:9,cornerRadius:3};
+
+window.addEventListener('load',()=>{
+  // Global KPIs (static)
+  const GLOBAL_KPIS = [
+    ['Solicitudes activas','3 002','ok','en curso en el proceso completo'],
+    ['Plazo proceso completo','294 d','warn','suma E2E fases 1→3'],
+    ['Cumplimiento SLA global','64%','bad','▼ 36% fuera de plazo'],
+    ['Altas / mes','217','ok','▲ +6% vs mes anterior'],
+  ];
+  document.getElementById('kpiGlobal').innerHTML = GLOBAL_KPIS.map(k=>`
+    <div class="ks"><div class="ks-lbl">${String(k[0]).replace('🔮 ','')} <i class="ii">i</i></div><div class="ks-val">${k[1]}</div><div class="ks-delta ${k[2]}">${k[3]}</div></div>`).join('');
+
+  aplicarTooltips();
+  buildCargaChart(2);
+  buildPlazoChart(2);
+
+  chSub=new Chart(document.getElementById('cSubplazos'),{type:'bar',
+    data:{labels:['Fase 1 · Grabación','Fase 2 · Valoración','Fase 3 · Resolución de PIA'],datasets:[
+      {label:'Plazo real',data:[24,118,152],backgroundColor:['#464C6A',RED,'#464C6A'],borderRadius:4,barPercentage:.5},
+      {label:'Objetivo',data:[30,120,180],backgroundColor:'#EDEEF1',borderRadius:4,barPercentage:.8,categoryPercentage:.65}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:true,labels:{font:{size:10,family:'Inter'},color:'#6B7280',boxWidth:10}},tooltip:{...TT,callbacks:{label:c=>` ${c.dataset.label}: ${c.raw}d`}}},
+      scales:{x:{grid:{color:'#F3F4F6'},border:{display:false},ticks:{font:{size:10,family:'Inter'},color:'#9CA3AF',callback:v=>v+'d'}},
+              y:{grid:{display:false},border:{display:false},ticks:{font:{size:11,family:'Inter',weight:'600'},color:'#374151'}}}}});
+
+  chBvd=new Chart(document.getElementById('cBvd'),{type:'bar',
+    data:{labels:BVD.labels,datasets:[
+      {label:'G0',data:BVD.g0,backgroundColor:'#D3D3DD',borderRadius:2},
+      {label:'G1',data:BVD.g1,backgroundColor:'#8E91AD',borderRadius:2},
+      {label:'G2',data:BVD.g2,backgroundColor:'#464C6A',borderRadius:2},
+      {label:'G3',data:BVD.g3,backgroundColor:NAVY,borderRadius:2}]},
+    options:{...baseOpt,plugins:{legend:{display:true,labels:{font:{size:10,family:'Inter'},color:'#6B7280',boxWidth:10}},tooltip:{...TT,callbacks:{label:c=>` ${c.dataset.label}: ${c.raw}%`}}},
+      scales:{x:{...baseOpt.scales.x,stacked:true},y:{...baseOpt.scales.y,stacked:true,max:100,ticks:{...baseOpt.scales.y.ticks,callback:v=>v+'%'}}}}});
+
+  chPrest=new Chart(document.getElementById('cPrest'),{type:'bar',
+    data:{labels:PREST.tipos,datasets:[
+      {label:'Media equipo',data:PREST.media,backgroundColor:TEAL_A,borderRadius:3},
+      {label:'D. Herrera (atípico)',data:PREST.herrera,backgroundColor:RED,borderRadius:3}]},
+    options:{...baseOpt,plugins:{legend:{display:true,labels:{font:{size:10,family:'Inter'},color:'#6B7280',boxWidth:10}},tooltip:{...TT,callbacks:{label:c=>` ${c.dataset.label}: ${c.raw}%`}}},
+      scales:{x:{...baseOpt.scales.x,ticks:{font:{size:9,family:'Inter'},color:'#9CA3AF',maxRotation:35,minRotation:35}},y:{...baseOpt.scales.y,ticks:{...baseOpt.scales.y.ticks,callback:v=>v+'%'}}}}});
+
+  renderPhase(2);
+});
+</script>
+</body>
+</html>
