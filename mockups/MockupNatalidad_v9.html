@@ -880,6 +880,10 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
     <div class="fsel"><span>Convocatoria</span>
       <select id="fConv" onchange="setConvCM(this.value)"><option value="2026">2026</option><option value="2025">2025</option><option value="2024">2024</option></select>
       <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+    <div class="fsel"><span>Ejercicio</span>
+      <select id="fEjer" onchange="renderConv()"><option value="">Todos</option><option>2024</option><option>2025</option>
+        <option selected>2026</option><option>2027</option><option>2028</option></select>
+      <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
     <div class="fsel"><span>Situaci&oacute;n</span>
       <select id="fRes" onchange="filtrar()">
         <option value="">Todas</option><option>Alta</option><option>Mantenimiento</option><option>Baja</option>
@@ -1042,7 +1046,7 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
 <!-- ══════════ FOOTER ══════════ -->
 </div><!-- /cmBody -->
 
-<div class="blk-ttl">Ejecución económica <span>Crédito de la convocatoria seleccionada en los filtros</span></div>
+<div class="blk-ttl">Ejecución económica <span>Convocatoria y ejercicio seleccionados en los filtros</span></div>
 
 
   <div class="fbar" id="fbarECO" style="display:none;">
@@ -1054,7 +1058,7 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
     </div>
     <div class="fgrp">
       <label>Ejercicio</label>
-      <select id="fEjer" onchange="renderEjer()">
+      <select id="fEjerOld">
         <option value="2024">2024</option><option value="2025">2025</option>
         <option value="2026" selected>2026</option><option value="2027">2027</option>
       </select>
@@ -1081,7 +1085,7 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
   <div class="pz-col">
     <div class="pz-head">
       <div>
-        <h3>Consumo de la convocatoria</h3>
+        <h3>Crédito por anualidad <i class="ii" data-t="Una convocatoria plurianual tiene su crédito repartido por ejercicios. Cada barra es una anualidad: lo ejecutado, lo comprometido y lo que queda sin comprometer. Pendiente de confirmar con gestión económica qué fase contable es «ejecutado» (obligación o pago) y el importe mensual de la ayuda.">i</i></h3>
         <p id="cvSub">Reparto del crédito a 03/09/2026</p>
       </div>
       <div class="cv-tabs" id="cvTabs" style="display:none;">
@@ -1091,11 +1095,10 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
       </div>
     </div>
     <div class="pz-head" style="margin-bottom:8px;">
-      <div style="font-size:10.5px;color:var(--g500);line-height:1.4;">Presupuesto de la convocatoria<br><strong id="cvTot" style="color:var(--g900);font-size:12px;"></strong></div>
+      <div style="font-size:10.5px;color:var(--g500);line-height:1.4;"><span id="cvTotL">Crédito de la convocatoria</span><br><strong id="cvTot" style="color:var(--g900);font-size:12px;"></strong></div>
       <div class="pz-hero"><b id="cvHero"></b><span id="cvHeroSub"></span></div>
     </div>
-    <div class="bgt-track" id="cvTrack"></div>
-    <div class="bgt-scale" id="cvScale"></div>
+    <div class="chart-wrap" style="height:150px;margin-bottom:10px;"><canvas id="cAnu"></canvas></div>
     <div class="bgt-cards" id="cvCards"></div>
     <div class="cap-box">
       <h4>Capacidad de admisión con el crédito disponible</h4>
@@ -1132,8 +1135,8 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
     </div>
     <div class="cmp">
       <h4>Importe por ejercicio y convocatoria</h4>
-      <p>Cada convocatoria paga en varias anualidades
-        <i class="ii" data-t="Una convocatoria es plurianual: la de 2024 paga en 2024, 2025 y 2026. Cada barra es un ejercicio y suma lo que pagan en él todas las convocatorias vivas; cada color es una convocatoria a lo largo de sus anualidades. Incluye lo comprometido pendiente de pago.">i</i></p>
+      <p>Ejecutado y comprometido de todas las convocatorias vivas
+        <i class="ii" data-t="Una convocatoria es plurianual: la de 2024 paga en 2024, 2025, 2026 y 2027. Cada barra es un ejercicio y suma lo que pagan en él todas las convocatorias vivas; cada color es una convocatoria a lo largo de sus anualidades. Incluye lo comprometido pendiente de pago.">i</i></p>
       <div class="chart-wrap" style="height:170px;"><canvas id="cEjer"></canvas></div>
       <div class="cmp-tot" id="ejerTot"></div>
 
@@ -1363,7 +1366,7 @@ const TIP = {
  'Expedientes en trámite':'Expedientes recepcionados que todavía no tienen resolución. Debajo, las solicitudes que siguen en REC sin expediente abierto: se mostrarán cuando se conecte REC, hoy no están en Atlantix.',
  'Plazo medio de resolución':'Días desde la entrada en el registro del órgano competente hasta la resolución, sobre los expedientes ya resueltos. Plazo legal: 90 días. Mientras REC no esté conectado se mide desde la recepción en AFN.',
  'Resueltas en plazo':'Expedientes resueltos dentro del plazo legal fijado en los filtros (90 días por defecto). Debajo, los que siguen en trámite y ya lo han superado: son los que más urge mover.',
- 'Crédito ejecutado':'Crédito ya pagado sobre el total de la convocatoria seleccionada en los filtros.',
+ 'Crédito ejecutado':'Ejecutado sobre el crédito de la anualidad elegida en el filtro Ejercicio, o de toda la convocatoria si no se elige ejercicio. Pendiente de confirmar con gestión económica si «ejecutado» es la obligación reconocida o el pago.',
  'Crédito disponible':'Crédito de la convocatoria que no está ni pagado ni comprometido. Debajo, cuántas altas completas caben: disponible entre lo que cuesta una ayuda entera (24 mensualidades).',
  'Dentro del objetivo':'Expedientes ya terminados que se resolvieron dentro del objetivo fijado en la barra de filtros. Por defecto es el plazo máximo normativo: 90 días desde la entrada de la solicitud en el registro del órgano competente.',
  'Dentro de objetivo':'Expedientes ya terminados cuyo plazo no superó el objetivo fijado en la barra de filtros. «En riesgo» son los que se acercan a él sin haberlo superado.',
@@ -1580,20 +1583,14 @@ function renderCM(){
   const set = (id,v) => { const e=document.getElementById(id); if(e) e.innerHTML=v; };
 
   /* los dos indicadores variables de cabecera siguen a la convocatoria elegida */
-  const C = CONV[FCM.conv] || CONV['2026'];
-  document.getElementById('kpiConv').innerHTML = ksHtml([
-    ['Crédito ejecutado', (C.eje/C.tot*100).toFixed(1).replace('.',',')+'%','ok',
-     (C.eje/1e6).toFixed(2).replace('.',',')+' M€ de '+(C.tot/1e6).toFixed(0)+' M€'],
-    ['Crédito disponible', ((C.tot-C.eje-C.com)/1e6).toFixed(2).replace('.',',')+' <span class="u">M€</span>','na',
-     C.admite ? nfmt(Math.floor((C.tot-C.eje-C.com)/COSTE_COMPLETO))+' altas completas caben' : 'cerrada a altas nuevas'],
-  ], true);
+  renderKpiCredito();
 
   /* ── vacío: el filtro es real y a veces no queda nada que mirar ── */
   const vacio = document.getElementById('cmVacio');
   if(!n){
     vacio.classList.add('on');
     vacio.innerHTML = FCM.conv==='2024'
-      ? '<b>La convocatoria 2024 no tiene pagos pendientes.</b> No quedan expedientes en tramitación: su crédito ya se agotó y los pagos se cerraron. Su ejecución sigue disponible en <em>Ejecución económica</em>.'
+      ? '<b>La convocatoria 2024 está cerrada a altas nuevas</b> y no tiene expedientes en tramitación. Sigue pagando a sus beneficiarios hasta 2027: su crédito está abajo, en <em>Ejecución económica</em>.'
       : '<b>Ningún expediente cumple los filtros seleccionados.</b> Prueba a quitar alguno.';
     document.getElementById('cmBody').style.display='none';
     set('gExp','0'); set('gEnt','0'); set('gEntD','');
@@ -1789,155 +1786,124 @@ function limpiar(){
    Por eso conviven varias convocatorias vivas a la vez.
    mens = mensualidad media · dur = duración máxima en meses · ben = beneficiarios resueltos
    pagadas = mensualidades ya abonadas de media · admite = si aún puede aceptar altas nuevas */
-const MENS = 215, DUR = 24, COSTE_COMPLETO = MENS*DUR;   /* 5.160 € por expediente completo */
-const CONV = {
-  '2024': { tot:12000000, eje:11816400, com:      0, ben:2290, cobrando:2290, pagadas:24, admite:false, agotada:true,  tramos:[0,0,0,2290] },
-  '2025': { tot:13500000, eje: 8531200, com:4265600, ben:2480, cobrando:2480, pagadas:16, admite:false, agotada:false, tramos:[180,420,900,980] },
-  '2026': { tot:15000000, eje: 4606160, com:9325840, ben:2700, cobrando:2678, pagadas: 8, admite:true,  agotada:false, tramos:[1180,1130,290,100] },
+const MENS = 215, DUR = 24, COSTE_COMPLETO = MENS*DUR;   /* importe mensual por confirmar con gestión económica */
+/* Crédito plurianual: cada convocatoria tiene su crédito repartido por anualidad
+   («la convocatoria 24 extiende los pagos desde el 24, 25, 26 y 27», Pablo, 29/09).
+   Hay tres convocatorias vivas a la vez. Fecha de corte 03/09/2026.
+   pre = crédito previsto · eje = ejecutado · com = comprometido, por ejercicio. */
+const EJER = ['2024','2025','2026','2027','2028'];
+const ANU = {
+  '2024': { pre:[2400000,4000000,3600000,2000000,0],       eje:[2350000,3950000,2580000,0,0],
+            com:[0,0,950000,1950000,0] },
+  '2025': { pre:[0,2000000,5500000,4500000,1500000],       eje:[0,1960000,3900000,0,0],
+            com:[0,0,1450000,4400000,1450000] },
+  '2026': { pre:[0,0,4500000,6500000,4000000],             eje:[0,0,2300000,0,0],
+            com:[0,0,1400000,6100000,3900000] },
 };
-const ARRASTRE = 183600 + 703200;   /* remanente sin consumir de 2024 y 2025 */
-let convKey='2026';
+const sumA = a => a.reduce((x,y)=>x+y,0);
+const CONV = {};
+Object.keys(ANU).forEach(k=>{ const a=ANU[k];
+  CONV[k] = { tot:sumA(a.pre), eje:sumA(a.eje), com:sumA(a.com) }; });
+Object.assign(CONV['2024'], { ben:2290, cobrando:2290, pagadas:18, admite:false, agotada:false, tramos:[0,0,610,1680] });
+Object.assign(CONV['2025'], { ben:2480, cobrando:2480, pagadas:10, admite:false, agotada:false, tramos:[180,1420,880,0] });
+Object.assign(CONV['2026'], { ben:2700, cobrando:2678, pagadas: 4, admite:true,  agotada:false, tramos:[2578,100,0,0] });
+const COLCONV = {'2024':'#464C6A','2025':'#D98324','2026':'#005B60'};
+let convKey='2026', chAnu=null, chEjer=null;
+const M2 = v => (v/1e6).toFixed(2).replace('.',',')+' M€';
+function ejerSel(){ return (document.getElementById('fEjer')||{}).value || ''; }
+/* lo que mide la vista: una anualidad de la convocatoria o la convocatoria entera */
+function ambito(k){
+  const a=ANU[k], i=EJER.indexOf(ejerSel());
+  return i<0 ? { pre:CONV[k].tot, eje:CONV[k].eje, com:CONV[k].com, txt:'todas sus anualidades' }
+             : { pre:a.pre[i], eje:a.eje[i], com:a.com[i], txt:'ejercicio '+EJER[i] };
+}
 function setConv(k){
   convKey=k;
-  /* los dos selectores y las pestañas del panel leen del mismo estado */
   ['fConv','fConvEco'].forEach(id=>{ const e=document.getElementById(id); if(e) e.value=k; });
   renderConv();
 }
-function renderConv(){
-  const c=CONV[convKey], disp=c.tot-c.eje-c.com;
-  const pe=c.eje/c.tot*100, pc=c.com/c.tot*100, pd=disp/c.tot*100;
-  document.getElementById('cvTot').textContent = eur(c.tot);
-  document.getElementById('cvHero').textContent = (c.eje/1e6).toFixed(2).replace('.',',')+' M€';
-  document.getElementById('cvHeroSub').innerHTML = 'ejecutado · <strong style="color:var(--green)">'+pe.toFixed(1).replace('.',',')+'%</strong> del crédito';
-  const vc=(document.getElementById('fCorte')||{}).value;
-  const fcorte = vc ? vc.split('-').reverse().join('/') : '03/09/2026';
-  document.getElementById('cvSub').textContent = (c.agotada
-    ? 'Convocatoria sin pagos pendientes'
-    : c.admite
-    ? 'Convocatoria abierta'
-    : 'Convocatoria cerrada a altas nuevas');
-  document.getElementById('cvTrack').innerHTML =
-    `<div class="bgt-seg s-ej" style="width:${pe}%">${pe.toFixed(1).replace('.',',')}%</div>`+
-    `<div class="bgt-seg s-cm" style="width:${pc}%">${pc>6?pc.toFixed(1).replace('.',',')+'%':''}</div>`+
-    `<div class="bgt-seg s-dp" style="width:${pd}%">${pd>6?pd.toFixed(1).replace('.',',')+'%':''}</div>`;
-  const M=v=>Math.round(v/1e6*10)/10;
-  document.getElementById('cvScale').innerHTML =
-    `<span style="left:0;">0</span><span style="left:33.33%;">${M(c.tot/3)} M€</span>`+
-    `<span style="left:66.67%;">${M(c.tot*2/3)} M€</span><span style="left:100%;">${M(c.tot)} M€</span>`;
-  const pend = DUR - c.pagadas;
-  /* beneficiarios con mensualidades pendientes, deducidos del propio compromiso:
-     así la cifra del rótulo no puede contradecir al importe que tiene al lado */
-  const benCom = pend ? Math.round(c.com/(MENS*pend)) : 0;
-  document.getElementById('cvCards').innerHTML =
-    `<div class="bc bc-ej"><span class="bc-l">Ejecutado</span><b>${eur(c.eje)}</b><em>${nfmt(c.cobrando)} beneficiarios · ${c.pagadas} de ${DUR} mensualidades</em></div>`+
-    `<div class="bc bc-cm"><span class="bc-l">Comprometido</span><b>${eur(c.com)}</b><em>${c.agotada?'—':pend+' mensualidades · '+nfmt(benCom)+' beneficiarios'}</em></div>`+
-    `<div class="bc bc-dp"><span class="bc-l">Disponible</span><b>${eur(disp)}</b><em></em></div>`;
-  /* capacidad de admisión — hoy se resuelve preguntando a mano a gestión económica */
-  const cap=document.getElementById('cvCap'), foot=document.getElementById('cvCapFoot');
-  if(!c.admite){
-    cap.innerHTML = `<div class="cap-row" style="color:var(--g500);">Convocatoria cerrada a altas nuevas. El remanente de <strong style="color:var(--g900)">${eur(disp)}</strong> queda sin consumir.</div>`;
-    foot.innerHTML = c.agotada
-      ? `Sus beneficiarios ya agotaron las ${DUR} mensualidades: la convocatoria no tiene pagos pendientes.`
-      : `Todavía paga mensualidades a sus ${nfmt(c.ben)} beneficiarios, pero no admite solicitudes nuevas.`;
-  } else {
-    const completas=Math.floor(disp/COSTE_COMPLETO);
-    cap.innerHTML =
-      `<div class="cap-row"><b>${nfmt(completas)}</b> altas completas `+
-      `<i class="ii" data-t="Crédito disponible dividido entre lo que cuesta un expediente entero: ${eur(disp)} ÷ ${eur(COSTE_COMPLETO)}. Un expediente completo cuesta la mensualidad por su duración, ${MENS} € × ${DUR}. Hoy este cálculo se resuelve preguntando a mano a gestión económica.">i</i></div>`;
-    foot.innerHTML = `Remanente de convocatorias anteriores <strong>${eur(ARRASTRE)}</strong>`;
-  }
-  /* reparto por tramo: cuántos han cobrado ya cuántas mensualidades y qué queda por pagarles */
-  const MID=[3.5,9.5,15.5,21.5];
-  const pendTr=c.tramos.map((n,i)=>Math.round((DUR-MID[i])*MENS*n));
-  chTramos.data.datasets[0].data = c.tramos;
-  chTramos.$pend = pendTr;
-  chTramos.update();
-  document.getElementById('trFoot').innerHTML = c.agotada
-    ? `Todos los beneficiarios han cobrado las ${DUR} mensualidades: pendiente de abono = 0 €.`
-    : '';
-  const pset=(id,v)=>{ const e=document.getElementById(id); if(e) e.textContent=v; };
-  pset('pMens', MENS+' €'); pset('pDur', DUR+' mensualidades');
-  pset('pCorte', fcorte);   pset('pCred', eur(c.tot));
-  document.querySelectorAll('#cvTabs button').forEach(b=>b.classList.toggle('on', b.dataset.cv===convKey));
-  renderCmp();
+function initAnu(){
+  const ax={grid:{color:'#EDEEF1'},ticks:{font:{family:'Inter',size:10},color:'#0A1F44'},border:{display:false}};
+  chAnu=new Chart(document.getElementById('cAnu'),{type:'bar',
+    data:{labels:[],datasets:[
+      {label:'Ejecutado',data:[],backgroundColor:'#005B60',stack:'a',barPercentage:.6},
+      {label:'Comprometido',data:[],backgroundColor:'#D98324',stack:'a',barPercentage:.6},
+      {label:'Sin comprometer',data:[],backgroundColor:'#D3D3DD',stack:'a',barPercentage:.6}]},
+    options:{responsive:true,maintainAspectRatio:false,animation:false,
+      plugins:{legend:{position:'bottom',labels:{boxWidth:9,boxHeight:9,padding:10,font:{family:'Inter',size:10},color:'#0A1F44'}},
+        tooltip:{callbacks:{title:it=>'Anualidad '+it[0].label,label:c=>' '+c.dataset.label+': '+M2(c.raw*1e6)}}},
+      scales:{x:{...ax,stacked:true,grid:{display:false}},y:{...ax,stacked:true,ticks:{...ax.ticks,callback:v=>v+' M€'}}}}});
 }
-
-/* Vista conjunta: cuánto dinero se está manejando a la vez entre convocatorias.
-   Responde a «tienen que manejar dinero de varios años a la vez» (Raquel, sesión 1/09). */
-function renderCmp(){
-  if(!chCmp) return;
-  const ys=Object.keys(CONV);
-  let T=0,E=0,M2=0,D=0;
-  const ej=[],co=[],di=[],est=[];
-  ys.forEach(y=>{
-    const c=CONV[y], disp=c.tot-c.eje-c.com;
-    T+=c.tot; E+=c.eje; M2+=c.com; D+=disp;
-    ej.push(c.eje); co.push(c.com); di.push(disp);
-    est.push(c.agotada ? 'sin pagos pendientes' : (!c.admite ? nfmt(c.cobrando)+' cobrando · cerrada'
-                                                  : nfmt(c.cobrando)+' cobrando · abierta'));
-  });
-  chCmp.data.labels=ys;
-  chCmp.data.datasets[0].data=ej;
-  chCmp.data.datasets[1].data=co;
-  chCmp.data.datasets[2].data=di;
-  /* la convocatoria elegida se resalta, como hace una selección en Celonis */
-  chCmp.data.datasets.forEach(d=>{ d.borderColor='#0A1F44';
-    d.borderWidth=ys.map(y=>y===convKey?1.4:0); d.borderSkipped=false; });
-  chCmp.$est=est;
-  chCmp.update();
-  renderEjer();
-  const m=v=>(v/1e6).toFixed(2).replace('.',',')+' M€';
-  document.getElementById('cmpTot').innerHTML =
-    `<div><span>Bajo gestión</span><b>${m(T)}</b></div>`+
-    `<div><span>Ejecutado</span><b>${m(E)}</b></div>`+
-    `<div><span>Comprometido</span><b>${m(M2)}</b></div>`+
-    `<div class="free"><span>Libre</span><b>${m(D)}</b></div>`;
-}
-
-
-/* ════════ CONVOCATORIA PLURIANUAL ════════
-   «la convocatoria 24 extiende los pagos desde el 24, 25, 26 y 27… me gustaría poder
-   filtrar tanto por una convocatoria en todas sus anualidades como por un año concreto
-   sumando convocatorias» (Pablo García, 29/09).
-   Dimensión: ejercicio · serie: convocatoria · medida: importe ejecutado + comprometido. */
-const EJER = ['2024','2025','2026','2027'];
-const PLURI = {
-  '2024': [2100000, 5910000, 3806400,       0],
-  '2025': [      0, 2350000, 8314000, 2132800],
-  '2026': [      0,       0, 6937660, 6994400],
-};
-const COLCONV = {'2024':'#464C6A','2025':'#D98324','2026':'#005B60'};
-let chEjer=null;
 function initEjer(){
   const ax={grid:{color:'#EDEEF1'},ticks:{font:{family:'Inter',size:10},color:'#0A1F44'},border:{display:false}};
   chEjer=new Chart(document.getElementById('cEjer'),{type:'bar',
-    data:{labels:EJER,datasets:Object.keys(PLURI).map(k=>({label:'Convocatoria '+k,
-      data:PLURI[k].map(v=>v/1e6),backgroundColor:COLCONV[k],stack:'e',barPercentage:.62}))},
+    data:{labels:EJER,datasets:Object.keys(ANU).map(k=>({label:'Convocatoria '+k,
+      data:EJER.map((_,i)=>(ANU[k].eje[i]+ANU[k].com[i])/1e6),backgroundColor:COLCONV[k],stack:'e',barPercentage:.62}))},
     options:{responsive:true,maintainAspectRatio:false,animation:false,
       plugins:{legend:{position:'bottom',labels:{boxWidth:9,boxHeight:9,padding:10,font:{family:'Inter',size:10},color:'#0A1F44'}},
-        tooltip:{callbacks:{title:it=>'Ejercicio '+it[0].label,
-          label:c=>' '+c.dataset.label+': '+c.raw.toFixed(2).replace('.',',')+' M€'}}},
-      scales:{x:{...ax,stacked:true,grid:{display:false}},
-              y:{...ax,stacked:true,ticks:{...ax.ticks,callback:v=>v+' M€'}}}}});
-  renderEjer();
+        tooltip:{callbacks:{title:it=>'Ejercicio '+it[0].label,label:c=>' '+c.dataset.label+': '+M2(c.raw*1e6)}}},
+      scales:{x:{...ax,stacked:true,grid:{display:false}},y:{...ax,stacked:true,ticks:{...ax.ticks,callback:v=>v+' M€'}}}}});
+  initAnu();
 }
 function renderEjer(){
   if(!chEjer) return;
-  const e=document.getElementById('fEjer').value, i=EJER.indexOf(e);
-  const conv=(typeof convKey!=='undefined')?convKey:'2026';
-  chEjer.data.datasets.forEach(d=>{
-    const k=d.label.slice(-4);
-    /* se resalta solo el ejercicio elegido; el total de la convocatoria va en el indicador */
-    d.backgroundColor=EJER.map((_,j)=> j===i ? COLCONV[k] : COLCONV[k]+'40');
-  });
+  const i=EJER.indexOf(ejerSel());
+  chEjer.data.datasets.forEach(d=>{ const k=d.label.slice(-4);
+    /* con ejercicio: se resalta el año entero, todas las convocatorias; sin él, la convocatoria en todas sus anualidades */
+    d.backgroundColor=EJER.map((_,j)=> (i<0 ? k===convKey : j===i) ? COLCONV[k] : COLCONV[k]+'40'); });
   chEjer.update();
-  const tot=Object.values(PLURI).reduce((a,v)=>a+v[i],0);
-  const convTot=PLURI[conv].reduce((a,b)=>a+b,0);
-  const m=v=>(v/1e6).toFixed(2).replace('.',',')+' M€';
+  const totEj = i<0 ? null : Object.keys(ANU).reduce((a,k)=>a+ANU[k].eje[i]+ANU[k].com[i],0);
+  const convTot = CONV[convKey].eje+CONV[convKey].com;
   document.getElementById('ejerTot').innerHTML=
-    `<div><span>Ejercicio ${e} · todas las convocatorias</span><b>${m(tot)}</b></div>`+
-    `<div><span>Convocatoria ${conv} · todas sus anualidades</span><b>${m(convTot)}</b></div>`;
+    (i<0 ? '' : `<div><span>Ejercicio ${EJER[i]} · todas las convocatorias</span><b>${M2(totEj)}</b></div>`)+
+    `<div><span>Convocatoria ${convKey} · todas sus anualidades</span><b>${M2(convTot)}</b></div>`;
 }
+function renderConv(){
+  if(!chAnu) return;
+  const c=CONV[convKey], a=ANU[convKey], A=ambito(convKey);
+  const disp=A.pre-A.eje-A.com, dispConv=c.tot-c.eje-c.com;
+  const pct=v=>(A.pre? v/A.pre*100:0).toFixed(1).replace('.',',')+'%';
+  document.getElementById('cvSub').textContent = 'Convocatoria '+convKey+' · '+(c.admite?'abierta':'cerrada a altas nuevas')+' · '+A.txt;
+  document.getElementById('cvTotL').textContent = A.txt==='todas sus anualidades' ? 'Crédito de la convocatoria' : 'Crédito de la anualidad';
+  document.getElementById('cvTot').textContent = eur(A.pre);
+  document.getElementById('cvHero').textContent = M2(A.eje);
+  document.getElementById('cvHeroSub').innerHTML = 'ejecutado · <strong style="color:var(--green)">'+pct(A.eje)+'</strong>';
+  const idx=EJER.map((_,i)=>i).filter(i=>a.pre[i]>0), sel=EJER.indexOf(ejerSel());
+  chAnu.data.labels=idx.map(i=>EJER[i]);
+  const cols=[['#005B60'],['#D98324'],['#D3D3DD']];
+  [a.eje,a.com,a.pre.map((p,i)=>p-a.eje[i]-a.com[i])].forEach((arr,d)=>{
+    chAnu.data.datasets[d].data=idx.map(i=>arr[i]/1e6);
+    chAnu.data.datasets[d].backgroundColor=idx.map(i=> sel<0||i===sel ? cols[d][0] : cols[d][0]+'55'); });
+  chAnu.update();
+  const pend=DUR-c.pagadas;
+  document.getElementById('cvCards').innerHTML =
+    `<div class="bc bc-ej"><span class="bc-l">Ejecutado</span><b>${eur(A.eje)}</b><em>${pct(A.eje)} · ${nfmt(c.cobrando)} beneficiarios</em></div>`+
+    `<div class="bc bc-cm"><span class="bc-l">Comprometido</span><b>${eur(A.com)}</b><em>${pct(A.com)} · ${pend} mensualidades por pagar</em></div>`+
+    `<div class="bc bc-dp"><span class="bc-l">Sin comprometer</span><b>${eur(disp)}</b><em>${pct(disp)}</em></div>`;
+  const cap=document.getElementById('cvCap'), foot=document.getElementById('cvCapFoot');
+  if(!c.admite){
+    cap.innerHTML = `<div class="cap-row" style="color:var(--g500);">Convocatoria cerrada a altas nuevas: sigue pagando a sus ${nfmt(c.ben)} beneficiarios hasta ${EJER[Math.max(...idx)]}. Quedan <strong style="color:var(--g900)">${eur(dispConv)}</strong> sin comprometer.</div>`;
+    foot.innerHTML = 'Destino del crédito sin comprometer de convocatorias cerradas: por confirmar con gestión económica.';
+  } else {
+    cap.innerHTML = `<div class="cap-row"><b>${nfmt(Math.floor(dispConv/COSTE_COMPLETO))}</b> altas completas `+
+      `<i class="ii" data-t="Crédito de la convocatoria sin comprometer (${eur(dispConv)}) entre lo que cuesta una ayuda entera (${MENS} € × ${DUR} = ${eur(COSTE_COMPLETO)}). Importe mensual por confirmar.">i</i></div>`;
+    foot.innerHTML = `Crédito sin comprometer de la convocatoria, todas sus anualidades: <strong>${eur(dispConv)}</strong>`;
+  }
+  renderEjer();
+  if(typeof renderCM==='function' && document.getElementById('kpiConv')) renderKpiCredito();
+}
+/* los dos indicadores económicos de cabecera, con el mismo ámbito que el bloque */
+function renderKpiCredito(){
+  const c=CONV[convKey], A=ambito(convKey), dispConv=c.tot-c.eje-c.com;
+  document.getElementById('kpiConv').innerHTML = ksHtml([
+    ['Crédito ejecutado', (A.pre? A.eje/A.pre*100:0).toFixed(1).replace('.',',')+'%','ok',
+     M2(A.eje)+' de '+M2(A.pre)+' · '+A.txt],
+    ['Crédito disponible', (dispConv/1e6).toFixed(2).replace('.',',')+' <span class="u">M€</span>','na',
+     c.admite ? nfmt(Math.floor(dispConv/COSTE_COMPLETO))+' altas completas caben' : 'cerrada a altas nuevas'],
+  ], true);
+  if(typeof aplicarTips==='function') aplicarTips();
+}
+function renderCmp(){}
 
 /* ════════ CICLO DE VIDA ════════ */
 const CICLO = [
@@ -2584,7 +2550,7 @@ const DFILAS = [
  ['Beneficiarias en alta','No contemplado todavía','—','—','Vademécum', 1],
  ['Beneficiarias en mantenimiento','No contemplado todavía','—','—','Vademécum', 1],
  ['Beneficiarias en baja','No contemplado todavía','—','—','Vademécum', 1],
- ['Crédito ejecutado','Crédito pagado sobre el total de la convocatoria',
+ ['Crédito ejecutado','Ejecutado sobre el crédito de la anualidad elegida, o de toda la convocatoria; fase contable (O o P) por confirmar',
   'Documento contable','Pago','Nexus · gestión económica', 1],
  ['Nómina de la convocatoria','Importe de los pagos vivos de la convocatoria',
   'Resolución','Pago en nómina','Nexus · gestión económica', 1],
