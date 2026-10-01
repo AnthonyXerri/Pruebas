@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Natalidad · Cuadro de mando</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0A1F44; --teal:#005B60; --plum:#464C6A; --red:#E12E2E; --amber:#D98324; --green:#2EAA4B;
+  --tx:#111827; --tx2:#6B7280; --tx3:#9CA3AF; --bd:#E5E7EB; --bg:#F7F8FA; --card:#fff;
+  --f:'Inter',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--f);background:var(--bg);color:var(--tx);font-size:13px}
+
+/* cabecera */
+.hdr{background:var(--card);border-bottom:1px solid var(--bd);position:sticky;top:0;z-index:10}
+.hdr-in{max-width:1320px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.hdr h1{font-size:16px;font-weight:700;color:var(--navy)}
+.hdr .sub{font-size:11px;color:var(--tx2);margin-top:2px}
+.tabs{display:flex;gap:4px;margin-left:auto}
+.tab{border:none;background:none;font:500 12px var(--f);color:var(--tx2);padding:7px 12px;border-radius:6px;cursor:pointer}
+.tab.on{background:var(--bg);color:var(--navy);font-weight:600}
+
+.fbar{max-width:1320px;margin:0 auto;padding:0 24px 12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.f{display:flex;align-items:center;gap:6px;border:1px solid var(--bd);border-radius:6px;padding:5px 10px;background:#fff}
+.f span{font-size:11px;color:var(--tx2)}
+.f select,.f input{border:none;outline:none;font:500 12px var(--f);color:var(--tx);background:transparent}
+.upd{margin-left:auto;font-size:10.5px;color:var(--tx3)}
+
+main{max-width:1320px;margin:0 auto;padding:20px 24px 32px}
+.pane{display:none}.pane.on{display:block}
+
+.sec-h{display:flex;align-items:baseline;gap:12px;margin:6px 0 12px}
+.sec-h h2{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--navy)}
+.sec-h p{font-size:11.5px;color:var(--tx2)}
+.sec{margin-bottom:28px}
+
+/* KPIs */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:12px}
+.kpi{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:16px 18px}
+.kpi .l{font-size:11.5px;color:var(--tx2);font-weight:500}
+.kpi .v{font-size:28px;font-weight:700;color:var(--navy);margin:6px 0 4px;letter-spacing:-.02em}
+.kpi .v small{font-size:15px;font-weight:600;color:var(--tx2);margin-left:2px}
+.kpi .d{font-size:11px;color:var(--tx2)}
+.kpi .d.bad{color:var(--red)} .kpi .d.ok{color:var(--green)}
+
+/* tarjetas */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:16px 18px}
+.card h3{font-size:13px;font-weight:600;color:var(--tx)}
+.card .cs{font-size:11px;color:var(--tx2);margin:2px 0 12px}
+.cw{position:relative;height:220px}
+
+.pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.pill{border:1px solid var(--bd);background:#fff;font:500 11.5px var(--f);color:var(--tx2);padding:5px 12px;border-radius:999px;cursor:pointer}
+.pill.on{background:var(--navy);border-color:var(--navy);color:#fff}
+
+.lg{display:flex;gap:14px;margin-top:10px;font-size:11px;color:var(--tx2)}
+.lg i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+
+/* presupuesto */
+.bar{display:flex;height:14px;border-radius:7px;overflow:hidden;background:var(--bd);margin:14px 0 8px}
+.bar div{height:100%}
+.bar-lg{display:flex;justify-content:space-between;font-size:11px;color:var(--tx2)}
+.bar-lg b{color:var(--tx);font-weight:600}
+
+/* tabla */
+table{width:100%;border-collapse:collapse}
+th{font-size:10.5px;font-weight:600;color:var(--tx2);text-align:left;padding:8px 10px;border-bottom:1px solid var(--bd);text-transform:uppercase;letter-spacing:.03em}
+td{padding:9px 10px;border-bottom:1px solid #F1F2F4;font-size:12px}
+tr:last-child td{border-bottom:none}
+.r{text-align:right}
+.tag{font-size:10.5px;padding:2px 8px;border-radius:999px;background:var(--bg);color:var(--tx2);white-space:nowrap}
+.tag.adm{background:#FDECEC;color:var(--red)}
+.hot{color:var(--red);font-weight:600}
+
+/* hoja de indicadores */
+.df-intro{font-size:12px;color:var(--tx2);line-height:1.55;max-width:860px;margin-bottom:12px}
+.df-bar{display:flex;gap:8px;margin-bottom:12px}
+.btn{border:1px solid var(--bd);background:#fff;font:500 12px var(--f);color:var(--tx);padding:6px 12px;border-radius:6px;cursor:pointer}
+.df td{vertical-align:top}
+.df td.ind{font-weight:600}
+.df textarea{width:100%;min-height:30px;border:1px solid var(--bd);border-radius:6px;padding:5px 7px;font:12px var(--f);resize:vertical}
+
+.foot{font-size:10.5px;color:var(--tx3);text-align:center;margin-top:8px}
+
+@media (max-width:900px){.kpis{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}}
+@media (max-width:520px){.kpis{grid-template-columns:1fr}.hdr-in,.fbar,main{padding-left:16px;padding-right:16px}}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-in">
+    <div>
+      <h1>Ayudas a la Natalidad · Cuadro de mando</h1>
+      <div class="sub">Dirección General de Infancia, Familia y Fomento de la Natalidad</div>
+    </div>
+    <div class="tabs">
+      <button class="tab on" data-p="pCM">Cuadro de mando</button>
+      <button class="tab" data-p="pDef">Definición de indicadores</button>
+    </div>
+  </div>
+  <div class="fbar" id="fbar">
+    <div class="f"><span>Convocatoria</span>
+      <select id="fConv"><option>2026</option><option>2025</option><option>2024</option></select></div>
+    <div class="f"><span>Desde</span><input type="date" value="2025-11-01"></div>
+    <div class="f"><span>Hasta</span><input type="date" value="2026-09-03"></div>
+    <div class="f"><span>Unidad</span>
+      <select><option>Todas</option><option>Unidad Gestora</option><option>Gestión Económica</option></select></div>
+    <span class="upd">Actualizado 03/09/2026 · Atlantix + Nexus</span>
+  </div>
+</header>
+
+<main>
+<!-- ════════ CUADRO DE MANDO ════════ -->
+<div class="pane on" id="pCM">
+
+  <section class="sec">
+    <div class="sec-h"><h2>Gestión del expediente</h2><p>Objetivo: 90 días desde la entrada en registro</p></div>
+    <div class="kpis">
+      <div class="kpi"><div class="l">Expedientes en gestión</div><div class="v">3.842</div><div class="d">sin llegar todavía al pago</div></div>
+      <div class="kpi"><div class="l">Plazo medio del expediente</div><div class="v">68<small>d</small></div><div class="d ok">22 d por debajo del objetivo</div></div>
+      <div class="kpi"><div class="l">Dentro del objetivo</div><div class="v">61<small>%</small></div><div class="d bad">1.499 expedientes fuera de plazo</div></div>
+      <div class="kpi"><div class="l">Expedientes detenidos</div><div class="v">1.053</div><div class="d bad">611 dependen de la unidad</div></div>
+    </div>
+
+    <div class="pills" id="pills">
+      <button class="pill on" data-s="all">Todo el proceso</button>
+      <button class="pill" data-s="gestion">Gestión del expediente</button>
+      <button class="pill" data-s="terceros">Validación de terceros</button>
+      <button class="pill" data-s="intervencion">Intervención</button>
+      <button class="pill" data-s="pagos">Resolución y pagos</button>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <h3>Dónde se va el tiempo</h3>
+        <div class="cs" id="tSub">Días medios por etapa · en rojo, la más lenta</div>
+        <div class="cw"><canvas id="cT"></canvas></div>
+      </div>
+      <div class="card">
+        <h3>Expedientes detenidos</h3>
+        <div class="cs">Evolución mensual, según de quién depende desatascarlos</div>
+        <div class="cw"><canvas id="cD"></canvas></div>
+        <div class="lg"><span><i style="background:var(--red)"></i>Unidad gestora</span><span><i style="background:#B5B6C6"></i>Solicitante</span></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <h3>Expedientes detenidos más antiguos</h3>
+      <div class="cs" id="bSub">Los que más tiempo llevan sin cambiar de estado</div>
+      <table><thead><tr><th>Expediente</th><th>Etapa</th><th>Motivo</th><th>Depende de</th><th class="r">Parado</th><th class="r">Importe</th></tr></thead>
+      <tbody id="tbB"></tbody></table>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-h"><h2>Ejecución económica</h2><p id="ecoSub"></p></div>
+    <div class="kpis" id="ecoK"></div>
+    <div class="grid2" style="align-items:start">
+      <div class="card">
+        <h3>Reparto del crédito</h3>
+        <div class="cs">Convocatoria <span id="cvN"></span> · 24 mensualidades de 215 € por beneficiario</div>
+        <div class="bar" id="bar"></div>
+        <div class="bar-lg" id="barLg"></div>
+        <div class="cs" style="margin:22px 0 0" id="cap"></div>
+      </div>
+      <div class="card">
+        <h3>Importe por ejercicio</h3>
+        <div class="cs">Cada convocatoria paga en varias anualidades · ejecutado más comprometido</div>
+        <div class="cw" style="height:200px"><canvas id="cE"></canvas></div>
+        <div class="lg" id="eLg"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="foot">Fuente: Atlantix / AEFN · Nexus · Contenido ilustrativo, datos no reales</div>
+</div>
+
+<!-- ════════ DEFINICIÓN DE INDICADORES ════════ -->
+<div class="pane" id="pDef">
+  <p class="df-intro">Hoja de trabajo para acordar qué mide cada indicador: desde qué etapa de Atlantix hasta cuál
+    se cuenta y con qué dato tiene que cuadrar. Rellenad las dos últimas columnas y descargad la hoja para devolverla por correo.</p>
+  <div class="df-bar">
+    <button class="btn" onclick="dfExport()">&darr; Descargar la hoja</button>
+    <button class="btn" onclick="dfClear()">Vaciar lo escrito</button>
+  </div>
+  <div class="card" style="padding:4px 8px;overflow-x:auto">
+    <table class="df"><thead><tr><th>Indicador</th><th>Qué cuenta hoy</th><th>Desde</th><th>Hasta</th><th>Debe cuadrar con</th>
+      <th style="width:200px">Definición correcta</th><th style="width:160px">Etapa de Atlantix</th></tr></thead>
+    <tbody id="dfBody"></tbody></table>
+  </div>
+</div>
+</main>
+
+<script>
+const RED='#E12E2E', NAVY='#0A1F44', GRY='#B5B6C6', SLATE='#464C6A';
+Chart.defaults.font.family="'Inter',sans-serif"; Chart.defaults.font.size=11; Chart.defaults.color='#6B7280';
+const nf=n=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+const eur=v=>nf(Math.round(v))+' €';
+const M=v=>(v/1e6).toFixed(2).replace('.',',')+' M€';
+
+/* ── proceso: una entrada por etapa ── */
+const MESES=['Abr','May','Jun','Jul','Ago','Sep'];
+const ST={
+  all:{sub:'Días medios por etapa',
+    l:['Registro → Alta','Alta → Propuesta','Propuesta → Terceros','Terceros → Intervención','Fiscalización','Resolución','Resolución → Pago'],
+    d:[2.1,15.6,18.4,6.3,12.5,4.5,8.2], a:[578,594,608,619,631,611], b:[394,412,428,436,447,442]},
+  gestion:{sub:'Días medios por paso de la instrucción',
+    l:['Registro → Alta','Alta → Clasificación','Clasificación → Verificación','Verificación → Propuesta','Ciclo de requerimiento'],
+    d:[2.1,3.4,5.8,6.4,18.2], a:[104,109,113,116,120,118], b:[268,281,295,302,309,314]},
+  terceros:{sub:'Días medios entre la solicitud del código y su volcado',
+    l:['Solicitud a Tesorería','Respuesta de Nexus','Resolución de incidencia','Volcado a Atlantix'],
+    d:[1.8,4.2,11.3,1.1], a:[61,65,70,73,79,74], b:[17,19,21,23,24,22]},
+  intervencion:{sub:'Días medios entre el envío y la respuesta de Intervención',
+    l:['Pendiente de envío → Envío','Envío → Fiscalización','Fiscalización → Respuesta','Ciclo de devolución'],
+    d:[4.1,3.2,5.2,14.3], a:[152,161,168,172,178,182], b:[88,94,97,101,104,106]},
+  pagos:{sub:'Días medios entre la resolución y la liberación del pago',
+    l:['Resolución → Notificación','Notificación → ADOK','ADOK → Fichero de pagos','Fichero → Liberación'],
+    d:[4.5,3.8,2.6,1.8], a:[168,183,201,214,228,237], b:[0,0,0,0,0,0]},
+};
+const BLOQ=[
+  ['NAT-26-01842','terceros','Error 533 · tercero con NIE','adm',34,5160],
+  ['NAT-26-00917','gestion','Requerimiento sin respuesta','sol',31,5160],
+  ['NAT-26-02311','intervencion','Devuelto por modificación','adm',29,4945],
+  ['NAT-26-01206','terceros','Error 536 · discrepancia NIF/NIE','adm',27,5160],
+  ['NAT-26-03018','pagos','Resuelto sin pago liberado','adm',24,3440],
+  ['NAT-26-00655','gestion','Solicitud duplicada','adm',22,5160],
+  ['NAT-26-02740','intervencion','Cambio del mes de devengo','sol',21,4730],
+  ['NAT-26-01577','terceros','Cuenta bancaria sin verificar','sol',19,5160],
+  ['NAT-26-03122','pagos','Pendiente de notificación','adm',17,2580],
+  ['NAT-26-00488','gestion','Error de grabación','adm',16,5160],
+];
+const ETN={gestion:'Gestión del expediente',terceros:'Validación de terceros',intervencion:'Intervención',pagos:'Resolución y pagos'};
+
+const cT=new Chart(document.getElementById('cT'),{type:'bar',
+  data:{labels:[],datasets:[{data:[],borderRadius:3,barPercentage:.7}]},
+  options:{indexAxis:'y',maintainAspectRatio:false,plugins:{legend:{display:false},
+    tooltip:{callbacks:{label:c=>' '+c.raw.toString().replace('.',',')+' días'}}},
+    scales:{x:{grid:{color:'#F1F2F4'},ticks:{callback:v=>v+' d'}},y:{grid:{display:false}}}}});
+const cD=new Chart(document.getElementById('cD'),{type:'bar',
+  data:{labels:MESES,datasets:[{label:'Unidad gestora',data:[],backgroundColor:RED,stack:'s',borderRadius:2},
+                               {label:'Solicitante',data:[],backgroundColor:GRY,stack:'s',borderRadius:2}]},
+  options:{maintainAspectRatio:false,plugins:{legend:{display:false}},
+    scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:{color:'#F1F2F4'}}}}});
+
+function setStage(k){
+  const s=ST[k], mx=Math.max(...s.d);
+  document.getElementById('tSub').textContent=s.sub+' · en rojo, el más lento';
+  cT.data.labels=s.l; cT.data.datasets[0].data=s.d;
+  cT.data.datasets[0].backgroundColor=s.d.map(v=>v===mx?RED:SLATE); cT.update();
+  cD.data.datasets[0].data=s.a; cD.data.datasets[1].data=s.b; cD.update();
+  const rows=BLOQ.filter(r=>k==='all'||r[1]===k);
+  document.getElementById('tbB').innerHTML=rows.map(r=>
+    `<tr><td>${r[0]}</td><td>${ETN[r[1]]}</td><td>${r[2]}</td>`+
+    `<td><span class="tag ${r[3]}">${r[3]==='adm'?'Unidad gestora':'Solicitante'}</span></td>`+
+    `<td class="r ${r[4]>=25?'hot':''}">${r[4]} d</td><td class="r">${eur(r[5])}</td></tr>`).join('');
+  document.querySelectorAll('.pill').forEach(p=>p.classList.toggle('on',p.dataset.s===k));
+}
+document.querySelectorAll('.pill').forEach(p=>p.onclick=()=>setStage(p.dataset.s));
+
+/* ── economía: crédito por convocatoria (plurianual) ── */
+const MENS=215, DUR=24, COSTE=MENS*DUR;
+const CONV={
+  '2024':{tot:12000000,eje:11816400,com:0,      ben:2290,est:'Sin pagos pendientes',admite:false},
+  '2025':{tot:13500000,eje: 8531200,com:4265600,ben:2480,est:'Cerrada a altas nuevas',admite:false},
+  '2026':{tot:15000000,eje: 4606160,com:9325840,ben:2700,est:'Abierta',admite:true},
+};
+const EJER=['2024','2025','2026','2027'];
+const PLURI={'2024':[2100000,5910000,3806400,0],'2025':[0,2350000,8314000,2132800],'2026':[0,0,6937660,6994400]};
+const COL={'2024':'#8E91AD','2025':'#D98324','2026':'#005B60'};
+
+const cE=new Chart(document.getElementById('cE'),{type:'bar',
+  data:{labels:EJER,datasets:Object.keys(PLURI).map(k=>({label:'Convocatoria '+k,data:PLURI[k].map(v=>v/1e6),
+    backgroundColor:COL[k],stack:'e',barPercentage:.6,borderRadius:2}))},
+  options:{maintainAspectRatio:false,plugins:{legend:{display:false},
+    tooltip:{callbacks:{label:c=>' '+c.dataset.label+': '+c.raw.toFixed(2).replace('.',',')+' M€'}}},
+    scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:{color:'#F1F2F4'},ticks:{callback:v=>v+' M€'}}}}});
+document.getElementById('eLg').innerHTML=Object.keys(COL).map(k=>`<span><i style="background:${COL[k]}"></i>Convocatoria ${k}</span>`).join('');
+
+function setConv(k){
+  const c=CONV[k], disp=c.tot-c.eje-c.com, pe=c.eje/c.tot*100, pc=c.com/c.tot*100, pd=disp/c.tot*100;
+  const p=v=>v.toFixed(1).replace('.',',')+'%';
+  document.getElementById('ecoSub').textContent='Convocatoria '+k+' · '+c.est;
+  document.getElementById('cvN').textContent=k;
+  document.getElementById('ecoK').innerHTML=[
+    ['Crédito de la convocatoria',M(c.tot),nf(c.ben)+' beneficiarios',''],
+    ['Ejecutado',M(c.eje),p(pe)+' del crédito','ok'],
+    ['Comprometido',M(c.com),c.com?'mensualidades pendientes de pago':'—',''],
+    ['Disponible',M(disp),p(pd)+' del crédito',''],
+  ].map(x=>`<div class="kpi"><div class="l">${x[0]}</div><div class="v">${x[1]}</div><div class="d ${x[3]}">${x[2]}</div></div>`).join('');
+  document.getElementById('bar').innerHTML=
+    `<div style="width:${pe}%;background:${NAVY}"></div><div style="width:${pc}%;background:#8E91AD"></div>`;
+  document.getElementById('barLg').innerHTML=
+    `<span><b>${p(pe)}</b> ejecutado</span><span><b>${p(pc)}</b> comprometido</span><span><b>${p(pd)}</b> disponible</span>`;
+  document.getElementById('cap').innerHTML=c.admite
+    ? `Con el crédito disponible caben <b style="color:var(--tx)">${nf(Math.floor(disp/COSTE))} altas completas</b> (${eur(disp)} ÷ ${eur(COSTE)}).`
+    : `No admite altas nuevas. Quedan <b style="color:var(--tx)">${eur(disp)}</b> sin consumir.`;
+  cE.data.datasets.forEach(d=>{const on=d.label.endsWith(k); d.backgroundColor=on?COL[k]:COL[d.label.slice(-4)]+'55';});
+  cE.update();
+}
+document.getElementById('fConv').onchange=e=>setConv(e.target.value);
+
+/* ── pestañas ── */
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===t));
+  document.querySelectorAll('.pane').forEach(x=>x.classList.toggle('on',x.id===t.dataset.p));
+  document.getElementById('fbar').style.display=t.dataset.p==='pCM'?'':'none';
+});
+
+/* ── hoja de definición de indicadores ── */
+const DFILAS = [
+ ['Solicitudes en cola de entrada','Hoy no se calcula: la solicitud aún no ha abierto expediente',
+  'Presentación en REC','Apertura de expediente en AFN','Registro / REC', 1],
+ ['Expedientes en gestión','Expedientes con la solicitud recepcionada que no han llegado al pago',
+  'Solicitud recepcionada','Pago','Vademécum · CURSO', 1],
+ ['Plazo medio del expediente','Días entre la entrada en registro y el pago, solo sobre los ya pagados',
+  'Entrada en el registro del órgano competente','Pago','—', 1],
+ ['Dentro del objetivo','Expedientes resueltos dentro del objetivo (por defecto, 90 días)',
+  'Entrada en el registro del órgano competente','Resolución','Plazo máximo normativo · 90 días', 1],
+ ['Expedientes detenidos','Sin cambio de estado desde hace más días de lo razonable para su etapa',
+  'Último cambio de estado','Hoy','—', 1],
+ ['Gestionables por la unidad','Detenidos cuya siguiente acción corresponde a la unidad gestora',
+  'Último cambio de estado','Hoy','Tipología de errores de terceros', 1],
+ ['Pendientes del solicitante','Detenidos esperando documentación o subsanación del ciudadano',
+  'Requerimiento notificado','Respuesta del ciudadano','—', 1],
+ ['Beneficiarias en alta','No contemplado todavía','—','—','Vademécum', 1],
+ ['Beneficiarias en mantenimiento','No contemplado todavía','—','—','Vademécum', 1],
+ ['Beneficiarias en baja','No contemplado todavía','—','—','Vademécum', 1],
+ ['Presupuesto ejecutado','Crédito pagado sobre el total de la convocatoria',
+  'Documento contable','Pago','Nexus · gestión económica', 1],
+ ['Nómina de la convocatoria','Importe de los pagos vivos de la convocatoria',
+  'Resolución','Pago en nómina','Nexus · gestión económica', 1],
+];
+function dfKey(i,c){return 'df:'+i+':'+c}
+function dfLoad(k){try{return localStorage.getItem(k)||''}catch(e){return ''}}
+function dfSave(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+function dfInit(){
+  const b=document.getElementById('dfBody');
+  b.innerHTML=DFILAS.map((r,i)=>`<tr><td class="ind">${r[0]}</td><td style="color:var(--tx2)">${r[1]}</td>`+
+    `<td>${r[2]}</td><td>${r[3]}</td><td style="color:var(--tx2)">${r[4]}</td>`+
+    `<td><textarea data-i="${i}" data-c="def" placeholder="Qué debería contar…">${dfLoad(dfKey(i,'def'))}</textarea></td>`+
+    `<td><textarea data-i="${i}" data-c="eta" placeholder="Etapa o etapas…">${dfLoad(dfKey(i,'eta'))}</textarea></td></tr>`).join('');
+  b.querySelectorAll('textarea').forEach(t=>t.oninput=e=>dfSave(dfKey(e.target.dataset.i,e.target.dataset.c),e.target.value));
+}
+function dfExport(){
+  const f=[['Indicador','Que cuenta hoy','Desde','Hasta','Debe cuadrar con','Definicion correcta','Etapa de Atlantix']];
+  DFILAS.forEach((r,i)=>f.push([r[0],r[1],r[2],r[3],r[4],dfLoad(dfKey(i,'def')),dfLoad(dfKey(i,'eta'))]));
+  const csv='﻿'+f.map(x=>x.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(';')).join('\r\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));
+  a.download='definicion_indicadores_natalidad.csv';a.click();
+}
+function dfClear(){DFILAS.forEach((r,i)=>{dfSave(dfKey(i,'def'),'');dfSave(dfKey(i,'eta'),'')});dfInit()}
+
+setStage('all'); setConv('2026'); dfInit();
+</script>
+</body>
+</html>
