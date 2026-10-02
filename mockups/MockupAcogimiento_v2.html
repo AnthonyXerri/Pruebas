@@ -1115,35 +1115,42 @@ function limpiar(){ ['fProc','fTipo','fNot'].forEach(i=>$(i).value=''); $('fIni'
 
 /* ── cabecera ── */
 const TIP={
- 'Expedientes en mantenimiento':'Expedientes que cobran la prestación cada mes sin ningún procedimiento abierto. Debajo, las altas y extinciones resueltas en el periodo.',
- 'Altas sin primer pago':'Reconocimientos ya en AME que todavía no han cobrado ninguna mensualidad. Debajo, los atrasos que acumulan desde su fecha de efectos: es lo que se pagará de golpe en la primera nómina y lo que descuadra el presupuesto.',
- 'Días hasta el primer pago':'Días desde la fecha de efectos del acogimiento hasta el primer pago, en las altas ya pagadas. Debajo, cuántos de esos días pasaron antes de que el alta llegara a AME, que es la parte que graba Protección.',
- 'Altas en la primera propuesta':'Altas que entraron en la primera propuesta mensual posible. Las demás esperaron un mes más, casi siempre porque la cuenta corriente no llegó antes del cierre.',
- 'Pagado de más tras el cese':'Importe pagado entre la fecha de efectos del cese y su grabación en AME, en las extinciones del periodo. Es lo que después hay que reclamar con un reintegro.',
- 'Reintegros sin iniciar':'Pagos de más que todavía no tienen procedimiento de reintegro notificado. Notificar el acuerdo de inicio interrumpe la prescripción; debajo, los que prescriben este año si no se notifica antes.',
+ 'Expedientes en mantenimiento':'Expedientes que cobran la prestación cada mes sin ningún procedimiento abierto: el tamaño del servicio. Debajo, las altas y extinciones resueltas en el periodo.',
+ 'Procedimientos en trámite':'Reconocimientos, modificaciones y extinciones abiertos en AME a la fecha de corte. Debajo, las altas que todavía no han cobrado ninguna mensualidad: la falta de pago a las familias.',
+ 'Días hasta el primer pago':'Días desde la fecha de efectos del acogimiento hasta el primer pago, en las altas ya pagadas. Debajo, cuántos de esos días pasan antes de que Protección grabe el alta en AME: la parte que el servicio no controla.',
+ 'Resueltos en plazo':'Procedimientos resueltos dentro del plazo legal: 3 meses desde el acuerdo de inicio (Decreto 44/2022, por confirmar). No descuenta las interrupciones imputables al interesado. Debajo, los que siguen en trámite y ya lo han superado.',
+ 'Atrasos pagados':'Importe de atrasos pagado de golpe en la primera nómina de las altas del periodo (Anexo I de la propuesta). Es el coste de pagar tarde y lo que descuadra el presupuesto del mes.',
+ 'Indebido sin reclamar':'Importe pagado de más tras un cese o una modificación negativa que todavía no tiene reintegro iniciado. Notificar el acuerdo de inicio interrumpe la prescripción; debajo, los que prescriben este año.',
 };
 function ks(lbl,val,cls,sub,grp){ return `<div class="ks ${grp?'ks-pred':'ks-fix'}"><div class="ks-lbl">${lbl} <i class="ii" data-t="${TIP[lbl]||''}">i</i></div>`+
   `<div class="ks-val">${val}</div><div class="ks-delta ${cls}">${sub}</div></div>`; }
+/* Cabecera = indicadores globales del servicio, comunes a cualquier prestación (Enrique, 29/09):
+   tamaño del servicio, lo que está en trámite, cuánto se tarda y si se cumple el plazo legal;
+   y el coste del desfase con Protección en los dos sentidos: lo que se paga tarde y lo que se paga de más. */
+const PLAZO=90;   /* Decreto 44/2022: resolver y notificar en 3 meses desde el acuerdo de inicio (por confirmar con el servicio) */
+const diasPlazo=e=>e.t[2]+e.t[3]+e.t[4];   /* acuerdo de inicio → resolución definitiva */
 function renderHdr(P){
   const f=F(), rec=P.filter(e=>e.proc==='rec'), recFin=rec.filter(e=>e.fin);
   const share={'Carácter general':.6,'Carácter especial':.13,'Programa de urgencia':.27};
   const mant=Math.round(1383*(f.tipo?share[f.tipo]:1));
   const altas=recFin.length, bajas=P.filter(e=>e.proc==='ext'&&e.fin).length;
-  const pend=rec.filter(e=>!e.fin), atr=pend.reduce((a,e)=>a+(CORTE-e.efectos)/DIA/30*e.imp,0);
+  const cur=P.filter(e=>!e.fin), sinCobrar=rec.filter(e=>!e.fin).length;
   const dias=recFin.length? recFin.reduce((a,e)=>a+e.t.reduce((x,y)=>x+y,0),0)/recFin.length : 0;
   const antes=recFin.length? recFin.reduce((a,e)=>a+e.t[0],0)/recFin.length : 0;
-  const prim=recFin.length? recFin.filter(e=>!e.sinCuenta).length/recFin.length*100 : 0;
-  const aplaz=recFin.filter(e=>e.sinCuenta).length;
+  const res=P.filter(e=>e.etapa>4), enPl=res.filter(e=>diasPlazo(e)<=PLAZO).length;
+  const fuera=cur.filter(e=>e.etapa>=2 && (CORTE-(e.alta+e.t[1]*DIA))/DIA>PLAZO).length;
   $('kpiGlobal').innerHTML=
     ks('Expedientes en mantenimiento',nfmt(mant),'na',`+${nfmt(altas)} altas · −${nfmt(bajas)} extinciones`)+
-    ks('Altas sin primer pago',nfmt(pend.length),pend.length?'bad':'na',pend.length?`${eur(Math.round(atr/100)*100)} de atrasos acumulados`:'')+
+    ks('Procedimientos en trámite',nfmt(cur.length),sinCobrar?'bad':'na',sinCobrar?`${nfmt(sinCobrar)} altas aún sin cobrar`:'ninguna alta sin cobrar')+
     ks('Días hasta el primer pago',dias?Math.round(dias)+' <span class="u">d</span>':'—','na',dias?`de ellos ${Math.round(antes)} d antes del alta en AME`:'')+
-    ks('Altas en la primera propuesta',recFin.length?Math.round(prim)+'<span class="u">%</span>':'—',aplaz?'bad':'na',aplaz?`${nfmt(aplaz)} esperaron un mes más`:'');
-  const ext=P.filter(e=>e.proc==='ext'), ind=ext.filter(e=>e.indeb>0);
-  const R=REINT.filter(r=>(!f.tipo||r.tipo===f.tipo)&&!r.iniciado), r26=R.filter(r=>r.q===0).length;
+    ks('Resueltos en plazo',res.length?Math.round(enPl/res.length*100)+'<span class="u">%</span>':'—',fuera?'bad':'na',fuera?`${nfmt(fuera)} en trámite ya lo superan`:'ninguno en trámite lo supera');
+  /* atrasos: lo que se paga de golpe en la primera nómina (Anexo I, «importe de atrasos») */
+  const atr=recFin.reduce((a,e)=>a+Math.max(0,e.t.reduce((x,y)=>x+y,0)-30)/30*e.imp,0);
+  const R=REINT.filter(r=>(!f.tipo||r.tipo===f.tipo)&&!r.iniciado), r26=R.filter(r=>r.q===0);
+  const m=v=>(v/1000).toFixed(0)+' <span class="u">mil €</span>';
   $('kpiInd').innerHTML=
-    ks('Pagado de más tras el cese',(ind.reduce((a,e)=>a+e.indeb,0)/1000).toFixed(1).replace('.',',')+' <span class="u">mil €</span>','na',`en ${nfmt(ind.length)} extinciones`,true)+
-    ks('Reintegros sin iniciar',nfmt(R.length),'bad',`${nfmt(r26)} prescriben en 2026`,true);
+    ks('Atrasos pagados',m(atr),'na',`en ${nfmt(altas)} altas del periodo`,true)+
+    ks('Indebido sin reclamar',m(R.reduce((a,r)=>a+r.imp,0)),'bad',`${nfmt(R.length)} reintegros · ${nfmt(r26.length)} prescriben en 2026`,true);
   $('scopeChip').textContent='Periodo analizado: '+fdate(f.ini)+' → '+fdate(f.fin-DIA);
 }
 
@@ -1328,12 +1335,13 @@ document.querySelectorAll('.tabb').forEach(b=>b.onclick=()=>{
 /* ── hoja de definición de indicadores ── */
 const DFILAS=[
  ['Expedientes en mantenimiento','Expedientes que cobran cada mes sin procedimiento abierto','Resolución de reconocimiento','Extinción','Listado de mantenimiento de AME',1],
- ['Altas sin primer pago','Reconocimientos en AME sin ninguna mensualidad cobrada, y sus atrasos','Alta en AME','Primer pago en nómina','Anexo I · importe de atrasos',1],
+ ['Procedimientos en trámite','Procedimientos abiertos en AME, y altas que aún no han cobrado','Acuerdo de inicio','Resolución','—',1],
+ ['Resueltos en plazo','Resueltos en 3 meses desde el acuerdo de inicio, y en trámite que ya lo superan','Acuerdo de inicio','Resolución notificada','Decreto 44/2022 · plazo máximo',1],
+ ['Atrasos pagados','Importe de atrasos pagado en la primera nómina de cada alta','Fecha de efectos','Primer pago','Anexo I · importe de atrasos',1],
  ['Días hasta el primer pago','Días desde la fecha de efectos hasta el primer pago, en altas pagadas','Fecha de efectos del acogimiento','Primer pago en nómina','—',1],
  ['Días antes del alta en AME','Parte de esos días que pasa antes de que Protección grabe el alta','Fecha de efectos','Alta en AME','Comunicaciones del pleno',1],
- ['Altas en la primera propuesta','Altas que entran en la primera propuesta posible','Expediente completo','Propuesta mensual','Anexo I de la propuesta',1],
- ['Pagado de más tras el cese','Importe pagado entre el cese y su grabación en AME','Fecha de efectos del cese','Alta de la extinción en AME','Anexo II · importes de reintegro',1],
- ['Reintegros sin iniciar','Pagos de más sin acuerdo de inicio de reintegro notificado, y cuándo prescriben','Resolución de extinción o modificación negativa','Notificación del acuerdo de inicio del reintegro','Relación de reintegros del servicio · plazo de prescripción por confirmar',1],
+ ['Pagado de más tras el cese','Mensualidades pagadas entre el cese y su grabación en AME','Fecha de efectos del cese','Alta de la extinción en AME','Anexo II · importes de reintegro',1],
+ ['Indebido sin reclamar','Importe pagado de más sin acuerdo de inicio de reintegro notificado, y cuándo prescribe','Resolución de extinción o modificación negativa','Notificación del acuerdo de inicio del reintegro','Relación de reintegros del servicio · plazo de prescripción por confirmar',1],
  ['Desviación de tiempo','Tiempo medio menos tiempo mediano de una actividad','Inicio de la actividad','Fin de la actividad','—',1],
  ['% de expedientes con retrabajo','Expedientes que repiten la actividad, sobre los que pasan por ella','Primera ejecución','Última ejecución','—',1],
  ['Días perdidos por retrabajo','Repeticiones de la actividad por su tiempo medio','Primera ejecución','Última ejecución','—',1],
