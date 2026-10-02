@@ -2165,6 +2165,8 @@ function vistaEtapa(){
   const sec=document.querySelector('#cmBody .sections'); if(sec) sec.style.display = todo ? '' : 'none';
   const blk=document.getElementById('actBlk'); if(blk) blk.style.display = todo ? 'none' : '';
   const ob=document.getElementById('fselObj'); if(ob) ob.style.display = todo ? '' : 'none';
+  /* la tabla de expedientes, una a una, solo en la vista del proceso entero */
+  const td=document.querySelector('#cmBody .tbl-duo'); if(td) td.style.display = todo ? '' : 'none';
   if(!todo) renderAct();
 }
 
