@@ -1058,7 +1058,7 @@ const IMP={'Carácter general':500,'Carácter especial':1000,'Programa de urgenc
 const EXP=[];
 (function(){
   let id=4100;
-  const VOL={rec:210,mpos:46,mneg:28,ext:124};
+  const VOL={rec:210,mpos:24,mneg:12,ext:124};
   const T0=0, T1=Date.UTC(2025,10,1);
   Object.keys(VOL).forEach(proc=>{
     for(let i=0;i<VOL[proc];i++){
@@ -1108,7 +1108,7 @@ function limpiar(){ ['fProc','fTipo','fNot'].forEach(i=>$(i).value=''); $('fIni'
 /* ── cabecera ── */
 const TIP={
  'Expedientes en mantenimiento':'Expedientes que cobran la prestación cada mes sin ningún procedimiento abierto. Debajo, las altas y extinciones resueltas en el periodo.',
- 'Procedimientos en curso':'Reconocimientos, modificaciones y extinciones abiertos en AME a la fecha de corte. Debajo, los que tienen la fecha de efectos de hace más de 90 días: son los que más atrasos o pagos de más acumulan.',
+ 'Altas sin primer pago':'Reconocimientos ya en AME que todavía no han cobrado ninguna mensualidad. Debajo, los atrasos que acumulan desde su fecha de efectos: es lo que se pagará de golpe en la primera nómina y lo que descuadra el presupuesto.',
  'Días hasta el primer pago':'Días desde la fecha de efectos del acogimiento hasta el primer pago, en las altas ya pagadas. Debajo, cuántos de esos días pasaron antes de que el alta llegara a AME, que es la parte que graba Protección.',
  'Altas en la primera propuesta':'Altas que entraron en la primera propuesta mensual posible. Las demás esperaron un mes más, casi siempre porque la cuenta corriente no llegó antes del cierre.',
  'Pagado de más tras el cese':'Importe pagado entre la fecha de efectos del cese y su grabación en AME, en las extinciones del periodo. Es lo que después hay que reclamar con un reintegro.',
@@ -1121,14 +1121,14 @@ function renderHdr(P){
   const share={'Carácter general':.6,'Carácter especial':.13,'Programa de urgencia':.27};
   const mant=Math.round(1383*(f.tipo?share[f.tipo]:1));
   const altas=recFin.length, bajas=P.filter(e=>e.proc==='ext'&&e.fin).length;
-  const cur=P.filter(e=>!e.fin), viejos=cur.filter(e=>(CORTE-e.efectos)/DIA>90).length;
+  const pend=rec.filter(e=>!e.fin), atr=pend.reduce((a,e)=>a+(CORTE-e.efectos)/DIA/30*e.imp,0);
   const dias=recFin.length? recFin.reduce((a,e)=>a+e.t.reduce((x,y)=>x+y,0),0)/recFin.length : 0;
   const antes=recFin.length? recFin.reduce((a,e)=>a+e.t[0],0)/recFin.length : 0;
   const prim=recFin.length? recFin.filter(e=>!e.sinCuenta).length/recFin.length*100 : 0;
   const aplaz=recFin.filter(e=>e.sinCuenta).length;
   $('kpiGlobal').innerHTML=
     ks('Expedientes en mantenimiento',nfmt(mant),'na',`+${nfmt(altas)} altas · −${nfmt(bajas)} extinciones`)+
-    ks('Procedimientos en curso',nfmt(cur.length),viejos?'bad':'na',viejos?`${nfmt(viejos)} con efectos de hace +90 d`:'ninguno con efectos de hace +90 d')+
+    ks('Altas sin primer pago',nfmt(pend.length),pend.length?'bad':'na',pend.length?`${eur(Math.round(atr/100)*100)} de atrasos acumulados`:'')+
     ks('Días hasta el primer pago',dias?Math.round(dias)+' <span class="u">d</span>':'—','na',dias?`de ellos ${Math.round(antes)} d antes del alta en AME`:'')+
     ks('Altas en la primera propuesta',recFin.length?Math.round(prim)+'<span class="u">%</span>':'—',aplaz?'bad':'na',aplaz?`${nfmt(aplaz)} esperaron un mes más`:'');
   const ext=P.filter(e=>e.proc==='ext'), ind=ext.filter(e=>e.indeb>0);
@@ -1153,13 +1153,15 @@ const chT=new Chart($('cTiempo'),{type:'bar',data:{labels:TRAMOS,datasets:[
     scales:{x:{...axis,stacked:true,grid:{display:false},ticks:{...axis.ticks,maxRotation:0,autoSkip:false,font:{family:'Inter',size:9.5}}},
             y:{...axis,stacked:true,ticks:{...axis.ticks,callback:v=>v+' d'}}}}});
 const MESES=['Abr','May','Jun','Jul','Ago','Sep'], MES0=Date.UTC(2026,3,1);
-const PCOL={rec:SLA,mpos:GRY,mneg:GRY2,ext:TEAL};
+const PCOL={rec:SLA,mpos:GRY,mneg:GRY2,ext:TEAL,rein:ORA};
 const chP=new Chart($('cProp'),{data:{labels:MESES,datasets:[
   ...Object.keys(PROC_N).map(k=>({type:'bar',label:PROC_N[k],data:[],backgroundColor:PCOL[k],stack:'p',barPercentage:.6,order:2})),
+  {type:'bar',label:'Reintegro',data:[],backgroundColor:PCOL.rein,stack:'p',barPercentage:.6,order:2},
   {type:'line',label:'Altas que perdieron la propuesta anterior',data:[],borderColor:RED,backgroundColor:RED,borderWidth:2,pointRadius:3,tension:.3,order:1}]},
   options:{...baseOpts,interaction:{mode:'index',intersect:false},
     scales:{x:{...axis,stacked:true,grid:{display:false}},y:{...axis,stacked:true}}}});
 $('c2Leg').innerHTML=Object.keys(PROC_N).map(k=>`<div class="leg"><div class="leg-sq" style="background:${PCOL[k]};"></div>${PROC_N[k]}</div>`).join('')+
+  `<div class="leg"><div class="leg-sq" style="background:${PCOL.rein};"></div>Reintegro</div>`+
   `<div class="leg"><div class="leg-ln" style="background:${RED};"></div>Altas que perdieron la propuesta anterior</div>`;
 
 function renderAll(P){
@@ -1175,9 +1177,12 @@ function renderAll(P){
   /* propuestas de abril a septiembre */
   const mesDe=t=>{const d=new Date(t);return (d.getUTCFullYear()-2026)*12+d.getUTCMonth()-3;};
   Object.keys(PROC_N).forEach((k,d)=>{ chP.data.datasets[d].data=MESES.map((_,j)=>P.filter(e=>e.proc===k&&e.etapa>3&&mesDe(e.prop)===j).length); });
-  chP.data.datasets[4].data=MESES.map((_,j)=>P.filter(e=>e.sinCuenta&&e.etapa>3&&mesDe(e.prop)===j).length);
+  /* el reintegro se inicia en la propuesta siguiente a que venza el plazo de recurso de la extinción (~2 meses) */
+  const finDe=e=>e.alta+e.t.slice(1).reduce((a,b)=>a+b,0)*DIA;
+  chP.data.datasets[4].data=MESES.map((_,j)=>P.filter(e=>e.indeb>0&&e.fin&&mesDe(finDe(e)+60*DIA)===j).length);
+  chP.data.datasets[5].data=MESES.map((_,j)=>P.filter(e=>e.sinCuenta&&e.etapa>3&&mesDe(e.prop)===j).length);
   chP.update();
-  const ult=chP.data.datasets.slice(0,4).reduce((a,d)=>a+d.data[5],0);
+  const ult=chP.data.datasets.slice(0,5).reduce((a,d)=>a+d.data[5],0);
   $('c2Sub').textContent=`${ult} procedimientos en la propuesta de septiembre · cierre los primeros días de cada mes`;
 }
 
@@ -1210,17 +1215,17 @@ document.querySelectorAll('#respTabs button').forEach(b=>b.onclick=()=>{respKey=
 /* ── actividades por etapa ── */
 /* [actividad, tiempo medio, tiempo mediano, % de expedientes que pasan, veces por expediente, repeticiones por expediente afectado] */
 const ACT={
-  alta:[['Grabación del alta en AME (Protección)',34.0,9.0,1,1.00,1],['Aviso por correo al servicio',1.2,1.0,1,1.00,1],
+  alta:[['Grabación del alta en AME (Protección)',0,0,1,1.00,1,'t0'],['Aviso por correo al servicio',1.2,1.0,1,1.00,1],
         ['Revisión del expediente',2.6,2.0,1,1.12,1.3],['Recálculo manual del importe',1.8,1.0,.14,1.35,1.4]],
   inicio:[['Acuerdo de inicio',1.5,1.0,1,1.00,1],['Notificación',9.8,4.0,1,1.18,1.1],['Plazo de alegaciones',10.4,10.0,1,1.00,1],
-          ['Reclamación de la cuenta corriente',12.5,7.0,.22,1.45,1.5],['Incorporación de alegaciones',3.2,2.0,.08,1.05,1]],
-  propuesta:[['Expediente completo (borrador)',1.4,1.0,1,1.03,1],['Validación de terceros en Nexus',2.1,1.0,.55,1.08,4.0],
-             ['Generación del documento D',1.0,1.0,.55,1.00,1],['Espera al cierre de la propuesta',14.6,12.0,1,1.00,1],
-             ['Paso a la propuesta siguiente',30.0,30.0,.12,1.10,2.0]],
+          ['Reclamación de la cuenta corriente',12.5,7.0,.22,1.45,1.5,'rec'],['Incorporación de alegaciones',3.2,2.0,.08,1.05,1]],
+  propuesta:[['Expediente completo (borrador)',1.4,1.0,1,1.03,1],['Validación de terceros en Nexus',2.1,1.0,1,1.08,4.0,'rec'],
+             ['Generación del documento D',1.0,1.0,1,1.00,1,'rec'],['Espera al cierre de la propuesta',0,0,1,1.00,1,'t3'],
+             ['Espera a la propuesta siguiente (sin cuenta a tiempo)',30.0,30.0,1,1.22,1,'rec']],
   interv:[['Envío a Intervención',2.2,2.0,1,1.00,1],['Fiscalización del borrador',5.8,5.0,1,1.12,1.0],
           ['Actuación interesada',4.1,3.0,.12,1.20,1.3],['Corrección y reenvío',2.5,2.0,.12,1.10,1]],
   resol:[['Resolución definitiva (copia manual)',2.3,1.5,1,1.04,3.0],['Firma de la directora',1.6,1.0,1,1.00,1],
-         ['Notificación de la resolución',8.9,4.0,1,1.06,1.1],['Pago en nómina',3.1,3.0,.62,1.00,1]],
+         ['Notificación de la resolución (en paralelo al pago)',8.9,4.0,1,1.06,1.1],['Pago en nómina',3.1,3.0,.62,1.00,1]],
 };
 const ST={alta:{n:'Alta en AME',k:1,meta:'De la formalización en el pleno a la revisión del expediente en AME'},
   inicio:{n:'Inicio y alegaciones',k:2,meta:'Acuerdo de inicio, notificación y 10 días de alegaciones'},
@@ -1232,10 +1237,13 @@ const DIMV={tipo:[['Carácter general',.58,1,1],['Carácter especial',.12,1.2,1.
 function renderAct(){
   if(stageKey==='all') return;
   const dim=$('actDim').value, k=ST[stageKey].k;
-  const base=pob().filter(e=>e.etapa>=k).length||1;
+  const Pk=pob().filter(e=>e.etapa>=k), base=Pk.length||1, baseRec=Pk.filter(e=>e.proc==='rec').length||1;
+  const med=a=>{const v=a.slice().sort((x,y)=>x-y);return v.length?v[Math.floor(v.length/2)]:0;};
+  const tr=i=>{const g=Pk.filter(e=>e.etapa>i||i===0).map(e=>e.t[i]);return [g.length?g.reduce((x,y)=>x+y,0)/g.length:0, med(g)];};
   const rows=[];
-  ACT[stageKey].forEach(a=>{ (dim?DIMV[dim]:[['',1,1,1]]).forEach((d,j)=>{
-    const exp=Math.max(1,Math.round(base*a[3]*d[1])), veces=Math.max(1,1+(a[4]-1)*d[3]), act=Math.round(exp*veces), rep=act-exp;
+  ACT[stageKey].map(a=>{ if(a[6]==='t0'||a[6]==='t3'){ const [m,md]=tr(a[6]==='t0'?0:3); a=a.slice(); a[1]=m; a[2]=md; a[6]=''; } return a; })
+  .forEach(a=>{ (dim?DIMV[dim]:[['',1,1,1]]).forEach((d,j)=>{
+    const exp=Math.max(1,Math.round((a[6]==='rec'?baseRec:base)*a[3]*d[1])), veces=Math.max(1,1+(a[4]-1)*d[3]), act=Math.round(exp*veces), rep=act-exp;
     const afe=rep?Math.max(1,Math.min(exp,Math.round(rep/a[5]))):0;
     rows.push({a:a[0],d:d[0],first:j===0,tm:a[1]*d[2],tmd:a[2]*Math.min(d[2],1.1),exp,act,veces:act/exp,rep,pct:afe/exp*100,perd:Math.round(rep*a[1]*d[2])});
   });});
@@ -1306,7 +1314,7 @@ document.querySelectorAll('.tabb').forEach(b=>b.onclick=()=>{
 /* ── hoja de definición de indicadores ── */
 const DFILAS=[
  ['Expedientes en mantenimiento','Expedientes que cobran cada mes sin procedimiento abierto','Resolución de reconocimiento','Extinción','Listado de mantenimiento de AME',1],
- ['Procedimientos en curso','Reconocimientos, modificaciones y extinciones abiertos','Alta del procedimiento en AME','Resolución','—',1],
+ ['Altas sin primer pago','Reconocimientos en AME sin ninguna mensualidad cobrada, y sus atrasos','Alta en AME','Primer pago en nómina','Anexo I · importe de atrasos',1],
  ['Días hasta el primer pago','Días desde la fecha de efectos hasta el primer pago, en altas pagadas','Fecha de efectos del acogimiento','Primer pago en nómina','—',1],
  ['Días antes del alta en AME','Parte de esos días que pasa antes de que Protección grabe el alta','Fecha de efectos','Alta en AME','Comunicaciones del pleno',1],
  ['Altas en la primera propuesta','Altas que entran en la primera propuesta posible','Expediente completo','Propuesta mensual','Anexo I de la propuesta',1],
