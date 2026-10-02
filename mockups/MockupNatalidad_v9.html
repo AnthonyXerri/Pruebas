@@ -829,6 +829,7 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
 .act-tbl td.dim{color:var(--cgy);}
 .act-tbl tr.grp td{border-top:1px solid var(--cbd);}
 .act-tbl .hi{color:var(--cred);font-weight:600;}
+.act-tbl .dsv{font-size:10.5px;color:var(--cgy);font-weight:400;margin-left:4px;}
 .act-tbl .md{color:#D98324;font-weight:600;}
 .act-col h4 .ii[data-t]::after{bottom:auto;top:calc(100% + 8px);}
 .act-col h4 .ii[data-t]::before{bottom:auto;top:calc(100% + 3px);border-top-color:transparent;border-bottom-color:var(--cnavy);}
@@ -1007,7 +1008,7 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
   </div>
   <div class="act-grid">
     <div class="act-col">
-      <h4>Desviaciones de tiempos en actividades <i class="ii" data-t="Días que tarda cada actividad de la etapa, entre su inicio y su fin registrados en Atlantix. La mediana deja fuera los casos extremos: si la media es mucho mayor, unos pocos expedientes están tirando del plazo. En rojo, la actividad más lenta.">i</i></h4>
+      <h4>Desviaciones de tiempos en actividades <i class="ii" data-t="Días que tarda cada actividad de la etapa, entre su inicio y su fin registrados en Atlantix. En rojo, la actividad más lenta y la de mayor desviación: la primera es lenta para todos; la segunda, lenta por unos pocos casos.">i</i></h4>
       <table class="act-tbl"><thead id="actTH1"></thead><tbody id="actTB1"></tbody></table>
     </div>
     <div class="act-col">
@@ -2131,16 +2132,19 @@ function renderAct(){
                  afe, pct:afe/exp*100, perd:Math.round(rep*a[1]*d[2])});
     });
   });
+  const maxD=Math.max(...rows.map(r=>r.tm-r.tmd));
   const maxT=Math.max(...rows.map(r=>r.tm)), maxP=Math.max(...rows.map(r=>r.perd));
   const dc = dim ? `<th>${dim==='sit'?'Situación':'Mes de entrada'}</th>` : '';
-  document.getElementById('actTH1').innerHTML=`<tr><th>Actividad</th>${dc}<th class="r">Tiempo medio</th><th class="r">Tiempo mediano</th></tr>`;
+  document.getElementById('actTH1').innerHTML=`<tr><th>Actividad</th>${dc}<th class="r">Tiempo medio</th><th class="r">Tiempo mediano</th>`+
+    `<th class="r">Desviación <i class="ii" data-t="Tiempo medio − tiempo mediano. Son los días que añaden los expedientes que tardan mucho más que el resto. Cerca de 0: la actividad tarda lo mismo en casi todos los expedientes. Alta: unos pocos casos largos están tirando del plazo y hay que mirarlos uno a uno. En rojo, la mayor.">i</i></th></tr>`;
   document.getElementById('actTH2').innerHTML=`<tr><th>Actividad</th>${dc}<th class="r">Nº veces</th><th class="r">Nº expedientes</th><th class="r">Nº actividades</th><th class="r">Nº repeticiones</th>`+
     `<th class="r">% exp. con retrabajo <i class="ii" data-t="Expedientes que repiten la actividad al menos una vez, sobre los que pasan por ella. Distingue un problema extendido de un caso aislado: un expediente que se repite 15 veces sube el Nº veces, pero aquí pesa solo 1.">i</i></th>`+
     `<th class="r">Días perdidos <i class="ii" data-t="Repeticiones × tiempo medio de la actividad. Es el coste del retrabajo en días de tramitación y sirve para priorizar: la actividad con más días perdidos es la que más plazo devuelve si se corrige.">i</i></th></tr>`;
   const tdA=r=>`<td class="act">${r.first?r.a:''}</td>`+(dim?`<td class="dim">${r.d}</td>`:'');
   const cls=(r)=> dim && r.first ? ' class="grp"' : '';
   document.getElementById('actTB1').innerHTML=rows.map(r=>`<tr${cls(r)}>${tdA(r)}`+
-    `<td class="r${r.tm===maxT?' hi':''}">${f1(r.tm)} d</td><td class="r">${f1(r.tmd)} d</td></tr>`).join('');
+    `<td class="r${r.tm===maxT?' hi':''}">${f1(r.tm)} d</td><td class="r">${f1(r.tmd)} d</td>`+
+    `<td class="r${r.tm-r.tmd===maxD?' hi':''}">+${f1(r.tm-r.tmd)} d <span class="dsv">${r.tmd?Math.round((r.tm/r.tmd-1)*100):0}%</span></td></tr>`).join('');
   document.getElementById('actTB2').innerHTML=rows.map(r=>`<tr${cls(r)}>${tdA(r)}`+
     `<td class="r">${f2(r.veces)}</td>`+
     `<td class="r">${nfmt(r.exp)}</td><td class="r">${nfmt(r.act)}</td><td class="r">${nfmt(r.rep)}</td>`+
