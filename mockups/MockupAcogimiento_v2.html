@@ -927,7 +927,7 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
   <div class="section">
     <div class="sec-title">Tiempos y cuellos de botella <i class="ii" data-t="Días entre los cambios de etapa registrados en AME, desde la fecha de efectos (formalización del acogimiento, cese o resolución que motiva el procedimiento) hasta el pago. La fecha de efectos es la formalización en el pleno (o la firma del programa de urgencia), el cese o la resolución de discapacidad. El primer tramo ocurre antes de que el expediente llegue a AME: lo graba Protección y el servicio no puede actuar sobre él, pero sí verlo.">i</i></div>
     <div class="sec-chart">
-      <div class="chart-ttl">↑ Tiempo medio por tramo del procedimiento</div>
+      <div class="chart-ttl">↑ Días y expedientes en cada fase del procedimiento</div>
       <div class="chart-sub" id="c1Sub"></div>
       <div class="chart-wrap" style="height:230px;"><canvas id="cTiempo"></canvas></div>
       <div class="legend">
@@ -935,6 +935,7 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
         <div class="leg"><div class="leg-sq" style="background:#464C6A;"></div>Gestión del servicio</div>
         <div class="leg"><div class="leg-sq" style="background:#D3D3DD;"></div>Plazo del interesado</div>
         <div class="leg"><div class="leg-sq" style="background:var(--red);"></div>Cuello de botella</div>
+        <div class="leg"><div class="leg-ln" style="background:#0A1F44;"></div>Expedientes en la fase ahora</div>
       </div>
     </div>
   </div>
@@ -970,10 +971,10 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
 </div>
 
 <!-- ══════════ EXPEDIENTES SIN PAGO ══════════ -->
-<div class="tbl-section">
+<div class="tbl-section" id="tblPend">
   <div class="tbl-hdr">
-    <div class="tbl-title"><span id="pendTtl">Procedimientos en curso</span> <span class="badge" id="badgePend"></span>
-      <i class="ii" id="pendTip" data-t="">i</i></div>
+    <div class="tbl-title"><span>Procedimientos en curso</span> <span class="badge" id="badgePend"></span>
+      <i class="ii" data-t="Reconocimientos, modificaciones y extinciones abiertos, ordenados por los días desde su fecha de efectos: los primeros son los que más atrasos o pagos de más acumulan. «Depende de» indica quién tiene la siguiente acción y por qué.">i</i></div>
     <div class="resp-tabs" id="respTabs">
       <button data-r="" class="on">Todos</button><button data-r="srv">Servicio</button>
       <button data-r="int">Interesado</button><button data-r="otr">Otras unidades</button><button data-r="cic">Ciclo mensual</button>
@@ -1114,8 +1115,11 @@ function limpiar(){ ['fProc','fTipo','fNot'].forEach(i=>$(i).value=''); $('fIni'
 
 /* ── cabecera ── */
 const TIP={
- 'Prestaciones activas':'Expedientes que cobran la prestación en la nómina del mes (en AME, «listado de mantenimiento»): el tamaño del servicio. Se cuenta por expediente: uno puede cubrir a varios menores. Debajo, las altas y extinciones del periodo.',
- 'Procedimientos en trámite':'Reconocimientos, modificaciones y extinciones abiertos en AME a la fecha de corte. Debajo, las altas que todavía no han cobrado ninguna mensualidad: la falta de pago a las familias.',
+ 'Prestaciones activas':'Expedientes que cobran la prestación en la nómina del mes (en AME, «listado de mantenimiento»): el tamaño del servicio. Se cuenta por expediente: uno puede cubrir a varios menores.',
+ 'Altas totales':'Reconocimientos de la prestación que han entrado en AME en el periodo. Debajo, cuántos ya cobran y cuántos esperan todavía el primer pago.',
+ 'Expedientes terminados':'Procedimientos del periodo ya resueltos: altas pagadas, extinciones y modificaciones cerradas.',
+ 'Atrasos pendientes de pago':'Atrasos que acumulan las altas que todavía no han cobrado, desde su fecha de efectos hasta hoy. Se pagarán de golpe en su primera nómina.',
+ 'Procedimientos en trámite':'Reconocimientos, modificaciones y extinciones abiertos en AME a la fecha de corte. Debajo, los que tienen la fecha de efectos de hace más de 90 días.',
  'Días hasta el primer pago':'Días desde la fecha de efectos del acogimiento hasta el primer pago, en las altas ya pagadas. Debajo, cuántos de esos días pasan antes de que Protección grabe el alta en AME: la parte que el servicio no controla.',
  'Resueltos en plazo':'Procedimientos resueltos dentro del plazo legal: 3 meses desde el acuerdo de inicio (Decreto 44/2022, por confirmar). No descuenta las interrupciones imputables al interesado. Debajo, los que siguen en trámite y ya lo han superado.',
  'Atrasos pagados':'Importe de atrasos abonado en la primera nómina de las altas del periodo (Anexo I de la propuesta): las mensualidades desde la fecha de efectos hasta el primer pago. Crece cuanto más tarda el alta en llegar a AME y concentra gasto en un solo mes.',
@@ -1138,17 +1142,23 @@ function renderHdr(P){
   const antes=recFin.length? recFin.reduce((a,e)=>a+e.t[0],0)/recFin.length : 0;
   const res=P.filter(e=>e.etapa>4), enPl=res.filter(e=>diasPlazo(e)<=PLAZO).length;
   const fuera=cur.filter(e=>e.etapa>=2 && (CORTE-(e.alta+e.t[1]*DIA))/DIA>PLAZO).length;
+  const tot=P.filter(e=>e.fin), totR=rec.length, viejos=cur.filter(e=>(CORTE-e.efectos)/DIA>90).length;
+  const mods=tot.filter(e=>e.proc==='mpos'||e.proc==='mneg').length;
   $('kpiGlobal').innerHTML=
-    ks('Prestaciones activas',nfmt(mant),'na',`+${nfmt(altas)} altas · −${nfmt(bajas)} extinciones`)+
-    ks('Procedimientos en trámite',nfmt(cur.length),sinCobrar?'bad':'na',sinCobrar?`${nfmt(sinCobrar)} altas aún sin cobrar`:'ninguna alta sin cobrar')+
+    ks('Prestaciones activas',nfmt(mant),'na','cobran en la nómina del mes')+
+    ks('Altas totales',nfmt(totR),'na',`${nfmt(altas)} ya cobrando · ${nfmt(sinCobrar)} sin primer pago`)+
+    ks('Expedientes terminados',nfmt(tot.length),'na',`${nfmt(altas)} altas · ${nfmt(bajas)} extinciones · ${nfmt(mods)} modif.`)+
+    ks('Procedimientos en trámite',nfmt(cur.length),viejos?'bad':'na',viejos?`${nfmt(viejos)} con efectos de hace +90 d`:'ninguno con efectos de hace +90 d')+
     ks('Días hasta el primer pago',dias?Math.round(dias)+' <span class="u">d</span>':'—','na',dias?`de ellos ${Math.round(antes)} d antes del alta en AME`:'')+
     ks('Resueltos en plazo',res.length?Math.round(enPl/res.length*100)+'<span class="u">%</span>':'—',fuera?'bad':'na',fuera?`${nfmt(fuera)} en trámite ya lo superan`:'ninguno en trámite lo supera');
-  /* atrasos: lo que se paga de golpe en la primera nómina (Anexo I, «importe de atrasos») */
+  /* atrasos: lo pagado de golpe en la primera nómina (Anexo I) y lo que acumulan las altas que aún no cobran */
   const atr=recFin.reduce((a,e)=>a+Math.max(0,e.t.reduce((x,y)=>x+y,0)-30)/30*e.imp,0);
+  const pendA=rec.filter(e=>!e.fin), atrP=pendA.reduce((a,e)=>a+(CORTE-e.efectos)/DIA/30*e.imp,0);
   const R=REINT.filter(r=>(!f.tipo||r.tipo===f.tipo)&&!r.iniciado), r26=R.filter(r=>r.q===0);
   const m=v=>(v/1000).toFixed(0)+' <span class="u">mil €</span>';
   $('kpiInd').innerHTML=
     ks('Atrasos pagados',m(atr),'na',`en ${nfmt(altas)} altas del periodo`,true)+
+    ks('Atrasos pendientes de pago',m(atrP),pendA.length?'bad':'na',`en ${nfmt(pendA.length)} altas sin primer pago`,true)+
     ks('Indebido pendiente de reintegro',m(R.reduce((a,r)=>a+r.imp,0)),'bad',`${nfmt(R.length)} reintegros · ${nfmt(r26.length)} prescriben en 2026`,true);
   $('scopeChip').textContent='Periodo analizado: '+fdate(f.ini)+' → '+fdate(f.fin-DIA);
 }
@@ -1158,14 +1168,17 @@ const baseOpts={responsive:true,maintainAspectRatio:false,animation:false,
   plugins:{legend:{display:false},tooltip:{backgroundColor:NAVY,titleColor:'#fff',bodyColor:'#D3D3DD',padding:9,cornerRadius:3,
     titleFont:{family:'Inter',size:11,weight:'600'},bodyFont:{family:'Inter',size:11}}}};
 const axis={grid:{color:'#EDEEF1'},ticks:{font:{family:'Inter',size:10},color:NAVY},border:{display:false}};
-const chT=new Chart($('cTiempo'),{type:'bar',data:{labels:TRAMOS,datasets:[
-  {label:'Antes del alta en AME',data:[],stack:'s',barPercentage:.62},
-  {label:'Gestión del servicio',data:[],stack:'s',barPercentage:.62},
-  {label:'Plazo del interesado',data:[],stack:'s',barPercentage:.62}]},
-  options:{...baseOpts,plugins:{...baseOpts.plugins,tooltip:{...baseOpts.plugins.tooltip,filter:i=>i.raw>0,
-    callbacks:{label:c=>' '+c.dataset.label+': '+f1(c.raw)+' d'}}},
-    scales:{x:{...axis,stacked:true,grid:{display:false},ticks:{...axis.ticks,maxRotation:0,autoSkip:false,font:{family:'Inter',size:9.5}}},
-            y:{...axis,stacked:true,ticks:{...axis.ticks,callback:v=>v+' d'}}}}});
+const FASES=[['alta','Alta en AME'],['inicio','Inicio y alegaciones'],['propuesta','Propuesta mensual'],['interv','Intervención'],['resol','Resolución y pago']];
+const chT=new Chart($('cTiempo'),{data:{labels:[],datasets:[
+  {type:'line',label:'Expedientes en la fase',data:[],yAxisID:'yN',borderColor:NAVY,backgroundColor:NAVY,borderWidth:2,pointRadius:4,pointBackgroundColor:'#fff',pointBorderWidth:2,tension:.25,order:0},
+  {type:'bar',label:'Antes del alta en AME',data:[],yAxisID:'yD',stack:'s',barPercentage:.62,order:1},
+  {type:'bar',label:'Gestión del servicio',data:[],yAxisID:'yD',stack:'s',barPercentage:.62,order:1},
+  {type:'bar',label:'Plazo del interesado',data:[],yAxisID:'yD',stack:'s',barPercentage:.62,order:1}]},
+  options:{...baseOpts,interaction:{mode:'index',intersect:false},plugins:{...baseOpts.plugins,tooltip:{...baseOpts.plugins.tooltip,filter:i=>i.raw>0,
+    callbacks:{label:c=>' '+c.dataset.label+': '+(c.dataset.yAxisID==='yN'?nfmt(c.raw)+' expedientes':f1(c.raw)+' d')}}},
+    scales:{x:{...axis,grid:{display:false},ticks:{...axis.ticks,maxRotation:0,autoSkip:false,font:{family:'Inter',size:9.5}}},
+            yN:{...axis,position:'left',beginAtZero:true,title:{display:true,text:'Nº de expedientes',font:{family:'Inter',size:9},color:GRY},ticks:{...axis.ticks,precision:0}},
+            yD:{...axis,position:'right',stacked:true,beginAtZero:true,grid:{display:false},title:{display:true,text:'Días',font:{family:'Inter',size:9},color:GRY},ticks:{...axis.ticks,callback:v=>v+' d'}}}}});
 const MESES=['Abr','May','Jun','Jul','Ago','Sep'], MES0=Date.UTC(2026,3,1);
 const PCOL={rec:SLA,mpos:GRY,mneg:GRY2,ext:TEAL,rein:ORA};
 const chP=new Chart($('cProp'),{data:{labels:MESES,datasets:[
@@ -1180,14 +1193,21 @@ $('c2Leg').innerHTML=Object.keys(PROC_N).map(k=>`<div class="leg"><div class="le
 
 function renderAll(P){
   const m=i=>{const g=P.filter(e=>e.etapa>i||e.fin||i===0);return g.length?g.reduce((a,e)=>a+e.t[i],0)/g.length:0;};
-  const tot=TRAMOS.map((_,i)=>m(i)), mx=Math.max(...tot), mi=tot.indexOf(mx);
-  const comp=c=>tot.map((v,i)=>COMP[i]===c?Math.round(v*10)/10:0);
-  chT.data.datasets[0].data=comp('fuera'); chT.data.datasets[1].data=comp('srv'); chT.data.datasets[2].data=comp('int');
+  const t=[0,1,2,3,4,5].map(m);
+  /* días por fase, separando de quién es el tiempo: Alta en AME = fecha de efectos → alta (Protección) + revisión */
+  const F5=[{fuera:t[0],srv:t[1],int:0},{fuera:0,srv:0,int:t[2]},{fuera:0,srv:t[3],int:0},{fuera:0,srv:t[4],int:0},{fuera:0,srv:t[5],int:0}];
+  const enF=FASES.map((_,i)=>P.filter(e=>!e.fin&&e.etapa===i+1).length);
+  const ord=FASES.map((_,i)=>i).sort((a,b)=>(F5[b].fuera+F5[b].srv+F5[b].int)-(F5[a].fuera+F5[a].srv+F5[a].int));
+  chT.data.labels=ord.map(i=>FASES[i][1]);
+  chT.data.datasets[0].data=ord.map(i=>enF[i]);
   const base={fuera:GRY2,srv:SLA,int:GRY3};
-  ['fuera','srv','int'].forEach((c,d)=>{ chT.data.datasets[d].backgroundColor=tot.map((_,i)=>i===mi&&COMP[i]===c?RED:base[c]); });
+  ['fuera','srv','int'].forEach((c,d)=>{
+    chT.data.datasets[d+1].data=ord.map(i=>Math.round(F5[i][c]*10)/10);
+    /* el cuello de botella (la primera barra, la más larga) en rojo */
+    chT.data.datasets[d+1].backgroundColor=ord.map((i,k)=>k===0&&F5[i][c]>0?RED:base[c]); });
   chT.update();
-  const total=tot.reduce((a,b)=>a+b,0);
-  $('c1Sub').textContent=`Todos los procedimientos · ${Math.round(total)} d de media desde la fecha de efectos hasta el pago`;
+  const total=t.reduce((a,b)=>a+b,0);
+  $('c1Sub').textContent=`Fases de mayor a menor duración · ${Math.round(total)} d de media desde la fecha de efectos hasta el pago`;
   /* propuestas de abril a septiembre */
   const mesDe=t=>{const d=new Date(t);return (d.getUTCFullYear()-2026)*12+d.getUTCMonth()-3;};
   Object.keys(PROC_N).forEach((k,d)=>{ chP.data.datasets[d].data=MESES.map((_,j)=>P.filter(e=>e.proc===k&&e.etapa>3&&mesDe(e.prop)===j).length); });
@@ -1214,31 +1234,23 @@ const RESP_N={srv:'Servicio',int:'Interesado',otr:'Otras unidades',cic:'Ciclo me
    (los que más atrasos o pagos de más acumulan). En una etapa: los que están en ella, por días en la etapa. */
 const UMBRAL={alta:7,inicio:25,propuesta:35,interv:15,resol:10};   /* días en la etapa a partir de los que se marca la fila */
 function renderPend(P){
-  const todo=stageKey==='all';
   const enEtapa=e=>Math.round((CORTE-(e.alta+e.t.slice(1,e.etapa).reduce((a,b)=>a+b,0)*DIA))/DIA);
-  const rows=P.filter(e=>!e.fin && (todo||e.etapa===ST[stageKey].k)).map(e=>{const [m,r]=motivo(e);
+  const rows=P.filter(e=>!e.fin).map(e=>{const [m,r]=motivo(e);
     const d=Math.round((CORTE-e.efectos)/DIA), de=enEtapa(e);
     /* impacto: el alta acumula atrasos; la modificación positiva, solo la diferencia; la extinción, lo pagado de más */
     const inc = e.proc==='mpos' ? IMP['Carácter especial']-IMP['Carácter general'] : e.imp;
     const imp = e.proc==='ext' ? (e.indeb ? {v:e.indeb,t:'pagado de más'} : null) : e.proc==='mneg' ? null : {v:Math.round(d/30*inc),t:'atrasos'};
     return {e,m,r,d,de,imp};})
-    .filter(x=>!respKey||x.r===respKey).sort((a,b)=> todo ? b.d-a.d : b.de-a.de);
-  const crit=x=> todo ? x.d>120 : x.de>UMBRAL[stageKey];
-  $('pendTtl').textContent = todo ? 'Procedimientos en curso' : 'Procedimientos en la etapa · '+ST[stageKey].n;
-  $('pendTip').dataset.t = todo
-    ? 'Reconocimientos, modificaciones y extinciones abiertos, ordenados por los días desde su fecha de efectos: los primeros son los que más atrasos o pagos de más acumulan. «Depende de» indica quién tiene la siguiente acción.'
-    : 'Procedimientos que están ahora en esta etapa, ordenados por los días que llevan en ella. En rojo, los que superan '+UMBRAL[stageKey]+' días (umbral orientativo, a fijar con el servicio).'
-      + (stageKey==='alta' ? ' Los acogimientos que Protección todavía no ha grabado no aparecen: aún no están en AME.' : '');
-  $('thPend').innerHTML='<tr><th>Expediente</th><th>Procedimiento</th>'+(todo?'<th>Etapa actual</th>':'')+'<th>Motivo</th><th>Depende de</th>'+
-    '<th class="r">Fecha de efectos</th><th class="r">'+(todo?'Días desde efectos':'Días en la etapa')+'</th>'+
+    .filter(x=>!respKey||x.r===respKey).sort((a,b)=>b.d-a.d);
+  $('thPend').innerHTML='<tr><th>Expediente</th><th class="r">Fecha de efectos</th><th>Etapa</th><th>Procedimiento</th><th>Depende de</th>'+
+    '<th class="r">Días desde efectos</th><th class="r">Días en etapa</th>'+
     '<th class="r">Impacto económico <i class="ii" data-t="Altas: atrasos que se acumulan hasta el primer pago. Modificaciones positivas: la diferencia de importe. Extinciones: lo pagado de más desde el cese, que habrá que reclamar.">i</i></th></tr>';
   $('badgePend').textContent=`${Math.min(10,rows.length)} visibles de ${nfmt(rows.length)}`;
-  $('tbPend').innerHTML = rows.length ? rows.slice(0,10).map(x=>`<tr${crit(x)?' class="row-crit"':''}>
-    <td><a class="exp-link">${x.e.id}</a></td><td>${PROC_N[x.e.proc]}</td>${todo?`<td>${ETAPA_N[x.e.etapa]}</td>`:''}<td>${x.m}</td>
-    <td><span class="resp-chip ${x.r==='srv'?'r-adm':'r-sol'}">${RESP_N[x.r]}</span></td>
-    <td class="r">${fdate(x.e.efectos)}</td><td class="r ${crit(x)?'hi-d':''}">${todo?x.d:x.de} d</td>
-    <td class="r">${x.imp===null?'—':eur(x.imp.v)+' <span class="dsv">'+x.imp.t+'</span>'}</td></tr>`).join('')
-    : `<tr><td colspan="${todo?8:7}" style="color:var(--cgy);padding:14px 12px;">Ningún procedimiento en esta etapa a la fecha de corte.</td></tr>`;
+  $('tbPend').innerHTML=rows.slice(0,10).map(x=>`<tr${x.d>120?' class="row-crit"':''}>
+    <td><a class="exp-link">${x.e.id}</a></td><td class="r">${fdate(x.e.efectos)}</td><td>${ETAPA_N[x.e.etapa]}</td><td>${PROC_N[x.e.proc]}</td>
+    <td><span class="resp-chip ${x.r==='srv'?'r-adm':'r-sol'}" title="${x.m}">${RESP_N[x.r]}</span> <span class="dsv">${x.m}</span></td>
+    <td class="r ${x.d>120?'hi-d':''}">${x.d} d</td><td class="r">${x.de} d</td>
+    <td class="r">${x.imp===null?'—':eur(x.imp.v)+' <span class="dsv">'+x.imp.t+'</span>'}</td></tr>`).join('');
 }
 document.querySelectorAll('#respTabs button').forEach(b=>b.onclick=()=>{respKey=b.dataset.r;
   document.querySelectorAll('#respTabs button').forEach(x=>x.classList.toggle('on',x===b)); renderPend(pob());});
@@ -1344,7 +1356,8 @@ function render(){
   $('secAll').style.display=todo?'':'none'; $('actBlk').style.display=todo?'none':'';
   $('phaseMeta').textContent=todo?'':ST[stageKey].meta;
   if(todo) renderAll(P); else { dimOpts(); renderAct(); }
-  renderPend(P);
+  $('tblPend').style.display=todo?'':'none';
+  if(todo) renderPend(P);
   renderInd(P);
 }
 document.querySelectorAll('.phase-pill').forEach(b=>b.onclick=()=>{stageKey=b.dataset.stage;
@@ -1391,7 +1404,13 @@ dfInit(); render();
 .act-tbl .src{display:inline-block;margin-left:6px;font-size:9px;font-weight:600;color:var(--cgy);border:1px solid var(--cbd);border-radius:3px;padding:0 4px;vertical-align:1px;}
 .act-tbl .src.q{color:#D98324;border-color:#F1D3A8;}
 .kpi-strip{min-width:0;} #kpiGlobal,#kpiInd{min-width:0;} .kpi-strip .ks{flex:1 1 0;min-width:0;}
-.kpi-strip .ks-lbl{white-space:normal;line-height:1.25;}
+.kpi-strip .ks-lbl{white-space:normal;line-height:1.25;font-size:11px!important;}
+.kpi-strip .ks{padding:9px 11px!important;}
+.kpi-strip .ks-val{font-size:27px!important;white-space:nowrap;}
+.kpi-strip .ks-val .u{font-size:12px!important;}
+.kpi-strip .ks-delta{font-size:10px!important;}
+.hdr .brand{min-width:0!important;padding:12px 14px!important;}
+.hdr .brand-info{max-width:210px;}
 #tbPend .hi-d{color:var(--cred);font-weight:600;}
 .pz-col .bgt-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px;}
 .bc{border:1px solid var(--cbd);border-top-width:2px;background:#fff;display:flex;flex-direction:column;}
