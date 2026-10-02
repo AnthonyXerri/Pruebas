@@ -815,7 +815,9 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
 .act-ttl{font-size:14.5px;font-weight:700;color:var(--cnavy);letter-spacing:.02em;}
 .act-ttl span{font-size:11px;font-weight:400;color:var(--cgy);margin-left:8px;letter-spacing:0;}
 .act-dim{height:30px!important;}
-.act-grid{display:grid;grid-template-columns:1fr 1.25fr;}
+.act-grid{display:grid;grid-template-columns:1fr 1.7fr;}
+.act-tbl th .ii{vertical-align:-1px;margin-left:3px;}
+.act-tbl th .ii[data-t]::after{left:auto;right:-6px;transform:none;}
 .act-col{padding:8px 18px 16px;min-width:0;}
 .act-col+.act-col{border-left:1px solid var(--cbd);}
 .act-col h4{font-size:12.5px;font-weight:600;color:var(--cnavy);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
@@ -1009,7 +1011,7 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
       <table class="act-tbl"><thead id="actTH1"></thead><tbody id="actTB1"></tbody></table>
     </div>
     <div class="act-col">
-      <h4>Desviaciones de retrabajos <i class="ii" data-t="Cuántas veces se repite cada actividad. Nº veces = actividades ÷ expedientes: 1 significa que cada expediente pasa una sola vez. Nº de repeticiones = actividades − expedientes: las ejecuciones que sobran, es decir, el retrabajo.">i</i></h4>
+      <h4>Desviaciones de retrabajos <i class="ii" data-t="Cuántas veces se repite cada actividad. Para priorizar, mirad «% exp. con retrabajo» y «Días perdidos»: Nº veces es una media y un solo caso aislado la dispara. Nº veces = actividades ÷ expedientes: 1 significa que cada expediente pasa una sola vez. Nº de repeticiones = actividades − expedientes: las ejecuciones que sobran, es decir, el retrabajo.">i</i></h4>
       <table class="act-tbl"><thead id="actTH2"></thead><tbody id="actTB2"></tbody></table>
     </div>
   </div>
@@ -2092,17 +2094,18 @@ function legHtml(arr,line){
   return arr.map(([c,n])=>`<div class="leg"><div class="${line?'leg-ln':'leg-sq'}" style="background:${c};"></div>${n}</div>`).join('');
 }
 /* ════════ ACTIVIDADES POR ETAPA ════════
-   [actividad, tiempo medio, tiempo mediano, % de expedientes que pasan por ella, veces por expediente] */
+   [actividad, tiempo medio, tiempo mediano, % de expedientes que pasan por ella, veces por expediente,
+    repeticiones por expediente afectado: cerca de 1 = retrabajo repartido; alto = pocos casos que se repiten mucho] */
 const ACT = {
-  gestion: [['Recepción de la solicitud',1.4,1.0,1,1.00],['Revisión de documentación',6.2,4.0,1,1.18],
-            ['Requerimiento',3.1,2.0,.21,1.12],['Subsanación',18.2,14.0,.15,1.30],['Desistimiento',10.5,10.0,.06,1.00],
-            ['Denegación',2.8,2.0,.08,1.00],['Propuesta favorable',2.3,1.5,.86,1.09]],
-  terceros: [['Solicitud de alta de tercero',1.8,1.2,1,1.10],['Respuesta de Nexus',4.2,3.0,1,1.21],
-             ['Corrección de incidencia',11.3,8.0,.12,1.60],['Volcado del código a Atlantix',1.1,0.8,.96,1.04]],
-  intervencion: [['Envío a Intervención',4.1,3.0,1,1.13],['Fiscalización',5.2,4.5,1,1.13],
-                 ['Devolución por modificación',14.3,11.0,.12,1.25],['Reparo de Intervención',6.0,5.0,.04,1.10]],
-  pagos: [['Resolución',2.1,1.5,1,1.00],['Notificación',4.5,3.0,1,1.05],['Documento contable ADOK',3.8,3.0,1,1.08],
-          ['Fichero de pagos',2.6,2.0,1,1.02],['Liberación del pago',1.8,1.5,1,1.00]],
+  gestion: [['Recepción de la solicitud',1.4,1.0,1,1.00,1],['Revisión de documentación',6.2,4.0,1,1.18,1.1],
+            ['Requerimiento',3.1,2.0,.21,1.12,1.2],['Subsanación',18.2,14.0,.15,1.30,1.3],['Desistimiento',10.5,10.0,.06,1.00,1],
+            ['Denegación',2.8,2.0,.08,1.00,1],['Propuesta favorable',2.3,1.5,.86,1.09,4.5]],
+  terceros: [['Solicitud de alta de tercero',1.8,1.2,1,1.10,6.0],['Respuesta de Nexus',4.2,3.0,1,1.21,1.1],
+             ['Corrección de incidencia',11.3,8.0,.12,1.60,2.4],['Volcado del código a Atlantix',1.1,0.8,.96,1.04,1]],
+  intervencion: [['Envío a Intervención',4.1,3.0,1,1.13,1.1],['Fiscalización',5.2,4.5,1,1.13,1.1],
+                 ['Devolución por modificación',14.3,11.0,.12,1.25,1.2],['Reparo de Intervención',6.0,5.0,.04,1.10,5.0]],
+  pagos: [['Resolución',2.1,1.5,1,1.00,1],['Notificación',4.5,3.0,1,1.05,1.2],['Documento contable ADOK',3.8,3.0,1,1.08,4.0],
+          ['Fichero de pagos',2.6,2.0,1,1.02,1.5],['Liberación del pago',1.8,1.5,1,1.00,1]],
 };
 /* valores de cada dimensión: [nombre, peso, efecto en tiempo, efecto en repeticiones] */
 const DIMV = {
@@ -2120,20 +2123,27 @@ function renderAct(){
     vals.forEach((d,j)=>{
       const exp=Math.max(1,Math.round(base*a[3]*d[1])), veces=Math.max(1,1+(a[4]-1)*d[3]);
       const act=Math.round(exp*veces);
-      rows.push({a:a[0], d:d[0], first:j===0, tm:a[1]*d[2], tmd:a[2]*Math.min(d[2],1.1), exp, act, veces:act/exp, rep:act-exp});
+      const rep=act-exp, afe=rep ? Math.max(1,Math.min(exp,Math.round(rep/a[5]))) : 0;
+      /* días perdidos = repeticiones × lo que tarda la actividad: el coste real del retrabajo */
+      rows.push({a:a[0], d:d[0], first:j===0, tm:a[1]*d[2], tmd:a[2]*Math.min(d[2],1.1), exp, act, veces:act/exp, rep,
+                 afe, pct:afe/exp*100, perd:Math.round(rep*a[1]*d[2])});
     });
   });
-  const maxT=Math.max(...rows.map(r=>r.tm));
+  const maxT=Math.max(...rows.map(r=>r.tm)), maxP=Math.max(...rows.map(r=>r.perd));
   const dc = dim ? `<th>${dim==='sit'?'Situación':'Mes de entrada'}</th>` : '';
   document.getElementById('actTH1').innerHTML=`<tr><th>Actividad</th>${dc}<th class="r">Tiempo medio</th><th class="r">Tiempo mediano</th></tr>`;
-  document.getElementById('actTH2').innerHTML=`<tr><th>Actividad</th>${dc}<th class="r">Nº veces</th><th class="r">Nº expedientes</th><th class="r">Nº actividades</th><th class="r">Nº repeticiones</th></tr>`;
+  document.getElementById('actTH2').innerHTML=`<tr><th>Actividad</th>${dc}<th class="r">Nº veces</th><th class="r">Nº expedientes</th><th class="r">Nº actividades</th><th class="r">Nº repeticiones</th>`+
+    `<th class="r">% exp. con retrabajo <i class="ii" data-t="Expedientes que repiten la actividad al menos una vez, sobre los que pasan por ella. Distingue un problema extendido de un caso aislado: un expediente que se repite 15 veces sube el Nº veces, pero aquí pesa solo 1.">i</i></th>`+
+    `<th class="r">Días perdidos <i class="ii" data-t="Repeticiones × tiempo medio de la actividad. Es el coste del retrabajo en días de tramitación y sirve para priorizar: la actividad con más días perdidos es la que más plazo devuelve si se corrige.">i</i></th></tr>`;
   const tdA=r=>`<td class="act">${r.first?r.a:''}</td>`+(dim?`<td class="dim">${r.d}</td>`:'');
   const cls=(r)=> dim && r.first ? ' class="grp"' : '';
   document.getElementById('actTB1').innerHTML=rows.map(r=>`<tr${cls(r)}>${tdA(r)}`+
     `<td class="r${r.tm===maxT?' hi':''}">${f1(r.tm)} d</td><td class="r">${f1(r.tmd)} d</td></tr>`).join('');
   document.getElementById('actTB2').innerHTML=rows.map(r=>`<tr${cls(r)}>${tdA(r)}`+
-    `<td class="r ${r.veces>=1.30?'hi':r.veces>=1.15?'md':''}">${f2(r.veces)}</td>`+
-    `<td class="r">${nfmt(r.exp)}</td><td class="r">${nfmt(r.act)}</td><td class="r">${nfmt(r.rep)}</td></tr>`).join('');
+    `<td class="r">${f2(r.veces)}</td>`+
+    `<td class="r">${nfmt(r.exp)}</td><td class="r">${nfmt(r.act)}</td><td class="r">${nfmt(r.rep)}</td>`+
+    `<td class="r ${r.pct>=10?'md':''}">${r.pct.toFixed(1).replace('.',',')}%</td>`+
+    `<td class="r ${r.perd===maxP&&r.perd>0?'hi':''}">${nfmt(r.perd)}</td></tr>`).join('');
   document.getElementById('actTtl').innerHTML=`Actividades de la etapa · ${STAGES[k].label}<span>${nfmt(base)} expedientes han pasado por ella</span>`;
 }
 /* los gráficos son del proceso entero; con una etapa elegida, las tablas de actividades */
