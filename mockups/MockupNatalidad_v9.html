@@ -1735,7 +1735,9 @@ function renderCM(){
     ['Dentro de objetivo', dentroPct+'<span class="u">%</span>', 'na',
      nfmt(nRef-dentroN)+' fuera'],
   ]));
-  chTiempo.data.labels = trs.map(i=>TRAMOS[i]);
+  /* en la vista del proceso entero, cada barra con un solo nombre; inicio y final dicen de dónde a dónde */
+  const TR_CORTO = ['Registro → Alta','Instrucción','Validación de terceros','Envío a Intervención','Fiscalización','Resolución → Pago'];
+  chTiempo.data.labels = trs.map(i => stageKey==='all' ? TR_CORTO[i] : TRAMOS[i]);
   chTiempo.data.datasets[0].data = gestDias;
   chTiempo.data.datasets[0].backgroundColor = gestDias.map((v,i)=>(v+espDias[i])>=uAl?RED:SLA);
   chTiempo.data.datasets[1].data = espDias;
