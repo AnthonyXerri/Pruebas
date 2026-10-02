@@ -925,7 +925,7 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
 <!-- ══════════ PROCESO ENTERO · DOS GRÁFICOS ══════════ -->
 <div class="sections" id="secAll">
   <div class="section">
-    <div class="sec-title">Tiempos y cuellos de botella <i class="ii" data-t="Días entre los cambios de etapa registrados en AME, desde la fecha de efectos (formalización del acogimiento, cese o resolución que motiva el procedimiento) hasta el pago. El primer tramo ocurre antes de que el expediente llegue a AME: lo graba Protección y el servicio no puede actuar sobre él, pero sí verlo.">i</i></div>
+    <div class="sec-title">Tiempos y cuellos de botella <i class="ii" data-t="Días entre los cambios de etapa registrados en AME, desde la fecha de efectos (formalización del acogimiento, cese o resolución que motiva el procedimiento) hasta el pago. La fecha de efectos es la formalización en el pleno (o la firma del programa de urgencia), el cese o la resolución de discapacidad. El primer tramo ocurre antes de que el expediente llegue a AME: lo graba Protección y el servicio no puede actuar sobre él, pero sí verlo.">i</i></div>
     <div class="sec-chart">
       <div class="chart-ttl">↑ Tiempo medio por tramo del procedimiento</div>
       <div class="chart-sub" id="c1Sub"></div>
@@ -976,7 +976,7 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
       <i class="ii" id="pendTip" data-t="">i</i></div>
     <div class="resp-tabs" id="respTabs">
       <button data-r="" class="on">Todos</button><button data-r="srv">Servicio</button>
-      <button data-r="int">Interesado</button><button data-r="otr">Otras unidades</button>
+      <button data-r="int">Interesado</button><button data-r="otr">Otras unidades</button><button data-r="cic">Ciclo mensual</button>
     </div>
   </div>
   <div class="tbl-wrap">
@@ -1049,7 +1049,7 @@ const pick=arr=>{let r=rnd(),a=0;for(const [v,p] of arr){a+=p;if(r<=a)return v;}
    0 fecha de efectos → alta en AME (lo graba Protección; fuera del servicio)
    1 revisión y acuerdo de inicio · 2 notificación y 10 días de alegaciones · 3 espera al cierre de la propuesta
    4 Intervención (fiscaliza el borrador) · 5 resolución definitiva → pago en nómina */
-const TRAMOS=['Formalización → Alta en AME','Revisión','Alegaciones','Espera a la propuesta','Intervención','Resolución → Pago'];
+const TRAMOS=['Fecha de efectos → Alta en AME','Revisión','Alegaciones','Espera a la propuesta','Intervención','Resolución → Pago'];
 const COMP=['fuera','srv','int','srv','srv','srv'];
 const PROC_N={rec:'Reconocimiento',mpos:'Modificación positiva',mneg:'Modificación negativa',ext:'Extinción'};
 const IMP={'Carácter general':500,'Carácter especial':1000,'Programa de urgencia':2000};
@@ -1060,21 +1060,22 @@ const EXP=[];
   const T0=0, T1=Date.UTC(2025,10,1);
   Object.keys(VOL).forEach(proc=>{
     for(let i=0;i<VOL[proc];i++){
-      const tarde = proc==='ext' && i<2;   /* algún cese que llega con más de un año (sesión 14/08) */
+      const tarde = proc==='ext' && i<2;
+      const mayoria = proc==='ext' && !tarde && rnd()<.3;   /* extinción por mayoría de edad: prevista, sin acuerdo de inicio */   /* algún cese que llega con más de un año (sesión 14/08) */
       const tipo= tarde ? 'Carácter general' : pick([['Carácter general',.58],['Carácter especial',.12],['Programa de urgencia',.30]]);
       const not=pick([['Telemática',.55],['Postal',.45]]);
       const sinCuenta = proc==='rec' && rnd()<.22;
       const actInt = rnd()<.12;
       const t=[
-        proc==='mpos' ? lgn(55,.8,5) : (tarde ? 400+rnd()*200 : lgn(14,1.05,1)),   /* discapacidad: retraso de los centros base · algún cese que llega con más de un año (sesión 14/08) */
+        proc==='mpos' ? lgn(55,.8,5) : mayoria ? 0 : (tarde ? 400+rnd()*200 : lgn(14,1.05,1)),   /* discapacidad: retraso de los centros base · algún cese que llega con más de un año (sesión 14/08) */
         lgn(3,.5,1) + (proc==='mpos'&&rnd()<.3 ? lgn(4,.5,1) : 0),     /* recálculo manual si AME «cortocircuita» */
-        (not==='Postal' ? lgn(30,.35,14) : lgn(13,.2,10)),
+        mayoria ? 0 : (not==='Postal' ? lgn(30,.35,14) : lgn(13,.2,10)),
         rnd()*28 + (sinCuenta ? 30 : 0),
         lgn(7,.3,3) + (actInt ? lgn(9,.4,4) : 0),
         lgn(6,.3,2)];
       const alta=T1 + rnd()*(Date.UTC(2026,8,30)-T1);
       const menores = tipo==='Programa de urgencia' ? 1 : (rnd()<.25?2:1);
-      EXP.push({id:'AC-'+(++id), proc, tipo, not, sinCuenta, actInt, t:t.map(x=>Math.round(x*10)/10),
+      EXP.push({id:'AC-'+(++id), proc, mayoria, tipo, not, sinCuenta, actInt, t:t.map(x=>Math.round(x*10)/10),
         alta, efectos: alta - t[0]*DIA, imp: IMP[tipo]*menores});
     }
   });
@@ -1117,8 +1118,8 @@ const TIP={
  'Procedimientos en trámite':'Reconocimientos, modificaciones y extinciones abiertos en AME a la fecha de corte. Debajo, las altas que todavía no han cobrado ninguna mensualidad: la falta de pago a las familias.',
  'Días hasta el primer pago':'Días desde la fecha de efectos del acogimiento hasta el primer pago, en las altas ya pagadas. Debajo, cuántos de esos días pasan antes de que Protección grabe el alta en AME: la parte que el servicio no controla.',
  'Resueltos en plazo':'Procedimientos resueltos dentro del plazo legal: 3 meses desde el acuerdo de inicio (Decreto 44/2022, por confirmar). No descuenta las interrupciones imputables al interesado. Debajo, los que siguen en trámite y ya lo han superado.',
- 'Atrasos pagados':'Importe de atrasos pagado de golpe en la primera nómina de las altas del periodo (Anexo I de la propuesta). Es el coste de pagar tarde y lo que descuadra el presupuesto del mes.',
- 'Indebido sin reclamar':'Importe pagado de más tras un cese o una modificación negativa que todavía no tiene reintegro iniciado. Notificar el acuerdo de inicio interrumpe la prescripción; debajo, los que prescriben este año.',
+ 'Atrasos pagados':'Importe de atrasos abonado en la primera nómina de las altas del periodo (Anexo I de la propuesta): las mensualidades desde la fecha de efectos hasta el primer pago. Crece cuanto más tarda el alta en llegar a AME y concentra gasto en un solo mes.',
+ 'Indebido pendiente de reintegro':'Importe pagado de más tras un cese o una modificación negativa que todavía no tiene reintegro iniciado. Notificar el acuerdo de inicio interrumpe la prescripción; debajo, los que prescriben este año.',
 };
 function ks(lbl,val,cls,sub,grp){ return `<div class="ks ${grp?'ks-pred':'ks-fix'}"><div class="ks-lbl">${lbl} <i class="ii" data-t="${TIP[lbl]||''}">i</i></div>`+
   `<div class="ks-val">${val}</div><div class="ks-delta ${cls}">${sub}</div></div>`; }
@@ -1148,7 +1149,7 @@ function renderHdr(P){
   const m=v=>(v/1000).toFixed(0)+' <span class="u">mil €</span>';
   $('kpiInd').innerHTML=
     ks('Atrasos pagados',m(atr),'na',`en ${nfmt(altas)} altas del periodo`,true)+
-    ks('Indebido sin reclamar',m(R.reduce((a,r)=>a+r.imp,0)),'bad',`${nfmt(R.length)} reintegros · ${nfmt(r26.length)} prescriben en 2026`,true);
+    ks('Indebido pendiente de reintegro',m(R.reduce((a,r)=>a+r.imp,0)),'bad',`${nfmt(R.length)} reintegros · ${nfmt(r26.length)} prescriben en 2026`,true);
   $('scopeChip').textContent='Periodo analizado: '+fdate(f.ini)+' → '+fdate(f.fin-DIA);
 }
 
@@ -1202,13 +1203,13 @@ function renderAll(P){
 /* ── expedientes pendientes de pago ── */
 function motivo(e){
   if(e.etapa===1) return e.proc==='mpos'?['Recálculo manual del importe en AME','srv']:['Revisión y acuerdo de inicio','srv'];
-  if(e.etapa===2) return e.not==='Postal'?['Notificación postal sin acuse','int']:['Plazo de alegaciones abierto','int'];
-  if(e.etapa===3) return e.sinCuenta?['Sin cuenta corriente: reclamada','int']:['Esperando el cierre de la propuesta','srv'];
+  if(e.etapa===2) return e.not==='Postal'?['Notificación postal sin acuse','otr']:['Plazo de alegaciones abierto','int'];
+  if(e.etapa===3) return e.sinCuenta?['Sin cuenta corriente: reclamada','int']:['Preparado para la próxima propuesta','cic'];
   if(e.etapa===4) return e.actInt?['Actuación interesada de Intervención','srv']:['En fiscalización','otr'];
   return ['Resolución pendiente de copia y firma','srv'];
 }
 const ETAPA_N=['','Alta en AME','Inicio y alegaciones','Propuesta mensual','Intervención','Resolución y pago'];
-const RESP_N={srv:'Servicio',int:'Interesado',otr:'Otras unidades'};
+const RESP_N={srv:'Servicio',int:'Interesado',otr:'Otras unidades',cic:'Ciclo mensual'};
 /* Tabla operativa. En el proceso entero: todos los procedimientos abiertos, por antigüedad desde la fecha de efectos
    (los que más atrasos o pagos de más acumulan). En una etapa: los que están en ella, por días en la etapa. */
 const UMBRAL={alta:7,inicio:25,propuesta:35,interv:15,resol:10};   /* días en la etapa a partir de los que se marca la fila */
@@ -1261,7 +1262,7 @@ const ACT={
   resol:[['Resolución definitiva',2.3,1.5,1,1.04,3.0,'','AME'],['Firma de la directora',1.6,1.0,1,1.00,1,'','?'],
          ['Notificación de la resolución (en paralelo al pago)',8.9,4.0,1,1.06,1.1,'','?'],['Pago en nómina',3.1,3.0,.62,1.00,1,'','Nexus']],
 };
-const ST={alta:{n:'Alta en AME',k:1,meta:'De la formalización en el pleno a la revisión del expediente en AME'},
+const ST={alta:{n:'Alta en AME',k:1,meta:'De la fecha de efectos (pleno, cese o resolución de discapacidad) a la revisión del expediente en AME'},
   inicio:{n:'Inicio y alegaciones',k:2,meta:'Acuerdo de inicio, notificación y 10 días de alegaciones'},
   propuesta:{n:'Propuesta mensual',k:3,meta:'Terceros, documento D y cierre de la propuesta del mes'},
   interv:{n:'Intervención',k:4,meta:'Fiscalización del borrador de resolución'},
@@ -1315,9 +1316,9 @@ const chR=new Chart($('cPresc'),{type:'bar',data:{labels:PRESC,datasets:[{data:[
     scales:{x:{...axis,grid:{display:false}},y:{...axis}}}});
 function renderInd(P){
   const f=F(), ext=P.filter(e=>e.proc==='ext'), ind=ext.filter(e=>e.indeb>0);
-  const dmed=ext.length?ext.reduce((a,e)=>a+e.t[0],0)/ext.length:0;
+  const ces=ext.filter(e=>!e.mayoria), dmed=ces.length?ces.reduce((a,e)=>a+e.t[0],0)/ces.length:0;   /* la mayoría de edad se conoce de antemano */
   const espera=ind.filter(e=>e.fin && (CORTE-(e.alta+e.t.slice(1).reduce((a,b)=>a+b,0)*DIA))/DIA<60).length;
-  $('ciSub').textContent=`${nfmt(ext.length)} extinciones en el periodo · el cese tarda de media ${Math.round(dmed)} días en llegar a AME`;
+  $('ciSub').textContent=`${nfmt(ext.length)} extinciones en el periodo, ${nfmt(ext.length-ces.length)} por mayoría de edad · el resto tarda de media ${Math.round(dmed)} días en llegar a AME`;
   $('ciCards').innerHTML=
     `<div class="bc bc-dp"><span class="bc-l">Con pago de más</span><b>${nfmt(ind.length)}</b><em>${ext.length?Math.round(ind.length/ext.length*100):0}% de las extinciones</em></div>`+
     `<div class="bc bc-cm"><span class="bc-l">Pagado de más</span><b>${eur(ind.reduce((a,e)=>a+e.indeb,0))}</b><em>a reclamar con reintegro</em></div>`+
@@ -1363,7 +1364,7 @@ const DFILAS=[
  ['Días hasta el primer pago','Días desde la fecha de efectos hasta el primer pago, en altas pagadas','Fecha de efectos del acogimiento','Primer pago en nómina','—',1],
  ['Días antes del alta en AME','Parte de esos días que pasa antes de que Protección grabe el alta','Fecha de efectos','Alta en AME','Comunicaciones del pleno',1],
  ['Pagado de más tras el cese','Mensualidades pagadas entre el cese y su grabación en AME','Fecha de efectos del cese','Alta de la extinción en AME','Anexo II · importes de reintegro',1],
- ['Indebido sin reclamar','Importe pagado de más sin acuerdo de inicio de reintegro notificado, y cuándo prescribe','Resolución de extinción o modificación negativa','Notificación del acuerdo de inicio del reintegro','Relación de reintegros del servicio · plazo de prescripción por confirmar',1],
+ ['Indebido pendiente de reintegro','Importe pagado de más sin acuerdo de inicio de reintegro notificado, y cuándo prescribe','Resolución de extinción o modificación negativa','Notificación del acuerdo de inicio del reintegro','Relación de reintegros del servicio · plazo de prescripción por confirmar',1],
  ['Desviación de tiempo','Tiempo medio menos tiempo mediano de una actividad','Inicio de la actividad','Fin de la actividad','—',1],
  ['% de expedientes con retrabajo','Expedientes que repiten la actividad, sobre los que pasan por ella','Primera ejecución','Última ejecución','—',1],
  ['Días perdidos por retrabajo','Repeticiones de la actividad por su tiempo medio','Primera ejecución','Última ejecución','—',1],
