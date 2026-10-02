@@ -935,7 +935,7 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
         <div class="leg"><div class="leg-sq" style="background:#464C6A;"></div>Gestión del servicio</div>
         <div class="leg"><div class="leg-sq" style="background:#D3D3DD;"></div>Plazo del interesado</div>
         <div class="leg"><div class="leg-sq" style="background:var(--red);"></div>Cuello de botella</div>
-        <div class="leg"><div class="leg-ln" style="background:#0A1F44;"></div>Expedientes en la fase ahora</div>
+        <div class="leg"><div class="leg-ln" style="background:#0A1F44;"></div>Expedientes que han pasado por la fase</div>
       </div>
     </div>
   </div>
@@ -1170,12 +1170,13 @@ const baseOpts={responsive:true,maintainAspectRatio:false,animation:false,
 const axis={grid:{color:'#EDEEF1'},ticks:{font:{family:'Inter',size:10},color:NAVY},border:{display:false}};
 const FASES=[['alta','Alta en AME'],['inicio','Inicio y alegaciones'],['propuesta','Propuesta mensual'],['interv','Intervención'],['resol','Resolución y pago']];
 const chT=new Chart($('cTiempo'),{data:{labels:[],datasets:[
-  {type:'line',label:'Expedientes en la fase',data:[],yAxisID:'yN',borderColor:NAVY,backgroundColor:NAVY,borderWidth:2,pointRadius:4,pointBackgroundColor:'#fff',pointBorderWidth:2,tension:.25,order:0},
+  {type:'line',label:'Han pasado por la fase',data:[],yAxisID:'yN',borderColor:NAVY,backgroundColor:NAVY,borderWidth:2,pointRadius:4,pointBackgroundColor:'#fff',pointBorderWidth:2,tension:.25,order:0},
   {type:'bar',label:'Antes del alta en AME',data:[],yAxisID:'yD',stack:'s',barPercentage:.62,order:1},
   {type:'bar',label:'Gestión del servicio',data:[],yAxisID:'yD',stack:'s',barPercentage:.62,order:1},
   {type:'bar',label:'Plazo del interesado',data:[],yAxisID:'yD',stack:'s',barPercentage:.62,order:1}]},
   options:{...baseOpts,interaction:{mode:'index',intersect:false},plugins:{...baseOpts.plugins,tooltip:{...baseOpts.plugins.tooltip,filter:i=>i.raw>0,
-    callbacks:{label:c=>' '+c.dataset.label+': '+(c.dataset.yAxisID==='yN'?nfmt(c.raw)+' expedientes':f1(c.raw)+' d')}}},
+    callbacks:{label:c=>' '+c.dataset.label+': '+(c.dataset.yAxisID==='yN'?nfmt(c.raw)+' expedientes':f1(c.raw)+' d'),
+      afterBody:it=>{const i=(chT.$ord||[])[it[0].dataIndex];return i===undefined?'':['',' Ahora en la fase: '+nfmt((chT.$ahora||[])[i]||0)];}}}},
     scales:{x:{...axis,grid:{display:false},ticks:{...axis.ticks,maxRotation:0,autoSkip:false,font:{family:'Inter',size:9.5}}},
             yN:{...axis,position:'left',beginAtZero:true,title:{display:true,text:'Nº de expedientes',font:{family:'Inter',size:9},color:GRY},ticks:{...axis.ticks,precision:0}},
             yD:{...axis,position:'right',stacked:true,beginAtZero:true,grid:{display:false},title:{display:true,text:'Días',font:{family:'Inter',size:9},color:GRY},ticks:{...axis.ticks,callback:v=>v+' d'}}}}});
@@ -1196,10 +1197,12 @@ function renderAll(P){
   const t=[0,1,2,3,4,5].map(m);
   /* días por fase, separando de quién es el tiempo: Alta en AME = fecha de efectos → alta (Protección) + revisión */
   const F5=[{fuera:t[0],srv:t[1],int:0},{fuera:0,srv:0,int:t[2]},{fuera:0,srv:t[3],int:0},{fuera:0,srv:t[4],int:0},{fuera:0,srv:t[5],int:0}];
-  const enF=FASES.map((_,i)=>P.filter(e=>!e.fin&&e.etapa===i+1).length);
+  /* expedientes que han pasado por cada fase en el periodo (nunca crece de una fase a la siguiente) y los que están ahora en ella */
+  const porF=FASES.map((_,i)=>P.filter(e=>e.etapa>=i+1).length), enF=FASES.map((_,i)=>P.filter(e=>!e.fin&&e.etapa===i+1).length);
+  chT.$ahora=enF;
   const ord=FASES.map((_,i)=>i).sort((a,b)=>(F5[b].fuera+F5[b].srv+F5[b].int)-(F5[a].fuera+F5[a].srv+F5[a].int));
   chT.data.labels=ord.map(i=>FASES[i][1]);
-  chT.data.datasets[0].data=ord.map(i=>enF[i]);
+  chT.data.datasets[0].data=ord.map(i=>porF[i]);  chT.$ord=ord;
   const base={fuera:GRY2,srv:SLA,int:GRY3};
   ['fuera','srv','int'].forEach((c,d)=>{
     chT.data.datasets[d+1].data=ord.map(i=>Math.round(F5[i][c]*10)/10);
