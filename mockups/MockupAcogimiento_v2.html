@@ -1115,7 +1115,7 @@ function limpiar(){ ['fProc','fTipo','fNot'].forEach(i=>$(i).value=''); $('fIni'
 
 /* ── cabecera ── */
 const TIP={
- 'Expedientes en mantenimiento':'Expedientes que cobran la prestación cada mes sin ningún procedimiento abierto: el tamaño del servicio. Debajo, las altas y extinciones resueltas en el periodo.',
+ 'Prestaciones activas':'Expedientes que cobran la prestación en la nómina del mes (en AME, «listado de mantenimiento»): el tamaño del servicio. Se cuenta por expediente: uno puede cubrir a varios menores. Debajo, las altas y extinciones del periodo.',
  'Procedimientos en trámite':'Reconocimientos, modificaciones y extinciones abiertos en AME a la fecha de corte. Debajo, las altas que todavía no han cobrado ninguna mensualidad: la falta de pago a las familias.',
  'Días hasta el primer pago':'Días desde la fecha de efectos del acogimiento hasta el primer pago, en las altas ya pagadas. Debajo, cuántos de esos días pasan antes de que Protección grabe el alta en AME: la parte que el servicio no controla.',
  'Resueltos en plazo':'Procedimientos resueltos dentro del plazo legal: 3 meses desde el acuerdo de inicio (Decreto 44/2022, por confirmar). No descuenta las interrupciones imputables al interesado. Debajo, los que siguen en trámite y ya lo han superado.',
@@ -1140,7 +1140,7 @@ function renderHdr(P){
   const res=P.filter(e=>e.etapa>4), enPl=res.filter(e=>diasPlazo(e)<=PLAZO).length;
   const fuera=cur.filter(e=>e.etapa>=2 && (CORTE-(e.alta+e.t[1]*DIA))/DIA>PLAZO).length;
   $('kpiGlobal').innerHTML=
-    ks('Expedientes en mantenimiento',nfmt(mant),'na',`+${nfmt(altas)} altas · −${nfmt(bajas)} extinciones`)+
+    ks('Prestaciones activas',nfmt(mant),'na',`+${nfmt(altas)} altas · −${nfmt(bajas)} extinciones`)+
     ks('Procedimientos en trámite',nfmt(cur.length),sinCobrar?'bad':'na',sinCobrar?`${nfmt(sinCobrar)} altas aún sin cobrar`:'ninguna alta sin cobrar')+
     ks('Días hasta el primer pago',dias?Math.round(dias)+' <span class="u">d</span>':'—','na',dias?`de ellos ${Math.round(antes)} d antes del alta en AME`:'')+
     ks('Resueltos en plazo',res.length?Math.round(enPl/res.length*100)+'<span class="u">%</span>':'—',fuera?'bad':'na',fuera?`${nfmt(fuera)} en trámite ya lo superan`:'ninguno en trámite lo supera');
@@ -1334,7 +1334,7 @@ document.querySelectorAll('.tabb').forEach(b=>b.onclick=()=>{
 
 /* ── hoja de definición de indicadores ── */
 const DFILAS=[
- ['Expedientes en mantenimiento','Expedientes que cobran cada mes sin procedimiento abierto','Resolución de reconocimiento','Extinción','Listado de mantenimiento de AME',1],
+ ['Prestaciones activas','Expedientes que cobran en la nómina del mes (uno puede cubrir a varios menores)','Resolución de reconocimiento','Extinción','Listado de mantenimiento de AME',1],
  ['Procedimientos en trámite','Procedimientos abiertos en AME, y altas que aún no han cobrado','Acuerdo de inicio','Resolución','—',1],
  ['Resueltos en plazo','Resueltos en 3 meses desde el acuerdo de inicio, y en trámite que ya lo superan','Acuerdo de inicio','Resolución notificada','Decreto 44/2022 · plazo máximo',1],
  ['Atrasos pagados','Importe de atrasos pagado en la primera nómina de cada alta','Fecha de efectos','Primer pago','Anexo I · importe de atrasos',1],
