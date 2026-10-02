@@ -975,7 +975,7 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
       <div class="chart-xlabel" id="c2X"></div>
       <div class="legend">
         <div class="leg"><div class="leg-sq" style="background:#464C6A;"></div>Gestión de la unidad</div>
-        <div class="leg"><div class="leg-sq" style="background:var(--red);"></div>Gestión de la unidad · supera el umbral</div>
+        <div class="leg"><div class="leg-sq" style="background:var(--red);"></div>Cuello de botella</div>
         <div class="leg"><div class="leg-sq" style="background:#8E91AD;"></div>Plazo del solicitante</div>
       </div>
     </div>
@@ -1093,7 +1093,7 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
 <!-- ══════════ FOOTER ══════════ -->
 </div><!-- /cmBody -->
 
-<div class="blk-ttl">Ejecución económica <span>Convocatoria y ejercicio seleccionados en los filtros</span></div>
+<div class="blk-ttl">Ejecución económica <span>Sigue los filtros de convocatoria y ejercicio · no le afectan fechas, situación ni unidad</span></div>
 
 
   <div class="fbar" id="fbarECO" style="display:none;">
@@ -1414,7 +1414,7 @@ const TIP = {
  'Plazo medio de resolución':'Días desde la entrada en el registro del órgano competente hasta la resolución, sobre los expedientes ya resueltos. Plazo legal: 90 días. Mientras REC no esté conectado se mide desde la recepción en AFN.',
  'Resueltas en plazo':'Expedientes resueltos dentro del plazo legal fijado en los filtros (90 días por defecto). Debajo, los que siguen en trámite y ya lo han superado: son los que más urge mover.',
  'Crédito ejecutado':'Ejecutado sobre el crédito de la anualidad elegida en el filtro Ejercicio, o de toda la convocatoria si no se elige ejercicio. Pendiente de confirmar con gestión económica si «ejecutado» es la obligación reconocida o el pago.',
- 'Crédito disponible':'Crédito de la convocatoria que no está ni pagado ni comprometido. Debajo, cuántas altas completas caben: disponible entre lo que cuesta una ayuda entera (24 mensualidades).',
+ 'Crédito disponible':'Crédito de la convocatoria, en todas sus anualidades, que no está ni ejecutado ni comprometido. Es el mismo dato que «Disponible» en el bloque de ejecución económica. Debajo, cuántas altas completas caben: disponible entre lo que cuesta una ayuda entera (24 mensualidades).',
  'Dentro del objetivo':'Expedientes ya terminados que se resolvieron dentro del objetivo fijado en la barra de filtros. Por defecto es el plazo máximo normativo: 90 días desde la entrada de la solicitud en el registro del órgano competente.',
  'Dentro de objetivo':'Expedientes ya terminados cuyo plazo no superó el objetivo fijado en la barra de filtros. «En riesgo» son los que se acercan a él sin haberlo superado.',
  'Expedientes detenidos':'Expedientes sin ningún cambio de estado desde hace más días de lo razonable para su etapa. Debajo, los que la unidad puede desatascar por sí misma. Los del solicitante son casi todos requerimientos: de 807 requeridos en la revisión, 575 subsanan y 232 desisten.',
@@ -1740,11 +1740,18 @@ function renderCM(){
   const TR_CORTO = ['Registro → Alta','Instrucción','Validación de terceros','Envío a Intervención','Fiscalización','Resolución → Pago'];
   chTiempo.data.labels = trs.map(i => stageKey==='all' ? TR_CORTO[i] : TRAMOS[i]);
   chTiempo.data.datasets[0].data = gestDias;
-  chTiempo.data.datasets[0].backgroundColor = gestDias.map((v,i)=>(v+espDias[i])>=uAl?RED:SLA);
+  const totTr = gestDias.map((v,i)=>v+espDias[i]), maxTr = Math.max(...totTr);
+  chTiempo.data.datasets[0].backgroundColor = totTr.map(v=> v===maxTr ? RED : SLA);
   chTiempo.data.datasets[1].data = espDias;
   chTiempo.update();
-  set('c2Sub','Gestión de la unidad '+(durTot-espTot).toFixed(0)+' d · plazo del solicitante '
-    +espTot.toFixed(1).replace('.',',')+' d');
+  if(stageKey==='all'){
+    const hastaRes = totTr.slice(0,5).reduce((a,b)=>a+b,0);
+    set('c2Sub','Hasta la resolución '+hastaRes.toFixed(0)+' d · hasta el pago '+durTot.toFixed(0)+' d · de ellos, '
+      +espTot.toFixed(1).replace('.',',')+' d de plazo del solicitante');
+  } else {
+    set('c2Sub','Gestión de la unidad '+(durTot-espTot).toFixed(0)+' d · plazo del solicitante '
+      +espTot.toFixed(1).replace('.',',')+' d');
+  }
 
   /* ── sección 3 · detenidos por responsable ── */
   set('s3Kpis', skHtml([
@@ -1879,7 +1886,7 @@ function initAnu(){
     data:{labels:[],datasets:[
       {label:'Ejecutado',data:[],backgroundColor:'#005B60',stack:'a',barPercentage:.6},
       {label:'Comprometido',data:[],backgroundColor:'#D98324',stack:'a',barPercentage:.6},
-      {label:'Sin comprometer',data:[],backgroundColor:'#D3D3DD',stack:'a',barPercentage:.6}]},
+      {label:'Disponible',data:[],backgroundColor:'#D3D3DD',stack:'a',barPercentage:.6}]},
     options:{responsive:true,maintainAspectRatio:false,animation:false,
       plugins:{legend:{position:'bottom',labels:{boxWidth:9,boxHeight:9,padding:10,font:{family:'Inter',size:10},color:'#0A1F44'}},
         tooltip:{callbacks:{title:it=>'Anualidad '+it[0].label,label:c=>' '+c.dataset.label+': '+M2(c.raw*1e6)}}},
@@ -1929,16 +1936,16 @@ function renderConv(){
   const pend=DUR-c.pagadas;
   document.getElementById('cvCards').innerHTML =
     `<div class="bc bc-ej"><span class="bc-l">Ejecutado</span><b>${eur(A.eje)}</b><em>${pct(A.eje)} · ${nfmt(c.cobrando)} beneficiarios</em></div>`+
-    `<div class="bc bc-cm"><span class="bc-l">Comprometido</span><b>${eur(A.com)}</b><em>${pct(A.com)} · ${pend} mensualidades por pagar</em></div>`+
-    `<div class="bc bc-dp"><span class="bc-l">Sin comprometer</span><b>${eur(disp)}</b><em>${pct(disp)}</em></div>`;
+    `<div class="bc bc-cm"><span class="bc-l">Comprometido</span><b>${eur(A.com)}</b><em>${pct(A.com)} · pendiente de pago</em></div>`+
+    `<div class="bc bc-dp"><span class="bc-l">Disponible</span><b>${eur(disp)}</b><em>${pct(disp)}</em></div>`;
   const cap=document.getElementById('cvCap'), foot=document.getElementById('cvCapFoot');
   if(!c.admite){
-    cap.innerHTML = `<div class="cap-row" style="color:var(--g500);">Convocatoria cerrada a altas nuevas: sigue pagando a sus ${nfmt(c.ben)} beneficiarios hasta ${EJER[Math.max(...idx)]}. Quedan <strong style="color:var(--g900)">${eur(dispConv)}</strong> sin comprometer.</div>`;
-    foot.innerHTML = 'Destino del crédito sin comprometer de convocatorias cerradas: por confirmar con gestión económica.';
+    cap.innerHTML = `<div class="cap-row" style="color:var(--g500);">Convocatoria cerrada a altas nuevas: sigue pagando a sus ${nfmt(c.ben)} beneficiarios hasta ${EJER[Math.max(...idx)]}. Quedan <strong style="color:var(--g900)">${eur(dispConv)}</strong> disponibles.</div>`;
+    foot.innerHTML = 'Destino del disponible de convocatorias cerradas: por confirmar con gestión económica.';
   } else {
     cap.innerHTML = `<div class="cap-row"><b>${nfmt(Math.floor(dispConv/COSTE_COMPLETO))}</b> altas completas `+
-      `<i class="ii" data-t="Crédito de la convocatoria sin comprometer (${eur(dispConv)}) entre lo que cuesta una ayuda entera (${MENS} € × ${DUR} = ${eur(COSTE_COMPLETO)}). Importe mensual por confirmar.">i</i></div>`;
-    foot.innerHTML = `Crédito sin comprometer de la convocatoria, todas sus anualidades: <strong>${eur(dispConv)}</strong>`;
+      `<i class="ii" data-t="Disponible de la convocatoria (${eur(dispConv)}) entre lo que cuesta una ayuda entera (${MENS} € × ${DUR} = ${eur(COSTE_COMPLETO)}). Importe mensual por confirmar.">i</i></div>`;
+    foot.innerHTML = `Disponible de la convocatoria, todas sus anualidades: <strong>${eur(dispConv)}</strong>`;
   }
   renderEjer();
   if(typeof renderCM==='function' && document.getElementById('kpiConv')) renderKpiCredito();
@@ -2019,8 +2026,8 @@ const chTiempo = new Chart(document.getElementById('cTiempo'), {
 });
 const chBloq = new Chart(document.getElementById('cBloq'), {
   type:'line', data:{ labels:[], datasets:[
-    { data:[], borderColor:RED, backgroundColor:RED, borderWidth:2.5, pointRadius:3.5, tension:.35, fill:false },
-    { data:[], borderColor:ORA, backgroundColor:ORA, borderWidth:2.5, pointRadius:3.5, tension:.35, fill:false }]},
+    { label:'Unidad gestora', data:[], borderColor:RED, backgroundColor:RED, borderWidth:2.5, pointRadius:3.5, tension:.35, fill:false },
+    { label:'Solicitante', data:[], borderColor:ORA, backgroundColor:ORA, borderWidth:2.5, pointRadius:3.5, tension:.35, fill:false }]},
   options:{ ...baseOpts, interaction:{mode:'index',intersect:false},
     scales:{ x:{...axis, grid:{display:false}}, y:{...axis, title:{display:true,text:'expedientes',font:{family:'Inter',size:9},color:'#8E91AD'}} } }
 });
@@ -2100,7 +2107,7 @@ function legHtml(arr,line){
    [actividad, tiempo medio, tiempo mediano, % de expedientes que pasan por ella, veces por expediente,
     repeticiones por expediente afectado: cerca de 1 = retrabajo repartido; alto = pocos casos que se repiten mucho] */
 const ACT = {
-  gestion: [['Recepción de la solicitud',1.4,1.0,1,1.00,1],['Revisión de documentación',6.2,4.0,1,1.18,1.1],
+  gestion: [['Recepción de la solicitud',1.4,1.0,1,1.00,1],['Revisión de documentación',6.2,4.0,1,1.15,1.0],
             ['Requerimiento',3.1,2.0,.21,1.12,1.2],['Subsanación',18.2,14.0,.15,1.30,1.3],['Desistimiento',10.5,10.0,.06,1.00,1],
             ['Denegación',2.8,2.0,.08,1.00,1],['Propuesta favorable',2.3,1.5,.86,1.09,4.5]],
   terceros: [['Solicitud de alta de tercero',1.8,1.2,1,1.10,6.0],['Respuesta de Nexus',4.2,3.0,1,1.21,1.1],
@@ -2157,6 +2164,7 @@ function vistaEtapa(){
   const todo = stageKey==='all';
   const sec=document.querySelector('#cmBody .sections'); if(sec) sec.style.display = todo ? '' : 'none';
   const blk=document.getElementById('actBlk'); if(blk) blk.style.display = todo ? 'none' : '';
+  const ob=document.getElementById('fselObj'); if(ob) ob.style.display = todo ? '' : 'none';
   if(!todo) renderAct();
 }
 
@@ -2262,7 +2270,7 @@ function onPeriodo(){
               +'la granularidad del eje de la gráfica de evolución, no el rango.';
   }
   const lbl={sem:'Semanal',mes:'Mensual',tri:'Trimestral',anu:'Anual'}[p]||'Mensual';
-  document.getElementById('cBloqX').textContent=lbl+' · '+g(vi)+' → '+g(vf);
+  document.getElementById('cBloqX').textContent=lbl+' · últimos 6 meses del periodo';
   renderCM();
 }
 
@@ -2665,10 +2673,14 @@ const DFILAS = [
  ['Beneficiarias en alta','No contemplado todavía','—','—','Vademécum', 1],
  ['Beneficiarias en mantenimiento','No contemplado todavía','—','—','Vademécum', 1],
  ['Beneficiarias en baja','No contemplado todavía','—','—','Vademécum', 1],
+ ['Desviación de tiempo de una actividad','Tiempo medio menos tiempo mediano de la actividad',
+  'Inicio de la actividad','Fin de la actividad','—', 1],
+ ['% de expedientes con retrabajo','Expedientes que repiten la actividad al menos una vez, sobre los que pasan por ella',
+  'Primera ejecución','Última ejecución','—', 1],
+ ['Días perdidos por retrabajo','Repeticiones de la actividad por su tiempo medio',
+  'Primera ejecución','Última ejecución','—', 1],
  ['Crédito ejecutado','Ejecutado sobre el crédito de la anualidad elegida, o de toda la convocatoria; fase contable (O o P) por confirmar',
   'Documento contable','Pago','Nexus · gestión económica', 1],
- ['Nómina de la convocatoria','Importe de los pagos vivos de la convocatoria',
-  'Resolución','Pago en nómina','Nexus · gestión económica', 1],
 ];
 function dfKey(i,c){ return 'df:'+i+':'+c; }
 function dfLoad(k){ try{ return localStorage.getItem(k)||''; }catch(e){ return ''; } }
