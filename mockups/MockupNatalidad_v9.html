@@ -809,6 +809,27 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
 .ent-it .ii[data-t]::after{bottom:auto;top:calc(100% + 8px);}
 .ent-it .ii[data-t]::before{bottom:auto;top:calc(100% + 3px);border-top-color:transparent;border-bottom-color:var(--cnavy);}
 .ent-it:last-child .ii[data-t]::after{left:auto;right:-6px;transform:none;}
+/* actividades de la etapa */
+.act-blk{border-bottom:1px solid var(--cbd);background:#fff;}
+.act-head{display:flex;align-items:center;justify-content:space-between;padding:12px 18px 6px;}
+.act-ttl{font-size:14.5px;font-weight:700;color:var(--cnavy);letter-spacing:.02em;}
+.act-ttl span{font-size:11px;font-weight:400;color:var(--cgy);margin-left:8px;letter-spacing:0;}
+.act-dim{height:30px!important;}
+.act-grid{display:grid;grid-template-columns:1fr 1.25fr;}
+.act-col{padding:8px 18px 16px;min-width:0;}
+.act-col+.act-col{border-left:1px solid var(--cbd);}
+.act-col h4{font-size:12.5px;font-weight:600;color:var(--cnavy);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.act-tbl{width:100%;border-collapse:collapse;}
+.act-tbl th{font-size:10.5px;font-weight:600;color:var(--cgy);text-align:left;padding:7px 10px;border-bottom:1px solid var(--cbd);white-space:nowrap;}
+.act-tbl th.r,.act-tbl td.r{text-align:right;}
+.act-tbl td{font-size:12px;color:var(--cnavy);padding:7px 10px;border-bottom:1px solid #F1F2F5;}
+.act-tbl td.act{font-weight:600;}
+.act-tbl td.dim{color:var(--cgy);}
+.act-tbl tr.grp td{border-top:1px solid var(--cbd);}
+.act-tbl .hi{color:var(--cred);font-weight:600;}
+.act-tbl .md{color:#D98324;font-weight:600;}
+.act-col h4 .ii[data-t]::after{bottom:auto;top:calc(100% + 8px);}
+.act-col h4 .ii[data-t]::before{bottom:auto;top:calc(100% + 3px);border-top-color:transparent;border-bottom-color:var(--cnavy);}
 </style>
 </head>
 <body>
@@ -967,6 +988,29 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
       <div class="chart-wrap"><canvas id="cBloq"></canvas></div>
       <div class="chart-xlabel" id="cBloqX">Ene → Jun 2026</div>
       <div class="legend" id="c3Leg"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ ACTIVIDADES DE LA ETAPA ══════════
+     Con una etapa elegida, los gráficos dejan paso a dos tablas por actividad (subfase):
+     dónde se va el tiempo y cuánto se repite cada actividad por expediente. -->
+<div class="act-blk" id="actBlk" style="display:none;">
+  <div class="act-head">
+    <div class="act-ttl" id="actTtl"></div>
+    <div class="fsel act-dim"><span>Dimensión de análisis</span>
+      <select id="actDim" onchange="renderAct()"><option value="">Sin desglose</option>
+        <option value="sit">Situación</option><option value="mes">Mes de entrada</option></select>
+      <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+  </div>
+  <div class="act-grid">
+    <div class="act-col">
+      <h4>Desviaciones de tiempos en actividades <i class="ii" data-t="Días que tarda cada actividad de la etapa, entre su inicio y su fin registrados en Atlantix. La mediana deja fuera los casos extremos: si la media es mucho mayor, unos pocos expedientes están tirando del plazo. En rojo, la actividad más lenta.">i</i></h4>
+      <table class="act-tbl"><thead id="actTH1"></thead><tbody id="actTB1"></tbody></table>
+    </div>
+    <div class="act-col">
+      <h4>Desviaciones de retrabajos <i class="ii" data-t="Cuántas veces se repite cada actividad. Nº veces = actividades ÷ expedientes: 1 significa que cada expediente pasa una sola vez. Nº de repeticiones = actividades − expedientes: las ejecuciones que sobran, es decir, el retrabajo.">i</i></h4>
+      <table class="act-tbl"><thead id="actTH2"></thead><tbody id="actTB2"></tbody></table>
     </div>
   </div>
 </div>
@@ -1636,20 +1680,21 @@ function renderCM(){
      Resuelto = ha pasado Intervención → Resolución. El plazo legal (90 d, art. 21
      LPAC) se mide hasta la resolución, no hasta el pago. */
   const RES = BT.filter(e => e.hasta === 6), VIV = BT.filter(e => e.hasta < 6);
+  const objG = OBJ_E2E || 90;
   const diasRes = e => suma(e.t.slice(0,5));
   const plazoRes = RES.length ? Math.round(media(RES.map(diasRes))) : 0;
-  const enPlazo  = RES.filter(e => diasRes(e) <= objetivo).length;
+  const enPlazo  = RES.filter(e => diasRes(e) <= objG).length;
   const pctPlazo = RES.length ? Math.round(enPlazo/RES.length*100) : 0;
-  const vivFuera = VIV.filter(e => totDias(e) > objetivo).length;
+  const vivFuera = VIV.filter(e => totDias(e) > objG).length;
   set('gEnt', nfmt(BT.length));
   set('gEntD', nfmt(RES.length)+' resueltas en el periodo');
   set('gExp', nfmt(VIV.length));
   set('gExpD','+ en REC: por conectar');
   set('gPlazo', plazoRes ? plazoRes+' d' : '—');
-  set('gPlazoD', plazoRes>objetivo ? '▲ +'+(plazoRes-objetivo)+' d sobre el plazo legal'
-                                   : '▼ '+(objetivo-plazoRes)+' d bajo el plazo legal');
+  set('gPlazoD', plazoRes>objG ? '▲ +'+(plazoRes-objG)+' d sobre el plazo legal'
+                                   : '▼ '+(objG-plazoRes)+' d bajo el plazo legal');
   { const d=document.getElementById('gPlazoD');
-    if(d) d.style.setProperty('color', plazoRes>objetivo ? 'var(--cred)' : 'var(--green)', 'important'); }
+    if(d) d.style.setProperty('color', plazoRes>objG ? 'var(--cred)' : 'var(--green)', 'important'); }
   set('gCumpl', pctPlazo+'%');
   set('gCumplD', vivFuera ? nfmt(vivFuera)+' en trámite ya lo superan' : 'ninguno en trámite lo supera');
   { const d=document.getElementById('gCumplD'); if(d) d.style.setProperty('color', vivFuera ? 'var(--cred)' : '', 'important'); }
@@ -1715,6 +1760,7 @@ function renderCM(){
 
   renderBloq(det);
   renderCiclo(P);
+  vistaEtapa();
   aplicarTips();
 }
 
@@ -2045,6 +2091,59 @@ const chCmp = new Chart(document.getElementById('cCmp'), {
 function legHtml(arr,line){
   return arr.map(([c,n])=>`<div class="leg"><div class="${line?'leg-ln':'leg-sq'}" style="background:${c};"></div>${n}</div>`).join('');
 }
+/* ════════ ACTIVIDADES POR ETAPA ════════
+   [actividad, tiempo medio, tiempo mediano, % de expedientes que pasan por ella, veces por expediente] */
+const ACT = {
+  gestion: [['Recepción de la solicitud',1.4,1.0,1,1.00],['Revisión de documentación',6.2,4.0,1,1.18],
+            ['Requerimiento',3.1,2.0,.21,1.12],['Subsanación',18.2,14.0,.15,1.30],['Desistimiento',10.5,10.0,.06,1.00],
+            ['Denegación',2.8,2.0,.08,1.00],['Propuesta favorable',2.3,1.5,.86,1.09]],
+  terceros: [['Solicitud de alta de tercero',1.8,1.2,1,1.10],['Respuesta de Nexus',4.2,3.0,1,1.21],
+             ['Corrección de incidencia',11.3,8.0,.12,1.60],['Volcado del código a Atlantix',1.1,0.8,.96,1.04]],
+  intervencion: [['Envío a Intervención',4.1,3.0,1,1.13],['Fiscalización',5.2,4.5,1,1.13],
+                 ['Devolución por modificación',14.3,11.0,.12,1.25],['Reparo de Intervención',6.0,5.0,.04,1.10]],
+  pagos: [['Resolución',2.1,1.5,1,1.00],['Notificación',4.5,3.0,1,1.05],['Documento contable ADOK',3.8,3.0,1,1.08],
+          ['Fichero de pagos',2.6,2.0,1,1.02],['Liberación del pago',1.8,1.5,1,1.00]],
+};
+/* valores de cada dimensión: [nombre, peso, efecto en tiempo, efecto en repeticiones] */
+const DIMV = {
+  sit: [['Alta',.42,1,1],['Mantenimiento',.32,.9,.95],['Baja',.12,1.15,1.05],['Modificación',.09,1.35,1.3],['Pago único',.05,.8,.9]],
+  mes: [['Abril',.16,1.08,1.04],['Mayo',.17,1.05,1.02],['Junio',.17,1,1],['Julio',.16,.97,.98],['Agosto',.15,1.12,1.06],['Septiembre',.19,1.02,1]],
+};
+function renderAct(){
+  const k=stageKey; if(k==='all' || !ACT[k]) return;
+  const dim=(document.getElementById('actDim')||{}).value||'';
+  const base=baseTiempos().filter(e=>e.hasta > FASE_TR[k][0]).length;
+  const f1=v=>v.toFixed(1).replace('.',','), f2=v=>v.toFixed(2).replace('.',',');
+  const rows=[];
+  ACT[k].forEach(a=>{
+    const vals = dim ? DIMV[dim] : [['',1,1,1]];
+    vals.forEach((d,j)=>{
+      const exp=Math.max(1,Math.round(base*a[3]*d[1])), veces=Math.max(1,1+(a[4]-1)*d[3]);
+      const act=Math.round(exp*veces);
+      rows.push({a:a[0], d:d[0], first:j===0, tm:a[1]*d[2], tmd:a[2]*Math.min(d[2],1.1), exp, act, veces:act/exp, rep:act-exp});
+    });
+  });
+  const maxT=Math.max(...rows.map(r=>r.tm));
+  const dc = dim ? `<th>${dim==='sit'?'Situación':'Mes de entrada'}</th>` : '';
+  document.getElementById('actTH1').innerHTML=`<tr><th>Actividad</th>${dc}<th class="r">Tiempo medio</th><th class="r">Tiempo mediano</th></tr>`;
+  document.getElementById('actTH2').innerHTML=`<tr><th>Actividad</th>${dc}<th class="r">Nº veces</th><th class="r">Nº expedientes</th><th class="r">Nº actividades</th><th class="r">Nº repeticiones</th></tr>`;
+  const tdA=r=>`<td class="act">${r.first?r.a:''}</td>`+(dim?`<td class="dim">${r.d}</td>`:'');
+  const cls=(r)=> dim && r.first ? ' class="grp"' : '';
+  document.getElementById('actTB1').innerHTML=rows.map(r=>`<tr${cls(r)}>${tdA(r)}`+
+    `<td class="r${r.tm===maxT?' hi':''}">${f1(r.tm)} d</td><td class="r">${f1(r.tmd)} d</td></tr>`).join('');
+  document.getElementById('actTB2').innerHTML=rows.map(r=>`<tr${cls(r)}>${tdA(r)}`+
+    `<td class="r ${r.veces>=1.30?'hi':r.veces>=1.15?'md':''}">${f2(r.veces)}</td>`+
+    `<td class="r">${nfmt(r.exp)}</td><td class="r">${nfmt(r.act)}</td><td class="r">${nfmt(r.rep)}</td></tr>`).join('');
+  document.getElementById('actTtl').innerHTML=`Actividades de la etapa · ${STAGES[k].label}<span>${nfmt(base)} expedientes han pasado por ella</span>`;
+}
+/* los gráficos son del proceso entero; con una etapa elegida, las tablas de actividades */
+function vistaEtapa(){
+  const todo = stageKey==='all';
+  const sec=document.querySelector('#cmBody .sections'); if(sec) sec.style.display = todo ? '' : 'none';
+  const blk=document.getElementById('actBlk'); if(blk) blk.style.display = todo ? 'none' : '';
+  if(!todo) renderAct();
+}
+
 function renderStage(k){
   stageKey=k;
   const S=STAGES[k];
