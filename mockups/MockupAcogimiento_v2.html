@@ -954,8 +954,7 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
   <div class="act-head">
     <div class="act-ttl" id="actTtl"></div>
     <div class="fsel act-dim"><span>Dimensión de análisis</span>
-      <select id="actDim" onchange="renderAct()"><option value="">Sin desglose</option>
-        <option value="tipo">Tipo de acogimiento</option><option value="not">Notificación</option></select>
+      <select id="actDim" onchange="renderAct()"></select>
       <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
   </div>
   <div class="act-grid">
@@ -973,8 +972,8 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
 <!-- ══════════ EXPEDIENTES SIN PAGO ══════════ -->
 <div class="tbl-section">
   <div class="tbl-hdr">
-    <div class="tbl-title">Expedientes pendientes de pago <span class="badge" id="badgePend"></span>
-      <i class="ii" data-t="Procedimientos en curso ordenados por los días transcurridos desde su fecha de efectos: los primeros son los que más atrasos acumulan y los que antes hay que mover. «Depende de» indica quién tiene la siguiente acción.">i</i></div>
+    <div class="tbl-title"><span id="pendTtl">Procedimientos en curso</span> <span class="badge" id="badgePend"></span>
+      <i class="ii" id="pendTip" data-t="">i</i></div>
     <div class="resp-tabs" id="respTabs">
       <button data-r="" class="on">Todos</button><button data-r="srv">Servicio</button>
       <button data-r="int">Interesado</button><button data-r="otr">Otras unidades</button>
@@ -982,8 +981,7 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
   </div>
   <div class="tbl-wrap">
     <table>
-      <thead><tr><th>Expediente</th><th>Procedimiento</th><th>Etapa actual</th><th>Motivo</th><th>Depende de</th>
-        <th class="r">Fecha de efectos</th><th class="r">Días</th><th class="r">Atrasos / pagado de más</th></tr></thead>
+      <thead id="thPend"></thead>
       <tbody id="tbPend"></tbody>
     </table>
   </div>
@@ -1211,18 +1209,35 @@ function motivo(e){
 }
 const ETAPA_N=['','Alta en AME','Inicio y alegaciones','Propuesta mensual','Intervención','Resolución y pago'];
 const RESP_N={srv:'Servicio',int:'Interesado',otr:'Otras unidades'};
+/* Tabla operativa. En el proceso entero: todos los procedimientos abiertos, por antigüedad desde la fecha de efectos
+   (los que más atrasos o pagos de más acumulan). En una etapa: los que están en ella, por días en la etapa. */
+const UMBRAL={alta:7,inicio:25,propuesta:35,interv:15,resol:10};   /* días en la etapa a partir de los que se marca la fila */
 function renderPend(P){
-  const rows=P.filter(e=>!e.fin).map(e=>{const [m,r]=motivo(e);const d=Math.round((CORTE-e.efectos)/DIA);
-    /* atrasos: el alta cobra todo; la modificación positiva, solo la diferencia; la negativa no genera atrasos */
+  const todo=stageKey==='all';
+  const enEtapa=e=>Math.round((CORTE-(e.alta+e.t.slice(1,e.etapa).reduce((a,b)=>a+b,0)*DIA))/DIA);
+  const rows=P.filter(e=>!e.fin && (todo||e.etapa===ST[stageKey].k)).map(e=>{const [m,r]=motivo(e);
+    const d=Math.round((CORTE-e.efectos)/DIA), de=enEtapa(e);
+    /* impacto: el alta acumula atrasos; la modificación positiva, solo la diferencia; la extinción, lo pagado de más */
     const inc = e.proc==='mpos' ? IMP['Carácter especial']-IMP['Carácter general'] : e.imp;
-    return {e,m,r,d,imp: e.proc==='ext' ? -e.indeb : e.proc==='mneg' ? null : Math.round(d/30*inc)};})
-    .filter(x=>!respKey||x.r===respKey).sort((a,b)=>b.d-a.d);
+    const imp = e.proc==='ext' ? (e.indeb ? {v:e.indeb,t:'pagado de más'} : null) : e.proc==='mneg' ? null : {v:Math.round(d/30*inc),t:'atrasos'};
+    return {e,m,r,d,de,imp};})
+    .filter(x=>!respKey||x.r===respKey).sort((a,b)=> todo ? b.d-a.d : b.de-a.de);
+  const crit=x=> todo ? x.d>120 : x.de>UMBRAL[stageKey];
+  $('pendTtl').textContent = todo ? 'Procedimientos en curso' : 'Procedimientos en la etapa · '+ST[stageKey].n;
+  $('pendTip').dataset.t = todo
+    ? 'Reconocimientos, modificaciones y extinciones abiertos, ordenados por los días desde su fecha de efectos: los primeros son los que más atrasos o pagos de más acumulan. «Depende de» indica quién tiene la siguiente acción.'
+    : 'Procedimientos que están ahora en esta etapa, ordenados por los días que llevan en ella. En rojo, los que superan '+UMBRAL[stageKey]+' días (umbral orientativo, a fijar con el servicio).'
+      + (stageKey==='alta' ? ' Los acogimientos que Protección todavía no ha grabado no aparecen: aún no están en AME.' : '');
+  $('thPend').innerHTML='<tr><th>Expediente</th><th>Procedimiento</th>'+(todo?'<th>Etapa actual</th>':'')+'<th>Motivo</th><th>Depende de</th>'+
+    '<th class="r">Fecha de efectos</th><th class="r">'+(todo?'Días desde efectos':'Días en la etapa')+'</th>'+
+    '<th class="r">Impacto económico <i class="ii" data-t="Altas: atrasos que se acumulan hasta el primer pago. Modificaciones positivas: la diferencia de importe. Extinciones: lo pagado de más desde el cese, que habrá que reclamar.">i</i></th></tr>';
   $('badgePend').textContent=`${Math.min(10,rows.length)} visibles de ${nfmt(rows.length)}`;
-  $('tbPend').innerHTML=rows.slice(0,10).map(x=>`<tr${x.d>120?' class="row-crit"':''}>
-    <td><a class="exp-link">${x.e.id}</a></td><td>${PROC_N[x.e.proc]}</td><td>${ETAPA_N[x.e.etapa]}</td><td>${x.m}</td>
+  $('tbPend').innerHTML = rows.length ? rows.slice(0,10).map(x=>`<tr${crit(x)?' class="row-crit"':''}>
+    <td><a class="exp-link">${x.e.id}</a></td><td>${PROC_N[x.e.proc]}</td>${todo?`<td>${ETAPA_N[x.e.etapa]}</td>`:''}<td>${x.m}</td>
     <td><span class="resp-chip ${x.r==='srv'?'r-adm':'r-sol'}">${RESP_N[x.r]}</span></td>
-    <td class="r">${fdate(x.e.efectos)}</td><td class="r ${x.d>120?'hi-d':''}">${x.d} d</td>
-    <td class="r">${x.imp===null?'—':x.imp<0?eur(-x.imp)+' de más':eur(x.imp)}</td></tr>`).join('');
+    <td class="r">${fdate(x.e.efectos)}</td><td class="r ${crit(x)?'hi-d':''}">${todo?x.d:x.de} d</td>
+    <td class="r">${x.imp===null?'—':eur(x.imp.v)+' <span class="dsv">'+x.imp.t+'</span>'}</td></tr>`).join('')
+    : `<tr><td colspan="${todo?8:7}" style="color:var(--cgy);padding:14px 12px;">Ningún procedimiento en esta etapa a la fecha de corte.</td></tr>`;
 }
 document.querySelectorAll('#respTabs button').forEach(b=>b.onclick=()=>{respKey=b.dataset.r;
   document.querySelectorAll('#respTabs button').forEach(x=>x.classList.toggle('on',x===b)); renderPend(pob());});
@@ -1251,8 +1266,15 @@ const ST={alta:{n:'Alta en AME',k:1,meta:'De la formalización en el pleno a la 
   propuesta:{n:'Propuesta mensual',k:3,meta:'Terceros, documento D y cierre de la propuesta del mes'},
   interv:{n:'Intervención',k:4,meta:'Fiscalización del borrador de resolución'},
   resol:{n:'Resolución y pago',k:5,meta:'Resolución definitiva, firma, notificación y pago en nómina'}};
-const DIMV={tipo:[['Carácter general',.58,1,1],['Carácter especial',.12,1.2,1.15],['Programa de urgencia',.30,.9,.95]],
+const DIMV={proc:[['Reconocimiento',.55,1,1],['Modificación',.10,1.2,1.1],['Extinción',.35,.9,.95]],
+            tipo:[['Carácter general',.58,1,1],['Carácter especial',.12,1.2,1.15],['Programa de urgencia',.30,.9,.95]],
             not:[['Telemática',.55,.8,.9],['Postal',.45,1.35,1.15]]};
+/* dimensiones que tienen sentido en cada etapa: la notificación solo existe a partir del acuerdo de inicio */
+const DIM_N={proc:'Procedimiento',tipo:'Tipo de acogimiento',not:'Notificación'};
+const DIM_ST={alta:['proc','tipo'],inicio:['proc','tipo','not'],propuesta:['proc','tipo'],interv:['proc','tipo'],resol:['proc','tipo','not']};
+function dimOpts(){ const sel=$('actDim'), prev=sel.value, ok=DIM_ST[stageKey]||[];
+  sel.innerHTML='<option value="">Sin desglose</option>'+ok.map(k=>`<option value="${k}">${DIM_N[k]}</option>`).join('');
+  sel.value = ok.includes(prev) ? prev : ''; }
 function srcTag(s){ return s==='?' ? '<span class="src q" title="Hoy no consta que el sistema guarde la fecha de este paso">por confirmar</span>'
                                   : '<span class="src">'+s+'</span>'; }
 function renderAct(){
@@ -1263,13 +1285,13 @@ function renderAct(){
   const tr=i=>{const g=Pk.filter(e=>e.etapa>i||i===0).map(e=>e.t[i]);return [g.length?g.reduce((x,y)=>x+y,0)/g.length:0, med(g)];};
   const rows=[];
   ACT[stageKey].map(a=>{ if(a[6]==='t0'||a[6]==='t3'){ const [m,md]=tr(a[6]==='t0'?0:3); a=a.slice(); a[1]=m; a[2]=md; a[6]=''; } return a; })
-  .forEach(a=>{ (dim?DIMV[dim]:[['',1,1,1]]).forEach((d,j)=>{
+  .forEach(a=>{ (dim ? (dim==='proc'&&a[6]==='rec' ? [['Reconocimiento',1,1,1]] : DIMV[dim]) : [['',1,1,1]]).forEach((d,j)=>{
     const exp=Math.max(1,Math.round((a[6]==='rec'?baseRec:base)*a[3]*d[1])), veces=Math.max(1,1+(a[4]-1)*d[3]), act=Math.round(exp*veces), rep=act-exp;
     const afe=rep?Math.max(1,Math.min(exp,Math.round(rep/a[5]))):0;
     rows.push({src:a[7],a:a[0],d:d[0],first:j===0,tm:a[1]*d[2],tmd:a[2]*Math.min(d[2],1.1),exp,act,veces:act/exp,rep,pct:afe/exp*100,perd:Math.round(rep*a[1]*d[2])});
   });});
   const maxT=Math.max(...rows.map(r=>r.tm)), maxD=Math.max(...rows.map(r=>r.tm-r.tmd)), maxP=Math.max(...rows.map(r=>r.perd));
-  const dc=dim?`<th>${dim==='tipo'?'Tipo de acogimiento':'Notificación'}</th>`:'';
+  const dc=dim?`<th>${DIM_N[dim]}</th>`:'';
   $('actTH1').innerHTML=`<tr><th>Actividad</th>${dc}<th class="r">Tiempo medio</th><th class="r">Tiempo mediano</th><th class="r">Desviación</th></tr>`;
   $('actTH2').innerHTML=`<tr><th>Actividad</th>${dc}<th class="r">Nº veces</th><th class="r">Nº expedientes</th><th class="r">Nº actividades</th><th class="r">Nº repeticiones</th><th class="r">% exp. con retrabajo</th><th class="r">Días perdidos</th></tr>`;
   const tdA=r=>`<td class="act">${r.first?r.a+srcTag(r.src):''}</td>`+(dim?`<td class="dim">${r.d}</td>`:'');
@@ -1320,8 +1342,8 @@ function render(){
   const todo=stageKey==='all';
   $('secAll').style.display=todo?'':'none'; $('actBlk').style.display=todo?'none':'';
   $('phaseMeta').textContent=todo?'':ST[stageKey].meta;
-  if(todo) renderAll(P); else renderAct();
-  renderPend(stageKey==='all'?P:P.filter(e=>e.etapa===ST[stageKey].k));
+  if(todo) renderAll(P); else { dimOpts(); renderAct(); }
+  renderPend(P);
   renderInd(P);
 }
 document.querySelectorAll('.phase-pill').forEach(b=>b.onclick=()=>{stageKey=b.dataset.stage;
