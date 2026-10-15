@@ -1112,6 +1112,13 @@ table.eco-t td.neg{color:var(--cred);}
 .eco-cp .ii[data-t]::after{bottom:calc(100% + 8px);}
 .kg .kt-l{align-items:flex-start;min-height:29px;}
 .kg .kt-l > span{white-space:normal;overflow:visible;}
+.fase-rep{margin-left:auto;display:flex;align-items:center;gap:12px;font-size:11px;color:var(--cgy);flex-wrap:wrap;justify-content:flex-end;}
+.fase-rep .fr-t b{color:var(--cnavy);font-weight:600;}
+.fr-bar{display:flex;width:160px;height:10px;gap:1px;}
+.fr-bar i{display:block;height:100%;min-width:2px;}
+.fr-k{display:inline-flex;align-items:center;gap:5px;}
+.fr-k i{width:8px;height:8px;border-radius:1px;display:inline-block;}
+.fr-k b{color:var(--cnavy);font-weight:600;}
 </style>
 </head>
 <body>
@@ -1234,7 +1241,6 @@ table.eco-t td.neg{color:var(--cred);}
       <div class="sec-chart">
         <div class="chart-head">
           <div class="chart-ttl" id="c3Ttl"></div>
-          <div class="seg" id="stGrp" style="display:none;"><button data-g="fase" class="on">Por fase</button><button data-g="sit">Por etapa</button></div>
         </div>
         <div class="chart-sub" id="c3Sub"></div>
         <div class="sb" id="stBars"></div>
@@ -1247,7 +1253,7 @@ table.eco-t td.neg{color:var(--cred);}
         <div class="chart-head">
           <div class="chart-ttl" id="c4Ttl"></div>
           <div class="fsel mini"><span>Dimensión</span><select id="cpDim">
-            <optgroup label="Solicitudes recibidas">
+            <optgroup label="Solicitudes de natalidad">
               <option value="tipo">Tipo de solicitud</option><option value="canal">Canal de entrada</option>
               <option value="edad">Edad de la solicitante</option><option value="nac">Nacionalidad</option>
               <option value="pais">País de nacimiento</option><option value="muni">Municipio de residencia</option>
@@ -1291,7 +1297,7 @@ table.eco-t td.neg{color:var(--cred);}
 
 <!-- ══════════ UNA FASE ELEGIDA · tablas por actividad ══════════ -->
 <div id="vFase" style="display:none;">
-  <div class="fase-hd"><button class="btn-outline" id="faseBack">&larr; Todo el proceso</button><div class="fase-tt" id="faseTt"></div></div>
+  <div class="fase-hd"><button class="btn-outline" id="faseBack">&larr; Todo el proceso</button><div class="fase-tt" id="faseTt"></div><div class="fase-rep" id="faseRep"></div></div>
   <div class="lect" id="lect"></div>
   <div class="act-blk">
     <div class="act-head">
@@ -1990,7 +1996,7 @@ function calcCompo(dk){
       c.a.forEach((a, i) => { if (RESP_INT[a] && enP(c.t[i])){ cnt[RESP_INT[a]] = (cnt[RESP_INT[a]] || 0) + 1; tot++; } });
       continue;
     }
-    if (D.g === 'sol' ? !enP(c.reg) : !(c.resol !== undefined && enP(c.resol))) continue;
+    if (D.g === 'sol' ? !enP(c.reg) || (c.res === 'dup' && c.fin <= P1) : !(c.resol !== undefined && enP(c.resol))) continue;
     const v = D.v(c); if (v === null || v === undefined) continue;
     cnt[v] = (cnt[v] || 0) + 1; tot++;
   }
@@ -2107,24 +2113,6 @@ function remesas(){
   const out = []; for (let m = ymOf(P0); m <= ymOf(P1); m++){ const t = ymDay(m, 27) + .5; if (t >= P0 && t <= P1) out.push(m); }
   return out;
 }
-/* mantenimiento: modificaciones y bajas que siguen su propio recorrido (Modificación Concesión → PTE. ENVÍO … → Intervención) */
-const MOD_K = { sin:'Sin repercusión económica', pos:'Económica positiva', neg:'Económica negativa', baja:'Baja de la ayuda' };
-function calcMant(){
-  const curso = {}, res = { sin:0, pos:0, neg:0, baja:0 }, mot = {}; let impP = 0, impN = 0, lib = 0, n = 0;
-  for (const c of CASES){ if (!c.mods.length || c.reg > HOY || !okc(c)) continue;
-    for (const m of c.mods){ const t = m.t;
-      if (t.MODC <= P1 && t.RES > P1){
-        const e = t.RESP <= P1 ? 'Favorable Concesión · pendiente de resolver' : t.ENV <= P1 ? 'Intervención Concesión' :
-                  t.PTE <= P1 ? m.pte : (t.VTM && t.VTM <= P1) ? 'Validación Tercero Modificación' : 'Modificación Concesión';
-        curso[e] = (curso[e] || 0) + 1; n++;
-      }
-      if (enP(t.RES)){ res[m.k]++; mot[m.mot] = (mot[m.mot] || 0) + 1;
-        if (m.imp > 0) impP += m.imp; if (m.imp < 0) impN += m.imp; lib += m.lib*MENS*c.hijos; }
-    }
-  }
-  return { curso, n, res, mot, impP, impN, lib };
-}
-
 /* ejecución por línea y anualidad: autorizado (A), dispuesto (D) y ejecutado (OK), como el Excel de gestión económica */
 function calcCredito(Y, todas){
   const lOk = todas ? (l => LINEAS.includes(+l)) : lineaOk;
@@ -2175,114 +2163,49 @@ function costeAltaNueva(Y){
 }
 
 /* ════════════════════════════════════════════════════════════════════
-   CABECERA · 16 indicadores globales del proceso
-   Responden a los filtros de arriba; no cambian al elegir una fase.
+   CABECERA · los KPIs del Excel de Javi (14/10): volumetría en embudo,
+   tiempos, retrabajo y gestión económica. Solo título y valor; el resto,
+   en el aviso (i). Responden a los filtros, no a la fase elegida.
    ════════════════════════════════════════════════════════════════════ */
-const TIP = {
-  rec:'Solicitudes iniciales con asiento de entrada en eReg dentro del periodo, una por número de registro y con formulario de solicitud. No cuenta aportaciones, comunicaciones, duplicados técnicos ni registros anulados: van en «Otros registros». Debajo, la variación frente al periodo anterior de la misma duración.',
-  otros:'Registros de eReg del periodo que no son una solicitud inicial. Las solicitudes genéricas sin formulario no se pueden clasificar: son el sesgo que hay que contar. Debajo, aportaciones por cada 100 solicitudes: mide intensidad documental, no personas.',
-  ent:'Solicitudes registradas en eReg que a la fecha de corte siguen en la bandeja de registros de Atlantix sin expediente dado de alta. Debajo, cuánto lleva esperando la más antigua.',
-  ges:'Expedientes en las etapas «Gestión Expediente» o «Requerimiento» de Atlantix a la fecha de corte. El desglose por etapa y situación está en «Stock pendiente por etapa y antigüedad».',
-  pf:'Expedientes con propuesta favorable todavía sin resolver: en «Validación Tercero», «Pendiente de envío a la Intervención», en «Intervención Concesión» o con respuesta favorable pendiente de resolución. El importe es el de los pagos propuestos que calcula AEFN al grabar la propuesta: atrasos desde el mes de la solicitud, la mensualidad de la nómina propuesta y el resto de ese año, sin pasar del fin del derecho. Así se conoce sin proponer y desproponer.',
-  fav:'Expedientes con propuesta o resolución favorable que todavía no tienen el primer pago, por causa: preparación de nómina (esperando el fichero mensual o la nómina), gestión del tercero, demora administrativa (envío, fiscalización o resolución) o falta de crédito.',
-  susp:'Expedientes abiertos sin ninguna actuación ni cambio de etapa durante más días que el umbral de la barra de filtros, sobre el total de abiertos. La lista, con quién tiene que desbloquear cada uno, está en la tabla «Expedientes en suspensión».',
-  ant:'Días desde el registro del expediente abierto más antiguo a la fecha de corte. Debajo, su número y la etapa en la que está.',
-  res:'Expedientes resueltos en el periodo: «Resolución Favorable Concesión», «Resolución Denegación» y «Resolución Desestimiento». El documento del 05/10 proponía contar los concedidos al pasar a «Validación Tercero», pero en Atlantix la resolución favorable llega después del visto bueno de la Intervención: se cuentan ahí. A validar.',
-  sal:'Expedientes finalizados en el periodo entre solicitudes registradas en él. Finalizar es llegar al primer pago, a la denegación, al desistimiento o descartarse por duplicada. Por encima del 100% la bolsa baja. Debajo, cuánto ha cambiado el stock.',
-  plazo:'De los expedientes enviados por primera vez a la Intervención en el periodo (la propuesta de pago que se fiscaliza), cuántos llegaron dentro del plazo fijado en los filtros desde la entrada en el registro de la DG. Plazo inicial: 90 días, a revisar con las normas reguladoras. Debajo, los abiertos que ya lo han superado sin llegar.',
-  e2e:'Días naturales entre el registro y la resolución de los expedientes resueltos en el periodo, sin descontar pausas. La mediana y el percentil 90 evitan que unos pocos casos largos distorsionen la media. «Tramitación» mide lo mismo desde el alta en Atlantix: separa la espera en el registro del trabajo con el expediente.',
-  retr:'Expedientes terminados en el periodo que han tenido que repetir algo que no estaba previsto, sobre los tramitados: un segundo requerimiento, una propuesta deshecha porque Nexus rechazó el tercero o una respuesta desfavorable de la Intervención, que devuelve el expediente a «Gestión Expediente». El primer requerimiento no cuenta: es parte del camino previsto y se mide en la tasa de requerimientos de la fase de gestión.',
-  ben:'Personas con mensualidad en la última nómina pagada del periodo: mantenimiento y nuevas altas. Debajo, las que cobraron al menos una vez en el periodo, contadas una sola vez aunque estén en varias remesas. Una persona con dos expedientes cuenta dos veces.',
-  alt:'Nuevas beneficiarias incorporadas a las nóminas del periodo: altas en mantenimiento y pagos únicos. Los atrasos son las mensualidades devengadas desde el mes de la solicitud que se pagan en el primer pago; los meses de media dicen con cuántas mensualidades de atraso entra cada alta en el mantenimiento. Los pagos únicos (sobre todo pérdidas gestacionales antes del primer pago) se pagan de una vez y no entran en mantenimiento.',
-  ejec:'Ejecutado (fase OK, nóminas contabilizadas en Nexus) entre autorizado (documento A) de la anualidad, sumando todas las líneas vivas. El dispuesto, lo pendiente de disponer y la previsión con la propuesta ya lanzada están en «Ejecución por línea y anualidad».',
-};
-const tileHtml = o => `<div class="kt${o.eco ? ' eco' : ''}">
-  <div class="kt-l"><span>${o.l}</span> <i class="ii" data-t="${esc(o.tip)}">i</i></div>
-  <div class="kt-v"><span>${o.v}</span>${o.er ? `<span class="tag-er${o.er === 'Nexus' ? ' nx' : ''}" data-tip="${o.er === 'Nexus' ? 'Necesita conectar Nexus (contabilidad): el dato cierto de ejecución y pago es el de Nexus.' : 'Necesita conectar eReg: hoy Atlantix solo tiene las solicitudes ya dadas de alta.'}">${o.er === 'Nexus' ? 'Nexus' : 'eReg'}</span>` : ''}</div>
-  <div class="kt-s${o.bad ? ' bad' : ''}">${o.s}</div></div>`;
+const ER = ' Necesita conectar eReg.';
 const U = s => `<span class="u">${s}</span>`;
-
 function renderCabecera(K, NM_, CR){
-  const t = [], anyo = yOf(P1);
-  const vr = K.recPrev ? pc(K.rec - K.recPrev, K.recPrev) : null;
-  t.push({ l:'Solicitudes recibidas', v:nf(K.rec), er:1, tip:TIP.rec,
-    s: vr === null ? 'sin periodo anterior comparable' : `${vr >= 0 ? '▲' : '▼'} ${pcs(Math.abs(vr))} frente al periodo anterior` });
-  t.push({ l:'Otros registros', v:nf(K.otros), er:1,
-    tip:TIP.otros + ` En el periodo: ${nf(K.apo)} aportaciones, ${nf(K.com)} comunicaciones` +
-      (filtroCaso() ? '. Con filtro de año, tipo o canal solo se cuentan los registros ligados a un expediente.' :
-        `, ${nf(K.gen)} genéricas sin formulario, ${nf(K.dupT)} duplicados técnicos y ${nf(K.anu)} anulados.`),
-    s:`${f0(pc(K.apo, K.rec))} aportaciones por cada 100 solicitudes` });
-  t.push({ l:'Pendientes de alta', v:nf(K.ent), er:1, tip:TIP.ent,
-    s: K.ent ? `la más antigua, registrada hace ${f0(K.entOld)} días` : 'ninguna en la bandeja', bad:K.entOld > 45 });
-  t.push({ l:'En tramitación', v:nf(K.ges), tip:TIP.ges, s:`${nf(K.req)} en «Requerimiento»` });
-  const pfT = K.pfImp.atr + K.pfImp.mes + K.pfImp.resto, nms = Object.keys(K.pfMes).map(Number).sort((a, b) => a - b);
-  const mesTxt = m => MES[m % 12] + (Math.floor(m/12) !== anyo ? ' de ' + Math.floor(m/12) : '');
-  const mTop = nms.slice().sort((a, b) => K.pfN[b] - K.pfN[a])[0];                  /* la nómina con más propuestas */
-  t.push({ l:'Propuestas favorables', v:nf(K.pf),
-    tip:TIP.pf + ` Ahora: atrasos ${eur(K.pfImp.atr)} + mensualidad de la nómina propuesta ${eur(K.pfImp.mes)} + resto del año ${eur(K.pfImp.resto)} = ${eur(pfT)}.` +
-      (nms.length ? ` Por nómina propuesta: ${nms.map(m => `${ymLargo(m)}, ${nf(K.pfN[m])} expedientes y ${eur(K.pfMes[m])}`).join('; ')}.` : ''),
-    s: K.pf ? `${meur(pfT)} en pagos propuestos · ${nf(K.pfN[mTop])} para ${mesTxt(mTop)}` : 'ninguna pendiente de resolver' });
-  const cTop = Object.keys(K.favCau).sort((a,b) => K.favCau[b] - K.favCau[a])[0];
-  t.push({ l:'Favorables por pagar', v:nf(K.fav),
-    tip:TIP.fav + ' Ahora: ' + Object.keys(CAU).map(k => `${nf(K.favCau[k])} por ${CAU[k]}`).join(', ') + '.',
-    s: K.fav ? `${pcs(pc(K.favCau[cTop], K.fav), 0)} por ${CAU[cTop]}` : '—' });
-  t.push({ l:'En suspensión', v:nf(K.susp), tip:TIP.susp,
-    s:`${pcs(pc(K.susp, K.abiertos))} de los abiertos · más de ${F.umbral} días sin actuación` });
-  t.push({ l:'Antigüedad máxima', v: K.ant ? f0(K.ant.edad) + U(' d') : '—',
-    tip:TIP.ant + (K.ant ? ` Ahora: ${K.ant.c.id}, ${sitTxt(K.ant.s)}; lleva ${f0(K.ant.quieto)} días sin actuación.` : ''),
-    s: K.ant ? `${K.ant.c.id} · ${SIT[K.ant.s].e}` : 'ningún expediente abierto' });
-  const rT = K.res.con + K.res.den + K.res.des;
-  t.push({ l:'Resueltos', v:nf(rT),
-    tip:TIP.res + ` En el periodo: ${nf(K.res.con)} favorables, ${nf(K.res.den)} denegaciones y ${nf(K.res.des)} desistimientos.`,
-    s:`${nf(K.res.con)} favorables, ${nf(K.res.den)} denegaciones y ${nf(K.res.des)} desistimientos` });
-  const dS = K.abiertos - K.abiertos0;
-  t.push({ l:'Tasa de salida', v: K.rec ? f0(pc(K.fin, K.rec)) + U('%') : '—', er:1, tip:TIP.sal,
-    s:`stock ${dS >= 0 ? '+' : '−'}${nf(Math.abs(dS))} en el periodo: ${nf(K.abiertos)} abiertos`, bad:dS > 0 });
-  const enPl = K.pp ? pc(K.ppOk, K.pp) : null;
-  t.push({ l:'Resueltos en plazo', v: enPl === null ? '—' : f0(enPl) + U('%'), er:1, tip:TIP.plazo,
-    s:`${nf(K.superan)} abiertos pasan de ${F.plazo} días sin propuesta de pago`, bad: enPl !== null && enPl < 80 });
-  t.push({ l:'Tiempo medio E2E', v: K.e2e.length ? f0(media(K.e2e)) + U(' d') : '—', er:1, tip:TIP.e2e,
-    s: K.e2e.length ? `mediana ${f0(qs(K.e2eS, .5))} · P90 ${f0(qs(K.e2eS, .9))} · tramitación ${f0(media(K.tram))} d` : '' });
-  t.push({ l:'Tasa de retrabajo', v: K.tramit ? f0(pc(K.retr, K.tramit)) + U('%') : '—',
-    tip:TIP.retr + (K.tramit ? ` Primera tramitación correcta: ${pcs(100 - pc(K.retr, K.tramit), 0)}.` : ''),
-    s: K.tramit ? `2.º requerimiento ${f0(pc(K.rReq, K.tramit))}% · tercero rechazado ${f0(pc(K.rTer, K.tramit))}% · Intervención ${f0(pc(K.rInt, K.tramit))}%` : '' });
-  const nb = NM_.mB !== undefined ? NM_.N.T[NM_.mB] : null;
-  let altas = 0, altM = 0, atr = 0, unicos = 0, unImp = 0, meses = 0;
-  NM_.rem.forEach(m => { const x = NM_.N.T[m]; if (!x) return; altas += x.altas + x.unicos; altM += x.altas; atr += x.atr; unicos += x.unicos; unImp += x.unico; meses += x.atrMeses; });
-  t.push({ l:'Beneficiarias activas', v: nb ? nf(nb.ben) : '—', eco:1,
-    tip:TIP.ben + (nb ? ` En la nómina de ${MES[NM_.mB % 12]}: ${nf(nb.altas)} altas, ${nf(nb.ext)} extinciones y ${nf(nb.bajas)} bajas; ${nf(nb.ben2)} cobran por dos o más hijos; ${nf(nb.unicos)} pagos únicos aparte.` : ''),
-    s: nb ? `${nf(NM_.N.uniq)} cobraron al menos una vez en el periodo` : 'ninguna nómina pagada en el periodo' });
-  t.push({ l:'Altas en nómina', v:nf(altas), eco:1,
-    tip:TIP.alt + ` En el periodo: ${nf(altM)} altas en mantenimiento con ${eur(atr)} de atrasos y ${nf(unicos)} pagos únicos por ${eur(unImp)}.`,
-    s:`atrasos ${meur(atr, 1)} · ${f1(altM ? meses/altM : 0)} meses de media · ${nf(unicos)} pagos únicos` });
-  t.push({ l:'Ejecución presupuestaria', v: CR.A ? f1(pc(CR.OK, CR.A)) + U('%') : '—', eco:1, er:'Nexus', tip:TIP.ejec,
-    s: CR.A ? `${meur(CR.OK, 1)} ejecutados de ${meur(CR.A, 1)} autorizados en ${CR.Y}` : 'sin crédito autorizado en el año' });
-  /* v13 · cabecera del Excel de Javi: volumetría en embudo, tiempos, retrabajo y gestión económica */
   const otras = K.otros + K.dupC, total = K.nat + otras, pct = (a, b) => b ? pcs(pc(a, b), 0) : '';
   const dd = a => a.length ? f1(media(a)) + U(' d') : '—';
-  const inact = nb ? NM_.N.uniq - nb.ben - unicos : 0;
+  const vr = K.recPrev ? pc(K.rec - K.recPrev, K.recPrev) : null;
+  /* nóminas pagadas en el periodo */
+  let altM = 0, atr = 0, unicos = 0, unImp = 0, meses = 0, ext = 0, bajas = 0;
+  NM_.rem.forEach((m, i) => { const x = NM_.N.T[m]; if (!x) return; altM += x.altas; atr += x.atr; unicos += x.unicos; unImp += x.unico; meses += x.atrMeses;
+    if (i > 0){ ext += x.ext; bajas += x.bajas; } });
+  const mB = NM_.mB, nb = mB !== undefined ? NM_.N.T[mB] : null, inact = nb ? NM_.N.uniq - nb.ben - unicos : 0;
+  const totN = m => { const x = NM_.N.T[m]; return x ? x.mant + x.alta + x.atr + x.unico + x.mod + x.modNeg : 0; };
+  const impB = nb ? totN(mB) : 0, impA = nb ? totN(mB - 12) : 0;
   const V = [
-    { l:'Total solicitudes recibidas', v:nf(total), tip:'Todo lo que entra por el registro electrónico (eReg) en el periodo: solicitudes de natalidad más otras solicitudes. Necesita conectar eReg.' },
-    { l:'Otras solicitudes', v:nf(otras), side:1, tip:`Registros que no son una solicitud de natalidad: ${nf(K.apo)} aportaciones, ${nf(K.com)} comunicaciones y ${nf(K.dupC)} duplicadas` +
-      (filtroCaso() ? '.' : `, más ${nf(K.gen)} genéricas sin formulario, ${nf(K.dupT)} duplicados técnicos y ${nf(K.anu)} anulados.`) },
-    { l:'Solicitudes de natalidad', v:nf(K.nat), p:pct(K.nat, total), tip:'Solicitudes iniciales con formulario registradas en el periodo. El % es sobre el total recibido.' +
-      (vr === null ? '' : ` ${vr >= 0 ? '▲' : '▼'} ${pcs(Math.abs(vr))} frente al periodo anterior.`) },
-    { l:'Pendientes de alta', v:nf(K.pdte), side:1, tip:'Solicitudes de natalidad del periodo que a la fecha de corte siguen en la bandeja de registros de Atlantix, sin dar de alta.' },
+    { l:'Total solicitudes recibidas', v:nf(total), tip:'Todo lo que entra por el registro electrónico (eReg) en el periodo: solicitudes de natalidad más otras solicitudes.' + ER },
+    { l:'Otras solicitudes', v:nf(otras), side:1, tip:`Registros que no son una solicitud de natalidad: ${nf(K.apo)} aportaciones (${f0(pc(K.apo, K.nat))} por cada 100 solicitudes), ${nf(K.com)} comunicaciones y ${nf(K.dupC)} duplicadas` +
+      (filtroCaso() ? '. Con filtro de año, tipo o canal solo se cuentan los ligados a un expediente.' : `, más ${nf(K.gen)} genéricas sin formulario, ${nf(K.dupT)} duplicados técnicos y ${nf(K.anu)} anulados.`) + ER },
+    { l:'Solicitudes de natalidad', v:nf(K.nat), p:pct(K.nat, total), tip:'Solicitudes iniciales con formulario registradas en el periodo, una por número de registro. El % es sobre el total recibido.' +
+      (vr === null ? '' : ` ${vr >= 0 ? '▲' : '▼'} ${pcs(Math.abs(vr))} frente al periodo anterior de la misma duración.`) + ER },
+    { l:'Pendientes de alta', v:nf(K.pdte), side:1, tip:'Solicitudes de natalidad del periodo que a la fecha de corte siguen en la bandeja de registros de Atlantix, sin dar de alta.' + ER },
     { l:'Dadas de alta', v:nf(K.alta), p:pct(K.alta, K.nat), tip:'Solicitudes de natalidad del periodo ya dadas de alta en Atlantix: han entrado en tramitación. El % es sobre las solicitudes de natalidad.' },
     { l:'Pendientes de resolver', v:nf(K.alta - K.resC), side:1, tip:'Dadas de alta que aún no tienen resolución: en gestión, en validación de terceros, en la Intervención o pendientes de firmar la resolución.' },
-    { l:'Resueltas', v:nf(K.resC), p:pct(K.resC, K.alta), tip:'Dadas de alta con resolución favorable, de denegación o de desistimiento. El % es sobre las dadas de alta.' },
-    { l:'Denegadas o desistidas', v:nf(K.dd), side:1, tip:'Resoluciones de denegación y de desistimiento.' },
+    { l:'Resueltas', v:nf(K.resC), p:pct(K.resC, K.alta), tip:'Dadas de alta con resolución: favorable, denegación o desistimiento. El % es sobre las dadas de alta.' },
+    { l:'Denegadas o desistidas', v:nf(K.dd), side:1, tip:'«Resolución Denegación» y «Resolución Desestimiento».' },
     { l:'Favorables', v:nf(K.favC), p:pct(K.favC, K.resC), tip:`«Resolución Favorable Concesión». El % es sobre las resueltas. ${nf(K.favC - K.favPag)} esperan todavía el primer pago.` },
-    { l:'Tiempo E2E', v:dd(K.e2e), tip:`Días de media del registro a la resolución de los expedientes resueltos en el periodo: es la suma de los dos siguientes. Mediana ${f0(qs(K.e2eS, .5))} d · P90 ${f0(qs(K.e2eS, .9))} d.` +
-      (K.pp ? ` El ${pcs(pc(K.ppOk, K.pp), 0)} llega a la Intervención en ${F.plazo} días o menos.` : '') },
-    { l:'Registro → alta', v:dd(K.tA), tip:'Días de media en la bandeja de registros, del registro en eReg al alta en Atlantix, de esos mismos expedientes.' },
+    { l:'Tiempo E2E', v:dd(K.e2e), tip:`Días naturales de media del registro a la resolución de los expedientes resueltos en el periodo: es la suma de los dos siguientes. Mediana ${f0(qs(K.e2eS, .5))} d · P90 ${f0(qs(K.e2eS, .9))} d.` +
+      (K.pp ? ` En plazo: el ${pcs(pc(K.ppOk, K.pp), 0)} llega a la Intervención en ${F.plazo} días o menos.` : '') + ER },
+    { l:'Registro → alta', v:dd(K.tA), tip:'Días de media en la bandeja de registros, del registro en eReg al alta en Atlantix, de esos mismos expedientes.' + ER },
     { l:'Alta → resolución', v:dd(K.tram), tip:'Días de media del alta en Atlantix a la resolución, de esos mismos expedientes.' },
-    { l:'Retrabajo', v: K.tramit ? f0(pc(K.retr, K.tramit)) + U('%') : '—', tip:TIP.retr },
-    { l:'Nuevas altas', v:nf(altM), tip:`Nuevas beneficiarias que entran en el mantenimiento en las nóminas del periodo, con ${eur(atr)} de atrasos (${f1(altM ? meses/altM : 0)} meses de media).` },
-    { l:'Beneficiarias activas', v: nb ? nf(nb.ben) : '—', tip:'Beneficiarias con mensualidad en la última nómina pagada del periodo: mantenimiento y nuevas altas.' },
+    { l:'Retrabajo', v: K.tramit ? f0(pc(K.retr, K.tramit)) + U('%') : '—',
+      tip:'Expedientes terminados en el periodo que han tenido que repetir algo no previsto, sobre los tramitados.' +
+        (K.tramit ? ` Segundo requerimiento ${f0(pc(K.rReq, K.tramit))}% · tercero rechazado por Nexus ${f0(pc(K.rTer, K.tramit))}% · respuesta desfavorable de la Intervención ${f0(pc(K.rInt, K.tramit))}%.` : '') +
+        ' El primer requerimiento no cuenta: es parte del camino previsto.' },
+    { l:'Nuevas altas', v:nf(altM), tip:`Nuevas beneficiarias que entran en el mantenimiento en las nóminas del periodo, con ${eur(atr)} de atrasos: ${f1(altM ? meses/altM : 0)} meses de media.` },
+    { l:'Beneficiarias activas', v: nb ? nf(nb.ben) : '—', tip:'Con mensualidad en la última nómina pagada del periodo: mantenimiento y nuevas altas.' +
+      (nb ? ` Nómina de ${ymLargo(mB)}: ${eur(impB)}${impA ? `, ${impB >= impA ? '+' : '−'}${pcs(Math.abs(pc(impB - impA, impA)))} frente a la de un año antes` : ''}.` : '') },
     { l:'Pagos únicos', v:nf(unicos), tip:`Pagos de una sola vez en las nóminas del periodo, por ${eur(unImp)}: sobre todo pérdidas gestacionales antes del primer pago. No entran en mantenimiento.` },
-    { l:'Beneficiarias inactivas', v: nb ? nf(inact) : '—', tip:'Cobraron en alguna nómina del periodo y ya no están en la última: el menor cumplió dos años o causaron baja.' },
-    { l:'Ejecución presupuestaria', v: CR.A ? f1(pc(CR.OK, CR.A)) + U('%') : '—', tip:`Ejecutado (OK) entre autorizado (A) de la anualidad ${CR.Y}, todas las líneas: ${meur(CR.OK, 1)} de ${meur(CR.A, 1)}. Necesita la contabilidad de Nexus.` },
+    { l:'Beneficiarias inactivas', v: nb ? nf(inact) : '—', tip:`Cobraron en alguna nómina del periodo y ya no están en la última: ${nf(ext)} porque el menor cumplió dos años y ${nf(bajas)} por baja.` },
+    { l:'Ejecución presupuestaria', v: CR.A ? f1(pc(CR.OK, CR.A)) + U('%') : '—', tip:`Ejecutado (OK) entre autorizado (A) de la anualidad ${CR.Y}, todas las líneas: ${meur(CR.OK, 1)} de ${meur(CR.A, 1)}. Necesita conectar la contabilidad de Nexus.` },
   ];
   const T = (o, i) => `<div class="kt${o.side ? ' side' : ''}${i === 0 ? ' kl' : i === 8 ? ' kr' : ''}"><div class="kt-l"><span>${o.l}</span> <i class="ii" data-t="${esc(o.tip)}">i</i></div>` +
     `<div class="kt-v"><span>${o.v}</span>${o.p ? `<em class="kt-p">${o.p}</em>` : ''}</div></div>`;
@@ -2290,6 +2213,7 @@ function renderCabecera(K, NM_, CR){
     `<div class="kg-g" style="grid-column:1 / span 9">Volumetría</div>` + V.slice(0, 9).map(T).join('') +
     `<div class="kg-g" style="grid-column:1 / span 3">Tiempos</div><div class="kg-g" style="grid-column:4 / span 1">Retrabajos</div><div class="kg-g" style="grid-column:5 / span 5">Gestión económica</div>` +
     V.slice(9).map(T).join('');
+  return { total, otras, inact, ext, bajas, altM, unicos };
 }
 
 /* ════════ GRÁFICOS (Chart.js, mismo cromado que el resto de cuadros) ════════ */
@@ -2313,17 +2237,23 @@ const lblFase = { id:'lblFase', afterDatasetsDraw(ch){
   ctx.save(); ctx.textAlign = 'center';
   X.forEach((o, k) => {
     const bar = m0.data[k]; if (!bar) return;
-    const top = yD.getPixelForValue(o.v);
-    if (o.n) caja(ctx, f1(o.v) + ' d', bar.x, top - 10, k === ch.$max ? RED : NAVY, true);
+    const top = yD.getPixelForValue(o.v), dentro = bar.base - top >= 26;
+    /* los días van dentro de la barra si cabe; si no, encima */
+    let ocupado = null;
+    if (o.n){ const t = f1(o.v) + ' d';
+      if (dentro){ ctx.font = '700 10.5px Inter, Arial, sans-serif'; ctx.fillStyle = k === ch.$max || o.c === RED ? '#fff' : (o.claro ? NAVY : '#fff'); ctx.fillText(t, bar.x, top + 15); ocupado = [top + 2, top + 22]; }
+      else { caja(ctx, t, bar.x, top - 10, k === ch.$max ? RED : NAVY, true); ocupado = [top - 19, top]; } }
     const pt = mL.data[k]; if (!pt) return;
-    let y = pt.y - 13; if (y + 7 > top - 19 && y - 8 < top) y = pt.y + 14;
+    let y = pt.y - 13;
+    if (ocupado && y + 8 > ocupado[0] && y - 8 < ocupado[1]) y = pt.y - 13 < ocupado[0] ? y : pt.y + 15;
+    if (ocupado && y + 8 > ocupado[0] && y - 8 < ocupado[1]) y = ocupado[0] - 10;
     caja(ctx, nf(o.now), pt.x, y, NAVY);
   });
   ctx.restore(); },
   /* los botones de cada fase, debajo de su barra */
   afterLayout(ch){ const el = document.getElementById('c1Btns'); if (!el || !ch.chartArea) return;
     el.style.paddingLeft = ch.chartArea.left + 'px'; el.style.paddingRight = Math.max(0, ch.width - ch.chartArea.right) + 'px'; } };
-let chFase, chFlujo, chCompo, chNom;
+let chFase, chFlujo, chCompo;
 function initCharts(){
   chFase = new Chart(document.getElementById('cFase'), {
     type:'bar', data:{ labels:FASES.map(f => f.n), datasets:[
@@ -2366,12 +2296,11 @@ function initCharts(){
 }
 
 function renderFase(){
-  const R = calcFases(), r = document.getElementById('fsResp').value, st = calcStock();
-  const now = FASES.map(f => SIT_ORD.filter(k => SIT[k].f === f.k).reduce((x, k) => x + st[k].n, 0));
+  const R = calcFases(), r = document.getElementById('fsResp').value, now = stockFases().map(o => o.n);
   const X = FASES.map((f, k) => { const n = R.dur[k].length, s = sorted(R.dur[k]), by = {};
     RK.forEach(q => by[q] = n ? R.rs[k][q]/n : 0);
     const m = n ? media(R.dur[k]) : 0;
-    return { n, m, v: r ? by[r] : m, by, med:qs(s, .5), p90:qs(s, .9), now:now[k] }; });
+    return { n, m, v: r ? by[r] : m, by, med:qs(s, .5), p90:qs(s, .9), now:now[k], claro: r === 'S' || r === 'C' }; });
   const vals = X.map(o => o.v), kmax = vals.indexOf(Math.max(...vals));
   chFase.$x = X; chFase.$max = kmax; chFase.$r = r;
   const col = r ? RESP[r].c : SLA;
@@ -2439,31 +2368,25 @@ function renderFlujo(){
     (R.B.some(b => b.parcial) ? '<div class="leg" style="color:var(--cgy);">* tramo incompleto</div>' : '');
 }
 
-let stGrp = 'fase';
 const EDADC = ['#D3D3DD','#8E91AD','#464C6A', RED];
 const EDADL = ['0–30 días','31–60 días','61–90 días','Más de 90 días'];
-function renderStock(){
-  const rows = calcStock(); let items = [];
-  if (stGrp === 'fase') items = FASES.map(f => { const o = { lbl:f.n, f:f.k, b:[0,0,0,0], n:0, sum:0, max:0 };
+function stockFases(){
+  const rows = calcStock();
+  return FASES.map(f => { const o = { lbl:f.n, f:f.k, b:[0,0,0,0], n:0, sum:0, max:0 };
     SIT_ORD.filter(k => SIT[k].f === f.k).forEach(k => { const r = rows[k]; o.n += r.n; o.sum += r.sum; o.max = Math.max(o.max, r.max); r.b.forEach((v, j) => o.b[j] += v); });
     return o; });
-  else items = SIT_ORD.map(k => ({ ...rows[k], lbl:sitTxt(k), f:SIT[k].f, r:SIT[k].r, k }));
+}
+function renderStock(){
+  const items = stockFases();
   const tot = items.reduce((x, i) => x + i.n, 0), mx = Math.max(1, ...items.map(i => i.n));
-  const b90 = items.reduce((x, i) => x + i.b[3], 0), sum = items.reduce((x, i) => x + i.sum, 0);
-  let html = '', fPrev = null;
-  items.forEach(it => {
-    if (stGrp === 'sit' && it.f !== fPrev){ html += `<div class="sb-g">${FASES[FI[it.f]].n}</div>`; fPrev = it.f; }
-    if (stGrp === 'sit' && !it.n) return;
-    const tip = `${it.lbl}: ${nf(it.n)} abiertos` + (it.n ? ` · ${EDADL.map((l, j) => `${l.toLowerCase()}: ${nf(it.b[j])}`).join(' · ')} · antigüedad media ${f0(it.sum/it.n)} d, máxima ${f0(it.max)} d` : '') +
-      (it.r ? ` · depende de: ${RESP[it.r].n.toLowerCase()}` : '');
-    html += `<div class="sb-row" data-tip="${esc(tip)}"><div class="sb-l">${it.lbl}</div><div class="sb-track">` +
+  const b90 = items.reduce((x, i) => x + i.b[3], 0), sum = items.reduce((x, i) => x + i.sum, 0), mxA = Math.max(0, ...items.map(i => i.max));
+  document.getElementById('stBars').innerHTML = `<div class="sb-hd"><span></span><span></span><span>Abiertos</span><span>Antig. media</span></div>` + items.map(it => {
+    const tip = `${it.lbl}: ${nf(it.n)} abiertos` + (it.n ? ` · ${EDADL.map((l, j) => `${l.toLowerCase()}: ${nf(it.b[j])}`).join(' · ')} · antigüedad media ${f0(it.sum/it.n)} d, máxima ${f0(it.max)} d` : '');
+    return `<div class="sb-row" data-tip="${esc(tip)}"><div class="sb-l">${it.lbl}</div><div class="sb-track">` +
       it.b.map((v, j) => v ? `<i style="width:${v/mx*100}%;background:${EDADC[j]};"></i>` : '').join('') +
-      `</div><div class="sb-n">${nf(it.n)}</div><div class="sb-m">${it.n ? f0(it.sum/it.n) + ' d' : ''}</div></div>`;
-  });
-  document.getElementById('stBars').innerHTML = `<div class="sb-hd"><span></span><span></span><span>Abiertos</span><span>Antig. media</span></div>` + html;
+      `</div><div class="sb-n">${nf(it.n)}</div><div class="sb-m">${it.n ? f0(it.sum/it.n) + ' d' : ''}</div></div>`; }).join('');
   document.getElementById('c3Ttl').textContent = `↑ ${nf(tot)} abiertos a ${fdate(P1)}`;
-  const mx2 = Math.max(0, ...items.map(i => i.max));
-  document.getElementById('c3Sub').innerHTML = tot ? `${pcs(pc(b90, tot), 0)} con más de 90 días · media ${f0(sum/tot)} d · el más antiguo, <b>${f0(mx2)} d</b>` : 'Nada pendiente con estos filtros.';
+  document.getElementById('c3Sub').innerHTML = tot ? `${pcs(pc(b90, tot), 0)} con más de 90 días · media ${f0(sum/tot)} d · el más antiguo, <b>${f0(mxA)} d</b>` : 'Nada pendiente con estos filtros.';
   document.getElementById('c3Leg').innerHTML = legHtml(EDADC.map((c, j) => [c, EDADL[j]]));
 }
 
@@ -2477,7 +2400,7 @@ function renderCompo(){
   chCompo.resize(); chCompo.update();
   const nulN = R.keys.filter(k => R.nul.includes(k)).reduce((x, k) => x + R.cnt[k], 0);
   document.getElementById('c4Ttl').textContent = '↑ ' + D.n;
-  document.getElementById('c4Sub').innerHTML = `${nf(R.tot)} ${D.g === 'sol' ? 'solicitudes recibidas' : dk === 'sent' ? 'expedientes resueltos' : dk === 'mot' ? 'denegaciones' : 'respuestas de la Intervención a altas'} en el periodo` +
+  document.getElementById('c4Sub').innerHTML = `${nf(R.tot)} ${D.g === 'sol' ? 'solicitudes de natalidad' : dk === 'sent' ? 'expedientes resueltos' : dk === 'mot' ? 'denegaciones' : 'respuestas de la Intervención a altas'} en el periodo` +
     (nulN && (dk === 'tipo' || dk === 'edad' || dk === 'nac' || dk === 'pais') ? ` · ${pcs(pc(nulN, R.tot))} sin informar o sin clasificar` : '') +
     (D.ereg ? ' · el canal sale de eReg' : '');
 }
@@ -2493,7 +2416,7 @@ function renderSusp(){
   const rows = SUSP.filter(x => !suspResp || x.r === suspResp).sort((a, b) => {
     const va = suspVal(a, suspSort.k), vb = suspVal(b, suspSort.k);
     return (va < vb ? -1 : va > vb ? 1 : 0)*(suspSort.asc ? 1 : -1) || b.quieto - a.quieto; });
-  const MAXF = 15;
+  const MAXF = 10;
   document.getElementById('suspBody').innerHTML = rows.slice(0, MAXF).map(x => `<tr class="${x.quieto > 180 ? 'row-crit' : ''}">
     <td><a class="exp-link" title="Abrir en Atlantix">${x.c.id}</a></td><td>${fdate(x.c.reg)}</td><td>${SIT[x.s].e}</td>
     <td>${SIT[x.s].n || '—'}</td><td><span class="resp-chip rr-${x.r}">${RESP[x.r].n}</span></td><td class="r">${nf(x.dias)}</td>
@@ -2594,123 +2517,6 @@ function renderAct(){
   document.getElementById('actTtl').innerHTML = `Actividades de la fase · ${f.n}<span>${nf(base)} solicitudes registradas en el periodo han pasado por ella</span>`;
 }
 
-/* ════════ NÓMINA, MANTENIMIENTO Y EJECUCIÓN ════════ */
-let nomVista = 'imp', matVista = 'OK';
-function renderNomina(NMx){
-  const { rem, N } = NMx, T = N.T;
-  const S = [['mant','Mantenimiento', SLA], ['alta','Nuevas altas', TEAL], ['atr','Atrasos', ORA], ['unico','Pagos únicos', GRY], ['mod','Regularizaciones', GRY3]];
-  const tm = m => T[m] || { mant:0, alta:0, atr:0, unico:0, mod:0, modNeg:0, ben:0, ben2:0, altas:0, unicos:0, ext:0, bajas:0, lib:0, atrMeses:0 };
-  const totM = m => { const x = tm(m); return x.mant + x.alta + x.atr + x.unico + x.mod + x.modNeg; };
-  chNom.$m = rem;
-  chNom.data.labels = rem.map(ymTxt);
-  if (nomVista === 'imp'){
-    chNom.data.datasets = [
-      ...S.map(([k, n, c]) => ({ type:'bar', label:n, data:rem.map(m => +(tm(m)[k]/1e6).toFixed(3)), backgroundColor:c, stack:'n', barPercentage:.72, categoryPercentage:.8, order:2, $eur:1 })),
-      { type:'line', label:'Beneficiarias', data:rem.map(m => tm(m).ben), yAxisID:'yB', borderColor:NAVY, backgroundColor:NAVY, borderWidth:1.8, pointRadius:rem.length > 24 ? 0 : 2.5, tension:.25, order:1 } ];
-    chNom.options.scales.y.title.text = 'M€'; chNom.options.scales.yB.title.text = 'beneficiarias';
-    document.getElementById('nomLeg').innerHTML = legHtml([...S.map(([k, n, c]) => [c, n]), [NAVY, 'Beneficiarias', 1]]);
-  } else {
-    chNom.data.datasets = [
-      { type:'bar', label:'Altas en mantenimiento', data:rem.map(m => tm(m).altas), backgroundColor:TEAL, stack:'n', barPercentage:.72, categoryPercentage:.8, order:2 },
-      { type:'bar', label:'Pagos únicos', data:rem.map(m => tm(m).unicos), backgroundColor:GRY, stack:'n', barPercentage:.72, categoryPercentage:.8, order:2 },
-      { type:'line', label:'Meses de atraso al entrar', data:rem.map(m => { const x = tm(m); return x.altas ? +(x.atrMeses/x.altas).toFixed(2) : null; }),
-        yAxisID:'yB', borderColor:ORA, backgroundColor:ORA, borderWidth:2, pointRadius:rem.length > 24 ? 0 : 3, tension:.25, order:1, $mes:1 } ];
-    chNom.options.scales.y.title.text = 'altas'; chNom.options.scales.yB.title.text = 'meses de atraso';
-    document.getElementById('nomLeg').innerHTML = legHtml([[TEAL, 'Altas en mantenimiento'], [GRY, 'Pagos únicos'], [ORA, 'Meses de atraso con que se entra en nómina', 1]]);
-  }
-  chNom.$extra = rem.map(m => { const x = tm(m), a = totM(m), b = totM(m - 12);
-    return [...(x.modNeg ? [` Compensaciones: −${meur(-x.modNeg)}`] : []), '', `Total ${meur(a)}${b ? ` · ${a >= b ? '+' : '−'}${pcs(Math.abs(pc(a - b, b)))} frente a ${ymTxt(m - 12)}` : ''}`,
-      `${nf(x.altas + x.unicos)} altas · ${nf(x.ext)} extinciones · ${nf(x.bajas)} bajas`]; });
-  chNom.update();
-  document.getElementById('nomSub').innerHTML = rem.length ? `${rem.length} nóminas pagadas, de ${ymLargo(rem[0])} a ${ymLargo(rem[rem.length - 1])} · se paga a final de mes · 500 € por hijo` :
-    'Ninguna nómina pagada en el periodo elegido.';
-  const mB = rem[rem.length - 1];
-  if (mB === undefined){ ['nomCards','nomTbl'].forEach(id => document.getElementById(id).innerHTML = ''); return; }
-  const x = tm(mB), a = totM(mB), b = totM(mB - 12), al = x.altas + x.unicos;
-  document.getElementById('nomCards').innerHTML = [
-    ['Última nómina', meur(a), ymLargo(mB) + (b ? ` · ${a >= b ? '+' : '−'}${pcs(Math.abs(pc(a - b, b)))} frente a un año antes` : ''), 'bc-ej'],
-    ['Beneficiarias', nf(x.ben), `${nf(x.ben - x.altas)} en mantenimiento y ${nf(x.altas)} altas · ${nf(x.ben2)} por dos o más hijos`, 'bc-dp'],
-    ['Altas', nf(al), `atrasos ${eur(x.atr)} · ${f1(x.altas ? x.atrMeses/x.altas : 0)} meses de media · ${nf(x.unicos)} pagos únicos por ${eur(x.unico)}`, 'bc-cm'],
-    ['Extinciones y bajas', nf(x.ext + x.bajas), `${nf(x.ext)} por fin del derecho · ${nf(x.bajas)} bajas, ${nf(x.lib)} mensualidades liberadas del D`, 'bc-dp'],
-  ].map(([l, v, e, c]) => `<div class="bc ${c}"><div class="bc-l">${l}</div><b>${v}</b><em>${e}</em></div>`).join('');
-  document.getElementById('nomTbl').innerHTML = `<thead><tr><th>Nómina</th><th>Importe</th><th>vs. año anterior</th><th>Beneficiarias</th><th>Altas</th><th>Atrasos</th><th class="ma">Meses de atraso</th><th>Pagos únicos</th><th>Extinciones y bajas</th></tr></thead><tbody>` +
-    rem.slice(-6).reverse().map(m => { const y = tm(m), a = totM(m), b = totM(m - 12), n = y.altas + y.unicos;
-      return `<tr><td class="nm">${MES3[m % 12]} ${Math.floor(m/12)}</td><td>${meur(a)}</td><td>${b ? (a >= b ? '+' : '−') + pcs(Math.abs(pc(a - b, b))) : '—'}</td><td>${nf(y.ben)}</td><td>${nf(n)}</td>` +
-        `<td>${meur(y.atr)}</td><td>${y.altas ? f1(y.atrMeses/y.altas) : '—'}</td><td>${nf(y.unicos)}</td><td>${nf(y.ext + y.bajas)}</td></tr>`; }).join('') + '</tbody>';
-}
-
-const MANT_ORD = ['Modificación Concesión','Validación Tercero Modificación','PTE. ENVÍO MODIFICACIÓN SIN REPER. ECONOM.','PTE. ENVÍO MODIFICACIÓN ECONOM. POSITIVA',
-  'PTE. ENVÍO MODIFICACIÓN ECONOM. NEGATIVA','PTE. ENVÍO BAJA DE LA AYUDA','Intervención Concesión','Favorable Concesión · pendiente de resolver'];
-function renderMant(){
-  const M = calcMant(), tot = Object.values(M.res).reduce((a, b) => a + b, 0);
-  const top = Object.entries(M.mot).sort((a, b) => b[1] - a[1]).slice(0, 3);
-  document.getElementById('mant').innerHTML =
-    `<div><div class="mant-h">En curso a ${fdate(P1)} <span>${nf(M.n)}</span></div><table class="mat">` +
-      MANT_ORD.filter(e => M.curso[e]).map(e => `<tr><td class="nm">${e}</td><td>${nf(M.curso[e])}</td></tr>`).join('') + `</table></div>` +
-    `<div><div class="mant-h">Resueltas en el periodo <span>${nf(tot)}</span></div><table class="mat">` +
-      `<tr><td class="nm">${MOD_K.sin}</td><td>${nf(M.res.sin)}</td></tr>` +
-      `<tr><td class="nm">${MOD_K.pos}</td><td>${nf(M.res.pos)} <em>+${meur(M.impP)}</em></td></tr>` +
-      `<tr><td class="nm">${MOD_K.neg}</td><td>${nf(M.res.neg)} <em>−${meur(-M.impN)}</em></td></tr>` +
-      `<tr><td class="nm">${MOD_K.baja}</td><td>${nf(M.res.baja)} <em>−${meur(M.lib)} del D</em></td></tr></table>` +
-      `<div class="mant-f">Más frecuentes: ${top.map(([k, v]) => `${k.charAt(0).toLowerCase() + k.slice(1)} (${nf(v)})`).join(', ')}</div></div>`;
-}
-
-function renderCredito(){
-  const Y = +document.getElementById('crEjer').value, R = calcCredito(Y), yC = yOf(P1);
-  const lin = lineaSel(), pD = pc(R.D, R.A), pO = pc(R.OK, R.A);
-  document.getElementById('crSub').innerHTML = `${lin.length === LINEAS.length ? 'Todas las líneas' : 'Líneas ' + lin.join(', ')} · anualidad ${Y} · a ${fdate(P1)}`;
-  document.getElementById('crCards').innerHTML = [
-    ['Autorizado (A)', meur(R.A), `documento A de la anualidad ${Y}`, 'bc-dp'],
-    ['Dispuesto (D)', meur(R.D), `${pcs(pD)} del autorizado · ${meur(R.D - R.OK)} pendiente de pagar`, 'bc-cm'],
-    ['Ejecutado (OK)', meur(R.OK), `${pcs(pO)} del autorizado · nóminas contabilizadas`, 'bc-ej'],
-    ['Pendiente de disponer', meur(R.disp), 'autorizado − dispuesto, según Nexus: lo que queda para nuevas altas', R.disp < 0 ? 'bc-bad' : 'bc-dp'],
-  ].map(([l, v, e, c]) => `<div class="bc ${c}"><div class="bc-l">${l}</div><b>${v}</b><em>${e}</em></div>`).join('');
-  const w = v => Math.max(0, Math.min(100, pc(v, Math.max(R.A, R.D))));
-  document.getElementById('crTrack').innerHTML =
-    `<div class="bgt-seg s-ej" style="width:${w(R.OK)}%;" data-tip="Ejecutado (OK): ${eur(R.OK)}">${pO >= 8 ? pcs(pO, 0) : ''}</div>` +
-    `<div class="bgt-seg s-cm" style="width:${w(R.D - R.OK)}%;" data-tip="Dispuesto pendiente de pagar: ${eur(R.D - R.OK)}">${pD - pO >= 8 ? pcs(pD - pO, 0) : ''}</div>` +
-    `<div class="bgt-seg s-dp" style="width:${w(Math.max(0, R.disp))}%;" data-tip="Pendiente de disponer: ${eur(R.disp)}">${100 - pD >= 8 ? pcs(100 - pD, 0) : ''}</div>`;
-  document.getElementById('crScale').innerHTML = `<span style="left:0">0</span><span style="left:${w(R.OK)}%">ejecutado</span><span style="left:100%">${meur(R.A, 1)}</span>`;
-  /* ejecución cierta (Nexus) y prevista a corto plazo (Atlantix), como la plantea gestión económica */
-  const box = document.getElementById('capBox'), cap = document.getElementById('crCap');
-  if (Y === yC){
-    const ultPag = remesasPagadas(), mC = ymOf(P1), resto = R.D - R.OK - R.mes, cierre = R.D + R.prop, disp = R.A - R.D - R.prop;
-    const nu = costeAltaNueva(Y), extra = nu.coste > 0 ? Math.floor(Math.max(0, disp)/nu.coste) : 0;
-    const fila = (v, t, cls) => `<div class="cap-row${cls ? ' ' + cls : ''}"><b>${meur(v)}</b><span>${t}</span></div>`;
-    cap.innerHTML = fila(R.OK, `<strong>Ejecutado cierto</strong>: nóminas pagadas en Nexus hasta ${ultPag !== null ? ymLargo(ultPag) : '—'}`) +
-      (R.mes ? fila(R.mes, `nómina de ${MES[mC % 12]} ya reconocida, pendiente de pago`) : '') +
-      fila(resto, 'resto del año ya dispuesto para quienes están en nómina') +
-      fila(R.prop, `<strong>propuesto en Atlantix, aún sin D_COM</strong>: ${nf(R.nProp)} expedientes con pagos propuestos para este año`) +
-      fila(cierre, `cierre previsto con lo dispuesto y lo propuesto: el ${pcs(pc(cierre, R.A))} del autorizado`, 'tot') +
-      fila(disp, `<strong>disponible según Atlantix</strong> (según Nexus, ${meur(R.disp)})` +
-        (nu.coste ? `: unas ${nf(extra)} altas más si entran en la nómina de ${MES[nu.N % 12]}, a ${eur(nu.coste)} de media cada una` : ''), disp < 0 ? 'bad' : '');
-    document.getElementById('crCapFoot').textContent = 'Nexus da el dato cierto de lo pagado y lo dispuesto; Atlantix conoce antes lo propuesto, porque calcula los pagos de cada expediente al grabar la propuesta. Es una suma de esos pagos propuestos, no una estimación.';
-    box.style.display = '';
-  } else box.style.display = 'none';
-  /* matriz línea × anualidad */
-  const V = matVista, M = R.mat[V], esB = V === 'B';
-  const cel = v => !v ? '—' : esB ? nf(v) : Math.abs(v) < 0.05e6 ? '<0,1' : (v/1e6).toFixed(1).replace('.', ',');
-  const tt = v => v && !esB ? ` title="${eur(v)}"` : '';
-  const col = y => y === Y ? ' class="on"' : '';
-  const totY = {}; ANUS.forEach(y => totY[y] = lin.reduce((x, l) => x + ((M[l] || {})[y] || 0), 0));
-  document.getElementById('matSub').innerHTML = { A:'Crédito autorizado (documento A) de cada línea en cada anualidad, en M€. Las altas de un año se pagan en ese año y en los dos o tres siguientes.',
-    D:'Dispuesto a la fecha de corte, en M€: el D sin terceros con los D_COM de altas, bajas y modificaciones.',
-    OK:'Ejecutado (fase OK) a la fecha de corte, en M€. La suma de cada columna es la ejecución de la anualidad.',
-    B:'Beneficiarias pagadas al menos una vez en cada anualidad, con los pagos únicos. Cuenta cada expediente: quien tiene dos hijos en dos líneas cuenta dos veces.' }[V];
-  const sumL = l => ANUS.reduce((x, y) => x + ((M[l] || {})[y] || 0), 0), sumR = k => lin.reduce((x, l) => x + (R[k][l] || 0), 0);
-  const atrM = (s, n) => n ? f1(s/n) : '—';
-  const tipBen = 'Expedientes de la línea pagados al menos una vez hasta la fecha de corte, con los pagos únicos. Es el dato que más piden a gestión económica.';
-  document.getElementById('crMat').innerHTML = `<thead><tr><th>Línea</th>${ANUS.map(y => `<th${col(y)}>${y}</th>`).join('')}` +
-    (esB ? `<th class="sep">Pagadas al menos una vez <i class="ii" data-t="${tipBen}">i</i></th><th>De solicitudes de años anteriores <i class="ii" data-t="Solicitudes de un año que entran en nómina al año siguiente o más tarde: van a la línea del año de su alta, con sus atrasos.">i</i></th>` +
-           `<th>Meses de atraso al entrar <i class="ii" data-t="Media de mensualidades de atraso con que entran en mantenimiento las altas de la línea, desde el mes de la solicitud hasta la primera nómina. Sin los pagos únicos.">i</i></th>`
-         : `<th>Total</th><th class="sep">Beneficiarias <i class="ii" data-t="${tipBen}">i</i></th>`) + `</tr></thead><tbody>` +
-    lin.map(l => `<tr><td class="nm">Línea ${l}</td>${ANUS.map(y => `<td${col(y)}${tt((M[l] || {})[y])}>${cel((M[l] || {})[y])}</td>`).join('')}` +
-      (esB ? `<td class="sep tt">${nf(R.ben[l] || 0)}</td><td>${nf(R.benPrev[l] || 0)}</td><td>${atrM(R.atrS[l], R.atrN[l])}</td>`
-           : `<td class="tt">${cel(sumL(l))}</td><td class="sep">${nf(R.ben[l] || 0)}</td>`) + `</tr>`).join('') +
-    `<tr class="sum"><td class="nm">${esB ? 'Total' : 'Total anualidad'}</td>${ANUS.map(y => `<td${col(y)}>${cel(totY[y])}</td>`).join('')}` +
-    (esB ? `<td class="sep tt">${nf(sumR('ben'))}</td><td>${nf(sumR('benPrev'))}</td><td>${atrM(sumR('atrS'), sumR('atrN'))}</td>`
-         : `<td class="tt">${cel(ANUS.reduce((x, y) => x + totY[y], 0))}</td><td class="sep">${nf(sumR('ben'))}</td>`) + `</tr></tbody>`;
-}
 /* gestión económica en una tabla: autorizado, dispuesto y ejecutado por línea en la anualidad elegida */
 function renderEco(){
   const Y = +document.getElementById('crEjer').value, R = calcCredito(Y, true), yC = yOf(P1);
@@ -2748,90 +2554,90 @@ const EST = { ok:['Calculable','Sale de Atlantix tal y como está hoy'], ereg:['
               nexus:['Necesita Nexus','Hace falta conectar la contabilidad de Nexus: fases A, D y OK'],
               val:['A validar','La definición o la etapa de Atlantix está por confirmar'], ext:['Lo aporta la unidad','Dato que no está en ningún sistema'] };
 const HOJA = [
- ['1','Nº solicitudes recibidas en eReg','Solicitudes iniciales con asiento en eReg en el periodo; sin aportaciones, comunicaciones, duplicados técnicos ni anulados.','Registros de eReg con formulario de solicitud y fecha de asiento en el periodo, uno por número de registro.','eReg','Cabecera · Solicitudes recibidas','ereg'],
- ['1','Otros registros','Lo excluido en la fila anterior debe contarse como indicador aparte.','Registros de eReg del periodo que no son solicitud inicial, por tipo; incluye las genéricas sin formulario, que hoy no se pueden clasificar.','eReg','Cabecera · Otros registros','ereg'],
- ['1','Nº solicitudes pendientes de recepción o alta en Atlantix','Registradas en eReg que a la fecha de corte no constan dadas de alta o vinculadas a un expediente.','Solicitudes de eReg que siguen en la bandeja de registros de Atlantix sin expediente dado de alta, y cuánto lleva la más antigua.','eReg + Atlantix','Cabecera · Pendientes de alta; Stock (Entrada)','ereg'],
- ['1','Nº expedientes en tramitación','Activos en «Gestión de expedientes», por subestado: revisión, requerimiento, subsanación, propuesta o incidencia.','Expedientes en las etapas «Gestión Expediente» y «Requerimiento» (en Atlantix es una etapa propia), por situación: primera revisión, devuelto a revisión, requerimiento sin notificar, en plazo, con plazo vencido y aportación sin validar.','Atlantix + NOTE','Cabecera · En tramitación; Stock por etapa','val'],
- ['1','Propuestas favorables (etapa PF) e importe','Por convocatoria y mes; importe de atrasos (×500 €) desde la solicitud, mes de nómina y resto del año hasta el fin de devengo. Evitar proponer y desproponer.','La propuesta favorable no es una etapa: al grabarla, AEFN calcula los pagos propuestos y pasa el expediente a «Validación Tercero». Se cuentan las que aún no tienen resolución; el importe es la suma de sus pagos propuestos para el año, por mes de nómina.','Atlantix (AEFN)','Cabecera · Propuestas favorables; Ejecución cierta y prevista','val'],
- ['1','Nº expedientes resueltos','Concedidos, denegados, desistidos y archivados por fecha de resolución; etapa «validación terceros», a validar.','Por la fecha de las etapas «Resolución Favorable Concesión», «Resolución Denegación» y «Resolución Desestimiento». La favorable llega después de la Intervención, no al pasar a «Validación Tercero».','Atlantix','Cabecera · Resueltos; Composición (sentido)','val'],
- ['1','% de expedientes resueltos en plazo','90 días máximo desde la entrada en el registro de la DG hasta la propuesta de pago; revisar las normas reguladoras.','De los enviados por primera vez a la Intervención en el periodo (la propuesta de pago que se fiscaliza), % con (envío − registro) ≤ plazo. El plazo es un parámetro de la barra de filtros.','eReg + Atlantix','Cabecera · Resueltos en plazo','ereg'],
- ['1','Tiempo medio E2E','Media de días registro → resolución, con mediana y percentil 90.','Media, mediana y P90 de (resolución − registro) de los resueltos del periodo, en días naturales; y la tramitación desde el alta.','eReg + Atlantix','Cabecera · Tiempo medio E2E','ereg'],
- ['1','Antigüedad máxima','Expediente no finalizado más antiguo: número, etapa actual y días sin actuación.','Máximo de (fecha de corte − registro) entre los abiertos, con su número, etapa de Atlantix y días desde la última actuación.','eReg + Atlantix','Cabecera · Antigüedad máxima; tabla de suspensión','ereg'],
- ['1','Nº expedientes favorables pendientes de pago','Sin nómina ni primer abono, por convocatoria, mes y causa: demora administrativa, tercero, crédito o preparación de nómina.','Con propuesta o resolución favorable y sin primer pago; la causa sale de la etapa: esperando el fichero mensual o la nómina, tercero en gestión, o envío, fiscalización y resolución.','Atlantix + Nexus','Cabecera · Favorables por pagar; Stock por etapa','val'],
- ['1','Nº de beneficiarias activas','En mantenimiento en el periodo, en algún momento del periodo, altas y bajas, y personas únicas.','Con mensualidad en la última nómina pagada; las que cobraron en el periodo, sin contarlas dos veces; altas, extinciones y bajas por remesa. Cada expediente cuenta: dos hijos en dos líneas son dos.','Atlantix (nómina) + Nexus','Cabecera · Beneficiarias activas; Nómina por remesa','val'],
- ['1','Ejecución presupuestaria','Obligaciones reconocidas / crédito definitivo, con comprometido, pagos, disponible y previsión de cierre.','Como lo lleva gestión económica: ejecutado (OK) ÷ autorizado (A) de la anualidad, sumando las líneas; con el dispuesto (D), lo pendiente de disponer y el cierre previsto con lo ya propuesto.','Nexus (contabilidad) + Atlantix','Cabecera; Ejecución por línea y anualidad','nexus'],
- ['1','Nº de nuevas altas por remesa con atrasos','Por remesa: altas, fechas de registro y de nómina, meses e importe de atrasos; incluir pagos únicos.','Altas de cada remesa con sus meses e importe de atrasos desde el mes de la solicitud; los pagos únicos, aparte.','Atlantix (nómina)','Cabecera · Altas en nómina; Nómina por remesa','val'],
- ['1','Tasa de salida','Finalizados en el periodo / solicitudes registradas en él, con la variación del stock.','Finalizados (primer pago, denegación, desistimiento o descarte por duplicada) ÷ solicitudes del periodo; y cuánto cambian los abiertos.','eReg + Atlantix','Cabecera · Tasa de salida; Entradas, salidas y stock','ereg'],
- ['1','Expedientes en suspensión','Sin actuación ni cambio de estado durante el umbral; por etapa, causa, responsable y antigüedad.','Abiertos sin cambio de etapa ni actuación en la bitácora durante más días que el umbral (parámetro), con quién tiene que moverlos.','Atlantix','Cabecera · En suspensión; tabla de suspensión','ok'],
+ ['1','Nº solicitudes recibidas en eReg','Solicitudes iniciales con asiento en eReg en el periodo; sin aportaciones, comunicaciones, duplicados técnicos ni anulados.','Registros de eReg con formulario de solicitud y fecha de asiento en el periodo, uno por número de registro.','eReg','Cabecera · Solicitudes de natalidad','ereg'],
+ ['1','Otros registros','Lo excluido en la fila anterior debe contarse como indicador aparte.','Registros de eReg del periodo que no son solicitud inicial, por tipo; incluye las genéricas sin formulario, que hoy no se pueden clasificar.','eReg','Cabecera · Otras solicitudes','ereg'],
+ ['1','Nº solicitudes pendientes de recepción o alta en Atlantix','Registradas en eReg que a la fecha de corte no constan dadas de alta o vinculadas a un expediente.','Solicitudes de eReg que siguen en la bandeja de registros de Atlantix sin expediente dado de alta, y cuánto lleva la más antigua.','eReg + Atlantix','Cabecera · Pendientes de alta; Stock por fase (Entrada)','ereg'],
+ ['1','Nº expedientes en tramitación','Activos en «Gestión de expedientes», por subestado: revisión, requerimiento, subsanación, propuesta o incidencia.','Expedientes en las etapas «Gestión Expediente» y «Requerimiento» (en Atlantix es una etapa propia), por situación: primera revisión, devuelto a revisión, requerimiento sin notificar, en plazo, con plazo vencido y aportación sin validar.','Atlantix + NOTE','Tiempo y expedientes por fase; Stock por fase (Gestión del expediente)','val'],
+ ['1','Propuestas favorables (etapa PF) e importe','Por convocatoria y mes; importe de atrasos (×500 €) desde la solicitud, mes de nómina y resto del año hasta el fin de devengo. Evitar proponer y desproponer.','La propuesta favorable no es una etapa: al grabarla, AEFN calcula los pagos propuestos y pasa el expediente a «Validación Tercero». Se cuentan las que aún no tienen resolución; el importe es la suma de sus pagos propuestos para el año, por mes de nómina.','Atlantix (AEFN)','Gestión económica · Propuesto en Atlantix','val'],
+ ['1','Nº expedientes resueltos','Concedidos, denegados, desistidos y archivados por fecha de resolución; etapa «validación terceros», a validar.','Por la fecha de las etapas «Resolución Favorable Concesión», «Resolución Denegación» y «Resolución Desestimiento». La favorable llega después de la Intervención, no al pasar a «Validación Tercero».','Atlantix','Cabecera · Resueltas, Denegadas o desistidas y Favorables; Composición (sentido)','val'],
+ ['1','% de expedientes resueltos en plazo','90 días máximo desde la entrada en el registro de la DG hasta la propuesta de pago; revisar las normas reguladoras.','De los enviados por primera vez a la Intervención en el periodo (la propuesta de pago que se fiscaliza), % con (envío − registro) ≤ plazo. El plazo es un parámetro de la barra de filtros.','eReg + Atlantix','Cabecera · aviso de Tiempo E2E','ereg'],
+ ['1','Tiempo medio E2E','Media de días registro → resolución, con mediana y percentil 90.','Media, mediana y P90 de (resolución − registro) de los resueltos del periodo, en días naturales; y la tramitación desde el alta.','eReg + Atlantix','Cabecera · Tiempo E2E, Registro → alta y Alta → resolución','ereg'],
+ ['1','Antigüedad máxima','Expediente no finalizado más antiguo: número, etapa actual y días sin actuación.','Máximo de (fecha de corte − registro) entre los abiertos, con su número, etapa de Atlantix y días desde la última actuación.','eReg + Atlantix','Stock pendiente (subtítulo); tabla de suspensión','ereg'],
+ ['1','Nº expedientes favorables pendientes de pago','Sin nómina ni primer abono, por convocatoria, mes y causa: demora administrativa, tercero, crédito o preparación de nómina.','Con propuesta o resolución favorable y sin primer pago; la causa sale de la etapa: esperando el fichero mensual o la nómina, tercero en gestión, o envío, fiscalización y resolución.','Atlantix + Nexus','Cabecera · aviso de Favorables; Stock por fase (Resolución y pago)','val'],
+ ['1','Nº de beneficiarias activas','En mantenimiento en el periodo, en algún momento del periodo, altas y bajas, y personas únicas.','Con mensualidad en la última nómina pagada; las que cobraron en el periodo, sin contarlas dos veces; altas, extinciones y bajas por remesa. Cada expediente cuenta: dos hijos en dos líneas son dos.','Atlantix (nómina) + Nexus','Cabecera · Beneficiarias activas e inactivas','val'],
+ ['1','Ejecución presupuestaria','Obligaciones reconocidas / crédito definitivo, con comprometido, pagos, disponible y previsión de cierre.','Como lo lleva gestión económica: ejecutado (OK) ÷ autorizado (A) de la anualidad, sumando las líneas; con el dispuesto (D), lo pendiente de disponer y el cierre previsto con lo ya propuesto.','Nexus (contabilidad) + Atlantix','Cabecera · Ejecución presupuestaria; Gestión económica','nexus'],
+ ['1','Nº de nuevas altas por remesa con atrasos','Por remesa: altas, fechas de registro y de nómina, meses e importe de atrasos; incluir pagos únicos.','Altas de cada remesa con sus meses e importe de atrasos desde el mes de la solicitud; los pagos únicos, aparte.','Atlantix (nómina)','Cabecera · Nuevas altas y Pagos únicos','val'],
+ ['1','Tasa de salida','Finalizados en el periodo / solicitudes registradas en él, con la variación del stock.','Finalizados (primer pago, denegación, desistimiento o descarte por duplicada) ÷ solicitudes del periodo; y cuánto cambian los abiertos.','eReg + Atlantix','Entradas, salidas y stock (% de tramitación y de resolución)','ereg'],
+ ['1','Expedientes en suspensión','Sin actuación ni cambio de estado durante el umbral; por etapa, causa, responsable y antigüedad.','Abiertos sin cambio de etapa ni actuación en la bitácora durante más días que el umbral (parámetro), con quién tiene que moverlos.','Atlantix','Tabla de expedientes en suspensión','ok'],
  ['2','Nº solicitudes recibidas por periodo','Solicitudes iniciales únicas por número de registro; diaria, semanal, mensual y anual.','Las de la cabecera, agrupadas por semana, quincena, mes, trimestre o año con «Ver por».','eReg','Entradas, salidas y stock','ereg'],
- ['2','Variación de la demanda','(Periodo actual − periodo anterior) / periodo anterior × 100.','Frente al periodo inmediatamente anterior de la misma duración.','eReg','Cabecera · debajo de Solicitudes recibidas','ereg'],
- ['2','Desviación de remesas enviadas','Un periodo anual, semestral o trimestral frente a otro.','Cada remesa frente a la misma del año anterior.','Atlantix (nómina)','Nómina por remesa (Últimas remesas)','val'],
+ ['2','Variación de la demanda','(Periodo actual − periodo anterior) / periodo anterior × 100.','Frente al periodo inmediatamente anterior de la misma duración.','eReg','Cabecera · aviso de Solicitudes de natalidad','ereg'],
+ ['2','Desviación de remesas enviadas','Un periodo anual, semestral o trimestral frente a otro.','Cada remesa frente a la misma del año anterior.','Atlantix (nómina)','Cabecera · aviso de Beneficiarias activas (última nómina frente a la de un año antes)','val'],
  ['2','Promedio diario, mensual y anual de entrada','Solicitudes entre los días del periodo, solo iniciales válidas.','Entradas del periodo entre sus días, meses y años.','eReg','Entradas, salidas y stock (subtítulo)','ereg'],
  ['2','Distribución por país de nacimiento, nacionalidad y edad','Número y % por país, nacionalidad y tramo de edad de la madre; definir tramos y no informados.','Tramos de edad alrededor del límite de 30 años; «No informado» aparte.','Formulario','Composición','val'],
  ['2','Nº solicitudes por canal de entrada','Sede electrónica, oficina de registro, ORVE u otros canales de eReg.','Canal del asiento en eReg; también como filtro.','eReg','Composición; filtro Canal','ereg'],
- ['2','Nº de aportaciones recibidas','Aportaciones y comunicaciones por separado, vinculadas al expediente cuando sea posible.','Registros de eReg de tipo aportación o comunicación, ligados a su expediente.','eReg','Cabecera · Otros registros (aviso)','ereg'],
- ['2','Ratio de aportaciones','Aportaciones / solicitudes × 100: intensidad documental, no personas.','Aportaciones por cada 100 solicitudes del periodo.','eReg','Cabecera · debajo de Otros registros','ereg'],
- ['2','Distribución por convocatoria','Por convocatoria o régimen, sin duplicar entre anualidades. ¿Convocatoria de origen de las que pasan de año?','No hay convocatorias: la ayuda está siempre abierta y el crédito va por líneas, una por año de alta en nómina. El proceso se filtra por año de la solicitud; el crédito, por línea. Las que pasan de año entran en la línea siguiente con sus atrasos.','Atlantix + Nexus','Filtro Año de solicitud; Ejecución por línea y anualidad','val'],
+ ['2','Nº de aportaciones recibidas','Aportaciones y comunicaciones por separado, vinculadas al expediente cuando sea posible.','Registros de eReg de tipo aportación o comunicación, ligados a su expediente.','eReg','Cabecera · aviso de Otras solicitudes','ereg'],
+ ['2','Ratio de aportaciones','Aportaciones / solicitudes × 100: intensidad documental, no personas.','Aportaciones por cada 100 solicitudes del periodo.','eReg','Cabecera · aviso de Otras solicitudes','ereg'],
+ ['2','Distribución por convocatoria','Por convocatoria o régimen, sin duplicar entre anualidades. ¿Convocatoria de origen de las que pasan de año?','No hay convocatorias: la ayuda está siempre abierta y el crédito va por líneas, una por año de alta en nómina. El proceso se filtra por año de la solicitud; el crédito, por línea. Las que pasan de año entran en la línea siguiente con sus atrasos.','Atlantix + Nexus','Filtro Año de solicitud; Gestión económica','val'],
  ['2','Distribución por tipo de solicitud','Gestación, nacimiento o adopción, con la categoría «sin clasificar».','Tipo del formulario; «Sin clasificar» aparte para controlar la calidad del dato.','Formulario','Filtro Tipo; Composición','ok'],
  ['2','Distribución territorial','Por municipio de residencia, agrupando los de pocos casos.','Municipio del formulario; los de menos casos, en «Resto de municipios».','Formulario','Composición','val'],
- ['3','Stock pendiente total','Abiertos a la fecha y hora de corte, sin contar el mismo en varias etapas.','Todos los abiertos desde el registro hasta el primer pago, cada uno en su etapa de Atlantix y su situación.','eReg + Atlantix + Nexus','Stock pendiente por etapa y antigüedad','ereg'],
- ['3','Nº pendientes de recepción o alta','Diferencia entre las solicitudes de eReg y las ya incorporadas en Atlantix.','«Bandeja de registros · sin dar de alta».','eReg + Atlantix','Stock (Entrada)','ereg'],
- ['3','Nº pendientes de revisión','Dados de alta sin revisión documental completa ni primer resultado.','«Gestión Expediente» en primera revisión, o devuelto a revisión tras un requerimiento, un tercero rechazado o una respuesta desfavorable.','Atlantix','Stock por etapa','ok'],
- ['3','Nº pendientes de subsanación','Requeridos en plazo, fuera de plazo sin cerrar y aportaciones sin revisar.','Etapa «Requerimiento»: sin notificar, en plazo (diez días hábiles desde la notificación de NOTE), plazo vencido sin aportación y aportación sin validar.','Atlantix + NOTE + eReg','Stock por etapa','val'],
- ['3','Nº pendientes de terceros y errores de Nexus','Solicitudes de alta, errores de identidad o cuenta, validaciones pendientes y terceros disponibles sin continuar.','Etapa «Validación Tercero»: esperando el fichero mensual, en gestión económica, tercero creado sin cargar y tercero rechazado sin devolver. Al devolverlo se deshace la propuesta y el expediente vuelve a «Gestión Expediente».','Atlantix + Nexus','Stock por etapa; fase Validación de terceros','val'],
- ['3','Nº pendientes de Intervención','Pendientes de remitir, en fiscalización, devueltos y con reparo; tiempo hasta la respuesta.','«Pendiente de envío a la Intervención», «Intervención Concesión» y respuestas desfavorables sin devolver a gestión; el tiempo de respuesta, en la fase.','Atlantix (D029)','Stock por etapa; fase Intervención','ok'],
- ['3','Nº pendientes de resolución','Completos sin propuesta, propuesta preparada, pendiente de firma y resolución sin notificar.','Respuesta favorable de la Intervención todavía sin «Resolución Favorable Concesión».','Atlantix','Stock por etapa; fase Resolución y pago','ok'],
- ['3','Nº pendientes de pago','Pendientes de primera nómina, rechazados, incidencias de tercero o cuenta y falta de crédito.','«Resolución Favorable Concesión» esperando su primera nómina.','Atlantix + Nexus','Stock por etapa; Cabecera · Favorables por pagar','val'],
- ['3','Nº pendientes por antigüedad','Tramos 0–30, 31–60, 61–90 y más de 90 días, por etapa y convocatoria, con media y máxima.','Antigüedad desde el registro en esos cuatro tramos, por fase o por etapa; la media en cada fila y la máxima en el aviso.','eReg + Atlantix','Stock pendiente por etapa y antigüedad','ereg'],
- ['3','Nº expedientes suspendidos','Sin actuación durante el umbral / abiertos × 100.','Lo mismo, con el umbral como parámetro.','Atlantix','Cabecera · En suspensión','ok'],
- ['4','Tiempo medio E2E: criterio de cómputo','Fecha inicial y final, días naturales o hábiles, pausas y reabiertos.','Días naturales sin descontar pausas; un expediente que vuelve a gestión sigue siendo el mismo. Criterio a cerrar.','eReg + Atlantix','Cabecera · Tiempo medio E2E (aviso)','val'],
- ['4','Tiempo hasta el primer trámite y hasta el envío a Intervención','Registro → primera actuación sustantiva; registro → remesa y envío a Intervención.','Registro → primera decisión (fase Entrada) y registro → primer envío por D029 (fase Intervención).','eReg + Atlantix','Fases Entrada e Intervención','ereg'],
- ['4','Tiempo hasta el inicio del primer pago','Registro → primer abono, separando lo administrativo de lo posterior a la resolución.','Registro → primer pago, por fases y según de quién depende cada día; la espera del calendario mensual, aparte.','eReg + Atlantix + Nexus','Tiempos y embudo por fase','ereg'],
- ['4','Antigüedad máxima (alerta)','Días del pendiente más antiguo, con etapa, causa y días desde la última actuación.','Lo mismo que en la cabecera.','eReg + Atlantix','Cabecera; tabla de suspensión','ereg'],
- ['4','Tiempo registro → alta','Por solicitud inicial, sin aportaciones; mediana y P90.','Mediana y P90 de (alta − registro) de las altas del periodo.','eReg + Atlantix','Fase Entrada','ereg'],
- ['4','Tiempo de asignación del código de tercero','Solicitud del tercero → disponibilidad; la recarga mensual crea una desviación aparente.','Tres tramos: espera al fichero mensual (calendario), gestión económica (fichero → tercero creado) y carga en Atlantix. Así no se atribuye a gestión económica la espera del calendario.','Atlantix + Nexus','Tiempos y embudo; fase Validación de terceros','val'],
- ['4','Tiempo resolución → pago','Resolución favorable → primer abono, por nómina y convocatoria.','Mediana y P90 de (primer pago − «Resolución Favorable Concesión»); si la resolución llega después del cierre de la nómina propuesta, se cobra en la siguiente.','Atlantix + Nexus','Fase Resolución y pago','val'],
- ['5','Nº expedientes recepcionados','Altas en Atlantix vinculadas a un expediente.','Altas del periodo desde la bandeja de registros.','Atlantix','Fase Entrada','ok'],
- ['5','Nº expedientes revisados','Revisión documental completa con resultado registrado.','Decisiones del periodo en «Gestión Expediente»: propuesta favorable, requerimiento o denegación.','Atlantix','Fase Gestión del expediente','ok'],
- ['5','Nº propuestas favorables','Nuevas del periodo, sin duplicados ni regeneraciones técnicas.','Propuestas grabadas en el periodo; las que se repiten tras volver a gestión cuentan como repetición en la tabla de retrabajos.','Atlantix (AEFN)','Fase Gestión del expediente','ok'],
- ['5','Nº denegaciones y % sobre lo resuelto','Propuestas o resoluciones denegatorias, por causa.','«Resolución Denegación» del periodo y el requisito incumplido que marca el gestor.','Atlantix','Composición (sentido, requisito); fase Gestión','ok'],
- ['5','Nº requerimientos emitidos','Separar primeros y sucesivos.','Entradas en la etapa «Requerimiento», primeras y sucesivas.','Atlantix','Fase Gestión del expediente','ok'],
- ['5','Nº subsanaciones revisadas','Aportaciones ligadas a un requerimiento, valoradas y cerradas.','«Aportación Documentación o Fin Etapa»: vuelta a «Gestión Expediente» tras validar la aportación.','Atlantix + eReg','Fase Gestión del expediente','ok'],
- ['5','Nº envíos a Intervención','Expedientes o lotes remitidos, con fecha, volumen e importe.','Envíos por D029 del periodo y lotes; el importe, el de los pagos propuestos de cada expediente.','Atlantix (D029)','Fase Intervención','val'],
- ['5','Nº resoluciones emitidas','Firmadas en el periodo, por sentido y convocatoria.','Resoluciones del periodo, por sentido.','Atlantix','Fase Resolución y pago; Composición','ok'],
- ['5','Nº incluidos en nómina','Por remesa, separando nuevas altas y mantenimiento.','Altas de cada nómina, aparte del mantenimiento.','Atlantix (nómina)','Nómina por remesa; fase Resolución y pago','val'],
- ['5','Productividad media','Finalizados / efectivos disponibles, con dotación y días efectivos; sin uso individual.','Decisiones de gestión del periodo ÷ efectivos (parámetro) ÷ meses: un indicador del equipo.','Atlantix + la unidad','Fase Gestión del expediente','ext'],
- ['6','Tasa de requerimientos','Con al menos un requerimiento / revisados × 100, por causa documental.','Expedientes cuya primera decisión es un requerimiento; la documentación pedida, como dimensión.','Atlantix','Fase Gestión del expediente','ok'],
- ['6','Subsanación correcta','Subsanaciones que completan lo requerido / revisadas × 100.','Vueltas tras una aportación que acaban en propuesta favorable sin nuevo requerimiento.','Atlantix','Fase Gestión del expediente','ok'],
- ['6','Incidencias de terceros','Con error o bloqueo de tercero / enviados a esa fase × 100.','Terceros rechazados, casi siempre por la titularidad de la cuenta, sobre los enviados a gestión económica: deshacen la propuesta y vuelven a «Gestión Expediente».','Atlantix + Nexus','Fase Validación de terceros; Cabecera · Tasa de retrabajo','val'],
- ['6','Reparos de Intervención','Con reparo / fiscalizados × 100; tipo de reparo y reincidencia.','«Desfavorable», «Actuación Interesada» y «Dev. a instancia Promo» sobre las respuestas del periodo; las favorables con observaciones, aparte.','Atlantix (D029)','Fase Intervención; Composición (respuesta)','ok'],
- ['6','Devoluciones internas','Devueltas a una etapa anterior / tramitadas × 100.','Vueltas a «Gestión Expediente» desde «Validación Tercero» (tercero rechazado) o desde la Intervención (respuesta desfavorable); y repeticiones en las tablas de cada fase.','Atlantix','Cabecera · Tasa de retrabajo; tablas de retrabajos','ok'],
- ['6','Tasa de retrabajo','Con repetición no prevista de una actividad / tramitados × 100.','Terminados en el periodo con un segundo requerimiento, un tercero rechazado o una respuesta desfavorable de la Intervención, por motivo. El primer requerimiento no cuenta: se mide en la tasa de requerimientos.','Atlantix','Cabecera · Tasa de retrabajo; tablas de retrabajos','ok'],
- ['6','Primera tramitación correcta','Sin devolución, reparo ni repetición / finalizados × 100.','Terminados sin segundo requerimiento, tercero rechazado ni respuesta desfavorable.','Atlantix','Cabecera · aviso de Tasa de retrabajo','ok'],
+ ['3','Stock pendiente total','Abiertos a la fecha y hora de corte, sin contar el mismo en varias etapas.','Todos los abiertos desde el registro hasta el primer pago, cada uno en su etapa de Atlantix y su situación.','eReg + Atlantix + Nexus','Stock pendiente por fase y antigüedad','ereg'],
+ ['3','Nº pendientes de recepción o alta','Diferencia entre las solicitudes de eReg y las ya incorporadas en Atlantix.','«Bandeja de registros · sin dar de alta».','eReg + Atlantix','Stock por fase (Entrada)','ereg'],
+ ['3','Nº pendientes de revisión','Dados de alta sin revisión documental completa ni primer resultado.','«Gestión Expediente» en primera revisión, o devuelto a revisión tras un requerimiento, un tercero rechazado o una respuesta desfavorable.','Atlantix','Stock por fase; detalle de la fase','ok'],
+ ['3','Nº pendientes de subsanación','Requeridos en plazo, fuera de plazo sin cerrar y aportaciones sin revisar.','Etapa «Requerimiento»: sin notificar, en plazo (diez días hábiles desde la notificación de NOTE), plazo vencido sin aportación y aportación sin validar.','Atlantix + NOTE + eReg','Stock por fase; detalle de la fase','val'],
+ ['3','Nº pendientes de terceros y errores de Nexus','Solicitudes de alta, errores de identidad o cuenta, validaciones pendientes y terceros disponibles sin continuar.','Etapa «Validación Tercero»: esperando el fichero mensual, en gestión económica, tercero creado sin cargar y tercero rechazado sin devolver. Al devolverlo se deshace la propuesta y el expediente vuelve a «Gestión Expediente».','Atlantix + Nexus','Stock por fase; detalle de Validación de terceros','val'],
+ ['3','Nº pendientes de Intervención','Pendientes de remitir, en fiscalización, devueltos y con reparo; tiempo hasta la respuesta.','«Pendiente de envío a la Intervención», «Intervención Concesión» y respuestas desfavorables sin devolver a gestión; el tiempo de respuesta, en la fase.','Atlantix (D029)','Stock por fase; detalle de Intervención','ok'],
+ ['3','Nº pendientes de resolución','Completos sin propuesta, propuesta preparada, pendiente de firma y resolución sin notificar.','Respuesta favorable de la Intervención todavía sin «Resolución Favorable Concesión».','Atlantix','Stock por fase; detalle de Resolución y pago','ok'],
+ ['3','Nº pendientes de pago','Pendientes de primera nómina, rechazados, incidencias de tercero o cuenta y falta de crédito.','«Resolución Favorable Concesión» esperando su primera nómina.','Atlantix + Nexus','Stock por fase (Resolución y pago); Cabecera · aviso de Favorables','val'],
+ ['3','Nº pendientes por antigüedad','Tramos 0–30, 31–60, 61–90 y más de 90 días, por etapa y convocatoria, con media y máxima.','Antigüedad desde el registro en esos cuatro tramos, por fase; la media en cada fila y la máxima en el subtítulo.','eReg + Atlantix','Stock pendiente por fase y antigüedad','ereg'],
+ ['3','Nº expedientes suspendidos','Sin actuación durante el umbral / abiertos × 100.','Lo mismo, con el umbral como parámetro.','Atlantix','Tabla de expedientes en suspensión','ok'],
+ ['4','Tiempo medio E2E: criterio de cómputo','Fecha inicial y final, días naturales o hábiles, pausas y reabiertos.','Días naturales sin descontar pausas; un expediente que vuelve a gestión sigue siendo el mismo. Criterio a cerrar.','eReg + Atlantix','Cabecera · aviso de Tiempo E2E','val'],
+ ['4','Tiempo hasta el primer trámite y hasta el envío a Intervención','Registro → primera actuación sustantiva; registro → remesa y envío a Intervención.','Registro → primera decisión (fase Entrada) y registro → primer envío por D029 (fase Intervención).','eReg + Atlantix','Detalle de Entrada e Intervención','ereg'],
+ ['4','Tiempo hasta el inicio del primer pago','Registro → primer abono, separando lo administrativo de lo posterior a la resolución.','Registro → primer pago, por fases y según de quién depende cada día; la espera del calendario mensual, aparte.','eReg + Atlantix + Nexus','Tiempo y expedientes por fase','ereg'],
+ ['4','Antigüedad máxima (alerta)','Días del pendiente más antiguo, con etapa, causa y días desde la última actuación.','Lo mismo que en la cabecera.','eReg + Atlantix','Stock pendiente (subtítulo); tabla de suspensión','ereg'],
+ ['4','Tiempo registro → alta','Por solicitud inicial, sin aportaciones; mediana y P90.','Mediana y P90 de (alta − registro) de las altas del periodo.','eReg + Atlantix','Detalle de Entrada','ereg'],
+ ['4','Tiempo de asignación del código de tercero','Solicitud del tercero → disponibilidad; la recarga mensual crea una desviación aparente.','Tres tramos: espera al fichero mensual (calendario), gestión económica (fichero → tercero creado) y carga en Atlantix. Así no se atribuye a gestión económica la espera del calendario.','Atlantix + Nexus','Tiempo y expedientes por fase («Días de»); detalle de Validación de terceros','val'],
+ ['4','Tiempo resolución → pago','Resolución favorable → primer abono, por nómina y convocatoria.','Mediana y P90 de (primer pago − «Resolución Favorable Concesión»); si la resolución llega después del cierre de la nómina propuesta, se cobra en la siguiente.','Atlantix + Nexus','Detalle de Resolución y pago','val'],
+ ['5','Nº expedientes recepcionados','Altas en Atlantix vinculadas a un expediente.','Altas del periodo desde la bandeja de registros.','Atlantix','Detalle de Entrada','ok'],
+ ['5','Nº expedientes revisados','Revisión documental completa con resultado registrado.','Decisiones del periodo en «Gestión Expediente»: propuesta favorable, requerimiento o denegación.','Atlantix','Detalle de Gestión del expediente','ok'],
+ ['5','Nº propuestas favorables','Nuevas del periodo, sin duplicados ni regeneraciones técnicas.','Propuestas grabadas en el periodo; las que se repiten tras volver a gestión cuentan como repetición en la tabla de retrabajos.','Atlantix (AEFN)','Detalle de Gestión del expediente','ok'],
+ ['5','Nº denegaciones y % sobre lo resuelto','Propuestas o resoluciones denegatorias, por causa.','«Resolución Denegación» del periodo y el requisito incumplido que marca el gestor.','Atlantix','Composición (sentido, requisito); detalle de Gestión del expediente','ok'],
+ ['5','Nº requerimientos emitidos','Separar primeros y sucesivos.','Entradas en la etapa «Requerimiento», primeras y sucesivas.','Atlantix','Detalle de Gestión del expediente','ok'],
+ ['5','Nº subsanaciones revisadas','Aportaciones ligadas a un requerimiento, valoradas y cerradas.','«Aportación Documentación o Fin Etapa»: vuelta a «Gestión Expediente» tras validar la aportación.','Atlantix + eReg','Detalle de Gestión del expediente','ok'],
+ ['5','Nº envíos a Intervención','Expedientes o lotes remitidos, con fecha, volumen e importe.','Envíos por D029 del periodo y lotes; el importe, el de los pagos propuestos de cada expediente.','Atlantix (D029)','Detalle de Intervención','val'],
+ ['5','Nº resoluciones emitidas','Firmadas en el periodo, por sentido y convocatoria.','Resoluciones del periodo, por sentido.','Atlantix','Detalle de Resolución y pago; Composición','ok'],
+ ['5','Nº incluidos en nómina','Por remesa, separando nuevas altas y mantenimiento.','Altas de cada nómina, aparte del mantenimiento.','Atlantix (nómina)','Cabecera · Nuevas altas; detalle de Resolución y pago','val'],
+ ['5','Productividad media','Finalizados / efectivos disponibles, con dotación y días efectivos; sin uso individual.','Decisiones de gestión del periodo ÷ efectivos (parámetro) ÷ meses: un indicador del equipo.','Atlantix + la unidad','Detalle de Gestión del expediente','ext'],
+ ['6','Tasa de requerimientos','Con al menos un requerimiento / revisados × 100, por causa documental.','Expedientes cuya primera decisión es un requerimiento; la documentación pedida, como dimensión.','Atlantix','Detalle de Gestión del expediente','ok'],
+ ['6','Subsanación correcta','Subsanaciones que completan lo requerido / revisadas × 100.','Vueltas tras una aportación que acaban en propuesta favorable sin nuevo requerimiento.','Atlantix','Detalle de Gestión del expediente','ok'],
+ ['6','Incidencias de terceros','Con error o bloqueo de tercero / enviados a esa fase × 100.','Terceros rechazados, casi siempre por la titularidad de la cuenta, sobre los enviados a gestión económica: deshacen la propuesta y vuelven a «Gestión Expediente».','Atlantix + Nexus','Detalle de Validación de terceros; Cabecera · Retrabajo','val'],
+ ['6','Reparos de Intervención','Con reparo / fiscalizados × 100; tipo de reparo y reincidencia.','«Desfavorable», «Actuación Interesada» y «Dev. a instancia Promo» sobre las respuestas del periodo; las favorables con observaciones, aparte.','Atlantix (D029)','Detalle de Intervención; Composición (respuesta)','ok'],
+ ['6','Devoluciones internas','Devueltas a una etapa anterior / tramitadas × 100.','Vueltas a «Gestión Expediente» desde «Validación Tercero» (tercero rechazado) o desde la Intervención (respuesta desfavorable); y repeticiones en las tablas de cada fase.','Atlantix','Cabecera · Retrabajo; tablas de retrabajos del detalle','ok'],
+ ['6','Tasa de retrabajo','Con repetición no prevista de una actividad / tramitados × 100.','Terminados en el periodo con un segundo requerimiento, un tercero rechazado o una respuesta desfavorable de la Intervención, por motivo. El primer requerimiento no cuenta: se mide en la tasa de requerimientos.','Atlantix','Cabecera · Retrabajo; tablas de retrabajos del detalle','ok'],
+ ['6','Primera tramitación correcta','Sin devolución, reparo ni repetición / finalizados × 100.','Terminados sin segundo requerimiento, tercero rechazado ni respuesta desfavorable.','Atlantix','Cabecera · aviso de Retrabajo','ok'],
  ['6','Incidencias resueltas','Cerradas con validación funcional / registradas; tiempo medio y antigüedad.','No se ve todavía: falta saber si las incidencias técnicas se registran en Atlantix.','Por definir','—','val'],
- ['7','Resoluciones favorables','Número, % sobre lo resuelto, importe reconocido y tipo de hecho causante.','«Resolución Favorable Concesión» del periodo y su peso; el importe, el de los pagos propuestos.','Atlantix','Cabecera · Resueltos; Composición','val'],
+ ['7','Resoluciones favorables','Número, % sobre lo resuelto, importe reconocido y tipo de hecho causante.','«Resolución Favorable Concesión» del periodo y su peso; el importe, el de los pagos propuestos.','Atlantix','Cabecera · Favorables; Composición','val'],
  ['7','Resoluciones denegatorias','Número y % por motivo, convocatoria y cohorte de entrada.','El requisito incumplido como dimensión.','Atlantix','Composición (requisito incumplido)','ok'],
- ['7','Desistimientos','Expreso y por falta de subsanación.','«Resolución Desestimiento»; hoy salen de requerimientos sin aportación. Falta saber si el desistimiento expreso tiene marca propia.','Atlantix','Composición (sentido); fase Gestión del expediente','val'],
- ['7','Modificaciones positivas','Número, importe incremental, mensualidades afectadas y fecha de efecto.','«Modificación Concesión» → «PTE. ENVÍO MODIFICACIÓN ECONOM. POSITIVA» → Intervención → resolución; el importe se regulariza en la nómina.','Atlantix','Mantenimiento; Nómina por remesa','ok'],
- ['7','Modificaciones negativas, neutras y anulaciones','Número, importe minorado, mensualidades afectadas y posible regularización.','Lo mismo con «PTE. ENVÍO MODIFICACIÓN ECONOM. NEGATIVA» y «… SIN REPER. ECONOM.».','Atlantix','Mantenimiento; Nómina por remesa','ok'],
- ['7','Bajas','Número, fecha de efectos, motivo e impacto en el compromiso futuro.','«PTE. ENVÍO BAJA DE LA AYUDA»: quita las mensualidades que quedaban y minora el D. Las extinciones, fin natural del derecho, van aparte.','Atlantix + Nexus','Mantenimiento; Nómina (Extinciones y bajas)','ok'],
- ['8','Beneficiarias activas: pagos periódicos y únicos','Personas únicas en mantenimiento en la nómina del mes; total anual de activas.','Beneficiarias de cada remesa, con los pagos únicos aparte.','Atlantix (nómina) + Nexus','Cabecera; Nómina por remesa','val'],
- ['8','Altas en nómina','Nuevas incorporaciones por remesa, con mes de solicitud y atrasos.','Altas de cada remesa y meses de atraso con que entran.','Atlantix (nómina)','Cabecera; Nómina por remesa (Altas y atrasos)','val'],
- ['8','Bajas de nómina','Número, motivo, fecha de efectos y mensualidades futuras liberadas.','Bajas por remesa con las mensualidades liberadas del D; las extinciones, aparte.','Atlantix (nómina)','Nómina por remesa (Extinciones y bajas)','val'],
- ['8','Importe de nómina','Separar mantenimiento, nuevas altas, atrasos, modificaciones y regularizaciones.','Cada remesa apilada en mantenimiento, nuevas altas, atrasos, pagos únicos y regularizaciones.','Atlantix (nómina) + Nexus','Nómina por remesa','val'],
- ['8','Expedientes pagados','Con abono efectivo; no equiparar obligación reconocida con pago realizado.','Pagados con OK en Nexus; lo dispuesto pendiente de pagar, aparte.','Nexus','Ejecución por línea y anualidad','nexus'],
- ['8','Atrasos abonados','Altas con atrasos, mensualidades medias y totales e importe por cohorte.','Atrasos de cada remesa y meses medios de atraso por alta; por línea, en la vista Beneficiarias.','Atlantix (nómina)','Nómina por remesa; Ejecución por línea y anualidad','val'],
- ['9','Ejecución por línea y anualidad: A, D y OK','Para cada línea (año de alta en nómina) y anualidad: autorizado, pendiente de disponer, dispuesto, dispuesto pendiente de pagar y pagado. Es el Excel que hoy montan a mano.','Matriz línea × anualidad con autorizado (A), dispuesto (D sin terceros y D_COM) y ejecutado (OK); tarjetas y barra de la anualidad elegida.','Nexus (contabilidad)','Ejecución por línea y anualidad','nexus'],
- ['9','Ejecución por anualidad','Lo ejecutado en cada año, sumando todas las líneas.','La suma de cada columna de la matriz.','Nexus (contabilidad)','Ejecución por línea y anualidad (fila Total)','nexus'],
- ['9','Pendiente de disponer y dispuesto pendiente de pagar','Lo que queda para nuevas altas y lo ya reservado para quienes están en nómina.','A − D y D − OK de la anualidad.','Nexus (contabilidad)','Tarjetas y barra de ejecución','nexus'],
- ['9','Ejecución cierta y prevista a corto plazo','Cierta: lo pagado según Nexus. Prevista: la nómina reconocida sin pagar y la propuesta ya lanzada, que Atlantix conoce antes que Nexus.','Ejecutado + nómina del mes reconocida + resto dispuesto + pagos propuestos en Atlantix sin D_COM; el disponible según Nexus y según Atlantix, y cuántas altas más caben.','Nexus + Atlantix (AEFN)','Ejecución cierta y prevista a corto plazo','nexus'],
- ['9','Beneficiarias por línea','Personas pagadas al menos una vez en cada línea, con pagos únicos. Dos expedientes de la misma persona en dos líneas cuentan dos veces.','Expedientes de la línea con algún pago (OK) hasta la fecha de corte; también por anualidad.','Nexus','Ejecución por línea y anualidad (columna y vista Beneficiarias)','nexus'],
- ['9','Meses de atraso al entrar en nómina','Con cuántas mensualidades de atraso se incorpora cada expediente al mantenimiento, y su evolución por año.','Meses entre el mes de la solicitud y la primera nómina: por remesa y de media por línea.','Atlantix (nómina)','Nómina (Altas y atrasos); Ejecución, vista Beneficiarias','val'],
- ['9','Pagos únicos','Desglosarlos y contarlos en la ejecución y en las beneficiarias.','Pagos de una vez: sobre todo pérdidas gestacionales antes del primer pago, o resueltas después del fin del derecho.','Atlantix (nómina) + Nexus','Nómina por remesa; Cabecera · Altas en nómina','val'],
- ['9','Bajas y extinciones','Baja: se quitan mensualidades ya dispuestas y minora el D. Extinción: el fin natural del derecho.','Bajas por «PTE. ENVÍO BAJA DE LA AYUDA» con las mensualidades liberadas; extinciones cuando el menor cumple dos años.','Atlantix + Nexus','Nómina (Extinciones y bajas); Mantenimiento','ok'],
- ['9','Línea frente a año de la solicitud','Las solicitudes de un año que entran en nómina al siguiente van a la línea de ese año, con sus atrasos.','Columna «De solicitudes de años anteriores» por línea; el filtro de arriba va por año de la solicitud.','Atlantix + Nexus','Ejecución, vista Beneficiarias; filtro Año de solicitud','val'],
- ['9','Importe por hijo','500 € al mes por hijo: un embarazo gemelar son 1.000 €.','La mensualidad de cada expediente es 500 € por hijo; los hijos por solicitud, también como dimensión.','Atlantix','Composición (hijos); Nómina (tarjeta Beneficiarias)','ok'],
- ['9','Tiempo de gestión económica en terceros','Desde que reciben el fichero hasta que devuelven los terceros: horas, un día como mucho. Lo que se requiere a la interesada no es tiempo suyo.','Fichero de terceros → tercero creado, aparte de la espera al fichero y de los rechazos, que vuelven a gestión.','Atlantix + Nexus','Tiempos y embudo (Gestión económica); fase Validación de terceros','val'],
+ ['7','Desistimientos','Expreso y por falta de subsanación.','«Resolución Desestimiento»; hoy salen de requerimientos sin aportación. Falta saber si el desistimiento expreso tiene marca propia.','Atlantix','Composición (sentido); detalle de Gestión del expediente','val'],
+ ['7','Modificaciones positivas','Número, importe incremental, mensualidades afectadas y fecha de efecto.','«Modificación Concesión» → «PTE. ENVÍO MODIFICACIÓN ECONOM. POSITIVA» → Intervención → resolución; el importe se regulariza en la nómina.','Atlantix','No está en la pantalla: se quitó para simplificar (reunión del 14/10)','ok'],
+ ['7','Modificaciones negativas, neutras y anulaciones','Número, importe minorado, mensualidades afectadas y posible regularización.','Lo mismo con «PTE. ENVÍO MODIFICACIÓN ECONOM. NEGATIVA» y «… SIN REPER. ECONOM.».','Atlantix','No está en la pantalla: se quitó para simplificar (reunión del 14/10)','ok'],
+ ['7','Bajas','Número, fecha de efectos, motivo e impacto en el compromiso futuro.','«PTE. ENVÍO BAJA DE LA AYUDA»: quita las mensualidades que quedaban y minora el D. Las extinciones, fin natural del derecho, van aparte.','Atlantix + Nexus','Cabecera · aviso de Beneficiarias inactivas','ok'],
+ ['8','Beneficiarias activas: pagos periódicos y únicos','Personas únicas en mantenimiento en la nómina del mes; total anual de activas.','Beneficiarias de cada remesa, con los pagos únicos aparte.','Atlantix (nómina) + Nexus','Cabecera · Beneficiarias activas y Pagos únicos','val'],
+ ['8','Altas en nómina','Nuevas incorporaciones por remesa, con mes de solicitud y atrasos.','Altas de cada remesa y meses de atraso con que entran.','Atlantix (nómina)','Cabecera · Nuevas altas (aviso con los atrasos)','val'],
+ ['8','Bajas de nómina','Número, motivo, fecha de efectos y mensualidades futuras liberadas.','Bajas por remesa con las mensualidades liberadas del D; las extinciones, aparte.','Atlantix (nómina)','Cabecera · aviso de Beneficiarias inactivas','val'],
+ ['8','Importe de nómina','Separar mantenimiento, nuevas altas, atrasos, modificaciones y regularizaciones.','Cada remesa apilada en mantenimiento, nuevas altas, atrasos, pagos únicos y regularizaciones.','Atlantix (nómina) + Nexus','Cabecera · aviso de Beneficiarias activas (importe de la última nómina)','val'],
+ ['8','Expedientes pagados','Con abono efectivo; no equiparar obligación reconocida con pago realizado.','Pagados con OK en Nexus; lo dispuesto pendiente de pagar, aparte.','Nexus','Gestión económica (tabla por línea)','nexus'],
+ ['8','Atrasos abonados','Altas con atrasos, mensualidades medias y totales e importe por cohorte.','Atrasos de las altas del periodo y meses medios de atraso con que entran.','Atlantix (nómina)','Cabecera · aviso de Nuevas altas','val'],
+ ['9','Ejecución por línea y anualidad: A, D y OK','Para cada línea (año de alta en nómina) y anualidad: autorizado, pendiente de disponer, dispuesto, dispuesto pendiente de pagar y pagado. Es el Excel que hoy montan a mano.','Matriz línea × anualidad con autorizado (A), dispuesto (D sin terceros y D_COM) y ejecutado (OK); tarjetas y barra de la anualidad elegida.','Nexus (contabilidad)','Gestión económica (tabla por línea)','nexus'],
+ ['9','Ejecución por anualidad','Lo ejecutado en cada año, sumando todas las líneas.','La suma de cada columna de la matriz.','Nexus (contabilidad)','Gestión económica (fila Total)','nexus'],
+ ['9','Pendiente de disponer y dispuesto pendiente de pagar','Lo que queda para nuevas altas y lo ya reservado para quienes están en nómina.','A − D y D − OK de la anualidad.','Nexus (contabilidad)','Gestión económica (Pendiente de pagar y Pendiente de disponer)','nexus'],
+ ['9','Gestión económica (a corto plazo: propuesto, cierre previsto y margen)','Cierta: lo pagado según Nexus. Prevista: la nómina reconocida sin pagar y la propuesta ya lanzada, que Atlantix conoce antes que Nexus.','Ejecutado + nómina del mes reconocida + resto dispuesto + pagos propuestos en Atlantix sin D_COM; el disponible según Nexus y según Atlantix, y cuántas altas más caben.','Nexus + Atlantix (AEFN)','Gestión económica (a corto plazo: propuesto, cierre previsto y margen)','nexus'],
+ ['9','Beneficiarias por línea','Personas pagadas al menos una vez en cada línea, con pagos únicos. Dos expedientes de la misma persona en dos líneas cuentan dos veces.','Expedientes de la línea con algún pago (OK) hasta la fecha de corte; también por anualidad.','Nexus','Gestión económica (columna Beneficiarias)','nexus'],
+ ['9','Meses de atraso al entrar en nómina','Con cuántas mensualidades de atraso se incorpora cada expediente al mantenimiento, y su evolución por año.','Meses entre el mes de la solicitud y la primera nómina: por remesa y de media por línea.','Atlantix (nómina)','Cabecera · aviso de Nuevas altas','val'],
+ ['9','Pagos únicos','Desglosarlos y contarlos en la ejecución y en las beneficiarias.','Pagos de una vez: sobre todo pérdidas gestacionales antes del primer pago, o resueltas después del fin del derecho.','Atlantix (nómina) + Nexus','Cabecera · Pagos únicos','val'],
+ ['9','Bajas y extinciones','Baja: se quitan mensualidades ya dispuestas y minora el D. Extinción: el fin natural del derecho.','Bajas por «PTE. ENVÍO BAJA DE LA AYUDA» con las mensualidades liberadas; extinciones cuando el menor cumple dos años.','Atlantix + Nexus','Cabecera · aviso de Beneficiarias inactivas','ok'],
+ ['9','Línea frente a año de la solicitud','Las solicitudes de un año que entran en nómina al siguiente van a la línea de ese año, con sus atrasos.','Columna «De solicitudes de años anteriores» por línea; el filtro de arriba va por año de la solicitud.','Atlantix + Nexus','Filtro Año de solicitud; Gestión económica','val'],
+ ['9','Importe por hijo','500 € al mes por hijo: un embarazo gemelar son 1.000 €.','La mensualidad de cada expediente es 500 € por hijo; los hijos por solicitud, también como dimensión.','Atlantix','Composición (hijos)','ok'],
+ ['9','Tiempo de gestión económica en terceros','Desde que reciben el fichero hasta que devuelven los terceros: horas, un día como mucho. Lo que se requiere a la interesada no es tiempo suyo.','Fichero de terceros → tercero creado, aparte de la espera al fichero y de los rechazos, que vuelven a gestión.','Atlantix + Nexus','Tiempo y expedientes por fase («Días de» gestión económica); detalle de Validación de terceros','val'],
 ];
 const hojaFiltro = { est:'', bloque:'' };
 const hKey = (i, c) => 'natv13:hoja:' + i + ':' + c;
@@ -2849,7 +2655,7 @@ function renderHoja(){
   const nE = cnt.ereg || 0, nN = cnt.nexus || 0, nV = cnt.val || 0;
   document.getElementById('dfNota').innerHTML = `<strong>Qué falta para pasar de la maqueta al cuadro real.</strong> ` +
     `${nE} indicadores necesitan conectar <strong>eReg</strong>: sin él no se ve la bolsa previa al alta ni se puede medir desde la entrada en el registro de la DG. ` +
-    `${nN} necesitan la <strong>contabilidad de Nexus</strong> (fases A, D y OK): el dato cierto de lo dispuesto y lo pagado está allí. En la cabecera llevan la etiqueta eReg o Nexus. ` +
+    `${nN} necesitan la <strong>contabilidad de Nexus</strong> (fases A, D y OK): el dato cierto de lo dispuesto y lo pagado está allí. En la cabecera lo dice el aviso (i) de cada indicador. ` +
     `${nV} necesitan <strong>validar un nombre, una etapa o una definición</strong>: las etapas y situaciones de Atlantix con Sofía y Soluciones, y la nómina y los pagos con gestión económica. ` +
     `${cnt.ok || 0} se pueden calcular ya con Atlantix.`;
 }
@@ -2870,6 +2676,11 @@ function vista(k){
   if (k === 'all'){ [chFase, chFlujo, chCompo].forEach(c => c.resize()); renderFase(); renderFlujo(); renderStock(); renderCompo(); renderSusp(); }
   else { const f = FASES[FI[k]];
     document.getElementById('faseTt').innerHTML = `Detalle de la fase · <b>${f.n}</b> <i class="ii" data-t="${esc(f.meta.replace(/<[^>]+>/g, ''))}">i</i>`;
+    /* lo que Javi quería ver al pinchar en la fase: de quién dependen sus días */
+    const R = calcFases(), q = FI[k], n = R.dur[q].length, tt = n ? media(R.dur[q]) : 0;
+    document.getElementById('faseRep').innerHTML = n ? `<span class="fr-t"><b>${f1(tt)} días</b> de media en la fase</span><span class="fr-bar">` +
+      RK.filter(x => R.rs[q][x]/n >= 0.05).map(x => `<i style="flex:${R.rs[q][x]/n};background:${RESP[x].c};" data-tip="${RESP[x].n}: ${f1(R.rs[q][x]/n)} d"></i>`).join('') + `</span>` +
+      RK.filter(x => R.rs[q][x]/n >= 0.05).map(x => `<span class="fr-k"><i style="background:${RESP[x].c};"></i>${RESP[x].n} <b>${f1(R.rs[q][x]/n)} d</b></span>`).join('') : '';
     renderActDims(); renderLectura(); renderAct(); }
   if (cambia){ const el = document.getElementById(k === 'all' ? 'vAll' : 'vFase'); if (el.getBoundingClientRect().top < 0) el.scrollIntoView(); }
 }
@@ -2933,8 +2744,6 @@ function initUI(){
   document.getElementById('faseBack').addEventListener('click', () => vista('all'));
   document.getElementById('flFase').innerHTML = `<option value="all">Proceso completo</option>` + FASES.map(f => `<option value="${f.k}">${f.n}</option>`).join('');
   document.getElementById('flFase').addEventListener('change', renderFlujo);
-  if (0) document.getElementById('stGrp').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return;
-    stGrp = b.dataset.g; document.querySelectorAll('#stGrp button').forEach(x => x.classList.toggle('on', x === b)); renderStock(); });
   document.getElementById('cpDim').addEventListener('change', renderCompo);
   document.getElementById('suspTabs').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; suspResp = b.dataset.r; renderSusp(); });
   document.querySelectorAll('#tSusp th').forEach(th => th.addEventListener('click', () => {
