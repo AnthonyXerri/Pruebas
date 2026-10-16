@@ -2489,10 +2489,11 @@ function renderCabecera(K, NM_, CR){
       'Cómo se calcula: beneficiarias con mensualidad en la última nómina pagada del periodo (mantenimiento + nuevas altas). Una persona con dos expedientes cuenta dos veces.',
       nb ? `Ahora: nómina de ${mesB}, ${eur(impB)}${impA ? `, un ${pcs(Math.abs(pc(impB - impA, impA)))} ${impB >= impA ? 'más' : 'menos'} que la del año anterior` : ''}. 500 € al mes por hijo.` : '',
       'Fuente: nómina de Atlantix + Nexus.') },
-    { l:'Pagos únicos', v:nf(unicos), tip:L(
+    { l:'Pagos únicos', v:nf(K.unCoh || 0), tip:L(
       'Qué es: pagos de una sola vez que no entran en la nómina mensual.',
       'Cuándo pasa: pérdida gestacional antes del primer pago, o expediente resuelto cuando el menor ya ha cumplido dos años. Se paga de golpe todo lo devengado.',
-      `Ahora: ${nf(unicos)} pagos por ${eur(unImp)}. Lo pidió Pablo (gestión económica).`,
+      `Cómo se calcula: de los expedientes resueltos favorables del periodo, los que cobraron con un pago único. Con las nuevas altas en nómina suman los que ya han cobrado: ${nf(K.altaNom || 0)} + ${nf(K.unCoh || 0)} = ${nf(K.favPag)}.`,
+      `Ahora: contando todas las nóminas pagadas en el periodo, también de solicitudes anteriores, fueron ${nf(unicos)} pagos por ${eur(unImp)}. Lo pidió Pablo (gestión económica).`,
       'Fuente: nómina de Atlantix + Nexus.') },
     { l:'Beneficiarias inactivas', v: nb ? nf(inact) : '—', tip:L(
       'Qué es: beneficiarias que han dejado de cobrar durante el periodo.',
@@ -2584,7 +2585,7 @@ function initCharts(){
       plugins:{ ...baseOpts.plugins, tooltip:{ ...baseOpts.plugins.tooltip, filter:it => it.raw !== 0 && it.raw !== null,
         callbacks:{ title:it => chFlujo.$t[it[0].dataIndex], label:c => c.dataset.$pct ? ` ${c.dataset.label}: ${pcs(c.raw, 0)}` : ` ${c.dataset.label}: ${nf(c.raw)}`,
           afterBody:it => { const x = chFlujo.$fs && chFlujo.$fs[it[0].dataIndex];
-            if (x) return ['', `Pendientes al empezar: ${nf(x.s0)} → al final: ${nf(x.fin)}`, `Salen: ${nf(x.sig)} a la fase siguiente${x.ant ? ', ' + nf(x.ant) + ' vuelven atrás' : ''}${x.term ? ', ' + nf(x.term) + ' terminan aquí' : ''}`];
+            if (x) return ['', ...(x.nota ? [`Entran: ${x.nota}`] : []), `Pendientes al empezar: ${nf(x.s0)} → al final: ${nf(x.fin)}`, `Salen: ${nf(x.sig)} a la fase siguiente${x.ant ? ', ' + nf(x.ant) + ' vuelven atrás' : ''}${x.term ? ', ' + nf(x.term) + ' terminan aquí' : ''}`];
             if (chFlujo.$all) return []; const i = it[0].dataIndex, e = chFlujo.$e[i], s = chFlujo.$s[i];
             return ['', `Entran ${nf(e)} · salen ${nf(s)} · ${e - s >= 0 ? 'la bolsa sube ' + nf(e - s) : 'la bolsa baja ' + nf(s - e)}`]; } } } },
       scales:{ x:{ ...axis, stacked:true, grid:{display:false}, ticks:{ ...axis.ticks, maxRotation:0, autoSkipPadding:8 } },
@@ -2642,10 +2643,12 @@ function renderFlujoFases(){
     { ...bar, label:'Salen de la fase', data:X.map(x => x.sal), backgroundColor:SLA, stack:'s' },
     { ...bar, label:'Pendientes al final', data:X.map(x => x.fin), backgroundColor:GRY2, stack:'p' } ];
   chFlujo.update();
-  const k = X.reduce((a, x, i) => x.fin > X[a].fin ? i : a, 0), cr = X.reduce((a, x, i) => (x.fin - x.s0) > (X[a].fin - X[a].s0) ? i : a, 0);
+  let vueltas = 0, dupP = 0;
+  for (const c of VIS){ if (!okc(c)) continue; c.a.forEach((a, i) => { if ((a === 'ETER' || a === 'VGE') && enP(c.t[i])) vueltas++; }); if (enP(c.reg) && c.res === 'dup' && c.fin <= P1) dupP++; }
+  X[0].nota = `incluye ${nf(dupP)} duplicadas, que entran en la bandeja y se descartan`; X[1].nota = `incluye ${nf(vueltas)} vueltas desde validación de terceros o desde la Intervención`;
+  const k = X.reduce((a, x, i) => x.fin > X[a].fin ? i : a, 0);
   document.getElementById('c2Ttl').textContent = `↑ Entradas, salidas y pendientes de cada fase, del ${fdate(P0)} al ${fdate(P1)}`;
-  document.getElementById('c2Sub').innerHTML = `Más pendientes al final: <b>${FASES[k].n.toLowerCase()}</b> (${nf(X[k].fin)})` +
-    (X[cr].fin > X[cr].s0 ? ` · la que más crece: <b>${FASES[cr].n.toLowerCase()}</b> (+${nf(X[cr].fin - X[cr].s0)})` : ' · ninguna fase acumula más que al empezar');
+  document.getElementById('c2Sub').innerHTML = `Más pendientes al final: <b>${FASES[k].n.toLowerCase()}</b> (${nf(X[k].fin)}) · terceros, Intervención y pago van por lotes mensuales: su pendiente depende del día de corte`;
   document.getElementById('c2Leg').innerHTML = legHtml([['rgba(0,91,96,.26)', 'Entran en la fase'], [SLA, 'Salen de la fase'], [GRY2, 'Pendientes al final del periodo']]);
 }
 /* la vista mensual de Javi: lo que entra, lo que se da de alta y lo que se resuelve, con sus porcentajes */
