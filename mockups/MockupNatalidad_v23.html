@@ -1357,6 +1357,19 @@ table.eco-t tr.sub td{font-weight:600;border-top:1px solid #E3E5EB;}
 .tbl-hdr .susp-ctl .resp-tabs{margin-left:0;}
 .tag-ley{display:inline-block;margin-left:6px;font-size:9.5px;font-weight:700;color:#8A5200;background:#FFF4E5;border:1px solid #F3D9B1;border-radius:2px;padding:0 5px;white-space:nowrap;}
 #tSusp td.mh{color:var(--cgy);font-size:10.5px;margin-left:3px;}
+/* pendientes de resolver en tres grupos */
+.kt-gr{margin-top:6px;display:flex;flex-direction:column;gap:2px;font-size:10px;line-height:1.3;color:var(--cgy);}
+.kt-gr .r{display:grid;grid-template-columns:var(--nw, 28px) 1fr;column-gap:5px;align-items:baseline;padding:1px 5px 1px 2px;margin:0 -5px 0 -2px;border-radius:2px;}
+.kt-gr .r b{font-weight:600;color:var(--cnavy);font-variant-numeric:tabular-nums;text-align:right;}
+.kt-gr .r.on{background:#E6F0F0;color:var(--cteal);font-weight:500;cursor:pointer;box-shadow:inset 2px 0 0 var(--cteal);}
+.kt-gr .r.on b{color:var(--cteal);}
+.kt-gr .r.on:hover{background:#D6E8E8;}
+table.cmp-t tr.sub td.nm{padding-left:22px;color:var(--cgy);}
+table.cmp-t tr.sub td{font-size:11px;}
+.pg-p.on{fill:var(--cteal);font-weight:500;}
+#tblSusp .tbl-hdr{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;row-gap:8px;}
+#tblSusp .tbl-hdr .susp-ctl{grid-column:1 / -1;grid-row:2;margin-left:0;justify-content:flex-start;}
+#tblSusp #suspCSV{grid-column:2;grid-row:1;}
 </style>
 </head>
 <body>
@@ -2085,6 +2098,10 @@ function sitOf(c, i, T){
   return 'ge1';
 }
 const respOf = (c, i, s) => SIT[s].r;
+/* grupos de «Expedientes pendientes de resolver» (reunión del 27/10): en revisión o requerimiento, revisados de
+   conformidad sin proponer y ya propuestos (terceros, Intervención o firma) */
+const grupoSit = s => s === 'rok' || s === 'rokU' ? 'rok' : SIT[s].f === 'ges' || SIT[s].f === 'ent' ? 'rev' : 'prop';
+const grupoPend = c => grupoSit(sitOf(c, idxAt(c, P1), P1));
 /* nómina en la que la última propuesta favorable hasta el evento i propone pagar */
 const nPropAt = (c, i) => { for (let j = i; j >= 0; j--) if (c.a[j] === 'PF') return c.x[j]; return c.nProp; };
 /* D_COM positivo de un alta: gestión económica lo hace tras la resolución, a final del mes anterior a su primera nómina */
@@ -2164,7 +2181,11 @@ function calcCabecera(){
   const K = { rec:0, recPrev:0, apo:0, com:0, gen:0, dupT:0, anu:0, ent:0, entOld:0, ges:0, req:0, pf:0,
     pfImp:{atr:0, mes:0, resto:0}, pfMes:{}, pfN:{}, fav:0, favCau:{nom:0, ter:0, adm:0, cre:0}, susp:0, abiertos:0, abiertos0:0,
     ant:null, res:{con:0, den:0, des:0}, fin:0, e2e:[], tram:[], pp:0, ppOk:0, superan:0,
-    tramit:0, retr:0, rReq:0, rTer:0, rInt:0, nat:0, dupC:0, pdte:0, alta:0, resC:0, dd:0, favC:0, favPag:0, tA:[] };
+    tramit:0, retr:0, rReq:0, rTer:0, rInt:0, nat:0, dupC:0, pdte:0, alta:0, resC:0, dd:0, favC:0, favPag:0, tA:[],
+    curG:{rev:0, rok:0, prop:0},
+    /* revisados sin proponer a la fecha de corte, sean de la solicitud que sean, y lo que costaría proponerlos todos en la
+       primera nómina a la que aún pueden llegar (el fichero de terceros se genera el día 7 del mes anterior) */
+    rok:{n:0, q:0, n30:0, fuera:0, atr:0, mes:0, Nn:dateOf(P1).getUTCDate() < 7 ? ymOf(P1) + 1 : ymOf(P1) + 2} };
   for (const c of VIS){ if (!okc(c)) continue;
     if (c.fin !== undefined && c.fin < Q0) continue;            /* cerrado antes de todo lo que se mira */
     if (enP(c.reg)) K.rec++; else if (c.reg >= Q0 && c.reg < P0) K.recPrev++;
@@ -2174,6 +2195,7 @@ function calcCabecera(){
       else { K.nat++;
         if (!(c.alta <= P1)) K.pdte++;
         else { K.alta++;
+          if (!(c.resol <= P1)) K.curG[grupoPend(c)]++;
           if (c.resol <= P1){ K.resC++; if (c.res === 'con'){ K.favC++; if (c.fin <= P1){ K.favPag++; if (c.unico) K.unCoh = (K.unCoh || 0) + 1; else { K.altaNom = (K.altaNom || 0) + 1; K.atrMesCoh = (K.atrMesCoh || 0) + c.P - c.D; } } } else { K.dd++; if (c.res === 'den') K.denC = (K.denC || 0) + 1; else K.desC = (K.desC || 0) + 1; } } } }
     }
     if (c.resol !== undefined && enP(c.resol)){ K.tA.push(c.alta - c.reg); if (c.resol - c.reg > F.plazo) K.fuera = (K.fuera || 0) + 1; }
@@ -2190,6 +2212,8 @@ function calcCabecera(){
           const x = costeNomina(c, np, Math.floor(np/12)*12 + 11); K.pfImp.atr += x.atr; K.pfImp.mes += x.mes; K.pfImp.resto += x.resto;
           K.pfMes[np] = (K.pfMes[np] || 0) + x.atr + x.mes + x.resto; K.pfN[np] = (K.pfN[np] || 0) + 1; } }
       const quieto = P1 - c.t[i], edad = P1 - c.reg;
+      if (grupoSit(s) === 'rok'){ const r = K.rok, x = costeNomina(c, r.Nn, r.Nn);
+        r.n++; r.q += quieto; if (quieto > 30) r.n30++; if (s === 'rokU') r.fuera++; r.atr += x.atr; r.mes += x.mes; }
       if (quieto > F.umbral) K.susp++;
       if (!K.ant || edad > K.ant.edad) K.ant = { c, edad, quieto, f, s };
       if (!(c.pp <= P1) && edad > F.plazo) K.superan++;
@@ -2538,12 +2562,12 @@ function nominaPeriodo(NM_){
 /* valor numérico de cada indicador de la cabecera */
 function valores(K, NM_){
   const o = nominaPeriodo(NM_), resT = K.e2e.length;
-  return { ent:K.nat + K.otros + K.dupC, apo:K.otros + K.dupC, nat:K.nat, pdte:K.pdte, alta:K.alta, cur:K.alta - K.resC, resC:K.resC, dd:K.dd, favC:K.favC,
+  return { ent:K.nat + K.otros + K.dupC, apo:K.otros + K.dupC, nat:K.nat, pdte:K.pdte, alta:K.alta, cur:K.alta - K.resC, curRev:K.curG.rev, curRok:K.curG.rok, curProp:K.curG.prop, resC:K.resC, dd:K.dd, favC:K.favC,
     e2e:resT ? media(K.e2e) : null, tA:K.tA.length ? media(K.tA) : null, tram:K.tram.length ? media(K.tram) : null,
     fuera:resT ? pc(K.fuera || 0, resT) : null, retr:K.retr, retrP:K.tramit ? pc(K.retr, K.tramit) : null,
     altaNom:K.altaNom || 0, ben:o.nb ? o.nb.ben : null, unCoh:K.unCoh || 0, rects:o.rects, dejan:o.nb ? o.inact + o.unicos : null, ejec:o.ejec };
 }
-const FMT = { ent:'n', apo:'n', nat:'n', pdte:'n', alta:'n', cur:'n', resC:'n', dd:'n', favC:'n', e2e:'d', tA:'d', tram:'d', fuera:'p', retr:'n', retrP:'p',
+const FMT = { ent:'n', apo:'n', nat:'n', pdte:'n', alta:'n', cur:'n', curRev:'n', curRok:'n', curProp:'n', resC:'n', dd:'n', favC:'n', e2e:'d', tA:'d', tram:'d', fuera:'p', retr:'n', retrP:'p',
   altaNom:'n', ben:'n', unCoh:'n', rects:'n', dejan:'n', ejec:'e' };
 const fmtV = (k, v) => v === null || v === undefined ? '—' : FMT[k] === 'd' ? f1(v) + ' d' : FMT[k] === 'p' ? f1(v) + '%' : FMT[k] === 'e' ? f1(v/1e6) + ' M€' : nf(v);
 /* diferencia: en número y en % (en puntos si el indicador ya es un %) */
@@ -2594,6 +2618,15 @@ function renderCabecera(K, NM_, X){
   /* los avisos (i) son la chuleta de la reunión: qué es, cómo se calcula, cómo se lee la cifra de ahora y de dónde sale */
   const L = (...l) => l.filter(Boolean).join('\n');
   const resT = K.e2e.length, fuera = K.fuera || 0, mesB = mB !== undefined ? ymLargo(mB) : '';
+  const G3 = K.curG, rk = K.rok;
+  const tipRok = L('Qué es: expedientes de «Gestión Expediente» ya revisados de conformidad que todavía no se han propuesto a nómina. La unidad elige cada mes cuáles entran en la propuesta, según el crédito y la carga de trabajo.',
+    rk.n ? `Ahora: ${nf(rk.n)} a la fecha de corte, contando también los de solicitudes anteriores al periodo. Llevan de media ${f0(rk.q/rk.n)} días desde la revisión y ${nf(rk.n30)} más de 30 días; ${nf(rk.fuera)} ya se quedaron fuera de la última propuesta.` : 'Ahora: ninguno a la fecha de corte.',
+    rk.n ? `Si se proponen todos: en la nómina de ${ymLargo(rk.Nn)}, ${eur(rk.atr)} de atrasos y ${eur(rk.mes)} de primera mensualidad, ${eur(rk.atr + rk.mes)} en total; después, ${eur(rk.mes)} más cada mes. Cuánto cabe está en «Gestión económica · A corto plazo».` : '',
+    'Cómo leerlo: pulsa para verlos en «Expedientes sin actividad», con sus días sin actuación y sus atrasos.',
+    'Fuente: hoy solo constan en el Excel de cada tramitador. Para contarlos con datos reales, Atlantix tiene que registrar la revisión con su fecha: con la etapa «Propuesta favorable» o con una marca «revisado de conformidad» (lo decide la unidad).');
+  const grupos = `<div class="kt-gr" style="--nw:${Math.max(...[G3.rev, G3.rok, G3.prop].map(v => nf(v).length)) + .3}ch"><div class="r"><b>${nf(G3.rev)}</b><span>en revisión</span></div>` +
+    `<div class="r on" data-t="${esc(tipRok)}"><b>${nf(G3.rok)}</b><span>revisados sin proponer</span></div>` +
+    `<div class="r"><b>${nf(G3.prop)}</b><span>ya propuestos</span></div></div>`;
   const V = [
     { k:'ent', l:'Entradas en registro <em class="kt-sub">(total de solicitudes)</em>', v:nf(total), tip:L(
       'Qué es: todo lo que entra por el registro electrónico (eReg) para esta ayuda en el periodo: las solicitudes y cualquier otro escrito. En registro se llaman «entradas».',
@@ -2629,11 +2662,12 @@ function renderCabecera(K, NM_, X){
         'Cómo se calcula: solicitudes recibidas con expediente dado de alta antes de la fecha de corte.',
         `Cómo leerlo: se reparten en expedientes pendientes de resolver (${nf(K.alta - K.resC)}) y resueltos (${nf(K.resC)}).`,
         'Fuente: Atlantix.') },
-    { k:'cur', l:'Expedientes pendientes de resolver', v:nf(K.alta - K.resC), side:1, tip:L(
+    { k:'cur', l:'Expedientes pendientes de resolver', v:nf(K.alta - K.resC), side:1, grp:grupos, tip:L(
       'Qué es: expedientes dados de alta que todavía no tienen resolución. Son los que están en trámite ahora mismo.',
-      'Cómo se calcula: expedientes dados de alta − expedientes resueltos.',
-      'Cómo leerlo: están en gestión del expediente (incluidos los requerimientos y los ya revisados de conformidad que aún no se han propuesto a nómina), en validación de terceros, en la Intervención o pendientes de firmar la resolución. El reparto por fase está en «Stock pendiente» y en el explorador de procesos; los parados más de 30 días, en «Expedientes sin actividad».',
-      'Fuente: Atlantix.') },
+      'Cómo se calcula: expedientes dados de alta − expedientes resueltos. Se reparten en tres grupos según dónde está cada uno a la fecha de corte.',
+      `Ahora: ${nf(G3.rev)} en revisión (primera revisión, devueltos a revisión o con requerimiento); ${nf(G3.rok)} revisados de conformidad que aún no se han propuesto a nómina; y ${nf(G3.prop)} ya propuestos, en validación de terceros, en la Intervención o pendientes de firmar la resolución.`,
+      'Cómo leerlo: el grupo destacado es el que espera a la unidad: ya está revisado y falta incluirlo en una propuesta. Al pasar el ratón por él se ve cuánto costaría proponerlos todos; al pulsarlo, la lista. El reparto por fase está en «Stock pendiente» y en el explorador de procesos; los parados más de 30 días, en «Expedientes sin actividad».',
+      'Fuente: Atlantix. Los revisados sin proponer, cuando Atlantix registre la revisión de conformidad (etapa o marca, a decidir).') },
     { k:'resC', l:'Expedientes resueltos', v:nf(K.resC), p:pc(K.resC, K.alta), pl:'de los de alta', bar:1,
       pt:L('Qué es: de lo que ha entrado en tramitación, cuánto está ya resuelto.', `Cómo se calcula: expedientes resueltos ÷ expedientes dados de alta = ${nf(K.resC)} ÷ ${nf(K.alta)}.`,
         'Cómo leerlo: con un año de periodo es normal no llegar al 100%: lo último que entró aún se está tramitando.'),
@@ -2719,7 +2753,7 @@ function renderCabecera(K, NM_, X){
     return x ? `<div class="kt-cmp" data-tip="${esc(tip)}">${x.fl} <b>${x.n}</b>${x.p ? ' · ' + x.p : ''}</div>` : `<div class="kt-cmp" data-tip="${esc(tip)}">sin dato para comparar</div>`; };
   const tile = (o, ini, fin) => `<div class="kt${o.side ? ' side' : ''}${ini ? ' kl' : ''}${fin ? ' kr' : ''}">` +
     `<div class="kt-l"><span>${o.l}</span> <i class="ii" data-t="${esc(o.tip)}">i</i></div><div class="kt-v"><span>${o.v}</span></div>` + cmpL(o) +
-    (o.sub ? `<div class="kt-s">${o.sub}</div>` : '') +
+    (o.sub ? `<div class="kt-s">${o.sub}</div>` : '') + (o.grp || '') +
     (o.pl ? `<div class="kt-pc"><b>${pcs(o.p, 0)}</b><span class="kt-pl">${o.pl} <i class="ii" data-t="${esc(o.pt)}">i</i></span></div><div class="kt-bar"${o.bar ? '' : ' style="visibility:hidden"'}><i style="width:${o.bar ? Math.min(100, o.p).toFixed(1) : 0}%"></i></div>` : '') + `</div>`;
   /* cinco bloques, como los separa el Excel de Javi: antes del alta, tramitación, tiempos, reprocesos y gestión económica */
   const G = [[['pre', 'Fase previa a tramitación', 'De la entrada en eReg al alta en Atlantix.', V.slice(0, 4), 'Lo que pasa antes de que exista el expediente: lo que entra por registro (eReg) y las solicitudes que esperan a que se les cree expediente. Son las del periodo vistas a la fecha de corte.\nCómo leerlo: es un embudo. Cada tarjeta gris es lo que se queda en ese paso; sumada a la blanca de su derecha da la anterior.'],
@@ -3158,7 +3192,8 @@ function remesasPagadas(){ let m = ymOf(P1); while (ymDay(m, 27) + .5 > P1) m--;
 
 /* ════════ PESTAÑA · COMPARATIVA DE PERIODOS ════════ */
 const CMP_FILAS = [['Fase previa a tramitación', [['ent','Entradas en registro'], ['apo','Aportaciones'], ['nat','Solicitudes recibidas'], ['pdte','Pendientes de alta']]],
-  ['Fase de tramitación', [['alta','Expedientes dados de alta'], ['cur','Expedientes pendientes de resolver'], ['resC','Expedientes resueltos'], ['dd','Expedientes denegados o desistidos'], ['favC','Expedientes resueltos favorables']]],
+  ['Fase de tramitación', [['alta','Expedientes dados de alta'], ['cur','Expedientes pendientes de resolver'], ['curRev','en revisión o requerimiento',1], ['curRok','revisados de conformidad sin proponer',1],
+    ['curProp','propuestos sin resolver',1], ['resC','Expedientes resueltos'], ['dd','Expedientes denegados o desistidos'], ['favC','Expedientes resueltos favorables']]],
   ['Tiempos', [['e2e','Tiempo E2E'], ['tA','Registro → alta'], ['tram','Alta → resolución'], ['fuera','Incumplimiento de plazo de tramitación']]],
   ['Reprocesos', [['retr','Expedientes con reprocesos'], ['retrP','% de los terminados con reprocesos']]],
   ['Gestión económica', [['altaNom','Nuevas altas en nómina'], ['ben','Beneficiarias activas (mantenimiento)'], ['unCoh','Pagos únicos con expediente propio'],
@@ -3178,9 +3213,9 @@ function renderComparativa(){
       (CMP.corto ? ' · los datos empiezan el 01/01/2022: el periodo de comparación está incompleto' : '') + ' · con los mismos filtros de año, tipo y canal.';
     let h = `<thead><tr><th>Indicador</th><th>${pa}</th><th>${pb}</th><th>Diferencia</th><th>Variación</th></tr></thead><tbody>`;
     CMP_FILAS.forEach(([g, fs]) => { h += `<tr class="grp"><td colspan="5">${g}</td></tr>`;
-      fs.forEach(([k, n]) => { const x = dif(k, X[k], CMP.X[k]);
-        h += `<tr><td class="nm">${n}</td><td>${fmtV(k, X[k])}</td><td>${fmtV(k, CMP.X[k])}</td>${celdaDif(x)}</tr>`;
-        cmpT1.push([g, n, fmtV(k, X[k]), fmtV(k, CMP.X[k]), x ? x.n : '', x && x.p ? x.p : '']); }); });
+      fs.forEach(([k, n, sub]) => { const x = dif(k, X[k], CMP.X[k]);
+        h += `<tr${sub ? ' class="sub"' : ''}><td class="nm">${n}</td><td>${fmtV(k, X[k])}</td><td>${fmtV(k, CMP.X[k])}</td>${celdaDif(x)}</tr>`;
+        cmpT1.push([g, sub ? 'Expedientes pendientes de resolver: ' + n : n, fmtV(k, X[k]), fmtV(k, CMP.X[k]), x ? x.n : '', x && x.p ? x.p : '']); }); });
     t1.innerHTML = h + '</tbody>';
   }
   renderEvolucion();
@@ -3265,7 +3300,7 @@ const HOJA = [
  ['1','Nº solicitudes recibidas en eReg','Solicitudes iniciales con asiento en eReg en el periodo; sin aportaciones, comunicaciones, duplicados técnicos ni anulados.','Registros de eReg con formulario de solicitud y fecha de asiento en el periodo, uno por número de registro.','eReg','Cabecera · Solicitudes recibidas','ereg'],
  ['1','Otros registros','Lo excluido en la fila anterior debe contarse como indicador aparte.','Registros de eReg del periodo que no son solicitud inicial, por tipo; incluye las genéricas sin formulario, que hoy no se pueden clasificar.','eReg','Cabecera · Aportaciones','ereg'],
  ['1','Nº solicitudes pendientes de recepción o alta en Atlantix','Registradas en eReg que a la fecha de corte no constan dadas de alta o vinculadas a un expediente.','Solicitudes de eReg que siguen en la bandeja de registros de Atlantix sin expediente dado de alta, y cuánto lleva la más antigua.','eReg + Atlantix','Cabecera · Pendientes de alta; Stock por fase (Entrada)','ereg'],
- ['1','Nº expedientes en tramitación','Activos en «Gestión de expedientes», por subestado: revisión, requerimiento, subsanación, propuesta o incidencia.','Expedientes en las etapas «Gestión Expediente» y «Requerimiento» (en Atlantix es una etapa propia), por situación: primera revisión, devuelto a revisión, revisado de conformidad sin proponer a nómina, requerimiento sin notificar, en plazo, con plazo vencido y aportación sin validar.','Atlantix + NOTE','Tiempo y expedientes por fase; Stock por fase (Gestión del expediente)','val'],
+ ['1','Nº expedientes en tramitación','Activos en «Gestión de expedientes», por subestado: revisión, requerimiento, subsanación, propuesta o incidencia.','Expedientes en las etapas «Gestión Expediente» y «Requerimiento» (en Atlantix es una etapa propia), por situación: primera revisión, devuelto a revisión, revisado de conformidad sin proponer a nómina, requerimiento sin notificar, en plazo, con plazo vencido y aportación sin validar. En la cabecera, los pendientes de resolver se separan en revisión o requerimiento, revisados de conformidad sin proponer y propuestos (27/10); los revisados necesitan que Atlantix registre la revisión, con etapa o con marca (a decidir).','Atlantix + NOTE','Cabecera · Expedientes pendientes de resolver (tres grupos); Tiempo y expedientes por fase; Stock por fase (Gestión del expediente)','val'],
  ['1','Propuestas favorables (etapa PF) e importe','Por convocatoria y mes; importe de atrasos (×500 €) desde la solicitud, mes de nómina y resto del año hasta el fin de devengo. Evitar proponer y desproponer.','La propuesta favorable no es una etapa: al grabarla, AEFN calcula los pagos propuestos y pasa el expediente a «Validación Tercero». Se cuentan las que aún no tienen resolución; el importe es la suma de sus pagos propuestos para el año, por mes de nómina.','Atlantix (AEFN)','Gestión económica · A corto plazo (propuesto en Atlantix, sin D, por anualidad)','val'],
  ['1','Nº expedientes resueltos','Concedidos, denegados, desistidos y archivados por fecha de resolución; etapa «validación terceros», a validar.','Por la fecha de las etapas «Resolución Favorable Concesión», «Resolución Denegación» y «Resolución Desestimiento». La favorable llega después de la Intervención, no al pasar a «Validación Tercero».','Atlantix','Cabecera · Expedientes resueltos, denegados o desistidos y resueltos favorables; Composición (sentido)','val'],
  ['1','% de expedientes resueltos en plazo','90 días máximo desde la entrada en el registro de la DG hasta la propuesta de pago; revisar las normas reguladoras.','Se muestra al revés, como incumplimiento: % de los resueltos en el periodo con (resolución − registro) por encima del plazo. El plazo es un parámetro de la barra de filtros (90 días de inicio).','eReg + Atlantix','Cabecera · Incumplimiento de plazo de tramitación','ereg'],
@@ -3483,8 +3518,13 @@ function initUI(){
   /* etapa de Atlantix (con los revisados de conformidad aparte) y umbral de días sin actuación */
   const ets = [...new Set(SIT_ORD.map(k => SIT[k].e))];
   document.getElementById('suspEtapa').innerHTML = `<option value="">Todas</option>` + ets.map(e => `<option value="${esc(e)}">${e}</option>` +
-    (e === 'Gestión Expediente' ? `<option value="rok">· revisados de conformidad sin proponer</option>` : '')).join('');
+    (e === 'Gestión Expediente' ? `<option value="rok">· revisados sin proponer</option>` : '')).join('');
   document.getElementById('suspEtapa').addEventListener('change', e => { suspEtapa = e.target.value; renderSusp(); });
+  document.getElementById('kg').addEventListener('click', e => {
+    if (!e.target.closest('.kt-gr .r.on')) return;
+    suspEtapa = 'rok'; document.getElementById('suspEtapa').value = 'rok'; renderSusp();
+    const t = document.getElementById('tblSusp'); if (t.offsetParent) t.scrollIntoView({ behavior:'smooth', block:'start' });
+  });
   document.getElementById('suspUmbral').addEventListener('change', e => { F.umbral = +e.target.value; renderSusp(); });
   document.getElementById('actDim').addEventListener('change', renderAct);
   /* gestión económica: por anualidad o por línea, y qué líneas y anualidades */
@@ -3514,9 +3554,9 @@ function initUI(){
     HOJA.forEach((r, i) => { hSave(hKey(i, 'v'), ''); hSave(hKey(i, 'o'), ''); }); renderHoja(); });
   /* avisos (i): una caja que se coloca dentro de la pantalla y separa «Qué es», «Cómo se calcula», «Cómo leerlo», «Ahora» y «Fuente» */
   const iib = document.createElement('div'); iib.className = 'iibox'; document.body.appendChild(iib);
-  const ETQ = /^(Qué es|Cómo se calcula|Cómo leerlo|Cómo funciona la ayuda|Ahora|Fuente|Ojo|Cuándo pasa|Por qué importa):\s*/;
+  const ETQ = /^(Qué es|Cómo se calcula|Cómo leerlo|Cómo funciona la ayuda|Ahora|Fuente|Ojo|Cuándo pasa|Por qué importa|Si se proponen todos):\s*/;
   document.addEventListener('mouseover', e => {
-    const el = e.target.closest && e.target.closest('.ii[data-t]');
+    const el = e.target.closest && e.target.closest('.ii[data-t], .kt-gr .r[data-t]');
     if (!el){ iib.classList.remove('on'); return; }
     iib.innerHTML = el.dataset.t.split('\n').filter(l => l.trim()).map(l => { const m = l.match(ETQ);
       return `<p>${m ? `<b>${m[1]}:</b> ${esc(l.slice(m[0].length))}` : esc(l)}</p>`; }).join('');
@@ -3559,7 +3599,7 @@ let pxListo = false, PXG = null;
 
 /* solicitudes iniciales del periodo y hasta qué fase han llegado a la fecha de corte */
 function pxCalc(){
-  const S = { ini:0, pdte:0, alta:0, ter:0, int:0, fav:0, pag:0, den:{ges:0, ter:0, int:0}, cur:{ges:0, ter:0, int:0}, ahora:{ges:0, ter:0, int:0, res:0}, devTer:0, devInt:0 };
+  const S = { ini:0, pdte:0, alta:0, ter:0, int:0, fav:0, pag:0, den:{ges:0, ter:0, int:0}, cur:{ges:0, ter:0, int:0}, ahora:{ges:0, ter:0, int:0, res:0}, grp:{rev:0, rok:0, prop:0}, devTer:0, devInt:0 };
   for (const c of VIS){ if (!okc(c) || !enP(c.reg) || (c.res === 'dup' && c.fin <= P1)) continue;
     S.ini++;
     if (!(c.alta <= P1)){ S.pdte++; continue; }
@@ -3572,7 +3612,7 @@ function pxCalc(){
     if (c.a.slice(0, last + 1).includes('VGE')) S.devInt++;
     const hasta = int ? 'int' : ter ? 'ter' : 'ges';
     if (c.resol <= P1){ if (c.res === 'con'){ S.fav++; if (c.fin <= P1) S.pag++; } else S.den[hasta]++; }
-    else { S.cur[hasta]++; const f = SIT[sitOf(c, last, P1)].f; S.ahora[f in S.ahora ? f : 'ges']++; }
+    else { S.cur[hasta]++; const s = sitOf(c, last, P1), f = SIT[s].f; S.ahora[f in S.ahora ? f : 'ges']++; S.grp[grupoSit(s)]++; }
   }
   S.denT = S.den.ges + S.den.ter + S.den.int;
   return S;
@@ -3585,14 +3625,18 @@ function pxBuild(){
   const tA = K.tA && K.tA.length ? f1(media(K.tA)) + ' d de media hasta el alta' : '';
   const res = S.fav + S.denT, cur = S.cur.ges + S.cur.ter + S.cur.int;
   PXG = { S, apo, ent, res, cur };
+  /* pie en filas (cifra a la derecha); la marcada, destacada. La caja crece lo que haga falta */
+  const filas = (x, y, F) => F.map(([t, n, on], k) => { const yy = y + 74 + k*17;
+    return (on ? `<rect x="${x + 10}" y="${yy - 12}" width="${PW - 20}" height="16" rx="2" fill="#E6F0F0"/>` : '') +
+      `<text class="pg-p${on ? ' on' : ''}" x="${x + 18}" y="${yy}">${t}</text><text class="pg-p${on ? ' on' : ''}" x="${x + PW - 14}" y="${yy}" text-anchor="end">${nf(n)}</text>`; }).join('');
   const caja = (id, cx, y, tit, n, sub, pie, tipo) => {
-    const x = cx - PW/2, col = { den:PG.red, fav:PG.teal, pend:PG.gris }[tipo] || PG.navy;
-    return `<g class="pgn" data-id="${id}"><rect x="${x}" y="${y}" width="${PW}" height="${PH}" rx="4" fill="#fff" stroke="${PG.borde}"/>` +
-      `<rect x="${x}" y="${y}" width="4" height="${PH}" rx="2" fill="${col}"/>` +
+    const x = cx - PW/2, col = { den:PG.red, fav:PG.teal, pend:PG.gris }[tipo] || PG.navy, h = Array.isArray(pie) ? PH + (pie.length - 1)*17 + 6 : PH;
+    return `<g class="pgn" data-id="${id}"><rect x="${x}" y="${y}" width="${PW}" height="${h}" rx="4" fill="#fff" stroke="${PG.borde}"/>` +
+      `<rect x="${x}" y="${y}" width="4" height="${h}" rx="2" fill="${col}"/>` +
       `<text class="pg-t" x="${x + 18}" y="${y + 23}">${tit}</text>` +
       `<text class="pg-n" x="${x + 18}" y="${y + 54}" fill="${tipo === 'pend' ? PG.gris : PG.navy}">${nf(n)}</text>` +
       (sub ? `<text class="pg-s" x="${x + PW - 14}" y="${y + 54}" text-anchor="end">${sub}</text>` : '') +
-      (pie ? `<text class="pg-p" x="${x + 18}" y="${y + 74}">${pie}</text>` : '') + `</g>`;
+      (Array.isArray(pie) ? filas(x, y, pie) : pie ? `<text class="pg-p" x="${x + 18}" y="${y + 74}">${pie}</text>` : '') + `</g>`;
   };
   /* rama: de la madre baja, se abre en horizontal y cae en cada hija */
   const rama = (cx, y) => { const ym = y + PH + (PY - PH)/2, yh = y + PY;
@@ -3609,7 +3653,7 @@ function pxBuild(){
   g += caja('pdte', x(1) - PD, y(2), 'Pendientes de alta', S.pdte, de(S.pdte, S.ini, 'de las recibidas'), 'Sin expediente en Atlantix', 'pend');
   g += caja('alta', x(2), y(2), 'Expedientes dados de alta', S.alta, de(S.alta, S.ini, 'de las recibidas'), tA, 'ini');
   g += caja('cur', x(2) - PD, y(3), 'Expedientes pendientes de resolver', cur, de(cur, S.alta, 'de los de alta'),
-    `Gestión ${nf(S.ahora.ges)} · Terceros ${nf(S.ahora.ter)} · Interv. ${nf(S.ahora.int)}` + (S.ahora.res ? ` · Firma ${nf(S.ahora.res)}` : ''), 'pend');
+    [['En revisión o requerimiento', S.grp.rev], ['Revisados de conformidad, sin proponer', S.grp.rok, 1], ['Propuestos, sin resolver', S.grp.prop]], 'pend');
   g += caja('res', x(3), y(3), 'Expedientes resueltos', res, de(res, S.alta, 'de los de alta'), 'Con resolución firmada', 'ini');
   g += caja('den', x(3) - PD, y(4), 'Expedientes denegados o desistidos', S.denT, de(S.denT, res, 'de los resueltos'),
     `Gestión ${nf(S.den.ges)} · Terceros ${nf(S.den.ter)} · Interv. ${nf(S.den.int)}`, 'den');
@@ -3627,9 +3671,10 @@ function pxTipTxt(id){
     ini:['Solicitudes recibidas', r('Pendientes de alta', nf(S.pdte)) + r('Expedientes dados de alta', nf(S.alta)) + '<div class="kp">Es «Solicitudes recibidas» de la cabecera.</div>'],
     pdte:['Pendientes de alta', 'En la bandeja de registros de Atlantix, sin expediente a la fecha de corte.<div class="kp">Es «Pendientes de alta» de la cabecera.</div>'],
     alta:['Expedientes dados de alta', r('Pendientes de resolver', nf(cur)) + r('Resueltos', nf(res)) + '<div class="kp">Es «Expedientes dados de alta» de la cabecera.</div>'],
-    cur:['Expedientes pendientes de resolver', '<div class="t2">Dónde están ahora</div>' + r('En gestión del expediente', nf(S.ahora.ges)) + r('En validación de terceros', nf(S.ahora.ter)) + r('En la Intervención', nf(S.ahora.int)) +
+    cur:['Expedientes pendientes de resolver', '<div class="t2">Dónde están ahora</div>' + r('En revisión o requerimiento', nf(S.grp.rev)) + r('Revisados de conformidad, sin proponer', nf(S.grp.rok)) +
+      r('Propuestos, sin resolver', nf(S.grp.prop)) + '<div class="t2">De los propuestos</div>' + r('En validación de terceros', nf(S.ahora.ter)) + r('En la Intervención', nf(S.ahora.int)) +
       (S.ahora.res ? r('Pendientes de firmar la resolución', nf(S.ahora.res)) : '') +
-      '<div class="kp">Es «Expedientes pendientes de resolver» de la cabecera. El reparto es la fase en la que está cada uno hoy, con el mismo criterio que la línea del gráfico «Tiempo y expedientes por fase» (esa línea cuenta todo lo abierto, también lo registrado antes del periodo, y puede salir algo mayor).</div>'],
+      '<div class="kp">Es «Expedientes pendientes de resolver» de la cabecera, con los mismos tres grupos. Los revisados sin proponer ya están revisados de conformidad en «Gestión Expediente» y esperan entrar en una propuesta a nómina. El reparto es la fase en la que está cada uno hoy, con el mismo criterio que la línea del gráfico «Tiempo y expedientes por fase» (esa línea cuenta todo lo abierto, también lo registrado antes del periodo, y puede salir algo mayor).</div>'],
     res:['Expedientes resueltos', r('Denegados o desistidos', nf(S.denT)) + r('Resueltos favorables', nf(S.fav)) + '<div class="kp">Es «Expedientes resueltos» de la cabecera.</div>'],
     fav:['Expedientes resueltos favorables', r('Ya han cobrado (primer pago)', nf(S.pag)) + r('Esperan la nómina', nf(S.fav - S.pag)) + '<div class="kp">Es «Expedientes resueltos favorables» de la cabecera.</div>'],
     den:['Expedientes denegados o desistidos', r('Desde gestión del expediente', nf(S.den.ges)) + r('Tras llegar a validación de terceros', nf(S.den.ter)) + r('Tras llegar a la Intervención', nf(S.den.int)) +
