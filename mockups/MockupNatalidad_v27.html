@@ -811,7 +811,6 @@ th.col-focus{background:#FAFAFB!important;color:#0A1F44!important;}
 .ent-it:last-child .ii[data-t]::after{left:auto;right:-6px;transform:none;}
 /* actividades de la etapa */
 .act-blk{border-bottom:1px solid var(--cbd);background:#fff;}
-.act-blk > .rev-nota{margin:14px 18px 0;}
 .act-head{display:flex;align-items:center;justify-content:space-between;padding:12px 18px 6px;}
 .act-ttl{font-size:14.5px;font-weight:700;color:var(--cnavy);letter-spacing:.02em;}
 .act-ttl span{font-size:11px;font-weight:400;color:var(--cgy);margin-left:8px;letter-spacing:0;}
@@ -1091,6 +1090,9 @@ table.mat th{white-space:normal;line-height:1.3;vertical-align:bottom;}
 .ph-btns button span{font-size:10.5px;font-weight:600;color:var(--cnavy);line-height:1.2;text-align:center;}
 .ph-btns button em{font-style:normal;font-size:9.5px;color:var(--blue);}
 .ph-btns button:hover{border-color:var(--cnavy);background:#FAFAFB;}
+.ph-btns button:disabled{cursor:default;}
+.ph-btns button:disabled:hover{border-color:var(--cbd);background:#fff;}
+.ph-btns button:disabled em{color:var(--cgy);}
 /* detalle de una fase */
 .fase-hd{display:flex;align-items:center;gap:14px;padding:10px 18px;border-bottom:1px solid var(--cbd);background:#fff;}
 .fase-tt{font-size:13px;color:var(--cgy);display:flex;align-items:center;gap:5px;}
@@ -1488,7 +1490,7 @@ table.cmp-t tr.sub td{font-size:11px;}
 <div id="vAll">
   <div class="sections">
     <div class="section">
-      <div class="sec-title">Tiempo medio y expedientes resueltos por fase <i class="ii" data-t="Qué es: días de media en cada fase (barras) y expedientes abiertos hoy en cada una (línea).&#10;Cómo leerlo: «Días de» muestra solo la parte de cada responsable; «Ver detalle», las actividades de la fase.">i</i></div>
+      <div class="sec-title">Tiempo medio y expedientes resueltos por fase <i class="ii" data-t="Qué es: días de media en cada fase (barras) y expedientes abiertos hoy en cada una (línea).&#10;Cómo leerlo: «Días de» muestra solo la parte de cada responsable.">i</i></div>
       <div class="sec-chart">
         <div class="chart-head">
           <div class="chart-ttl" id="c1Ttl"></div>
@@ -1498,7 +1500,6 @@ table.cmp-t tr.sub td{font-size:11px;}
         <div class="chart-sub" id="c1Sub"></div>
         <div class="chart-wrap" style="height:236px;"><canvas id="cFase"></canvas></div>
         <div class="ph-btns" id="c1Btns"></div>
-        <div class="ph-nota">Las actividades y subfases de cada fase son ilustrativas: los nombres exactos se confirmarán con los datos de Atlantix.</div>
         <div class="legend" id="c1Leg"></div>
       </div>
     </div>
@@ -1553,29 +1554,7 @@ table.cmp-t tr.sub td{font-size:11px;}
 
 </div>
 
-<!-- ══════════ UNA FASE ELEGIDA · tablas por actividad ══════════ -->
-<div id="vFase" style="display:none;">
-  <div class="fase-hd"><button class="btn-outline" id="faseBack">&larr; Todo el proceso</button><div class="fase-tt" id="faseTt"></div><div class="fase-rep" id="faseRep"></div></div>
-  <div class="lect" id="lect"></div>
-  <div class="act-blk">
-    <div class="rev-nota">Pendiente de definir.</div>
-    <div class="act-head">
-      <div class="act-ttl" id="actTtl"></div>
-      <div class="fsel act-dim"><span>Dimensión</span><select id="actDim"></select>
-        <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
-    </div>
-    <div class="act-grid">
-      <div class="act-col">
-        <h4>Desviaciones de tiempos <i class="ii" data-t="Días hasta cada actividad desde la anterior.&#10;Desviación = media − mediana: lo que añaden los pocos casos muy lentos. En rojo, lo peor.">i</i></h4>
-        <table class="act-tbl"><thead id="actTH1"></thead><tbody id="actTB1"></tbody></table>
-      </div>
-      <div class="act-col">
-        <h4>Desviaciones de reprocesos <i class="ii" data-t="Cuántas veces pasa cada expediente por la actividad (1 = una sola vez).&#10;Para priorizar, mira «% exp. con reproceso» y «Días perdidos».">i</i></h4>
-        <table class="act-tbl"><thead id="actTH2"></thead><tbody id="actTB2"></tbody></table>
-      </div>
-    </div>
-  </div>
-</div>
+<!-- v27 · el detalle de cada fase está a definir: sin vista propia -->
 
 <!-- ══════════ GESTIÓN ECONÓMICA · una tabla ══════════ -->
 <div id="ecoBlk">
@@ -3279,42 +3258,42 @@ const HOJA = [
  ['2','Distribución territorial','Por municipio de residencia, agrupando los de pocos casos.','Municipio del formulario; los de menos casos, en «Resto de municipios».','Formulario','Composición','val'],
  ['3','Stock pendiente total','Abiertos a la fecha y hora de corte, sin contar el mismo en varias etapas.','Todos los abiertos desde el registro hasta el primer pago, cada uno en su etapa de Atlantix y su situación.','eReg + Atlantix + Nexus','Stock pendiente por fase y antigüedad','ereg'],
  ['3','Nº pendientes de recepción o alta','Diferencia entre las solicitudes de eReg y las ya incorporadas en Atlantix.','«Bandeja de registros · sin dar de alta».','eReg + Atlantix','Stock por fase (Entrada)','ereg'],
- ['3','Nº pendientes de revisión','Dados de alta sin revisión documental completa ni primer resultado.','«Gestión Expediente» en primera revisión, o devuelto a revisión tras un requerimiento, un tercero rechazado o una respuesta desfavorable.','Atlantix','Stock por fase; detalle de la fase','ok'],
- ['3','Nº pendientes de subsanación','Requeridos en plazo, fuera de plazo sin cerrar y aportaciones sin revisar.','Etapa «Requerimiento»: sin notificar, en plazo (diez días hábiles desde la notificación de NOTE), plazo vencido sin aportación y aportación sin validar.','Atlantix + NOTE + eReg','Stock por fase; detalle de la fase','val'],
- ['3','Nº pendientes de terceros y errores de Nexus','Solicitudes de alta, errores de identidad o cuenta, validaciones pendientes y terceros disponibles sin continuar.','Etapa «Validación Tercero»: esperando el fichero mensual, en gestión económica, tercero creado sin cargar y tercero rechazado sin devolver. Al devolverlo se deshace la propuesta y el expediente vuelve a «Gestión Expediente».','Atlantix + Nexus','Stock por fase; detalle de Validación de terceros','val'],
- ['3','Nº pendientes de Intervención','Pendientes de remitir, en fiscalización, devueltos y con reparo; tiempo hasta la respuesta.','«Pendiente de envío a la Intervención», «Intervención Concesión» y respuestas desfavorables sin devolver a gestión; el tiempo de respuesta, en la fase.','Atlantix (D029)','Stock por fase; detalle de Intervención','ok'],
- ['3','Nº pendientes de resolución','Completos sin propuesta, propuesta preparada, pendiente de firma y resolución sin notificar.','Respuesta favorable de la Intervención todavía sin «Resolución Favorable Concesión».','Atlantix','Stock por fase; detalle de Resolución y pago','ok'],
+ ['3','Nº pendientes de revisión','Dados de alta sin revisión documental completa ni primer resultado.','«Gestión Expediente» en primera revisión, o devuelto a revisión tras un requerimiento, un tercero rechazado o una respuesta desfavorable.','Atlantix','Stock por fase','ok'],
+ ['3','Nº pendientes de subsanación','Requeridos en plazo, fuera de plazo sin cerrar y aportaciones sin revisar.','Etapa «Requerimiento»: sin notificar, en plazo (diez días hábiles desde la notificación de NOTE), plazo vencido sin aportación y aportación sin validar.','Atlantix + NOTE + eReg','Stock por fase','val'],
+ ['3','Nº pendientes de terceros y errores de Nexus','Solicitudes de alta, errores de identidad o cuenta, validaciones pendientes y terceros disponibles sin continuar.','Etapa «Validación Tercero»: esperando el fichero mensual, en gestión económica, tercero creado sin cargar y tercero rechazado sin devolver. Al devolverlo se deshace la propuesta y el expediente vuelve a «Gestión Expediente».','Atlantix + Nexus','Stock por fase','val'],
+ ['3','Nº pendientes de Intervención','Pendientes de remitir, en fiscalización, devueltos y con reparo; tiempo hasta la respuesta.','«Pendiente de envío a la Intervención», «Intervención Concesión» y respuestas desfavorables sin devolver a gestión; el tiempo de respuesta, en la fase.','Atlantix (D029)','Stock por fase','ok'],
+ ['3','Nº pendientes de resolución','Completos sin propuesta, propuesta preparada, pendiente de firma y resolución sin notificar.','Respuesta favorable de la Intervención todavía sin «Resolución Favorable Concesión».','Atlantix','Stock por fase','ok'],
  ['3','Nº pendientes de pago','Pendientes de primera nómina, rechazados, incidencias de tercero o cuenta y falta de crédito.','«Resolución Favorable Concesión» esperando su primera nómina.','Atlantix + Nexus','Stock por fase (Resolución y pago); Cabecera · aviso de Expedientes resueltos favorables','val'],
  ['3','Nº pendientes por antigüedad','Tramos 0–30, 31–60, 61–90 y más de 90 días, por etapa y convocatoria, con media y máxima.','Antigüedad desde el registro en esos cuatro tramos, por fase; la media en cada fila y la máxima en el subtítulo.','eReg + Atlantix','Stock pendiente por fase y antigüedad','ereg'],
  ['3','Nº expedientes suspendidos','Sin actuación durante el umbral / abiertos × 100.','Lo mismo, con un umbral de 30, 60, 90 o 180 días.','Atlantix','Tabla de expedientes sin actividad','ok'],
  ['4','Tiempo medio E2E: criterio de cómputo','Fecha inicial y final, días naturales o hábiles, pausas y reabiertos.','Días naturales sin descontar pausas; un expediente que vuelve a gestión sigue siendo el mismo. Criterio a cerrar.','eReg + Atlantix','Cabecera · aviso de Tiempo E2E','val'],
- ['4','Tiempo hasta el primer trámite y hasta el envío a Intervención','Registro → primera actuación sustantiva; registro → remesa y envío a Intervención.','Registro → primera decisión (fase Entrada) y registro → primer envío por D029 (fase Intervención).','eReg + Atlantix','Detalle de Entrada e Intervención','ereg'],
+ ['4','Tiempo hasta el primer trámite y hasta el envío a Intervención','Registro → primera actuación sustantiva; registro → remesa y envío a Intervención.','Registro → primera decisión (fase Entrada) y registro → primer envío por D029 (fase Intervención).','eReg + Atlantix','A definir (detalle de cada fase)','ereg'],
  ['4','Tiempo hasta el inicio del primer pago','Registro → primer abono, separando lo administrativo de lo posterior a la resolución.','Registro → primer pago, por fases y según de quién depende cada día; la espera del calendario mensual, aparte.','eReg + Atlantix + Nexus','Tiempo medio y expedientes resueltos por fase','ereg'],
  ['4','Antigüedad máxima (alerta)','Días del pendiente más antiguo, con etapa, causa y días desde la última actuación.','Lo mismo que en la cabecera.','eReg + Atlantix','Stock pendiente (subtítulo); tabla de expedientes sin actividad','ereg'],
- ['4','Tiempo registro → alta','Por solicitud inicial, sin aportaciones; mediana y P90.','Mediana y P90 de (alta − registro) de las altas del periodo.','eReg + Atlantix','Detalle de Entrada','ereg'],
- ['4','Tiempo de asignación del código de tercero','Solicitud del tercero → disponibilidad; la recarga mensual crea una desviación aparente.','Tres tramos: espera al fichero mensual (calendario), gestión económica (fichero → tercero creado) y carga en Atlantix. Así no se atribuye a gestión económica la espera del calendario.','Atlantix + Nexus','Tiempo medio y expedientes resueltos por fase («Días de»); detalle de Validación de terceros','val'],
- ['4','Tiempo resolución → pago','Resolución favorable → primer abono, por nómina y convocatoria.','Mediana y P90 de (primer pago − «Resolución Favorable Concesión»); si la resolución llega después del cierre de la nómina propuesta, se cobra en la siguiente.','Atlantix + Nexus','Detalle de Resolución y pago','val'],
- ['5','Nº expedientes recepcionados','Altas en Atlantix vinculadas a un expediente.','Altas del periodo desde la bandeja de registros.','Atlantix','Detalle de Entrada','ok'],
- ['5','Nº expedientes revisados','Revisión documental completa con resultado registrado.','Decisiones del periodo en «Gestión Expediente»: revisión de conformidad, requerimiento o denegación.','Atlantix','Detalle de Gestión del expediente','ok'],
- ['5','Nº propuestas favorables','Nuevas del periodo, sin duplicados ni regeneraciones técnicas.','Propuestas grabadas en el periodo; las que se repiten tras volver a gestión cuentan como repetición en la tabla de reprocesos.','Atlantix (AEFN)','Detalle de Gestión del expediente','ok'],
- ['5','Nº denegaciones y % sobre lo resuelto','Propuestas o resoluciones denegatorias, por causa.','«Resolución Denegación» del periodo y el requisito incumplido que marca el gestor.','Atlantix','Composición (sentido, requisito); detalle de Gestión del expediente','ok'],
- ['5','Nº requerimientos emitidos','Separar primeros y sucesivos.','Entradas en la etapa «Requerimiento», primeras y sucesivas.','Atlantix','Detalle de Gestión del expediente','ok'],
- ['5','Nº subsanaciones revisadas','Aportaciones ligadas a un requerimiento, valoradas y cerradas.','«Aportación Documentación o Fin Etapa»: vuelta a «Gestión Expediente» tras validar la aportación.','Atlantix + eReg','Detalle de Gestión del expediente','ok'],
- ['5','Nº envíos a Intervención','Expedientes o lotes remitidos, con fecha, volumen e importe.','Envíos por D029 del periodo y lotes; el importe, el de los pagos propuestos de cada expediente.','Atlantix (D029)','Detalle de Intervención','val'],
- ['5','Nº resoluciones emitidas','Firmadas en el periodo, por sentido y convocatoria.','Resoluciones del periodo, por sentido.','Atlantix','Detalle de Resolución y pago; Composición','ok'],
- ['5','Nº incluidos en nómina','Por remesa, separando nuevas altas y mantenimiento.','Altas de cada nómina, aparte del mantenimiento.','Atlantix (nómina)','Cabecera · Nuevas altas en nómina; detalle de Resolución y pago','val'],
- ['5','Productividad media','Finalizados / efectivos disponibles, con dotación y días efectivos; sin uso individual.','Decisiones de gestión del periodo ÷ efectivos (parámetro) ÷ meses: un indicador del equipo.','Atlantix + la unidad','Detalle de Gestión del expediente','ext'],
- ['6','Tasa de requerimientos','Con al menos un requerimiento / revisados × 100, por causa documental.','Expedientes cuya primera decisión es un requerimiento; la documentación pedida, como dimensión.','Atlantix','Detalle de Gestión del expediente','ok'],
- ['6','Subsanación correcta','Subsanaciones que completan lo requerido / revisadas × 100.','Vueltas tras una aportación que acaban en propuesta favorable sin nuevo requerimiento.','Atlantix','Detalle de Gestión del expediente','ok'],
- ['6','Incidencias de terceros','Con error o bloqueo de tercero / enviados a esa fase × 100.','Terceros rechazados, casi siempre por la titularidad de la cuenta, sobre los enviados a gestión económica: deshacen la propuesta y vuelven a «Gestión Expediente».','Atlantix + Nexus','Detalle de Validación de terceros; Cabecera · Expedientes con reprocesos','val'],
- ['6','Reparos de Intervención','Con reparo / fiscalizados × 100; tipo de reparo y reincidencia.','«Desfavorable», «Actuación Interesada» y «Dev. a instancia Promo» sobre las respuestas del periodo; las favorables con observaciones, aparte.','Atlantix (D029)','Detalle de Intervención; Composición (respuesta)','ok'],
+ ['4','Tiempo registro → alta','Por solicitud inicial, sin aportaciones; mediana y P90.','Mediana y P90 de (alta − registro) de las altas del periodo.','eReg + Atlantix','A definir (detalle de cada fase)','ereg'],
+ ['4','Tiempo de asignación del código de tercero','Solicitud del tercero → disponibilidad; la recarga mensual crea una desviación aparente.','Tres tramos: espera al fichero mensual (calendario), gestión económica (fichero → tercero creado) y carga en Atlantix. Así no se atribuye a gestión económica la espera del calendario.','Atlantix + Nexus','Tiempo medio y expedientes resueltos por fase («Días de»)','val'],
+ ['4','Tiempo resolución → pago','Resolución favorable → primer abono, por nómina y convocatoria.','Mediana y P90 de (primer pago − «Resolución Favorable Concesión»); si la resolución llega después del cierre de la nómina propuesta, se cobra en la siguiente.','Atlantix + Nexus','A definir (detalle de cada fase)','val'],
+ ['5','Nº expedientes recepcionados','Altas en Atlantix vinculadas a un expediente.','Altas del periodo desde la bandeja de registros.','Atlantix','A definir (detalle de cada fase)','ok'],
+ ['5','Nº expedientes revisados','Revisión documental completa con resultado registrado.','Decisiones del periodo en «Gestión Expediente»: revisión de conformidad, requerimiento o denegación.','Atlantix','A definir (detalle de cada fase)','ok'],
+ ['5','Nº propuestas favorables','Nuevas del periodo, sin duplicados ni regeneraciones técnicas.','Propuestas grabadas en el periodo; las que se repiten tras volver a gestión cuentan como repetición en la tabla de reprocesos.','Atlantix (AEFN)','A definir (detalle de cada fase)','ok'],
+ ['5','Nº denegaciones y % sobre lo resuelto','Propuestas o resoluciones denegatorias, por causa.','«Resolución Denegación» del periodo y el requisito incumplido que marca el gestor.','Atlantix','Composición (sentido, requisito)','ok'],
+ ['5','Nº requerimientos emitidos','Separar primeros y sucesivos.','Entradas en la etapa «Requerimiento», primeras y sucesivas.','Atlantix','A definir (detalle de cada fase)','ok'],
+ ['5','Nº subsanaciones revisadas','Aportaciones ligadas a un requerimiento, valoradas y cerradas.','«Aportación Documentación o Fin Etapa»: vuelta a «Gestión Expediente» tras validar la aportación.','Atlantix + eReg','A definir (detalle de cada fase)','ok'],
+ ['5','Nº envíos a Intervención','Expedientes o lotes remitidos, con fecha, volumen e importe.','Envíos por D029 del periodo y lotes; el importe, el de los pagos propuestos de cada expediente.','Atlantix (D029)','A definir (detalle de cada fase)','val'],
+ ['5','Nº resoluciones emitidas','Firmadas en el periodo, por sentido y convocatoria.','Resoluciones del periodo, por sentido.','Atlantix','Composición','ok'],
+ ['5','Nº incluidos en nómina','Por remesa, separando nuevas altas y mantenimiento.','Altas de cada nómina, aparte del mantenimiento.','Atlantix (nómina)','Cabecera · Nuevas altas en nómina','val'],
+ ['5','Productividad media','Finalizados / efectivos disponibles, con dotación y días efectivos; sin uso individual.','Decisiones de gestión del periodo ÷ efectivos (parámetro) ÷ meses: un indicador del equipo.','Atlantix + la unidad','A definir (detalle de cada fase)','ext'],
+ ['6','Tasa de requerimientos','Con al menos un requerimiento / revisados × 100, por causa documental.','Expedientes cuya primera decisión es un requerimiento; la documentación pedida, como dimensión.','Atlantix','A definir (detalle de cada fase)','ok'],
+ ['6','Subsanación correcta','Subsanaciones que completan lo requerido / revisadas × 100.','Vueltas tras una aportación que acaban en propuesta favorable sin nuevo requerimiento.','Atlantix','A definir (detalle de cada fase)','ok'],
+ ['6','Incidencias de terceros','Con error o bloqueo de tercero / enviados a esa fase × 100.','Terceros rechazados, casi siempre por la titularidad de la cuenta, sobre los enviados a gestión económica: deshacen la propuesta y vuelven a «Gestión Expediente».','Atlantix + Nexus','Cabecera · Expedientes con reprocesos','val'],
+ ['6','Reparos de Intervención','Con reparo / fiscalizados × 100; tipo de reparo y reincidencia.','«Desfavorable», «Actuación Interesada» y «Dev. a instancia Promo» sobre las respuestas del periodo; las favorables con observaciones, aparte.','Atlantix (D029)','Composición (respuesta)','ok'],
  ['6','Devoluciones internas','Devueltas a una etapa anterior / tramitadas × 100.','Vueltas a «Gestión Expediente» desde «Validación Tercero» (tercero rechazado) o desde la Intervención (respuesta desfavorable); y repeticiones en las tablas de cada fase.','Atlantix','Cabecera · Expedientes con reprocesos; tablas de reprocesos del detalle','ok'],
  ['6','Tasa de retrabajo','Con repetición no prevista de una actividad / tramitados × 100.','Terminados en el periodo con un segundo requerimiento, un tercero rechazado o una respuesta desfavorable de la Intervención, por motivo. El primer requerimiento no cuenta: se mide en la tasa de requerimientos.','Atlantix','Cabecera · Expedientes con reprocesos; tablas de reprocesos del detalle','ok'],
  ['6','Primera tramitación correcta','Sin devolución, reparo ni repetición / finalizados × 100.','Terminados sin segundo requerimiento, tercero rechazado ni respuesta desfavorable.','Atlantix','Cabecera · aviso de Expedientes con reprocesos','ok'],
  ['6','Incidencias resueltas','Cerradas con validación funcional / registradas; tiempo medio y antigüedad.','No se ve todavía: falta saber si las incidencias técnicas se registran en Atlantix.','Por definir','—','val'],
  ['7','Resoluciones favorables','Número, % sobre lo resuelto, importe reconocido y tipo de hecho causante.','«Resolución Favorable Concesión» del periodo y su peso; el importe, el de los pagos propuestos.','Atlantix','Cabecera · Expedientes resueltos favorables; Composición','val'],
  ['7','Resoluciones denegatorias','Número y % por motivo, convocatoria y cohorte de entrada.','El requisito incumplido como dimensión.','Atlantix','Composición (requisito incumplido)','ok'],
- ['7','Desistimientos','Expreso y por falta de subsanación.','«Resolución Desestimiento»; hoy salen de requerimientos sin aportación. Falta saber si el desistimiento expreso tiene marca propia.','Atlantix','Composición (sentido); detalle de Gestión del expediente','val'],
+ ['7','Desistimientos','Expreso y por falta de subsanación.','«Resolución Desestimiento»; hoy salen de requerimientos sin aportación. Falta saber si el desistimiento expreso tiene marca propia.','Atlantix','Composición (sentido)','val'],
  ['7','Modificaciones positivas','Número, importe incremental, mensualidades afectadas y fecha de efecto.','«Modificación Concesión» → «PTE. ENVÍO MODIFICACIÓN ECONOM. POSITIVA» → Intervención → resolución; el importe se regulariza en la nómina.','Atlantix','No está en la pantalla: se quitó para simplificar (reunión del 14/10)','ok'],
  ['7','Modificaciones negativas, neutras y anulaciones','Número, importe minorado, mensualidades afectadas y posible regularización.','Lo mismo con «PTE. ENVÍO MODIFICACIÓN ECONOM. NEGATIVA» y «… SIN REPER. ECONOM.».','Atlantix','No está en la pantalla: se quitó para simplificar (reunión del 14/10)','ok'],
  ['7','Bajas','Número, fecha de efectos, motivo e impacto en el compromiso futuro.','«PTE. ENVÍO BAJA DE LA AYUDA»: quita las mensualidades que quedaban y minora el D. Las extinciones, fin natural del derecho, van aparte.','Atlantix + Nexus','Cabecera · aviso de Beneficiarias que han dejado de cobrar','ok'],
@@ -3334,7 +3313,7 @@ const HOJA = [
  ['9','Bajas y extinciones','Baja: se quitan mensualidades ya dispuestas y minora el D. Extinción: el fin natural del derecho.','Bajas por «PTE. ENVÍO BAJA DE LA AYUDA» con las mensualidades liberadas; extinciones cuando el menor cumple dos años.','Atlantix + Nexus','Cabecera · aviso de Beneficiarias que han dejado de cobrar','ok'],
  ['9','Línea frente a año de la solicitud','Las solicitudes de un año que entran en nómina al siguiente van a la línea de ese año, con sus atrasos.','Columna «De solicitudes de años anteriores» por línea; el filtro de arriba va por año de la solicitud.','Atlantix + Nexus','Filtro Año de solicitud; Gestión económica','val'],
  ['9','Importe por hijo','500 € al mes por hijo: un embarazo gemelar son 1.000 €.','La mensualidad de cada expediente es 500 € por hijo; los hijos por solicitud, también como dimensión.','Atlantix','Composición (hijos)','ok'],
- ['9','Tiempo de gestión económica en terceros','Desde que reciben el fichero hasta que devuelven los terceros: horas, un día como mucho. Lo que se requiere a la interesada no es tiempo suyo.','Fichero de terceros → tercero creado, aparte de la espera al fichero y de los rechazos, que vuelven a gestión.','Atlantix + Nexus','Tiempo medio y expedientes resueltos por fase («Días de» gestión económica); detalle de Validación de terceros','val'],
+ ['9','Tiempo de gestión económica en terceros','Desde que reciben el fichero hasta que devuelven los terceros: horas, un día como mucho. Lo que se requiere a la interesada no es tiempo suyo.','Fichero de terceros → tercero creado, aparte de la espera al fichero y de los rechazos, que vuelven a gestión.','Atlantix + Nexus','Tiempo medio y expedientes resueltos por fase («Días de» gestión económica)','val'],
 ];
 const hojaFiltro = { est:'', bloque:'' };
 const hKey = (i, c) => 'natv14:hoja:' + i + ':' + c;
@@ -3366,22 +3345,10 @@ function hojaCSV(){
    MONTAJE Y EVENTOS
    ════════════════════════════════════════════════════════════════════ */
 let crTocado = false, NMX = null, KCAB = null, XCAB = null, cmpT1 = [], cmpT2 = [];
-function vista(k){
-  const cambia = k !== stageKey; stageKey = k;
-  document.getElementById('vAll').style.display = k === 'all' ? '' : 'none';
-  document.getElementById('vFase').style.display = k === 'all' ? 'none' : '';
-  document.getElementById('ecoBlk').style.display = k === 'all' ? '' : 'none';
-  document.getElementById('tblSusp').style.display = k === 'all' ? '' : 'none';
-  if (k === 'all'){ [chFase, chFlujo, chCompo].forEach(c => c.resize()); renderFase(); renderFlujo(); renderStock(); renderCompo(); renderSusp(); }
-  else { const f = FASES[FI[k]];
-    document.getElementById('faseTt').innerHTML = `Detalle de la fase · <b>${f.n}</b> <i class="ii" data-t="${esc(f.meta.replace(/<[^>]+>/g, ''))}">i</i>`;
-    /* lo que Javi quería ver al pinchar en la fase: de quién dependen sus días */
-    const R = calcFases(), q = FI[k], n = R.dur[q].length, tt = n ? media(R.dur[q]) : 0;
-    document.getElementById('faseRep').innerHTML = n ? `<span class="fr-t"><b>${f1(tt)} días</b> de media en la fase</span><span class="fr-bar">` +
-      RK.filter(x => R.rs[q][x]/n >= 0.05).map(x => `<i style="flex:${R.rs[q][x]/n};background:${RESP[x].c};" data-tip="${RESP[x].n}: ${f1(R.rs[q][x]/n)} d"></i>`).join('') + `</span>` +
-      RK.filter(x => R.rs[q][x]/n >= 0.05).map(x => `<span class="fr-k"><i style="background:${RESP[x].c};"></i>${RESP[x].n} <b>${f1(R.rs[q][x]/n)} d</b></span>`).join('') : '';
-    renderActDims(); renderLectura(); renderAct(); }
-  if (cambia){ const el = document.getElementById(k === 'all' ? 'vAll' : 'vFase'); if (el.getBoundingClientRect().top < 0) el.scrollIntoView(); }
+function vista(){
+  /* v27 · el detalle de cada fase está a definir: solo queda la vista del proceso entero */
+  stageKey = 'all';
+  [chFase, chFlujo, chCompo].forEach(c => c.resize()); renderFase(); renderFlujo(); renderStock(); renderCompo(); renderSusp();
 }
 function refresh(){
   periodo();
@@ -3465,12 +3432,10 @@ function initUI(){
     document.getElementById('suspEtapa').value = ''; document.getElementById('suspUmbral').value = '30';
     pintaAnu(); pintaLin(); pintaVer();
     pintaAnyo(); syncF(); refresh(); });
-  /* fases: botón bajo cada barra del primer gráfico y vuelta desde el detalle */
+  /* fases: rótulo bajo cada barra del primer gráfico; el detalle de cada fase está a definir */
   document.getElementById('fsResp').innerHTML = `<option value="">Todos</option>` + RK.map(r => `<option value="${r}">${RESP[r].n}</option>`).join('');
   document.getElementById('fsResp').addEventListener('change', renderFase);
-  document.getElementById('c1Btns').innerHTML = FASES.map(f => `<button data-k="${f.k}"><span>${f.n}</span><em>Ver detalle ›</em></button>`).join('');
-  document.getElementById('c1Btns').addEventListener('click', e => { const b = e.target.closest('button'); if (b) vista(b.dataset.k); });
-  document.getElementById('faseBack').addEventListener('click', () => vista('all'));
+  document.getElementById('c1Btns').innerHTML = FASES.map(f => `<button type="button" disabled title="El detalle de la fase está a definir"><span>${f.n}</span><em>A definir</em></button>`).join('');
   document.getElementById('flFase').innerHTML = `<option value="all">Proceso completo</option><option value="fases">Por fases</option>` + FASES.map(f => `<option value="${f.k}">${f.n}</option>`).join('');
   document.getElementById('flFase').addEventListener('change', renderFlujo);
   document.getElementById('cpDim').addEventListener('change', renderCompo);
@@ -3489,7 +3454,6 @@ function initUI(){
     const t = document.getElementById('tblSusp'); if (t.offsetParent) t.scrollIntoView({ behavior:'smooth', block:'start' });
   });
   document.getElementById('suspUmbral').addEventListener('change', e => { F.umbral = +e.target.value; renderSusp(); });
-  document.getElementById('actDim').addEventListener('change', renderAct);
   /* gestión económica: por anualidad o por línea, y qué líneas y anualidades */
   pintaAnu = msel('crAnu', ANUS, anuSel, y => 'Anualidad ' + y, 'Todas', () => { crTocado = true; renderEco(); });
   pintaLin = msel('crLin', LINEAS, linSel, l => 'Línea ' + l, 'Todas', renderEco);
