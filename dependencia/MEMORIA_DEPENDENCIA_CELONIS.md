@@ -43,6 +43,9 @@ Documento vivo. Se actualiza cada vez que se aprende o se decide algo. Última a
 - **Objects & Events** (Data Pool «OCPM DataPool VALI…», validación): **el objeto `SolicitudDependencia` ya existe** (namespace custom, etiqueta Dependencia). **No hay eventos de Dependencia** todavía.
   - Referencia de otros proyectos: el evento «AltaSolicitud» (Discapacidad) tiene `ID` (PK, String) + `Time` (Datetime); el objeto «Cita» (Discapacidad) tiene 17 atributos tipados (Boolean, Datetime, String, Long integer).
   - Botones Test changes / Create version / **Deploy**: los cambios son un borrador hasta el Deploy, que los publica. **No hacer Deploy sin Roberto.**
+- `SolicitudDependencia` se creó el 28/10 (en la reunión): solo tiene `ID` (PK, String) y etiqueta Dependencia. Su transformación «SolicitudDependenciaAttributes» solo tiene la plantilla comentada (sin SQL). Data preview desactivado.
+- **Ojo, dos Data Pools:** las tablas SIDM locales están en **OCPM DataPool IMPLEMENTACION** (Global Schema, 28 tablas; Data Job «Dependencia Global»), pero el objeto está en **OCPM DataPool VALI…** (Global, 14 tablas, **sin SIDM**). La SQL de un objeto solo ve las tablas de su pool. Pregunta a Roberto: ¿modelar en implementación o copiar las tablas a validación?
+- Editor de transformación del objeto: Transformation Scripts → Attributes (SQL del objeto) y Changes (opcional). Botones: Execute query, Preview, **Add attributes** (declara las columnas nuevas), Save with Validation, Cancel, Code Assistant.
 - **Siguiente paso:** completar `SolicitudDependencia` (atributos y transformación) y crear los eventos (alta y cambio de estado). Muestra coherente pedida a Roberto (FCALTA del 1.er semestre de 2025 y todo su histórico).
 
 ## 5. Las tablas
