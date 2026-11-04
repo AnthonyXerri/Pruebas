@@ -154,39 +154,21 @@ LEFT JOIN "SIDM_ESTADO_SOLICITUD" e ON RIGHT(e."CDESTADO", 2) = RIGHT(h."CDESTAD
 | Fase 3 · PIA | No: faltan las tablas del PIA |
 | Filtros de territorio y edad | No: falta la tabla de personas |
 
-## 9. SQL de referencia (borradores)
+## 9. SQL del modelo (validadas el 04/11 en «Pruebas Anthony»)
 
-**Objeto Solicitud** (validada el 04/11 en «Pruebas Anthony»; los alias son los nombres de los atributos a declarar):
-```sql
-SELECT
-    CAST(s."IDSOLICITUD" AS VARCHAR) AS "ID",
-    s."NMSOLICITUD"   AS "NumeroSolicitud",
-    s."FCSOLICITUD"   AS "FechaSolicitud",
-    s."FCREGENTRADA"  AS "FechaRegistroEntrada",
-    s."FCALTA"        AS "FechaAlta",
-    s."FC_FIN_PLAZO"  AS "FechaFinPlazo",
-    s."FCBAJA"        AS "FechaBaja",
-    s."CDESTADO"      AS "CodigoEstadoActual",
-    e."DSESTADO"      AS "EstadoActual",
-    s."CDTIPO"        AS "TipoSolicitud",
-    s."IT_URGENTE"    AS "Urgente",
-    s."IT_TRASLADO"   AS "Traslado",
-    s."ITEXTINGUIDO"  AS "Extinguido",
-    s."NMREVISION"    AS "NumeroRevision"
-FROM "SIDM_SOLICITUD" s
-LEFT JOIN "SIDM_ESTADO_SOLICITUD" e ON RIGHT(e."CDESTADO", 2) = RIGHT(s."CDESTADO", 2);
-```
+Están en **`dependencia/sql/`**, listas para pegar en Objects & Events:
+- `01_objeto_SolicitudDependencia.sql`: objeto (100 filas, estado actual con nombre).
+- `02_evento_RegistroEntrada.sql`: evento de inicio con `FCREGENTRADA` (99 filas; la 41 sin fecha).
+- `03_evento_CambioEstado.sql`: un evento por fila del histórico, con código, estado, **fase** (`CASE`) y **usuario** (`IDMODI`). 100 filas, todas con fase, sin IDs repetidos.
 
-**Evento Cambio de estado:**
-```sql
-SELECT 'CE_' || CAST(h."IDSOLICITUD" AS VARCHAR) || '_' || h."CDESTADO" || '_' || TO_CHAR(h."FCMODI", 'YYYYMMDDHH24MISS') AS "ID",
-       h."FCMODI" AS "Time", h."IDSOLICITUD" AS "Solicitud",
-       h."CDESTADO", e."DSESTADO", h."IDMODI"
-FROM "SIDM_HIST_ESTADO" h
-LEFT JOIN "SIDM_ESTADO_SOLICITUD" e ON RIGHT(e."CDESTADO", 2) = RIGHT(h."CDESTADO", 2)
-WHERE h."FCMODI" IS NOT NULL;
-```
-(Falta añadir la `Fase` con un `CASE` cuando se valide la agrupación.)
+Convenciones: `ID` y la relación `SolicitudDependencia` siempre con `CAST(... AS VARCHAR)`; prefijos de ID por tipo de evento (`REG_`, `CE_`); `Time` es la fecha del evento.
+
+### Lo que enseña el histórico (muestra: tarde del 28/10/2011, 12:41–16:13)
+- **`IDMODI` es el login del usuario** (RBO2, AAG50, GUIJOSA, EGV008, CLF10, MRR91…) → permite la parte «por trabajador» del mockup.
+- RBO2 graba altas en serie (equipo de grabación).
+- GUIJOSA pasa de 50 (Pendiente de resolución) a 90 (Resuelto) en **2 segundos**.
+- EGV008 pasa unas 20 solicitudes a 50 en el mismo segundo (acción masiva).
+- ⇒ Hay estados que son clics o lotes, no esperas reales: **medir las fases de entrada a salida de la fase**, no estado por estado.
 
 ## 10. Pendientes y preguntas abiertas
 
