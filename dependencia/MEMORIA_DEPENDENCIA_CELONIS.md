@@ -75,6 +75,13 @@ LEFT JOIN "SIDM_ESTADO_SOLICITUD" e ON RIGHT(e."CDESTADO", 2) = RIGHT(h."CDESTAD
 - Coincide con la reunión: Andrés llamaba «98» al 1298 (el único con fecha de baja, 2022).
 - **Pendiente:** confirmarlo con Roberto o SIDEMA.
 
+### Lo que se ve en los datos (muestra local, 04/11)
+- **La SQL del objeto Solicitud está validada** (sección 9): 100 filas y estado actual con nombre.
+- La muestra de `SIDM_SOLICITUD` son las **primeras solicitudes de SIDEMA (mayo–julio de 2007)**, todas en estado 90 (Expediente resuelto).
+- `NMSOLICITUD` = año + correlativo (`2007001830`).
+- **Tres fechas de inicio distintas:** `FCREGENTRADA` (registro), `FCSOLICITUD` y `FCALTA` (alta en SIDEMA, que puede ser **meses después**). **`FC_FIN_PLAZO` ≈ `FCREGENTRADA` + 6 meses** → el plazo legal de 180 días cuenta desde el **registro de entrada**. Propuesta: que el proceso empiece en el registro (a confirmar con Andrés, que propuso `FCALTA` como evento inicial).
+- Columnas vacías en la muestra: `FCBAJA`, `IT_URGENTE`, `IT_TRASLADO`, `NMREVISION`. `CDTIPO` solo tiene «RS» (¿qué es?). `ITEXTINGUIDO` = S/N/vacío. No se quitan hasta ver datos recientes.
+
 ## 6. Estados (por código de 2 dígitos) y propuesta de fases
 
 | Cód. | Estado | Fase propuesta |
@@ -149,13 +156,23 @@ LEFT JOIN "SIDM_ESTADO_SOLICITUD" e ON RIGHT(e."CDESTADO", 2) = RIGHT(h."CDESTAD
 
 ## 9. SQL de referencia (borradores)
 
-**Objeto Solicitud:**
+**Objeto Solicitud** (validada el 04/11 en «Pruebas Anthony»; los alias son los nombres de los atributos a declarar):
 ```sql
-SELECT s."IDSOLICITUD" AS "ID", s."NMSOLICITUD", s."FCSOLICITUD", s."FCREGENTRADA", s."FCENTRADA_COMUNIDAD",
-       s."FCALTA", s."FC_FIN_PLAZO", s."FC_EFECTOS", s."FCBAJA", s."CDMOTBAJA",
-       s."CDESTADO", e."DSESTADO" AS "DSESTADO_ACTUAL", s."CDTIPO", s."CDMOTALTA", s."CDPROVISIONAL",
-       s."NMREVISION", s."IDSOLICITUD_ORIG_REVISION",
-       s."IT_URGENTE", s."IT_TRASLADO", s."ITEXTINGUIDO", s."IT_BLOQUEADO", s."ID_EXPEDIENTE", s."IDSOLICITANTE"
+SELECT
+    CAST(s."IDSOLICITUD" AS VARCHAR) AS "ID",
+    s."NMSOLICITUD"   AS "NumeroSolicitud",
+    s."FCSOLICITUD"   AS "FechaSolicitud",
+    s."FCREGENTRADA"  AS "FechaRegistroEntrada",
+    s."FCALTA"        AS "FechaAlta",
+    s."FC_FIN_PLAZO"  AS "FechaFinPlazo",
+    s."FCBAJA"        AS "FechaBaja",
+    s."CDESTADO"      AS "CodigoEstadoActual",
+    e."DSESTADO"      AS "EstadoActual",
+    s."CDTIPO"        AS "TipoSolicitud",
+    s."IT_URGENTE"    AS "Urgente",
+    s."IT_TRASLADO"   AS "Traslado",
+    s."ITEXTINGUIDO"  AS "Extinguido",
+    s."NMREVISION"    AS "NumeroRevision"
 FROM "SIDM_SOLICITUD" s
 LEFT JOIN "SIDM_ESTADO_SOLICITUD" e ON RIGHT(e."CDESTADO", 2) = RIGHT(s."CDESTADO", 2);
 ```
@@ -177,5 +194,5 @@ WHERE h."FCMODI" IS NOT NULL;
 - [ ] Roberto: ¿los códigos casan por los 2 últimos dígitos en SIDEMA? ¿Puede darnos una muestra **coherente** (el histórico de las mismas solicitudes)?
 - [ ] Roberto: ¿existe ya el objeto de solicitud de dependencia en Objects & Events? ¿Qué nombre usar?
 - [ ] ¿`IDMODI` es el usuario que hace el cambio?
-- [ ] Andrés: qué son AVC y RA; validar las fases; qué fecha inicia el plazo legal (`FCREGENTRADA`, `FCSOLICITUD` o `FCALTA`).
+- [ ] Andrés: qué son AVC y RA; validar las fases; empezar el proceso en `FCREGENTRADA` (el plazo legal cuenta desde ahí: `FC_FIN_PLAZO` ≈ registro + 6 meses) y no en `FCALTA`; qué es `CDTIPO` = «RS».
 - [ ] Pedir tablas para lo que falta: personas (edad, municipio), asignaciones o valoradores, grado, PIA.
