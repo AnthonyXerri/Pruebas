@@ -38,7 +38,8 @@ Documento vivo. Se actualiza cada vez que se aprende o se decide algo. Última a
 
 - **La extracción real falla** con un error de la librería **Snappy** (compresión) en la JVM de extracción. Roberto lo consultó con Javier Olmeda. Pendiente.
 - Mientras tanto, Roberto copió **3 tablas en local** (Global Schema). **Son muestras:** `SIDM_SOLICITUD` 100 filas, `SIDM_HIST_ESTADO` 100 filas, `SIDM_ESTADO_SOLICITUD` 41 filas (completa).
-- **Las dos muestras no son de las mismas solicitudes:** de las 85 solicitudes del histórico, **0** están en `SIDM_SOLICITUD`. Sirven para construir la estructura, no para ver recorridos.
+- **Las dos muestras no son de las mismas solicitudes:** de las 85 solicitudes del histórico, **0** están en `SIDM_SOLICITUD`. No es por el formato: `SIDM_SOLICITUD` tiene IDs de 2–3 cifras (18, 19, 304…) y el histórico, de 3–6 (11785, 147629…). Sirven para construir la estructura, no para ver recorridos. Se ha pedido a Roberto una muestra coherente.
+- **`IDSOLICITUD` tiene distinto tipo en cada tabla** (numérico en una, texto en la otra): en los joins y UNION, convertir los dos con `CAST(... AS VARCHAR)`.
 - **Siguiente paso:** crear el objeto Solicitud y los eventos en Objects & Events.
 
 ## 5. Las tablas
