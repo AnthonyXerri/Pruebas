@@ -56,6 +56,11 @@ Documento vivo. Se actualiza cada vez que se aprende o se decide algo. Última a
 - Editor de transformación del objeto: Transformation Scripts → Attributes (SQL del objeto) y Changes (opcional). Botones: Execute query, Preview, **Add attributes** (declara las columnas nuevas), Save with Validation, Cancel, Code Assistant.
 - **04/11: atributos de `SolicitudDependencia` declarados y guardados** (14 + ID, incluido `IdSolicitudOriginal`; con descripción; sin Deploy). Falta su transformación (SQL) y el data source.
 - **Data sources del pool de validación** (04/11): None (Global), OCDM Schema y conexiones compartidas de IMPLEMENTACION solo de Atlantix/PnC y Discapacidad. **No está la de Dependencia ni el Global de implementación** → pedido a Roberto que la comparta. Hasta entonces no se puede ejecutar la SQL del objeto en validación.
+- **04/11: modelo mapeado en Objects & Events (pool de validación, borrador sin Deploy):**
+  - Objeto `SolicitudDependencia` (15 atributos + ID).
+  - Evento **`RegistroEntradaDependencia`** (ID, Time) → *involves one* `SolicitudDependencia` (relationship name `SolicitudDependencia`).
+  - Evento **`CambioEstadoDependencia`** (ID, Time, CodigoEstado, Estado, Fase, Usuario) → *involves one* `SolicitudDependencia`.
+  - Etiqueta Dependencia en todo. Falta: transformaciones con SQL (cuando haya data source), *Create version* y Deploy (con Roberto) y la perspectiva.
 - **Siguiente paso:** completar `SolicitudDependencia` (atributos y transformación) y crear los eventos (alta y cambio de estado). Muestra coherente pedida a Roberto (FCALTA del 1.er semestre de 2025 y todo su histórico).
 
 ## 5. Las tablas
