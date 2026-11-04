@@ -29,7 +29,7 @@ Documento vivo. Se actualiza cada vez que se aprende o se decide algo. Última a
 - **Data source:** las tablas locales están en **None (Global Schema)**. Las reales vendrán de la **conexión «Dependencia»** (entorno de **validación** de SIDEMA, no productivo; las tablas deberían ser iguales).
 - **Filtros de extracción** (Table Configuration → Filtering): el *Filter Statement* es el `WHERE` sin la palabra WHERE, pero su intérprete **no admite funciones** (`TO_DATE` da «Error parsing filter»). Para fechas, usar el **Time Filter** (creation date / change date, eligiendo columna y fecha de inicio) o probar la fecha como texto (`FCALTA >= '2025-01-01'`, que depende de cómo la lea Oracle). Muestra pedida el 04/11: SOLICITUD con FCALTA ≥ 01/01/2025; HIST_ESTADO con FCMODI ≥ 01/12/2024; ESTADO_SOLICITUD entera. Esquema en origen: `DBA_SIDM.`
 - **Fechas en el filtro (Oracle):** `'2025-01-01'` da ORA-01861 y `'01/01/2025'` da ORA-01843 (el formato de Oracle es `DD-MON-RR`, con el mes en letras). El 04/11 el preview filtrado ya funcionó (pendiente de anotar con qué formato). La vista previa trae solo 100 filas (`FETCH FIRST 100 ROWS ONLY`) y no prueba la extracción completa.
-- **Los datos del entorno de validación de SIDEMA son de PRUEBA:** usuario `1222222222` casi siempre, `SIDMVVAL1`, DNIs ficticios, referencias como `123123` o `12022025.001`, unas 400 solicitudes en el 1.er semestre de 2025. Sirven para construir y probar, **no para concluir** tiempos ni cuellos de botella.
+- **Los datos del entorno de validación de SIDEMA son de PRUEBA:** casi siempre el mismo usuario genérico, DNIs y referencias inventados, unas 400 solicitudes en el 1.er semestre de 2025. Sirven para construir y probar, **no para concluir** tiempos ni cuellos de botella.
 - **Revisiones de grado:** cada revisión es una **fila nueva** de `SIDM_SOLICITUD` con el mismo `NMSOLICITUD`, `NMREVISION` = 1, 2…, `IDSOLICITUD_ORIG_REVISION` = la original e `IDSOLICITUD_REVISION` = la siguiente. Conviene añadir `IDSOLICITUD_ORIG_REVISION` al objeto para poder agruparlas.
 - **Extracción:** Data Integration → Extractions. Las tablas nuevas se buscan en MAYÚSCULAS o entre `%`. Solo sirven las del esquema DBA de SIDEMA (las `public.` dan error de permisos). Para tablas nuevas, ejecutar extracción **full**.
 - **Objects & Events** (OCPM): Roberto usa el entorno de **validación y producción**. Los objetos se marcan con la **etiqueta «Dependencia»**. Puede que **ya exista** un objeto de solicitud de dependencia: comprobarlo antes de crear uno.
@@ -42,7 +42,7 @@ Documento vivo. Se actualiza cada vez que se aprende o se decide algo. Última a
 
 - **La extracción real falla** con un error de la librería **Snappy** (compresión) en la JVM de extracción. Roberto lo consultó con Javier Olmeda. Pendiente.
 - Mientras tanto, Roberto copió **3 tablas en local** (Global Schema). **Son muestras:** `SIDM_SOLICITUD` 100 filas, `SIDM_HIST_ESTADO` 100 filas, `SIDM_ESTADO_SOLICITUD` 41 filas (completa).
-- **Las dos muestras no son de las mismas solicitudes:** de las 85 solicitudes del histórico, **0** están en `SIDM_SOLICITUD`. No es por el formato: `SIDM_SOLICITUD` tiene IDs de 2–3 cifras (18, 19, 304…) y el histórico, de 3–6 (11785, 147629…). Sirven para construir la estructura, no para ver recorridos. Se ha pedido a Roberto una muestra coherente.
+- **Las dos muestras no son de las mismas solicitudes:** de las 85 solicitudes del histórico, **0** están en `SIDM_SOLICITUD`. No es por el formato: `SIDM_SOLICITUD` tiene IDs de 2–3 cifras y el histórico, de 3–6. Sirven para construir la estructura, no para ver recorridos. Se ha pedido a Roberto una muestra coherente.
 - **`IDSOLICITUD` tiene distinto tipo en cada tabla** (numérico en una, texto en la otra): en los joins y UNION, convertir los dos con `CAST(... AS VARCHAR)`.
 - **Objects & Events** (Data Pool «OCPM DataPool VALI…», validación): **el objeto `SolicitudDependencia` ya existe** (namespace custom, etiqueta Dependencia). **No hay eventos de Dependencia** todavía.
   - Referencia de otros proyectos: el evento «AltaSolicitud» (Discapacidad) tiene `ID` (PK, String) + `Time` (Datetime); el objeto «Cita» (Discapacidad) tiene 17 atributos tipados (Boolean, Datetime, String, Long integer).
@@ -82,7 +82,7 @@ LEFT JOIN "SIDM_ESTADO_SOLICITUD" e ON RIGHT(e."CDESTADO", 2) = RIGHT(h."CDESTAD
 ### Lo que se ve en los datos (muestra local, 04/11)
 - **La SQL del objeto Solicitud está validada** (sección 9): 100 filas y estado actual con nombre.
 - La muestra de `SIDM_SOLICITUD` son las **primeras solicitudes de SIDEMA (mayo–julio de 2007)**, todas en estado 90 (Expediente resuelto).
-- `NMSOLICITUD` = año + correlativo (`2007001830`).
+- `NMSOLICITUD` = año + correlativo (formato `AAAA` + 6 cifras).
 - **Tres fechas de inicio distintas:** `FCREGENTRADA` (registro), `FCSOLICITUD` y `FCALTA` (alta en SIDEMA, que puede ser **meses después**). **`FC_FIN_PLAZO` ≈ `FCREGENTRADA` + 6 meses** → el plazo legal de 180 días cuenta desde el **registro de entrada**. Propuesta: que el proceso empiece en el registro (a confirmar con Andrés, que propuso `FCALTA` como evento inicial).
 - Columnas vacías en la muestra: `FCBAJA`, `IT_URGENTE`, `IT_TRASLADO`, `NMREVISION`. `CDTIPO` solo tiene «RS» (¿qué es?). `ITEXTINGUIDO` = S/N/vacío. No se quitan hasta ver datos recientes.
 
@@ -168,10 +168,10 @@ Están en **`dependencia/sql/`**, listas para pegar en Objects & Events:
 Convenciones: `ID` y la relación `SolicitudDependencia` siempre con `CAST(... AS VARCHAR)`; prefijos de ID por tipo de evento (`REG_`, `CE_`); `Time` es la fecha del evento.
 
 ### Lo que enseña el histórico (muestra: tarde del 28/10/2011, 12:41–16:13)
-- **`IDMODI` es el login del usuario** (RBO2, AAG50, GUIJOSA, EGV008, CLF10, MRR91…) → permite la parte «por trabajador» del mockup.
-- RBO2 graba altas en serie (equipo de grabación).
-- GUIJOSA pasa de 50 (Pendiente de resolución) a 90 (Resuelto) en **2 segundos**.
-- EGV008 pasa unas 20 solicitudes a 50 en el mismo segundo (acción masiva).
+- **`IDMODI` es el login del usuario** (códigos de usuario de SIDEMA) → permite la parte «por trabajador» del mockup.
+- Un usuario graba altas en serie (equipo de grabación).
+- Otro usuario pasa de 50 (Pendiente de resolución) a 90 (Resuelto) en **2 segundos**.
+- Otro usuario pasa unas 20 solicitudes a 50 en el mismo segundo (acción masiva).
 - ⇒ Hay estados que son clics o lotes, no esperas reales: **medir las fases de entrada a salida de la fase**, no estado por estado.
 
 ## 10. Pendientes y preguntas abiertas
