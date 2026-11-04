@@ -14,7 +14,8 @@ SELECT
     s."IT_URGENTE"    AS "Urgente",
     s."IT_TRASLADO"   AS "Traslado",
     s."ITEXTINGUIDO"  AS "Extinguido",
-    s."NMREVISION"    AS "NumeroRevision"
+    s."NMREVISION"    AS "NumeroRevision",
+    CAST(s."IDSOLICITUD_ORIG_REVISION" AS VARCHAR) AS "IdSolicitudOriginal"
 FROM "SIDM_SOLICITUD" s
 LEFT JOIN "SIDM_ESTADO_SOLICITUD" e
        ON RIGHT(e."CDESTADO", 2) = RIGHT(s."CDESTADO", 2);

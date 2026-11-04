@@ -52,6 +52,7 @@ Documento vivo. Se actualiza cada vez que se aprende o se decide algo. Última a
 - **Data Pools** (lista del 04/11): **OCPM DataPool IMPLEMENTACION** (extrae; 11 conexiones; estado rojo por la extracción fallida) · **OCPM DataPool VALIDACION y PRODUCCION** (modela; recibe conexiones compartidas «OCPM DataPool IMPLEMENTACION _ …») · **POC - Dependencia** (PoC de sept. 2025; posible referencia de trabajo previo con SIDEMA) · otros: 00 - Extraction Pool, PNC, OCPM Data Pool, POC Bono Social Térmico, POC Tramitación.
   - Entre pools se **comparten tablas**: el pool receptor las ve como otro *data source*. Hay que encontrar el data source de VALIDACION que trae las SIDM (o pedir a Roberto que las comparta).
 - Editor de transformación del objeto: Transformation Scripts → Attributes (SQL del objeto) y Changes (opcional). Botones: Execute query, Preview, **Add attributes** (declara las columnas nuevas), Save with Validation, Cancel, Code Assistant.
+- **04/11: atributos de `SolicitudDependencia` declarados y guardados** (14 + ID, incluido `IdSolicitudOriginal`; con descripción; sin Deploy). Falta su transformación (SQL) y el data source.
 - **Siguiente paso:** completar `SolicitudDependencia` (atributos y transformación) y crear los eventos (alta y cambio de estado). Muestra coherente pedida a Roberto (FCALTA del 1.er semestre de 2025 y todo su histórico).
 
 ## 5. Las tablas
