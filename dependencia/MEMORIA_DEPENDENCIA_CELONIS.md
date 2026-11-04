@@ -40,7 +40,10 @@ Documento vivo. Se actualiza cada vez que se aprende o se decide algo. Última a
 - Mientras tanto, Roberto copió **3 tablas en local** (Global Schema). **Son muestras:** `SIDM_SOLICITUD` 100 filas, `SIDM_HIST_ESTADO` 100 filas, `SIDM_ESTADO_SOLICITUD` 41 filas (completa).
 - **Las dos muestras no son de las mismas solicitudes:** de las 85 solicitudes del histórico, **0** están en `SIDM_SOLICITUD`. No es por el formato: `SIDM_SOLICITUD` tiene IDs de 2–3 cifras (18, 19, 304…) y el histórico, de 3–6 (11785, 147629…). Sirven para construir la estructura, no para ver recorridos. Se ha pedido a Roberto una muestra coherente.
 - **`IDSOLICITUD` tiene distinto tipo en cada tabla** (numérico en una, texto en la otra): en los joins y UNION, convertir los dos con `CAST(... AS VARCHAR)`.
-- **Siguiente paso:** crear el objeto Solicitud y los eventos en Objects & Events.
+- **Objects & Events** (Data Pool «OCPM DataPool VALI…», validación): **el objeto `SolicitudDependencia` ya existe** (namespace custom, etiqueta Dependencia). **No hay eventos de Dependencia** todavía.
+  - Referencia de otros proyectos: el evento «AltaSolicitud» (Discapacidad) tiene `ID` (PK, String) + `Time` (Datetime); el objeto «Cita» (Discapacidad) tiene 17 atributos tipados (Boolean, Datetime, String, Long integer).
+  - Botones Test changes / Create version / **Deploy**: los cambios son un borrador hasta el Deploy, que los publica. **No hacer Deploy sin Roberto.**
+- **Siguiente paso:** completar `SolicitudDependencia` (atributos y transformación) y crear los eventos (alta y cambio de estado). Muestra coherente pedida a Roberto (FCALTA del 1.er semestre de 2025 y todo su histórico).
 
 ## 5. Las tablas
 
