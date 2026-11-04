@@ -48,7 +48,7 @@ components:
       attributes:
       - id: ea650b68-fc19-59ca-be40-db319cda888d
         pql: |
-          COUNT(CASE WHEN PU_MIN("o_custom_SolicitudDependencia", "e_custom_CambioEstadoDependencia"."Time", "e_custom_CambioEstadoDependencia"."CodigoEstado" IN ('90','34','36')) IS NULL AND "o_custom_SolicitudDependencia"."FechaBaja" IS NULL THEN "o_custom_SolicitudDependencia"."ID" END)
+          COUNT(CASE WHEN PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('90','34','36')) IS NULL AND "o_custom_SolicitudDependencia"."FechaBaja" IS NULL THEN "o_custom_SolicitudDependencia"."ID" END)
         format: ',.0f'
         columnType: int
         aggregation: true
@@ -62,7 +62,7 @@ components:
       attributes:
       - id: cfc7e36e-b1ca-5069-8971-fa1cbd73bd37
         pql: |
-          AVG(DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaSolicitud", "o_custom_SolicitudDependencia"."FechaAlta")) + AVG(DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaAlta", PU_MIN("o_custom_SolicitudDependencia", "e_custom_CambioEstadoDependencia"."Time", "e_custom_CambioEstadoDependencia"."CodigoEstado" IN ('90','34','36'))))
+          AVG(DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaSolicitud", "o_custom_SolicitudDependencia"."FechaAlta")) + AVG(DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaAlta", PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('90','34','36'))))
         unit: d
         format: ',.0f'
         columnType: float
@@ -77,7 +77,7 @@ components:
       attributes:
       - id: 8e5d4511-1e1e-589f-b565-251ce395d0ae
         pql: |
-          AVG(CASE WHEN DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaSolicitud", PU_MIN("o_custom_SolicitudDependencia", "e_custom_CambioEstadoDependencia"."Time", "e_custom_CambioEstadoDependencia"."CodigoEstado" IN ('90','34','36'))) <= 180 THEN 100.0 WHEN DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaSolicitud", PU_MIN("o_custom_SolicitudDependencia", "e_custom_CambioEstadoDependencia"."Time", "e_custom_CambioEstadoDependencia"."CodigoEstado" IN ('90','34','36'))) > 180 THEN 0.0 END)
+          AVG(CASE WHEN DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaSolicitud", PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('90','34','36'))) <= 180 THEN 100.0 WHEN DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaSolicitud", PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('90','34','36'))) > 180 THEN 0.0 END)
         unit: '%'
         format: ',.0f'
         columnType: float
@@ -311,7 +311,7 @@ components:
       attributes:
       - id: 465b0253-5be1-5a94-8351-efb4354374d7
         pql: |
-          AVG(CASE WHEN PU_COUNT("o_custom_SolicitudDependencia", "e_custom_CambioEstadoDependencia"."ID", "e_custom_CambioEstadoDependencia"."CodigoEstado" IN ('60','30','25')) > 0 THEN 100.0 ELSE 0.0 END)
+          AVG(CASE WHEN PU_COUNT("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('60','30','25')) > 0 THEN 100.0 ELSE 0.0 END)
         unit: '%'
         format: ',.0f'
         columnType: float
@@ -326,7 +326,7 @@ components:
       attributes:
       - id: 59cc2883-c3d2-53ae-b10c-d423dfd07ca8
         pql: |
-          COUNT(CASE WHEN PU_COUNT("o_custom_SolicitudDependencia", "e_custom_CambioEstadoDependencia"."ID", "e_custom_CambioEstadoDependencia"."CodigoEstado" IN ('60','30','25')) > 0 THEN "o_custom_SolicitudDependencia"."ID" END)
+          COUNT(CASE WHEN PU_COUNT("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('60','30','25')) > 0 THEN "o_custom_SolicitudDependencia"."ID" END)
         format: ',.0f'
         columnType: int
         aggregation: true
@@ -340,7 +340,7 @@ components:
       attributes:
       - id: dc7d4e41-9901-5ba3-beaa-7ec227cab258
         pql: |
-          AVG(CASE WHEN PU_COUNT("o_custom_SolicitudDependencia", "e_custom_CambioEstadoDependencia"."ID", "e_custom_CambioEstadoDependencia"."CodigoEstado" IN ('05','20','15')) > 0 THEN PU_COUNT("o_custom_SolicitudDependencia", "e_custom_CambioEstadoDependencia"."ID", "e_custom_CambioEstadoDependencia"."CodigoEstado" IN ('05','20','15')) END)
+          AVG(CASE WHEN PU_COUNT("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('05','20','15')) > 0 THEN PU_COUNT("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('05','20','15')) END)
         format: ',.1f'
         columnType: float
         aggregation: true
@@ -546,7 +546,7 @@ components:
       attributes:
       - id: a4f3a025-8143-5c7c-947f-7f7a3db0320b
         pql: |
-          CASE WHEN PU_COUNT("o_custom_SolicitudDependencia", "e_custom_CambioEstadoDependencia"."ID", "e_custom_CambioEstadoDependencia"."CodigoEstado" IN ('05','20','15')) = 0 THEN 'Sin AVC' WHEN PU_COUNT("o_custom_SolicitudDependencia", "e_custom_CambioEstadoDependencia"."ID", "e_custom_CambioEstadoDependencia"."CodigoEstado" IN ('05','20','15')) = 1 THEN '1 vuelta' WHEN PU_COUNT("o_custom_SolicitudDependencia", "e_custom_CambioEstadoDependencia"."ID", "e_custom_CambioEstadoDependencia"."CodigoEstado" IN ('05','20','15')) = 2 THEN '2 vueltas' ELSE '3+ vueltas (bucle)' END
+          CASE WHEN PU_COUNT("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('05','20','15')) = 0 THEN 'Sin AVC' WHEN PU_COUNT("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('05','20','15')) = 1 THEN '1 vuelta' WHEN PU_COUNT("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('05','20','15')) = 2 THEN '2 vueltas' ELSE '3+ vueltas (bucle)' END
         columnType: string
         aggregation: false
         description: ''
@@ -744,7 +744,7 @@ components:
         shortDisplayName: ''
       - id: 1195258a-6bf2-51c1-ac7a-123f12bf052f
         pql: |
-          COUNT(CASE WHEN PU_COUNT("o_custom_SolicitudDependencia", "e_custom_CambioEstadoDependencia"."ID", "e_custom_CambioEstadoDependencia"."CodigoEstado" IN ('60','30','25')) > 0 THEN "o_custom_SolicitudDependencia"."ID" END)
+          COUNT(CASE WHEN PU_COUNT("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('60','30','25')) > 0 THEN "o_custom_SolicitudDependencia"."ID" END)
         format: ',.0f'
         columnType: int
         aggregation: true
@@ -818,12 +818,12 @@ components:
     dataSources:
     - id: 6fca9ebd-8da5-53db-836f-8bac4d94f428
       filters:
-      - pql: FILTER "e_custom_CambioEstadoDependencia"."CodigoEstado" IN ('60','30','25','05','20','15')
+      - pql: FILTER "el__EventosDependencia"."CodigoEstado" IN ('60','30','25','05','20','15')
         isReferenced: false
       attributes:
       - id: ccb378bb-82cd-540a-aeec-2c93298cb8bd
         pql: |
-          "e_custom_CambioEstadoDependencia"."Usuario"
+          "el__EventosDependencia"."Usuario"
         columnType: string
         aggregation: false
         description: ''
@@ -831,7 +831,7 @@ components:
         shortDisplayName: ''
       - id: 840e039d-f3c9-50f7-8a26-bcdabbdd374d
         pql: |
-          COUNT(DISTINCT CASE WHEN "e_custom_CambioEstadoDependencia"."CodigoEstado" IN ('60','30','25') THEN BIND("e_custom_CambioEstadoDependencia", "o_custom_SolicitudDependencia"."ID") END)
+          COUNT(DISTINCT CASE WHEN "el__EventosDependencia"."CodigoEstado" IN ('60','30','25') THEN BIND("el__EventosDependencia", "o_custom_SolicitudDependencia"."ID") END)
         format: ',.0f'
         columnType: int
         aggregation: true
@@ -840,7 +840,7 @@ components:
         shortDisplayName: ''
       - id: 3909548c-8b94-5f75-a18c-5437d30191cd
         pql: |
-          COUNT(CASE WHEN "e_custom_CambioEstadoDependencia"."CodigoEstado" IN ('60','30','25') THEN "e_custom_CambioEstadoDependencia"."ID" END) * 1.0 / COUNT(DISTINCT CASE WHEN "e_custom_CambioEstadoDependencia"."CodigoEstado" IN ('60','30','25') THEN ROUND_DAY("e_custom_CambioEstadoDependencia"."Time") END)
+          COUNT(CASE WHEN "el__EventosDependencia"."CodigoEstado" IN ('60','30','25') THEN "el__EventosDependencia"."TIMESTAMP" END) * 1.0 / COUNT(DISTINCT CASE WHEN "el__EventosDependencia"."CodigoEstado" IN ('60','30','25') THEN ROUND_DAY("el__EventosDependencia"."TIMESTAMP") END)
         format: ',.1f'
         columnType: float
         aggregation: true
@@ -849,7 +849,7 @@ components:
         shortDisplayName: ''
       - id: 2bb7ac00-a319-55c4-b545-bae80a15f44a
         pql: |
-          COUNT(CASE WHEN "e_custom_CambioEstadoDependencia"."CodigoEstado" IN ('05','20','15') THEN "e_custom_CambioEstadoDependencia"."ID" END)
+          COUNT(CASE WHEN "el__EventosDependencia"."CodigoEstado" IN ('05','20','15') THEN "el__EventosDependencia"."TIMESTAMP" END)
         format: ',.0f'
         columnType: int
         aggregation: true
@@ -890,7 +890,7 @@ components:
       attributes:
       - id: cfd95fde-63ed-576c-8484-229a5e18ba58
         pql: |
-          AVG(DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaAlta", PU_MIN("o_custom_SolicitudDependencia", "e_custom_CambioEstadoDependencia"."Time", "e_custom_CambioEstadoDependencia"."CodigoEstado" IN ('90','34','36'))))
+          AVG(DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaAlta", PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('90','34','36'))))
         unit: d
         format: ',.0f'
         columnType: float
@@ -919,7 +919,7 @@ components:
       attributes:
       - id: 2268c107-1554-5df1-904d-4a024390b3a4
         pql: |
-          COUNT(CASE WHEN PU_MIN("o_custom_SolicitudDependencia", "e_custom_CambioEstadoDependencia"."Time", "e_custom_CambioEstadoDependencia"."CodigoEstado" IN ('90','34','36')) >= ADD_DAYS(TODAY(), -28) THEN "o_custom_SolicitudDependencia"."ID" END) / 4.0
+          COUNT(CASE WHEN PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('90','34','36')) >= ADD_DAYS(TODAY(), -28) THEN "o_custom_SolicitudDependencia"."ID" END) / 4.0
         format: ',.1f'
         columnType: float
         aggregation: true
@@ -982,7 +982,7 @@ components:
       attributes:
       - id: 0a6dca61-3ee6-5938-81e0-72424970f15c
         pql: |
-          COUNT(CASE WHEN PU_MIN("o_custom_SolicitudDependencia", "e_custom_CambioEstadoDependencia"."Time", "e_custom_CambioEstadoDependencia"."CodigoEstado" IN ('47')) IS NOT NULL THEN "o_custom_SolicitudDependencia"."ID" END)
+          COUNT(CASE WHEN PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('47')) IS NOT NULL THEN "o_custom_SolicitudDependencia"."ID" END)
         format: ',.0f'
         columnType: int
         aggregation: true
@@ -996,7 +996,7 @@ components:
       attributes:
       - id: 1b3bb4dc-08dd-5a6f-80c5-6bde08997b2f
         pql: |
-          COUNT(CASE WHEN DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaAlta", PU_MIN("o_custom_SolicitudDependencia", "e_custom_CambioEstadoDependencia"."Time", "e_custom_CambioEstadoDependencia"."CodigoEstado" IN ('47'))) <= 120 THEN "o_custom_SolicitudDependencia"."ID" END)
+          COUNT(CASE WHEN DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaAlta", PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('47'))) <= 120 THEN "o_custom_SolicitudDependencia"."ID" END)
         format: ',.0f'
         columnType: int
         aggregation: true
@@ -1010,7 +1010,7 @@ components:
       attributes:
       - id: 36bb86dc-1f54-5cab-bdb0-cf2f577c0445
         pql: |
-          COUNT(CASE WHEN DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaAlta", PU_MIN("o_custom_SolicitudDependencia", "e_custom_CambioEstadoDependencia"."Time", "e_custom_CambioEstadoDependencia"."CodigoEstado" IN ('47'))) > 120 THEN "o_custom_SolicitudDependencia"."ID" END)
+          COUNT(CASE WHEN DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaAlta", PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('47'))) > 120 THEN "o_custom_SolicitudDependencia"."ID" END)
         format: ',.0f'
         columnType: int
         aggregation: true
@@ -1098,12 +1098,12 @@ components:
     dataSources:
     - id: eea29328-7b8c-5bfe-ae24-367bef987008
       filters:
-      - pql: FILTER PU_MIN("o_custom_SolicitudDependencia", "e_custom_CambioEstadoDependencia"."Time", "e_custom_CambioEstadoDependencia"."CodigoEstado" IN ('47')) IS NOT NULL
+      - pql: FILTER PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('47')) IS NOT NULL
         isReferenced: false
       attributes:
       - id: 4fc2271b-b87f-5bc0-83eb-d64057af3c61
         pql: |
-          ROUND_MONTH(PU_MIN("o_custom_SolicitudDependencia", "e_custom_CambioEstadoDependencia"."Time", "e_custom_CambioEstadoDependencia"."CodigoEstado" IN ('47')))
+          ROUND_MONTH(PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('47')))
         format: '%Y-%m'
         columnType: date
         aggregation: false
@@ -1112,7 +1112,7 @@ components:
         shortDisplayName: ''
       - id: 972312e7-fbae-5b75-b996-a327d597fc1b
         pql: |
-          COUNT(CASE WHEN DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaAlta", PU_MIN("o_custom_SolicitudDependencia", "e_custom_CambioEstadoDependencia"."Time", "e_custom_CambioEstadoDependencia"."CodigoEstado" IN ('47'))) <= 120 THEN "o_custom_SolicitudDependencia"."ID" END)
+          COUNT(CASE WHEN DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaAlta", PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('47'))) <= 120 THEN "o_custom_SolicitudDependencia"."ID" END)
         format: ',.0f'
         columnType: int
         aggregation: true
@@ -1121,7 +1121,7 @@ components:
         shortDisplayName: ''
       - id: 3b668695-faec-5de2-83e6-0b46b6ab24e8
         pql: |
-          COUNT(CASE WHEN DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaAlta", PU_MIN("o_custom_SolicitudDependencia", "e_custom_CambioEstadoDependencia"."Time", "e_custom_CambioEstadoDependencia"."CodigoEstado" IN ('47'))) > 120 THEN "o_custom_SolicitudDependencia"."ID" END)
+          COUNT(CASE WHEN DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaAlta", PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('47'))) > 120 THEN "o_custom_SolicitudDependencia"."ID" END)
         format: ',.0f'
         columnType: int
         aggregation: true
@@ -1130,7 +1130,7 @@ components:
         shortDisplayName: ''
       - id: 08ad0d99-dee7-59c1-adcc-41cc36791ebb
         pql: |
-          AVG(DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaAlta", PU_MIN("o_custom_SolicitudDependencia", "e_custom_CambioEstadoDependencia"."Time", "e_custom_CambioEstadoDependencia"."CodigoEstado" IN ('47'))))
+          AVG(DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaAlta", PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('47'))))
         unit: días
         format: ',.0f'
         columnType: float
@@ -1140,7 +1140,7 @@ components:
         shortDisplayName: ''
       - id: af87436d-ff31-5851-a8b6-4b1032cac0fe
         pql: |
-          AVG(CASE WHEN PU_MIN("o_custom_SolicitudDependencia", "e_custom_CambioEstadoDependencia"."Time", "e_custom_CambioEstadoDependencia"."CodigoEstado" IN ('47')) IS NOT NULL THEN 120.0 END)
+          AVG(CASE WHEN PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('47')) IS NOT NULL THEN 120.0 END)
         unit: días
         format: ',.0f'
         columnType: float
@@ -1194,7 +1194,7 @@ components:
       attributes:
       - id: ce9056ac-359a-5835-b862-dd8246f33c06
         pql: |
-          AVG(DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaAlta", PU_MIN("o_custom_SolicitudDependencia", "e_custom_CambioEstadoDependencia"."Time", "e_custom_CambioEstadoDependencia"."CodigoEstado" IN ('43'))))
+          AVG(DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaAlta", PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('43'))))
         unit: d
         format: ',.0f'
         columnType: float
@@ -1209,7 +1209,7 @@ components:
       attributes:
       - id: a63b836c-060c-5786-8593-a7604fbefe04
         pql: |
-          AVG(DAYS_BETWEEN(PU_MIN("o_custom_SolicitudDependencia", "e_custom_CambioEstadoDependencia"."Time", "e_custom_CambioEstadoDependencia"."CodigoEstado" IN ('43')), PU_MIN("o_custom_SolicitudDependencia", "e_custom_CambioEstadoDependencia"."Time", "e_custom_CambioEstadoDependencia"."CodigoEstado" IN ('47'))))
+          AVG(DAYS_BETWEEN(PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('43')), PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('47'))))
         unit: d
         format: ',.0f'
         columnType: float
@@ -1224,7 +1224,7 @@ components:
       attributes:
       - id: f5aaa1d7-a2a5-5430-bb3a-14a5095f6f58
         pql: |
-          AVG(DAYS_BETWEEN(PU_MIN("o_custom_SolicitudDependencia", "e_custom_CambioEstadoDependencia"."Time", "e_custom_CambioEstadoDependencia"."CodigoEstado" IN ('47')), PU_MIN("o_custom_SolicitudDependencia", "e_custom_CambioEstadoDependencia"."Time", "e_custom_CambioEstadoDependencia"."CodigoEstado" IN ('90','34','36'))))
+          AVG(DAYS_BETWEEN(PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('47')), PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('90','34','36'))))
         unit: d
         format: ',.0f'
         columnType: float
