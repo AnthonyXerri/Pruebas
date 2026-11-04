@@ -40,6 +40,8 @@ Documento vivo. Se actualiza cada vez que se aprende o se decide algo. Última a
 
 ## 4. Estado actual (04/11/2026)
 
+- **Alcance de la tarea de Anthony (asignada por Roberto y Andrés):** como no hay datos (extracción con error; tablas locales y solo preview), **mapear el modelo** con lo que hay: objeto, atributos, tipos de evento y relaciones en Objects & Events, y dejar las SQL preparadas. La carga real (data source, transformaciones con datos, Deploy) llega cuando funcione la extracción.
+
 - **La extracción real falla** con un error de la librería **Snappy** (compresión) en la JVM de extracción. Roberto lo consultó con Javier Olmeda. Pendiente.
 - Mientras tanto, Roberto copió **3 tablas en local** (Global Schema). **Son muestras:** `SIDM_SOLICITUD` 100 filas, `SIDM_HIST_ESTADO` 100 filas, `SIDM_ESTADO_SOLICITUD` 41 filas (completa).
 - **Las dos muestras no son de las mismas solicitudes:** de las 85 solicitudes del histórico, **0** están en `SIDM_SOLICITUD`. No es por el formato: `SIDM_SOLICITUD` tiene IDs de 2–3 cifras y el histórico, de 3–6. Sirven para construir la estructura, no para ver recorridos. Se ha pedido a Roberto una muestra coherente.
