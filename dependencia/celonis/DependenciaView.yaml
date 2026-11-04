@@ -15,38 +15,26 @@ metadata:
     attributeFilter:
       active: true
 components:
-- id: text-box-b881f211-9d53-5329-8325-2956a28132cd
+- id: text-box-c8d8b695-6260-5c97-9e3b-ec5009a98d3b
   type: text-box
   filters: []
   settings:
-    content: <p><strong>Dirección General de Atención al Mayor y a la Dependencia</strong></p><p>CONSEJERÍA DE FAMILIA, JUVENTUD Y ASUNTOS SOCIALES · CU1</p>
+    content: <p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAG8AAACWBAMAAAAidsuCAAAAMFBMVEX///////79/Pziz9O4jJSGVl6AKzkfHx3eBi3eASowFBYNDQveACreACneACjYAB9UrGzsAAAKPUlEQVR42u2Zb3BU13XAf/fpCtm12L0ryxA7ivS0yLjTuJjItuIaFT/wgsOfCbgoSY2VVAwZPIR2xm0NpjPJhzTTyQQSg2cMTExi11MRBynBQLD4t5aeVCHXNULGNgab1eoJyY7tit23i4SF9PReP7zdlUQwM2Emn6L74c2Zs+d3z73vnXPunxXzl3IDreCAFN9UNwAeQHotxo24ROMG2xQ4BU6BU+AUOAX+eYDOBLU5LkYnWJjXBG8bF8WKcfkbdk4cWnEtUOwszPX8F/+V67vt+btz6r8aV08AW738nFy4Pyfax3Oi5+wf9y7HLV4rDGT2EZ73/vLBjFoldwQzauF9Ujv4hx6DKTPbX8f2gWB2eEsSrVn1iW2WutpjFG/lv08vjCINx+TymEcUIkTxaq0yJ6tudrwoRHz38//BAMptpgVmfCS4mCryEI++/YMn8bpCuk1+4K6zZNQL3hlQeF0K2l7yPTpbYJSBLTBNfQrYgaNXYI23BUZE7Cc59fTHDFgzOD7UE8csXNfdTN7WUecFvB6so94Da/Yfs0i47mY1uAXnBVyLI0e9r63xZzf/l93d3e8Pz0UgNFZc6X5xoUCh9Aq389SgrgRC01YMxJILBYBe4XZ2d3e/aPhvVb5cQxAv8EBDPQ823SNsUn0bdqtg41o7iOdWNRwQHzTdI4C+DS+qiW/1wRnNXYhbv/XcSuTO9r9O2qGq9R/C38xs6ULMeuK5lRTvOvS3PRRVPzY06XPIvQcDIpi//kNg2e4yT9g79xiQv/dgQATvWDoILD0e1FOp/S8akwNggUewKOZ3ErRFKnDAV2/DC33gD24JpILPXh05J7YF0lZQADir0z2lIT+MOtxSrXfA84Pvbas0kIuuLCi89OI5yR0m4DmJirU9n9QC2K0XFs/xXvJDvPQv11pJdRVot1Q1tZe22pgI79KGf1z4lsIBlag6fOhLl01MRLLviU3GB7WTQeexvm9tbVxrq7bGwo5nlq1vaPqy59xywHns3de3HF9r2q2NquOF5avrjxR6V6WVunv14OjsE8tfjQXJa6yP7Hp0p+qfbj6+7PmaUX1lrbelkNcP1Ffvqktl5+YHOY5eb2DWWmW3XO67tSGCM2Of1ts1f8GX+6H1causcLD/1n0Gzox9BkDbS9k5ynoDqus9J7ij9dMIyAbDbk2qYD0wrx4nmBKfGiAbjKsrgAGOibksIf7vFVFDlOM399y07D8xDcdk/5XEnhFETTYZJ5UOGFoHP9LN/XAquA6ufE+b+TRjvZfXwQ/LWvfDqQlnmwmgc8cSg2bOLII9r/5aMoq3CJbesmKJwX4+XIR8afCaIHy8GSDGA+Bt9itK3tKM2oIHPqeSy6Z2PawoKpeHD837/kKtHBHWlm+IHPbVesXrhyaAeWVz9axccrRi3zDDqeUjC7XGrb/7eBivrLle/+LRileGGb70/bcX5rDe0xNB7Y5lHcnh0D2vntEJ77nzrC1u+Zc3voZ2x7Kmz4ZDc3ZMWCN6T09arfJ3GalQcOYOA1jyFKFQav1KIH/XSlRw5o7rLXPN5UkyCeD0erYnMuqQja2uA6qUW3nBTwDhBS+5ZTtMv8gn5174ZPnng86SZH/HHMcD6NiWWv6jnlYbcFYni/9nTm5VuAboqb6tL9ckBYDdXNWw8R5bAZ7Tt+HlVUkxCZwUAGL0/vW9M5p3BgxQl2qfC7XfV9sPwrt/fe+Mlp0B4/M85j/btEPubfJHXbJ65bzGOoATz3bskQ1Nk19jNh8z3YxIaP16ChBfrDcYnd2lgKKGCBz8dmrccDwf/TbSDsw7AODVG5C/WwF8GgGWHrjO55BG9gEGZNNPMq6e2stNgVPgFDgFToFT4J8AlDjRG8Auw0PeDTVDXvnJDY3U5s+g5UHR7er6Uw3dPAyI0E3DuY1caBiKgPI/3qMQ3qzyxKnr+gzjWlCkXCsXb7qbp0pqviMKzl2H02c//OFNtpqxKv/jzFiF/O6Q1L5KlH+1Emkd19J0V6OnnESq3OsJEw9jK5fiyFHCIKFI4fUQZjDyhsg/2O4Y7ScsLDTX92BNToPSYjWQjnNXzZm2BKDSLtM2npGV5tgr/XplqxZhwLq1fKDYa4lw8pJBS2WwpTLYqw/YXtLmPtUHgSKdi2+VFeunjTOyQr7fLUuEF3mKoz+b+fTz69A2sevgU2Mtj1S3PPLgr+quLJ9Xt/Hd3fwC+jYbjPzThceNX0R1WUI6fL4R+WSUgod+H53tmJscc81BPJwWnLa6KHPtKF+NUtdOhXEsXVx6mxOtM9Eg4Qbi8VmmYzqVMLKdY9sMAcLfI/8cqZDoMlYPgeePm6hiGdsOGoSwoVh2dhoLLEabjfmvTXg10XdBQYnz2kl487dyLiin2wStH0+77RurFJqOQKZ1TP94pwPMT2dyb34RIDf+uA4gXWqg2U5lfPa6Ohs/LjwLcgIQAAaAtjjwCMe2A7gWyAEWvX2vecahqJyWCQc2rXJipveXLLwZFMcLABmeaaJ1GubTOL2nqu/8u/Zu5eSuLNsewcxeXjrY3H+3A1QYEHPuN0Ar2R6JRsZOT6+PRB48TUQhDSK4h4xquQC5AAyKI/xvJEJEt4wnMOiMSCJGXrrns9Cb7QWfJX/f/WpX6KN47+Wuc5e73rOHT8TfOzuz6z3V/dFNZxKcG2qOxztGYh1xe+zcbc3xU6ATRkMAjE9R/EGOqNzvAgUItLKeMAm7KHChrEfT3Qs6QDycecbDJIpIhrB03AulGrhW2NJxJzv6YyoACLGKN+1sCRB5j+Kd5E7FxRYvVyZWeSdtGyEeVudtS4iH1XkJQqzj/HhpzlsHsQtVBodbxuvLOmLYQJWxEaDK+A9JGBEFNB2vB8CNItU7TkaHa2UstHAyBECRwonaUouTB4hAPJv7hokShgmUxkEjYxGHpHbkiJ1OJDRAlhaXdwPepUWquytX1/zP0bdIeTFLFZfHgftUfNZYWl0MFH3lIiD7HzeOAdrf1+H8m+1HtiM0E6Dmu3D0mUHf4q66LZsO32xsfGezMdIG2r2OuRjIq42a7Qv947PHgrnYiLy66G+ieaUZC6JVJo5JRbU5DdAquPJTYHZ7bK+TAR/qp5hBPGGO7QaVsYARB6DCHNlqgFYiY1EDlNMT5L9L/ViwhZpvw9jefV9BosuTUQNgrNEElDz/mgkS0mUmWgmLAOV/TrutxAMCxbMqHIQj02V+esW1RQDpLw0WIq+1Kg+ABwz+eNLfBvL9cMZU2IVICJwGF6IkM+WDuGG2ALOibuftuicJnPZn4PlgoPeboPU791Ya0C+nvxUO92ZuWZBxoBjXLAHLt8gmg+1U3GuAFkMuNiFWvanm6SdFFsQGHLSIAZZvkW0xo2CxCVqnQbU0ONl+oi7601I/X7x2bCSnjGn/3I56w7fIXl7E2p1qKVVeaewL0URXouDcXVbsiA1CKzjbefvFeGgoeXY0cPLc0JDrW2iXL6ZSMxMXCz4pj3UNffT/2qONK07nylkAAAAASUVORK5CYII=" alt="Comunidad de Madrid" width="58" height="78"></p><p><strong>Dirección General de Atención al Mayor y a la Dependencia</strong></p><p>CONSEJERÍA DE FAMILIA, JUVENTUD Y ASUNTOS SOCIALES · CU1</p>
     background: white
-- id: kpi-list-29730969-4d34-531e-85eb-842ce0b9b638
+- id: kpi-list-62a2386b-c1ed-51fd-8445-a1d6f2f8932d
   type: kpi-list
   filters: []
   settings:
     data:
       kpis:
-      - id: 3a532ec1-a962-5b02-b3c7-91775f633377
-        kpi: d3ab7b15-7a33-5cb0-91a0-49afc31454e5.ea650b68-fc19-59ca-be40-db319cda888d
+      - id: 762bc85d-ae36-56ed-9af0-3d3926792175
+        kpi: 0a4194e4-29d6-5d0c-b4b6-2b88f1fbe484.f9959730-4ddd-5bab-b41d-339bdf7f08cb
         show: true
         order: 100
-      - id: ae74fb49-c688-5f97-adeb-1bf82786e44a
-        kpi: 69afc516-3668-5dfe-9dc2-484063457c2e.cfc7e36e-b1ca-5069-8971-fa1cbd73bd37
-        show: true
-        order: 200
-      - id: c6c31217-874d-5590-9677-1654ac21e0be
-        kpi: 9ac03bb8-7340-5c1f-beed-3c73da372671.8e5d4511-1e1e-589f-b565-251ce395d0ae
-        show: true
-        order: 300
-      - id: 305a4ac1-af6e-5948-84b2-5881e8d7bc8f
-        kpi: 86807de5-62fa-5581-bccb-2906e51dbf3f.84efe811-b63a-5c84-b126-933d6c36d9e8
-        show: true
-        order: 400
     dataSources:
-    - id: d3ab7b15-7a33-5cb0-91a0-49afc31454e5
+    - id: 0a4194e4-29d6-5d0c-b4b6-2b88f1fbe484
       attributes:
-      - id: ea650b68-fc19-59ca-be40-db319cda888d
+      - id: f9959730-4ddd-5bab-b41d-339bdf7f08cb
         pql: |
           COUNT(CASE WHEN PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('90','34','36')) IS NULL AND "o_custom_SolicitudDependencia"."FechaBaja" IS NULL THEN "o_custom_SolicitudDependencia"."ID" END)
         format: ',.0f'
@@ -56,11 +44,22 @@ components:
         displayName: Solicitudes activas
         shortDisplayName: ''
       description: ''
-      displayName: d3ab7b15-7a33-5cb0-91a0-49afc31454e5
+      displayName: 0a4194e4-29d6-5d0c-b4b6-2b88f1fbe484
       shortDisplayName: ''
-    - id: 69afc516-3668-5dfe-9dc2-484063457c2e
+- id: kpi-list-384a7912-dfbb-569e-9c19-3bfabb2481ef
+  type: kpi-list
+  filters: []
+  settings:
+    data:
+      kpis:
+      - id: 8da06962-429f-5034-b42b-dc5f1dc7ab25
+        kpi: e45276db-403c-5c77-8778-bff34c4ca508.7608ccd2-a3d4-5525-a246-2804fd5d5730
+        show: true
+        order: 100
+    dataSources:
+    - id: e45276db-403c-5c77-8778-bff34c4ca508
       attributes:
-      - id: cfc7e36e-b1ca-5069-8971-fa1cbd73bd37
+      - id: 7608ccd2-a3d4-5525-a246-2804fd5d5730
         pql: |
           AVG(DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaSolicitud", "o_custom_SolicitudDependencia"."FechaAlta")) + AVG(DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaAlta", PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('90','34','36'))))
         unit: d
@@ -71,13 +70,28 @@ components:
         displayName: Plazo proceso completo
         shortDisplayName: ''
       description: ''
-      displayName: 69afc516-3668-5dfe-9dc2-484063457c2e
+      displayName: e45276db-403c-5c77-8778-bff34c4ca508
       shortDisplayName: ''
-    - id: 9ac03bb8-7340-5c1f-beed-3c73da372671
+- id: kpi-list-e5569f35-ed4e-5ebd-83e2-e5062777a490
+  type: kpi-list
+  filters: []
+  settings:
+    data:
+      kpis:
+      - id: e61f034b-ce03-5dbc-b2ef-1e8a57d66653
+        kpi: 4c954724-7e75-578e-abfb-92f64f8894f5.a887d77f-2efa-5b45-b1d0-0b8c937c0c12
+        show: true
+        order: 100
+      - id: 2a935868-3637-501d-b6a0-d82cf82c9c8e
+        kpi: 167b35ff-0064-5bad-81da-8889863e876b.77e5bf83-33b3-5f20-8ca2-561fb9e4f522
+        show: true
+        order: 200
+    dataSources:
+    - id: 4c954724-7e75-578e-abfb-92f64f8894f5
       attributes:
-      - id: 8e5d4511-1e1e-589f-b565-251ce395d0ae
+      - id: a887d77f-2efa-5b45-b1d0-0b8c937c0c12
         pql: |
-          AVG(CASE WHEN DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaSolicitud", PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('90','34','36'))) <= 180 THEN 100.0 WHEN DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaSolicitud", PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('90','34','36'))) > 180 THEN 0.0 END)
+          COUNT(CASE WHEN DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaSolicitud", PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('90','34','36'))) <= 180 THEN "o_custom_SolicitudDependencia"."ID" END) * 100.0 / COUNT(CASE WHEN DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaSolicitud", PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('90','34','36'))) IS NOT NULL THEN "o_custom_SolicitudDependencia"."ID" END)
         unit: '%'
         format: ',.0f'
         columnType: float
@@ -86,23 +100,68 @@ components:
         displayName: Cumplimiento SLA global
         shortDisplayName: ''
       description: ''
-      displayName: 9ac03bb8-7340-5c1f-beed-3c73da372671
+      displayName: 4c954724-7e75-578e-abfb-92f64f8894f5
       shortDisplayName: ''
-    - id: 86807de5-62fa-5581-bccb-2906e51dbf3f
+    - id: 167b35ff-0064-5bad-81da-8889863e876b
       attributes:
-      - id: 84efe811-b63a-5c84-b126-933d6c36d9e8
+      - id: 77e5bf83-33b3-5f20-8ca2-561fb9e4f522
         pql: |
-          COUNT("o_custom_SolicitudDependencia"."FechaAlta") * 1.0 / COUNT(DISTINCT ROUND_MONTH("o_custom_SolicitudDependencia"."FechaAlta"))
+          COUNT(CASE WHEN DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaSolicitud", PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('90','34','36'))) > 180 THEN "o_custom_SolicitudDependencia"."ID" END) * 100.0 / COUNT(CASE WHEN DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaSolicitud", PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('90','34','36'))) IS NOT NULL THEN "o_custom_SolicitudDependencia"."ID" END)
+        unit: '%'
         format: ',.0f'
         columnType: float
+        aggregation: true
+        description: ''
+        displayName: Fuera de plazo
+        shortDisplayName: ''
+      description: ''
+      displayName: 167b35ff-0064-5bad-81da-8889863e876b
+      shortDisplayName: ''
+- id: kpi-list-9fef72dd-7c71-5f84-b40e-963cd536ccf0
+  type: kpi-list
+  filters: []
+  settings:
+    data:
+      kpis:
+      - id: 632dfbed-9c00-5887-b167-ef50b63ab3e9
+        kpi: c2732cef-3adf-5e8a-ad12-7477a38cd025.d278486f-6ac4-5722-82c8-dc185ac4a488
+        show: true
+        order: 100
+      - id: 96b00b8a-cdeb-5fcb-9e1d-3c1b97cc5017
+        kpi: 78b11927-6dc5-5454-8e32-2aff473eb94a.c0747928-9b07-503a-87d2-4af9db0b1cec
+        show: true
+        order: 200
+    dataSources:
+    - id: c2732cef-3adf-5e8a-ad12-7477a38cd025
+      attributes:
+      - id: d278486f-6ac4-5722-82c8-dc185ac4a488
+        pql: |
+          COUNT(CASE WHEN ROUND_MONTH("o_custom_SolicitudDependencia"."FechaAlta") = ROUND_MONTH(PU_MAX(CONSTANT(), "o_custom_SolicitudDependencia"."FechaAlta")) THEN "o_custom_SolicitudDependencia"."ID" END)
+        format: ',.0f'
+        columnType: int
         aggregation: true
         description: ''
         displayName: Altas / mes
         shortDisplayName: ''
       description: ''
-      displayName: 86807de5-62fa-5581-bccb-2906e51dbf3f
+      displayName: c2732cef-3adf-5e8a-ad12-7477a38cd025
       shortDisplayName: ''
-- id: text-box-b62c4b1a-35ee-5ea4-ba1e-d1f20c8fe5e0
+    - id: 78b11927-6dc5-5454-8e32-2aff473eb94a
+      attributes:
+      - id: c0747928-9b07-503a-87d2-4af9db0b1cec
+        pql: |
+          (COUNT(CASE WHEN ROUND_MONTH("o_custom_SolicitudDependencia"."FechaAlta") = ROUND_MONTH(PU_MAX(CONSTANT(), "o_custom_SolicitudDependencia"."FechaAlta")) THEN "o_custom_SolicitudDependencia"."ID" END) - COUNT(CASE WHEN ROUND_MONTH("o_custom_SolicitudDependencia"."FechaAlta") = ADD_MONTHS(ROUND_MONTH(PU_MAX(CONSTANT(), "o_custom_SolicitudDependencia"."FechaAlta")), -1) THEN "o_custom_SolicitudDependencia"."ID" END)) * 100.0 / COUNT(CASE WHEN ROUND_MONTH("o_custom_SolicitudDependencia"."FechaAlta") = ADD_MONTHS(ROUND_MONTH(PU_MAX(CONSTANT(), "o_custom_SolicitudDependencia"."FechaAlta")), -1) THEN "o_custom_SolicitudDependencia"."ID" END)
+        unit: '%'
+        format: +,.0f
+        columnType: float
+        aggregation: true
+        description: ''
+        displayName: vs mes anterior
+        shortDisplayName: ''
+      description: ''
+      displayName: 78b11927-6dc5-5454-8e32-2aff473eb94a
+      shortDisplayName: ''
+- id: text-box-c001b7bb-151d-5346-9a0f-0f2b2e03e8e4
   type: text-box
   filters: []
   settings:
@@ -110,45 +169,58 @@ components:
     background: white
     infoText:
       title: Cabecera
-      content: 'Solicitudes activas: sin resolución de grado ni baja. Plazo proceso completo: suma de los tiempos medios de las fases 1 y 2 (falta la fase 3, PIA). Cumplimiento SLA global: % de solicitudes que llegan a la resolución del grado en 180 días o menos desde la solicitud. Altas / mes: media de altas al mes.'
-- id: text-box-f3b2af92-afcb-5936-bbc4-1a83b3cb7830
-  type: text-box
-  filters: []
-  settings:
-    content: '<p><strong>Filtros:</strong> Periodo, Estado y Objetivo se aplican desde la barra de filtros de la View. <em>⚠ Territorio, Edad, Origen, Tipo de valoración, Resolución de grado y Tipo de prestación: pendientes de datos.</em></p>'
-    background: white
-- id: text-box-fd47d897-c8d6-55f7-ab2b-2ad4d26b75f9
-  type: text-box
-  filters: []
-  settings:
-    content: <p><strong>ESTA FASE</strong> · Equipos independientes por fase · objetivo ≤30 días</p>
-    background: white
-- id: kpi-list-453ce250-24fe-5a89-a0be-549a7d240e9b
+      content: 'Solicitudes activas: en curso (sin resolución del grado ni baja). Plazo proceso completo: suma de los tiempos E2E de las fases 1 y 2; falta la fase 3 (PIA). Cumplimiento SLA global: solicitudes que llegan a la resolución del grado en 180 días o menos desde la solicitud. Altas / mes: altas del último mes con datos.'
+- id: kpi-list-b58c6b53-38de-5aed-851d-f85969dd7d5f
   type: kpi-list
   filters: []
   settings:
     data:
       kpis:
-      - id: e406118a-d2f6-5b82-861e-73b209446efb
-        kpi: d4ca5929-444f-5cd4-8acb-fb9d3e3eac3d.4f2a4ae2-82d0-53ad-bae9-12a3d68c2d72
+      - id: e99cae9b-4f5a-50ba-b26d-a1c4c8fdc03c
+        kpi: 67de02a9-ce5b-51fa-9c72-ea998c5c88fb.3dd3280a-5408-56f4-a13b-845dbda3e385
         show: true
         order: 100
-      - id: 1fd17d0e-49e1-5d5d-87a6-297f46e88835
-        kpi: 1b3bd3f6-3c78-5ec4-a799-38b3c3c463e4.440d6a0d-b564-5f93-a85b-8c65274447b1
-        show: true
-        order: 200
-      - id: 6cbcf173-a0ae-5ce4-828a-ff73513bfa0a
-        kpi: d53ab645-3007-5523-991b-7b8ce6ef929e.8b607ec0-3540-56f4-a271-2f6d6164d547
-        show: true
-        order: 300
-      - id: de2a24a8-c566-587a-a1a2-e8044017b0a3
-        kpi: 5061d692-cdb5-58ec-bc3c-9fa2ef98d22a.3e95208f-3c27-51d4-b627-0925cfb7c9ac
-        show: true
-        order: 400
     dataSources:
-    - id: d4ca5929-444f-5cd4-8acb-fb9d3e3eac3d
+    - id: 67de02a9-ce5b-51fa-9c72-ea998c5c88fb
       attributes:
-      - id: 4f2a4ae2-82d0-53ad-bae9-12a3d68c2d72
+      - id: 3dd3280a-5408-56f4-a13b-845dbda3e385
+        pql: |
+          MAX("o_custom_SolicitudDependencia"."FechaAlta")
+        format: '%d/%m/%Y'
+        columnType: date
+        aggregation: true
+        description: ''
+        displayName: Actualizado
+        shortDisplayName: ''
+      description: ''
+      displayName: 67de02a9-ce5b-51fa-9c72-ea998c5c88fb
+      shortDisplayName: ''
+- id: text-box-c07d8f25-3a82-57d0-a35f-36dbe0394912
+  type: text-box
+  filters: []
+  settings:
+    content: '<p><strong>Periodo · Estado · Objetivo</strong>: desde la barra de filtros de la View. <em>Territorio · Edad · Origen · Tipo de valoración · Resolución de grado · Tipo de prestación: ⚠ pendientes de datos.</em></p>'
+    background: white
+- id: text-box-0d332462-1811-5b96-8f60-7ffc1b00ca3b
+  type: text-box
+  filters: []
+  settings:
+    content: <p><strong>ESTA FASE</strong> · Equipos independientes por fase · objetivo ≤30 días</p>
+    background: white
+- id: kpi-list-ecc6e5ad-bab7-57f7-95e1-5b63a5409818
+  type: kpi-list
+  filters: []
+  settings:
+    data:
+      kpis:
+      - id: 77508ee6-b0a7-58ce-bb23-40b6b468fcca
+        kpi: 1c5e0243-0c0e-578e-a62d-e6619266a3c3.3e186e7d-66d5-5ccd-bd8c-d29f58728fcc
+        show: true
+        order: 100
+    dataSources:
+    - id: 1c5e0243-0c0e-578e-a62d-e6619266a3c3
+      attributes:
+      - id: 3e186e7d-66d5-5ccd-bd8c-d29f58728fcc
         pql: |
           COUNT(DISTINCT "o_custom_SolicitudDependencia"."UsuarioAlta")
         format: ',.0f'
@@ -158,11 +230,26 @@ components:
         displayName: Personas involucradas
         shortDisplayName: ''
       description: ''
-      displayName: d4ca5929-444f-5cd4-8acb-fb9d3e3eac3d
+      displayName: 1c5e0243-0c0e-578e-a62d-e6619266a3c3
       shortDisplayName: ''
-    - id: 1b3bd3f6-3c78-5ec4-a799-38b3c3c463e4
+- id: kpi-list-95683ee0-b960-5ada-9bb9-67d2d651533b
+  type: kpi-list
+  filters: []
+  settings:
+    data:
+      kpis:
+      - id: 94d3f483-841e-5f4b-9ea8-082a3a02983d
+        kpi: 47e2179a-b390-5468-8740-12026e83214b.41da9a5c-cf02-53f0-b4a7-4e67c127f31d
+        show: true
+        order: 100
+      - id: 10e5930a-776e-5c56-9cf6-cb266b22dbdd
+        kpi: 6717eff5-80d8-56f0-b23b-045ecf4ccd8a.17810996-1a27-5986-baee-607c16228ccb
+        show: true
+        order: 200
+    dataSources:
+    - id: 47e2179a-b390-5468-8740-12026e83214b
       attributes:
-      - id: 440d6a0d-b564-5f93-a85b-8c65274447b1
+      - id: 41da9a5c-cf02-53f0-b4a7-4e67c127f31d
         pql: |
           AVG(DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaSolicitud", "o_custom_SolicitudDependencia"."FechaAlta"))
         unit: d
@@ -173,76 +260,131 @@ components:
         displayName: Tiempo E2E
         shortDisplayName: ''
       description: ''
-      displayName: 1b3bd3f6-3c78-5ec4-a799-38b3c3c463e4
+      displayName: 47e2179a-b390-5468-8740-12026e83214b
       shortDisplayName: ''
-    - id: d53ab645-3007-5523-991b-7b8ce6ef929e
+    - id: 6717eff5-80d8-56f0-b23b-045ecf4ccd8a
       attributes:
-      - id: 8b607ec0-3540-56f4-a271-2f6d6164d547
+      - id: 17810996-1a27-5986-baee-607c16228ccb
         pql: |
-          COUNT(CASE WHEN "o_custom_SolicitudDependencia"."FechaRegistroEntrada" >= ADD_DAYS(TODAY(), -28) THEN "o_custom_SolicitudDependencia"."ID" END) / 4.0
-        format: ',.1f'
+          AVG(DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaSolicitud", "o_custom_SolicitudDependencia"."FechaAlta")) - 30
+        unit: d
+        format: +,.0f
         columnType: float
         aggregation: true
         description: ''
-        displayName: Previsión carga · entran / semana
+        displayName: vs objetivo 30d
         shortDisplayName: ''
       description: ''
-      displayName: d53ab645-3007-5523-991b-7b8ce6ef929e
+      displayName: 6717eff5-80d8-56f0-b23b-045ecf4ccd8a
       shortDisplayName: ''
-    - id: 5061d692-cdb5-58ec-bc3c-9fa2ef98d22a
-      attributes:
-      - id: 3e95208f-3c27-51d4-b627-0925cfb7c9ac
-        pql: |
-          COUNT(CASE WHEN "o_custom_SolicitudDependencia"."FechaAlta" >= ADD_DAYS(TODAY(), -28) THEN "o_custom_SolicitudDependencia"."ID" END) / 4.0
-        format: ',.1f'
-        columnType: float
-        aggregation: true
-        description: ''
-        displayName: Previsión carga · se graban / semana
-        shortDisplayName: ''
-      description: ''
-      displayName: 5061d692-cdb5-58ec-bc3c-9fa2ef98d22a
-      shortDisplayName: ''
-- id: text-box-e374489f-8cc0-5450-8fbf-9fa6b01b03a8
+- id: text-box-deef8952-7ec7-571c-994f-91beb324af7b
   type: text-box
   filters: []
   settings:
-    content: '<h3><strong>% del equipo total</strong></h3><p><em>⚠ Pendiente de datos. Falta: efectivos de cada fase.</em></p>'
+    content: '<p><strong>% del equipo total</strong></p><p><em>⚠ Pendiente de datos: efectivos de cada fase.</em></p>'
     background: white
-- id: text-box-aebd487b-6ac0-5a35-9f9b-81789544fdcf
-  type: text-box
-  filters: []
-  settings:
-    content: '<h2 style="text-align: center;"><strong>PLAZOS DE TRAMITACIÓN</strong></h2>'
-    background: white
-- id: text-box-1da3e2f2-2ab2-5f8d-b531-44c582b8a15e
-  type: text-box
-  filters: []
-  settings:
-    content: '<h2 style="text-align: center;"><strong>SUBSANACIONES Y AVC</strong></h2>'
-    background: white
-- id: kpi-list-6d5b955b-44f7-5116-b74f-611708567068
+- id: kpi-list-b154b890-3ae8-5f0e-b7b4-4b7e258555ca
   type: kpi-list
   filters: []
   settings:
     data:
       kpis:
-      - id: c7001a36-c83c-5dcf-a24b-30ec29c31731
-        kpi: a541bf0b-de2c-5cc2-8963-d164952e6c28.815c4c7e-a9d4-524a-8486-0972da1c64e3
+      - id: f80aaee6-dab4-5d5c-8dc8-91bf436c4ba9
+        kpi: 6a6b087c-41b4-54a5-b254-809c63b0c935.46cd6438-6545-5218-8fc7-bd82182ca9d5
         show: true
         order: 100
-      - id: 3000850c-b097-530c-8347-083ae18f07d5
-        kpi: f3e533c7-9329-527a-a906-0e6352cdc6d9.fb009756-1e2e-5afc-97f0-bd3743fbbec7
+      - id: 447d26bc-19d1-5694-a1ab-87c0d76b38ab
+        kpi: e8fdcfe1-7e3f-5d37-acec-238e3e0d90f3.221844b0-16ab-5d08-9ac9-671d76f15d4e
         show: true
         order: 200
-      - id: 885723d3-9613-5245-b555-c33027442303
-        kpi: b6f8e76a-8c3a-57b4-9b91-8dab7ba5fa58.06e90e9c-a1c2-517e-bbb7-1d488ec1f338
+      - id: c248cd22-3d69-5c20-8004-7b99ef24d071
+        kpi: 22a1ae30-77d8-5e03-b014-522c55744880.5770e336-7d59-54b8-8453-d28f9cd32f72
         show: true
         order: 300
     dataSources:
-    - id: a541bf0b-de2c-5cc2-8963-d164952e6c28
+    - id: 6a6b087c-41b4-54a5-b254-809c63b0c935
       attributes:
-      - id: 815c4c7e-a9d4-524a-8486-0972da1c64e3
+      - id: 46cd6438-6545-5218-8fc7-bd82182ca9d5
+        pql: |
+          CASE WHEN COUNT(CASE WHEN "o_custom_SolicitudDependencia"."FechaRegistroEntrada" > ADD_DAYS(PU_MAX(CONSTANT(), "o_custom_SolicitudDependencia"."FechaAlta"), -28) AND "o_custom_SolicitudDependencia"."FechaRegistroEntrada" <= PU_MAX(CONSTANT(), "o_custom_SolicitudDependencia"."FechaAlta") THEN "o_custom_SolicitudDependencia"."ID" END) / 4.0 > COUNT(CASE WHEN "o_custom_SolicitudDependencia"."FechaAlta" > ADD_DAYS(PU_MAX(CONSTANT(), "o_custom_SolicitudDependencia"."FechaAlta"), -28) AND "o_custom_SolicitudDependencia"."FechaAlta" <= PU_MAX(CONSTANT(), "o_custom_SolicitudDependencia"."FechaAlta") THEN "o_custom_SolicitudDependencia"."ID" END) / 4.0 * 1.1 THEN 'Alta' WHEN COUNT(CASE WHEN "o_custom_SolicitudDependencia"."FechaRegistroEntrada" > ADD_DAYS(PU_MAX(CONSTANT(), "o_custom_SolicitudDependencia"."FechaAlta"), -28) AND "o_custom_SolicitudDependencia"."FechaRegistroEntrada" <= PU_MAX(CONSTANT(), "o_custom_SolicitudDependencia"."FechaAlta") THEN "o_custom_SolicitudDependencia"."ID" END) / 4.0 < COUNT(CASE WHEN "o_custom_SolicitudDependencia"."FechaAlta" > ADD_DAYS(PU_MAX(CONSTANT(), "o_custom_SolicitudDependencia"."FechaAlta"), -28) AND "o_custom_SolicitudDependencia"."FechaAlta" <= PU_MAX(CONSTANT(), "o_custom_SolicitudDependencia"."FechaAlta") THEN "o_custom_SolicitudDependencia"."ID" END) / 4.0 * 0.9 THEN 'Baja' WHEN COUNT(CASE WHEN "o_custom_SolicitudDependencia"."FechaRegistroEntrada" > ADD_DAYS(PU_MAX(CONSTANT(), "o_custom_SolicitudDependencia"."FechaAlta"), -28) AND "o_custom_SolicitudDependencia"."FechaRegistroEntrada" <= PU_MAX(CONSTANT(), "o_custom_SolicitudDependencia"."FechaAlta") THEN "o_custom_SolicitudDependencia"."ID" END) / 4.0 IS NULL THEN NULL ELSE 'Media' END
+        columnType: string
+        aggregation: true
+        description: ''
+        displayName: Previsión carga próx. mes
+        shortDisplayName: ''
+      description: ''
+      displayName: 6a6b087c-41b4-54a5-b254-809c63b0c935
+      shortDisplayName: ''
+    - id: e8fdcfe1-7e3f-5d37-acec-238e3e0d90f3
+      attributes:
+      - id: 221844b0-16ab-5d08-9ac9-671d76f15d4e
+        pql: |
+          COUNT(CASE WHEN "o_custom_SolicitudDependencia"."FechaRegistroEntrada" > ADD_DAYS(PU_MAX(CONSTANT(), "o_custom_SolicitudDependencia"."FechaAlta"), -28) AND "o_custom_SolicitudDependencia"."FechaRegistroEntrada" <= PU_MAX(CONSTANT(), "o_custom_SolicitudDependencia"."FechaAlta") THEN "o_custom_SolicitudDependencia"."ID" END) / 4.0
+        format: ',.0f'
+        columnType: float
+        aggregation: true
+        description: ''
+        displayName: Entran / sem
+        shortDisplayName: ''
+      description: ''
+      displayName: e8fdcfe1-7e3f-5d37-acec-238e3e0d90f3
+      shortDisplayName: ''
+    - id: 22a1ae30-77d8-5e03-b014-522c55744880
+      attributes:
+      - id: 5770e336-7d59-54b8-8453-d28f9cd32f72
+        pql: |
+          COUNT(CASE WHEN "o_custom_SolicitudDependencia"."FechaAlta" > ADD_DAYS(PU_MAX(CONSTANT(), "o_custom_SolicitudDependencia"."FechaAlta"), -28) AND "o_custom_SolicitudDependencia"."FechaAlta" <= PU_MAX(CONSTANT(), "o_custom_SolicitudDependencia"."FechaAlta") THEN "o_custom_SolicitudDependencia"."ID" END) / 4.0
+        format: ',.0f'
+        columnType: float
+        aggregation: true
+        description: ''
+        displayName: Resuelven / sem
+        shortDisplayName: ''
+      description: ''
+      displayName: 22a1ae30-77d8-5e03-b014-522c55744880
+      shortDisplayName: ''
+- id: text-box-461913e5-1fba-5687-9b50-fa5f7e4a94cc
+  type: text-box
+  filters: []
+  settings:
+    content: '<h3 style="text-align: center;"><strong>PLAZOS DE TRAMITACIÓN</strong></h3>'
+    background: white
+- id: text-box-141e5fb6-4d11-5663-9cf3-29e7d822982a
+  type: text-box
+  filters: []
+  settings:
+    content: '<h3 style="text-align: center;"><strong>SUBSANACIONES Y AVC</strong></h3>'
+    background: white
+- id: kpi-list-369de107-ddda-599e-b306-d3f248054169
+  type: kpi-list
+  filters: []
+  settings:
+    data:
+      kpis:
+      - id: aa4923ad-749f-5c6f-bea4-dceb60568d67
+        kpi: 0762e148-f4f0-57e1-82b6-f03cadc200e6.e5555815-2cd5-5a14-ac7f-2ef58ed5a3b8
+        show: true
+        order: 100
+      - id: a31f4bb8-bc9d-5d47-8397-ad39208dcbdd
+        kpi: d7c21d5c-34d4-51fe-a0b6-f5994179be04.72a1a49b-115f-5cb2-95c7-5fc73d8ffb8f
+        show: true
+        order: 200
+      - id: ea2ff253-a130-50d1-8e5b-abdafb8b4773
+        kpi: 12c491e9-7636-539b-9c40-f537aa93f8a3.32565ae9-39b8-5e42-9fbd-99f8d83d5c56
+        show: true
+        order: 300
+      - id: b0c491e8-b671-5d85-9a71-989472d53e19
+        kpi: 36ecb73a-160b-5da7-90fb-81c002f3050c.b5bd8942-d2b8-5208-b7eb-cddca8a0797b
+        show: true
+        order: 400
+      - id: a756fda6-6d67-5287-a031-b5187be5eaa3
+        kpi: 2a96edc5-7af6-59eb-a414-8bbedd50e4f6.b67bb65e-b7b6-567c-b358-d5e9861735dc
+        show: true
+        order: 500
+    dataSources:
+    - id: 0762e148-f4f0-57e1-82b6-f03cadc200e6
+      attributes:
+      - id: e5555815-2cd5-5a14-ac7f-2ef58ed5a3b8
         pql: |
           COUNT("o_custom_SolicitudDependencia"."FechaAlta")
         format: ',.0f'
@@ -252,11 +394,11 @@ components:
         displayName: Solicitudes grabadas
         shortDisplayName: ''
       description: ''
-      displayName: a541bf0b-de2c-5cc2-8963-d164952e6c28
+      displayName: 0762e148-f4f0-57e1-82b6-f03cadc200e6
       shortDisplayName: ''
-    - id: f3e533c7-9329-527a-a906-0e6352cdc6d9
+    - id: d7c21d5c-34d4-51fe-a0b6-f5994179be04
       attributes:
-      - id: fb009756-1e2e-5afc-97f0-bd3743fbbec7
+      - id: 72a1a49b-115f-5cb2-95c7-5fc73d8ffb8f
         pql: |
           COUNT(CASE WHEN DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaSolicitud", "o_custom_SolicitudDependencia"."FechaAlta") <= 30 THEN "o_custom_SolicitudDependencia"."ID" END)
         format: ',.0f'
@@ -266,11 +408,26 @@ components:
         displayName: Grabadas en plazo
         shortDisplayName: ''
       description: ''
-      displayName: f3e533c7-9329-527a-a906-0e6352cdc6d9
+      displayName: d7c21d5c-34d4-51fe-a0b6-f5994179be04
       shortDisplayName: ''
-    - id: b6f8e76a-8c3a-57b4-9b91-8dab7ba5fa58
+    - id: 12c491e9-7636-539b-9c40-f537aa93f8a3
       attributes:
-      - id: 06e90e9c-a1c2-517e-bbb7-1d488ec1f338
+      - id: 32565ae9-39b8-5e42-9fbd-99f8d83d5c56
+        pql: |
+          COUNT(CASE WHEN DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaSolicitud", "o_custom_SolicitudDependencia"."FechaAlta") <= 30 THEN "o_custom_SolicitudDependencia"."ID" END) * 100.0 / COUNT(CASE WHEN DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaSolicitud", "o_custom_SolicitudDependencia"."FechaAlta") IS NOT NULL THEN "o_custom_SolicitudDependencia"."ID" END)
+        unit: '%'
+        format: ',.1f'
+        columnType: float
+        aggregation: true
+        description: ''
+        displayName: '% en plazo (≤30 d)'
+        shortDisplayName: ''
+      description: ''
+      displayName: 12c491e9-7636-539b-9c40-f537aa93f8a3
+      shortDisplayName: ''
+    - id: 36ecb73a-160b-5da7-90fb-81c002f3050c
+      attributes:
+      - id: b5bd8942-d2b8-5208-b7eb-cddca8a0797b
         pql: |
           COUNT(CASE WHEN DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaSolicitud", "o_custom_SolicitudDependencia"."FechaAlta") > 30 THEN "o_custom_SolicitudDependencia"."ID" END)
         format: ',.0f'
@@ -280,36 +437,55 @@ components:
         displayName: Grabadas fuera de plazo
         shortDisplayName: ''
       description: ''
-      displayName: b6f8e76a-8c3a-57b4-9b91-8dab7ba5fa58
+      displayName: 36ecb73a-160b-5da7-90fb-81c002f3050c
       shortDisplayName: ''
-- id: text-box-84618f62-6f27-5c07-b31a-fccc8a7884cd
+    - id: 2a96edc5-7af6-59eb-a414-8bbedd50e4f6
+      attributes:
+      - id: b67bb65e-b7b6-567c-b358-d5e9861735dc
+        pql: |
+          COUNT(CASE WHEN DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaSolicitud", "o_custom_SolicitudDependencia"."FechaAlta") > 30 THEN "o_custom_SolicitudDependencia"."ID" END) * 100.0 / COUNT(CASE WHEN DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaSolicitud", "o_custom_SolicitudDependencia"."FechaAlta") IS NOT NULL THEN "o_custom_SolicitudDependencia"."ID" END)
+        unit: '%'
+        format: ',.1f'
+        columnType: float
+        aggregation: true
+        description: ''
+        displayName: '% fuera (>30 d)'
+        shortDisplayName: ''
+      description: ''
+      displayName: 2a96edc5-7af6-59eb-a414-8bbedd50e4f6
+      shortDisplayName: ''
+- id: text-box-6867c2e7-0c19-5717-b0b9-766354ddea89
   type: text-box
   filters: []
   settings:
-    content: '<h3><strong>Pendientes de grabar (bandeja)</strong></h3><p><em>⚠ Pendiente de datos. Falta: solicitudes registradas que aún no están en SIDEMA.</em></p>'
+    content: '<p><strong>Pendientes de grabar (bandeja)</strong> <em>⚠ origen del dato por confirmar: registradas que aún no están en SIDEMA.</em></p>'
     background: white
-- id: kpi-list-5420203b-4633-575b-b775-bdf19cc8701e
+- id: kpi-list-d28a9b8d-0fa2-57ef-83ba-12fc7f213b37
   type: kpi-list
   filters: []
   settings:
     data:
       kpis:
-      - id: 41b8a791-fa1c-573d-bd0a-bf82a1df2af7
-        kpi: 330d49fb-0565-58b3-a1c2-0257fa591dbe.465b0253-5be1-5a94-8351-efb4354374d7
+      - id: 85e03aa7-5eb0-5a8e-b17f-715f4140d619
+        kpi: 6569a55b-cf64-52da-ae96-6e96750314fe.f8f14a7c-0cb4-5abc-8d4d-c5e82e20f736
         show: true
         order: 100
-      - id: 7d93e47a-6951-5599-8b41-b46ecbf45c65
-        kpi: 6665b13b-89c4-5abc-bfa2-9656180838ef.59cc2883-c3d2-53ae-b10c-d423dfd07ca8
+      - id: 47fab2e8-7f20-598d-b802-8e870578728b
+        kpi: 84e38c3a-f037-5acd-8b2e-865d01068bd9.f272241c-a8fc-5916-a975-8d96ad793b0f
         show: true
         order: 200
-      - id: 800354e1-5705-55b2-9c07-a4e1aaf74fcb
-        kpi: d9c6adfd-45b6-5ad8-a188-4470dad04985.dc7d4e41-9901-5ba3-beaa-7ec227cab258
+      - id: 63cccac8-39f1-5184-bf62-9244f2f67af0
+        kpi: 39f7c414-10a4-56c7-92a5-f4466d23ebad.90a8bcb0-b5c8-5fdf-81f6-faa027ea61be
         show: true
         order: 300
+      - id: 34bc5ec4-085d-59e1-9cb0-5e5e1d69e91c
+        kpi: dfdf50f3-c677-568e-b375-680bed2e6649.feffa8fc-b01a-551e-b0cf-b06d68806577
+        show: true
+        order: 400
     dataSources:
-    - id: 330d49fb-0565-58b3-a1c2-0257fa591dbe
+    - id: 6569a55b-cf64-52da-ae96-6e96750314fe
       attributes:
-      - id: 465b0253-5be1-5a94-8351-efb4354374d7
+      - id: f8f14a7c-0cb4-5abc-8d4d-c5e82e20f736
         pql: |
           AVG(CASE WHEN PU_COUNT("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('60','30','25')) > 0 THEN 100.0 ELSE 0.0 END)
         unit: '%'
@@ -320,11 +496,11 @@ components:
         displayName: Tasa subsanación
         shortDisplayName: ''
       description: ''
-      displayName: 330d49fb-0565-58b3-a1c2-0257fa591dbe
+      displayName: 6569a55b-cf64-52da-ae96-6e96750314fe
       shortDisplayName: ''
-    - id: 6665b13b-89c4-5abc-bfa2-9656180838ef
+    - id: 84e38c3a-f037-5acd-8b2e-865d01068bd9
       attributes:
-      - id: 59cc2883-c3d2-53ae-b10c-d423dfd07ca8
+      - id: f272241c-a8fc-5916-a975-8d96ad793b0f
         pql: |
           COUNT(CASE WHEN PU_COUNT("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('60','30','25')) > 0 THEN "o_custom_SolicitudDependencia"."ID" END)
         format: ',.0f'
@@ -334,11 +510,25 @@ components:
         displayName: Número de subsanaciones
         shortDisplayName: ''
       description: ''
-      displayName: 6665b13b-89c4-5abc-bfa2-9656180838ef
+      displayName: 84e38c3a-f037-5acd-8b2e-865d01068bd9
       shortDisplayName: ''
-    - id: d9c6adfd-45b6-5ad8-a188-4470dad04985
+    - id: 39f7c414-10a4-56c7-92a5-f4466d23ebad
       attributes:
-      - id: dc7d4e41-9901-5ba3-beaa-7ec227cab258
+      - id: 90a8bcb0-b5c8-5fdf-81f6-faa027ea61be
+        pql: |
+          COUNT(CASE WHEN PU_COUNT("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('05','20','15')) >= 2 THEN "o_custom_SolicitudDependencia"."ID" END)
+        format: ',.0f'
+        columnType: int
+        aggregation: true
+        description: ''
+        displayName: Entran en bucle de AVC (2+ vueltas)
+        shortDisplayName: ''
+      description: ''
+      displayName: 39f7c414-10a4-56c7-92a5-f4466d23ebad
+      shortDisplayName: ''
+    - id: dfdf50f3-c677-568e-b375-680bed2e6649
+      attributes:
+      - id: feffa8fc-b01a-551e-b0cf-b06d68806577
         pql: |
           AVG(CASE WHEN PU_COUNT("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('05','20','15')) > 0 THEN PU_COUNT("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('05','20','15')) END)
         format: ',.1f'
@@ -348,16 +538,22 @@ components:
         displayName: Iteraciones/AVC
         shortDisplayName: ''
       description: ''
-      displayName: d9c6adfd-45b6-5ad8-a188-4470dad04985
+      displayName: dfdf50f3-c677-568e-b375-680bed2e6649
       shortDisplayName: ''
-- id: columns-line-chart-654508a9-da63-5367-842d-7038f0415bab
+- id: text-box-b9a9b9df-da38-5e9f-b34b-a1ff8b94c822
+  type: text-box
+  filters: []
+  settings:
+    content: '<p><strong>Reprocesos: subsanación (1 por exp.) vs AVC (en bucle)</strong></p><p>La subsanación no se repite; el reproceso real está en las AVC, que pueden iterar varias veces.</p>'
+    background: white
+- id: columns-line-chart-9b51ce99-b9ac-5aac-b889-a1e416b6cc8f
   type: columns-line-chart
   filters: []
   settings:
     name: '↑ Solicitudes grabadas: dentro vs fuera del plazo objetivo'
     limit: 1000
     visuals:
-    - id: f221d2e0-62e0-5294-b98d-e31c1ab3f97d
+    - id: cf290275-7cdc-53b9-802d-29733cb8c671
       mark:
         type: bar
         color: CUSTOM3_20
@@ -366,15 +562,15 @@ components:
       encodings:
         x:
           field:
-          - 3e29919c-854b-569c-9bec-4fc3ada1b5ea
+          - 6ba1f9ff-4a03-5df0-bd06-201b2945185f
         y:
           axis:
             hide: false
             title: Grabadas en plazo
             position: left
-          field: 26f41801-5c6b-5a9c-be10-f3ab56da5b6b
+          field: ab036bed-ea2f-59dd-a6b8-b20da2df678d
         detail: []
-    - id: f9a06ca8-e996-57da-a950-b8b0bab2a1d3
+    - id: 01ba05c1-38d6-5f2d-8b38-3bb5ec172b24
       mark:
         type: bar
         color: NEGATIVE
@@ -383,15 +579,15 @@ components:
       encodings:
         x:
           field:
-          - 3e29919c-854b-569c-9bec-4fc3ada1b5ea
+          - 6ba1f9ff-4a03-5df0-bd06-201b2945185f
         y:
           axis:
             hide: false
             title: Grabadas fuera de plazo
             position: left
-          field: 87927e67-9fce-5e84-a0b4-4f0f05ffbe9a
+          field: 4cd620d2-fc6c-58f3-93df-a9742d01b127
         detail: []
-    - id: df1b87cd-3f0f-5e08-bd07-25fa3c53cc2e
+    - id: b5d628df-3c60-5009-9d27-1bb50b457904
       mark:
         type: line
         color: HIGHLIGHT_20
@@ -400,14 +596,14 @@ components:
       encodings:
         x:
           field:
-          - 3e29919c-854b-569c-9bec-4fc3ada1b5ea
+          - 6ba1f9ff-4a03-5df0-bd06-201b2945185f
         y:
           axis:
             hide: false
             title: Plazo medio (días)
             position: right
-          field: d4af4f82-5655-5dc8-994d-47a5c3fc2439
-    - id: b1699ab5-cdb0-5587-a159-86d9620b9dc1
+          field: 2face62d-e19d-5410-b83a-2f1603923b93
+    - id: 64a1c93e-9a17-5d53-8ca3-e58fe7dc8f47
       mark:
         type: line
         color: WARNING
@@ -416,22 +612,22 @@ components:
       encodings:
         x:
           field:
-          - 3e29919c-854b-569c-9bec-4fc3ada1b5ea
+          - 6ba1f9ff-4a03-5df0-bd06-201b2945185f
         y:
           axis:
             hide: false
             title: Objetivo SLA 30d
             position: right
-          field: a3efcf17-3e1c-5126-880c-b1c5a6a3101d
+          field: 0203ca0e-dfe3-50a8-9ee0-d9284406110c
     infoText:
       content: El reparto se calcula comparando la fecha de solicitud con la fecha de grabación, no por el estado actual del expediente.
     dataSources:
-    - id: fffd734e-3a98-52a9-99b8-f437cc128e4d
+    - id: 11ac7409-651f-506b-81de-5040e2a79991
       filters:
       - pql: FILTER "o_custom_SolicitudDependencia"."FechaAlta" IS NOT NULL
         isReferenced: false
       attributes:
-      - id: 3e29919c-854b-569c-9bec-4fc3ada1b5ea
+      - id: 6ba1f9ff-4a03-5df0-bd06-201b2945185f
         pql: |
           ROUND_MONTH("o_custom_SolicitudDependencia"."FechaAlta")
         format: '%Y-%m'
@@ -440,7 +636,7 @@ components:
         description: ''
         displayName: Mes de grabación
         shortDisplayName: ''
-      - id: 26f41801-5c6b-5a9c-be10-f3ab56da5b6b
+      - id: ab036bed-ea2f-59dd-a6b8-b20da2df678d
         pql: |
           COUNT(CASE WHEN DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaSolicitud", "o_custom_SolicitudDependencia"."FechaAlta") <= 30 THEN "o_custom_SolicitudDependencia"."ID" END)
         format: ',.0f'
@@ -449,7 +645,7 @@ components:
         description: ''
         displayName: Grabadas en plazo
         shortDisplayName: ''
-      - id: 87927e67-9fce-5e84-a0b4-4f0f05ffbe9a
+      - id: 4cd620d2-fc6c-58f3-93df-a9742d01b127
         pql: |
           COUNT(CASE WHEN DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaSolicitud", "o_custom_SolicitudDependencia"."FechaAlta") > 30 THEN "o_custom_SolicitudDependencia"."ID" END)
         format: ',.0f'
@@ -458,7 +654,7 @@ components:
         description: ''
         displayName: Grabadas fuera de plazo
         shortDisplayName: ''
-      - id: d4af4f82-5655-5dc8-994d-47a5c3fc2439
+      - id: 2face62d-e19d-5410-b83a-2f1603923b93
         pql: |
           AVG(DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaSolicitud", "o_custom_SolicitudDependencia"."FechaAlta"))
         unit: días
@@ -468,7 +664,7 @@ components:
         description: ''
         displayName: Plazo medio (días)
         shortDisplayName: ''
-      - id: a3efcf17-3e1c-5126-880c-b1c5a6a3101d
+      - id: 0203ca0e-dfe3-50a8-9ee0-d9284406110c
         pql: |
           AVG(CASE WHEN "o_custom_SolicitudDependencia"."FechaAlta" IS NOT NULL THEN 30.0 END)
         unit: días
@@ -479,18 +675,18 @@ components:
         displayName: Objetivo SLA 30d
         shortDisplayName: ''
       description: ''
-      displayName: fffd734e-3a98-52a9-99b8-f437cc128e4d
+      displayName: 11ac7409-651f-506b-81de-5040e2a79991
       shortDisplayName: ''
     interactions:
       scrolling: true
-- id: columns-line-chart-cfc28b6e-11db-53c3-8438-dff45d534b29
+- id: columns-line-chart-5ca642d8-7933-5170-b73b-a74171e34a95
   type: columns-line-chart
   filters: []
   settings:
     name: AVC · Reproceso en bucle
     limit: 1000
     visuals:
-    - id: a90a68dc-4984-5b89-bdff-caceb3f7436b
+    - id: 7c2daea0-b354-56a7-92c1-580b46806956
       mark:
         type: bar
         color: CUSTOM3_20
@@ -499,15 +695,15 @@ components:
       encodings:
         x:
           field:
-          - a4f3a025-8143-5c7c-947f-7f7a3db0320b
+          - 9ca6c13d-e08b-52a9-89aa-68b75b5099c8
         y:
           axis:
             hide: false
             title: Exp.
             position: left
-          field: 377cd8c3-b8c7-58c5-a027-358733879495
+          field: 2f2b8c51-14e1-5998-8adc-505b8d3c343b
         detail: []
-    - id: d5ea9805-07e2-53e9-8af0-552210fdc843
+    - id: 107420f7-2aa4-5ac4-bf3d-8fdb1a265bc5
       mark:
         type: line
         color: WARNING
@@ -516,14 +712,14 @@ components:
       encodings:
         x:
           field:
-          - a4f3a025-8143-5c7c-947f-7f7a3db0320b
+          - 9ca6c13d-e08b-52a9-89aa-68b75b5099c8
         y:
           axis:
             hide: false
             title: '%'
             position: right
-          field: 5e793824-44a4-521f-98f6-838bc91e1249
-    - id: f37ed663-b958-5346-8108-c47ebfd0fd93
+          field: 82bacb4c-ce85-5306-942d-3e8c28c3c507
+    - id: f686698e-3caf-5dda-bbe1-ca5c7b22e831
       mark:
         type: line
         color: NEGATIVE
@@ -532,27 +728,27 @@ components:
       encodings:
         x:
           field:
-          - a4f3a025-8143-5c7c-947f-7f7a3db0320b
+          - 9ca6c13d-e08b-52a9-89aa-68b75b5099c8
         y:
           axis:
             hide: false
-            title: Plazo medio (días)
+            title: Plazo + (días)
             position: right
-          field: caed9843-cb47-50a1-852c-f65d7c279d5b
+          field: d4685648-4ffd-55c9-a57c-29cf837e92e8
     infoText:
-      content: 'Reprocesos: subsanación (1 por exp.) vs AVC (en bucle). Expedientes por número de vueltas de AVC y su plazo medio de grabación.'
+      content: Expedientes por número de vueltas de AVC (estados 05, 20 y 15), % sobre los que tienen AVC y días de más (Plazo +) frente a los que no tienen AVC (fila de referencia).
     dataSources:
-    - id: 3a451d8d-6d52-5362-be09-0d371f945e2f
+    - id: 2a0f6f7f-6556-5e42-a0ee-5d8b6a02c1e1
       attributes:
-      - id: a4f3a025-8143-5c7c-947f-7f7a3db0320b
+      - id: 9ca6c13d-e08b-52a9-89aa-68b75b5099c8
         pql: |
-          CASE WHEN PU_COUNT("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('05','20','15')) = 0 THEN 'Sin AVC' WHEN PU_COUNT("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('05','20','15')) = 1 THEN '1 vuelta' WHEN PU_COUNT("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('05','20','15')) = 2 THEN '2 vueltas' ELSE '3+ vueltas (bucle)' END
+          CASE WHEN PU_COUNT("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('05','20','15')) = 0 THEN '0 · sin AVC (referencia)' WHEN PU_COUNT("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('05','20','15')) = 1 THEN '1 vuelta' WHEN PU_COUNT("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('05','20','15')) = 2 THEN '2 vueltas' ELSE '3+ vueltas (bucle)' END
         columnType: string
         aggregation: false
         description: ''
         displayName: Nº de vueltas AVC
         shortDisplayName: ''
-      - id: 377cd8c3-b8c7-58c5-a027-358733879495
+      - id: 2f2b8c51-14e1-5998-8adc-505b8d3c343b
         pql: |
           COUNT(DISTINCT "o_custom_SolicitudDependencia"."ID")
         format: ',.0f'
@@ -561,9 +757,9 @@ components:
         description: ''
         displayName: Exp.
         shortDisplayName: ''
-      - id: 5e793824-44a4-521f-98f6-838bc91e1249
+      - id: 82bacb4c-ce85-5306-942d-3e8c28c3c507
         pql: |
-          COUNT(DISTINCT "o_custom_SolicitudDependencia"."ID") * 100.0 / GLOBAL(COUNT(DISTINCT "o_custom_SolicitudDependencia"."ID"))
+          COUNT(DISTINCT CASE WHEN PU_COUNT("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('05','20','15')) > 0 THEN "o_custom_SolicitudDependencia"."ID" END) * 100.0 / GLOBAL(COUNT(DISTINCT CASE WHEN PU_COUNT("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('05','20','15')) > 0 THEN "o_custom_SolicitudDependencia"."ID" END))
         unit: '%'
         format: ',.0f'
         columnType: float
@@ -571,41 +767,41 @@ components:
         description: ''
         displayName: '%'
         shortDisplayName: ''
-      - id: caed9843-cb47-50a1-852c-f65d7c279d5b
+      - id: d4685648-4ffd-55c9-a57c-29cf837e92e8
         pql: |
-          AVG(DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaSolicitud", "o_custom_SolicitudDependencia"."FechaAlta"))
-        unit: días
-        format: ',.0f'
+          AVG(DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaSolicitud", "o_custom_SolicitudDependencia"."FechaAlta")) - GLOBAL(AVG(CASE WHEN PU_COUNT("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('05','20','15')) = 0 THEN DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaSolicitud", "o_custom_SolicitudDependencia"."FechaAlta") END))
+        unit: d
+        format: +,.0f
         columnType: float
         aggregation: true
         description: ''
-        displayName: Plazo medio (días)
+        displayName: Plazo + (días)
         shortDisplayName: ''
       description: ''
-      displayName: 3a451d8d-6d52-5362-be09-0d371f945e2f
+      displayName: 2a0f6f7f-6556-5e42-a0ee-5d8b6a02c1e1
       shortDisplayName: ''
     interactions:
       scrolling: true
-- id: text-box-689ad309-1862-546a-b6c2-2aef987b49e5
+- id: text-box-261d46d8-7b5d-52f5-91d4-a32a98f1b180
   type: text-box
   filters: []
   settings:
-    content: '<h3><strong>Subsanación · por motivo (1 vez por exp.)</strong></h3><p><em>⚠ Pendiente de datos. Falta: motivo de la subsanación o documentación requerida.</em></p>'
+    content: '<p><strong>Subsanación · por motivo (1 vez por exp.)</strong></p><p>Motivo · Exp. · % · Plazo +</p><p><em>⚠ Pendiente de datos: motivo de la subsanación o documentación requerida.</em></p>'
     background: white
-- id: text-box-a56e48fc-6d3a-5983-a6e1-244be9c4a598
+- id: text-box-367d8290-bb41-5672-8692-7a4cd230bc65
   type: text-box
   filters: []
   settings:
-    content: '<h3><strong>Flujo por atributo (Territorio · Edad · Origen)</strong></h3><p>Los días bloqueado en subsanación sí salen del histórico de estados.</p><p><em>⚠ Pendiente de datos. Falta: municipio, fecha de nacimiento y origen de la solicitud.</em></p>'
+    content: '<p><strong>Flujo por atributo (Territorio · Edad · Origen)</strong></p><p>Exp. · % sub. · Plazo + · Días bloq. subs. (los días bloqueado sí salen del histórico).</p><p><em>⚠ Pendiente de datos: municipio, fecha de nacimiento y origen de la solicitud.</em></p>'
     background: white
-- id: columns-line-chart-890b320e-abe9-58a3-8fbe-c68457a03356
+- id: columns-line-chart-16a44f82-5c16-5143-a3c7-576be43588b1
   type: columns-line-chart
   filters: []
   settings:
     name: Detalle por Trabajador — Equipo de Grabación
     limit: 100
     visuals:
-    - id: 43af3b1a-ab96-5564-ac19-5a5c44eb663b
+    - id: 0b3e02b9-46f6-59f4-8fa6-218b752ae2a9
       mark:
         type: bar
         color: CUSTOM3_20
@@ -614,88 +810,88 @@ components:
       encodings:
         x:
           field:
-          - 773a730e-1859-592a-9c78-c6711ed9a434
+          - c30a8a8a-fec8-5936-94ed-000b4b804039
         y:
           axis:
             hide: false
             title: Expedientes
             position: left
-          field: 08c788ae-394d-522f-9c41-8b58846add78
+          field: ac224055-c5ef-5e32-b13a-b9fea9034673
         detail: []
-    - id: 2ada4fe1-0063-59b3-90c4-5a9d4d610628
+    - id: 1c6f094c-0089-54d1-a494-dc5431aa2214
       mark:
-        type: line
-        color: WARNING
+        type: bar
+        color: NEGATIVE
         orientation: vertical
       order: 200
       encodings:
         x:
           field:
-          - 773a730e-1859-592a-9c78-c6711ed9a434
-        y:
-          axis:
-            hide: false
-            title: Carga
-            position: right
-          field: f64bd606-acdf-5763-a1fb-ac6a93b544c0
-    - id: 8e8e3575-ec46-569d-a445-a6aab75fb77d
-      mark:
-        type: line
-        color: HIGHLIGHT_20
-        orientation: vertical
-      order: 300
-      encodings:
-        x:
-          field:
-          - 773a730e-1859-592a-9c78-c6711ed9a434
-        y:
-          axis:
-            hide: false
-            title: Plazo medio
-            position: right
-          field: fd3da248-797d-5f96-8926-467606ef010f
-    - id: f79241ad-428e-581f-99dc-caecc8283913
-      mark:
-        type: line
-        color: NEGATIVE
-        orientation: vertical
-      order: 400
-      encodings:
-        x:
-          field:
-          - 773a730e-1859-592a-9c78-c6711ed9a434
-        y:
-          axis:
-            hide: false
-            title: vs equipo
-            position: right
-          field: f1f06c2f-14eb-5903-98b1-870dabaa0356
-    - id: 3799af0a-a6f3-5e76-9627-62df1310647a
-      mark:
-        type: bar
-        color: NEGATIVE
-        orientation: vertical
-      order: 500
-      encodings:
-        x:
-          field:
-          - 773a730e-1859-592a-9c78-c6711ed9a434
+          - c30a8a8a-fec8-5936-94ed-000b4b804039
         y:
           axis:
             hide: false
             title: Subsanaciones
             position: left
-          field: 1195258a-6bf2-51c1-ac7a-123f12bf052f
+          field: 22a4ca2d-1060-5a6b-82d5-e1b5544a446c
         detail: []
+    - id: 5190e923-448d-5d83-a666-8efed349855c
+      mark:
+        type: line
+        color: WARNING
+        orientation: vertical
+      order: 300
+      encodings:
+        x:
+          field:
+          - c30a8a8a-fec8-5936-94ed-000b4b804039
+        y:
+          axis:
+            hide: false
+            title: Carga
+            position: right
+          field: caf70d3a-4ffd-514d-81ed-b1a242076a13
+    - id: 5268ed86-46f7-578d-9cf9-37fa8879dc41
+      mark:
+        type: line
+        color: HIGHLIGHT_20
+        orientation: vertical
+      order: 400
+      encodings:
+        x:
+          field:
+          - c30a8a8a-fec8-5936-94ed-000b4b804039
+        y:
+          axis:
+            hide: false
+            title: Plazo medio
+            position: right
+          field: f8691408-3313-53ba-bf88-8708f81041f5
+    - id: 158164c6-7a7b-55b5-81ef-a64f1a32de3d
+      mark:
+        type: line
+        color: POSITIVE
+        orientation: vertical
+      order: 500
+      encodings:
+        x:
+          field:
+          - c30a8a8a-fec8-5936-94ed-000b4b804039
+        y:
+          axis:
+            hide: false
+            title: vs equipo
+            position: right
+          field: 42840084-2903-5749-a4c7-764e56cf233e
     infoText:
-      content: Por usuario de alta (quien graba). Carga = expedientes del trabajador sobre la media del equipo. vs equipo = su plazo medio menos el del equipo. ⚠ Faltan nombre, tipo (propio o empresa externa) y territorio.
+      content: Por login de quien graba (UsuarioAlta). Carga = expedientes del trabajador frente a la media del equipo (100 % = media). vs equipo = su plazo medio menos el del equipo. ⚠ Faltan nombre, tipo (subcontrata o adscrito) y territorio.
     dataSources:
-    - id: 90577c1c-8941-5d05-a0ef-77b87a56c401
+    - id: cfb528e0-98df-593c-9177-e3835440d76d
       filters:
       - pql: FILTER "o_custom_SolicitudDependencia"."UsuarioAlta" IS NOT NULL
         isReferenced: false
       attributes:
-      - id: 773a730e-1859-592a-9c78-c6711ed9a434
+      - id: c30a8a8a-fec8-5936-94ed-000b4b804039
         pql: |
           "o_custom_SolicitudDependencia"."UsuarioAlta"
         columnType: string
@@ -703,7 +899,7 @@ components:
         description: ''
         displayName: Trabajador
         shortDisplayName: ''
-      - id: 08c788ae-394d-522f-9c41-8b58846add78
+      - id: ac224055-c5ef-5e32-b13a-b9fea9034673
         pql: |
           COUNT(DISTINCT "o_custom_SolicitudDependencia"."ID")
         format: ',.0f'
@@ -712,7 +908,16 @@ components:
         description: ''
         displayName: Expedientes
         shortDisplayName: ''
-      - id: f64bd606-acdf-5763-a1fb-ac6a93b544c0
+      - id: 22a4ca2d-1060-5a6b-82d5-e1b5544a446c
+        pql: |
+          COUNT(CASE WHEN PU_COUNT("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('60','30','25')) > 0 THEN "o_custom_SolicitudDependencia"."ID" END)
+        format: ',.0f'
+        columnType: int
+        aggregation: true
+        description: ''
+        displayName: Subsanaciones
+        shortDisplayName: ''
+      - id: caf70d3a-4ffd-514d-81ed-b1a242076a13
         pql: |
           COUNT(DISTINCT "o_custom_SolicitudDependencia"."ID") * 100.0 / (GLOBAL(COUNT(DISTINCT "o_custom_SolicitudDependencia"."ID")) * 1.0 / GLOBAL(COUNT(DISTINCT "o_custom_SolicitudDependencia"."UsuarioAlta")))
         unit: '%'
@@ -722,7 +927,7 @@ components:
         description: ''
         displayName: Carga
         shortDisplayName: ''
-      - id: fd3da248-797d-5f96-8926-467606ef010f
+      - id: f8691408-3313-53ba-bf88-8708f81041f5
         pql: |
           AVG(DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaSolicitud", "o_custom_SolicitudDependencia"."FechaAlta"))
         unit: d
@@ -732,38 +937,29 @@ components:
         description: ''
         displayName: Plazo medio
         shortDisplayName: ''
-      - id: f1f06c2f-14eb-5903-98b1-870dabaa0356
+      - id: 42840084-2903-5749-a4c7-764e56cf233e
         pql: |
           AVG(DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaSolicitud", "o_custom_SolicitudDependencia"."FechaAlta")) - GLOBAL(AVG(DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaSolicitud", "o_custom_SolicitudDependencia"."FechaAlta")))
         unit: d
-        format: ',.0f'
+        format: +,.0f
         columnType: float
         aggregation: true
         description: ''
         displayName: vs equipo
         shortDisplayName: ''
-      - id: 1195258a-6bf2-51c1-ac7a-123f12bf052f
-        pql: |
-          COUNT(CASE WHEN PU_COUNT("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('60','30','25')) > 0 THEN "o_custom_SolicitudDependencia"."ID" END)
-        format: ',.0f'
-        columnType: int
-        aggregation: true
-        description: ''
-        displayName: Subsanaciones
-        shortDisplayName: ''
       description: ''
-      displayName: 90577c1c-8941-5d05-a0ef-77b87a56c401
+      displayName: cfb528e0-98df-593c-9177-e3835440d76d
       shortDisplayName: ''
     interactions:
       scrolling: true
-- id: columns-line-chart-bfeba141-b15c-5181-9ae7-3592e5eb7d5e
+- id: columns-line-chart-17f1e0c3-d2c2-5e23-9383-9326261697fb
   type: columns-line-chart
   filters: []
   settings:
     name: Detalle por Trabajador — Equipo de Subsanación
     limit: 100
     visuals:
-    - id: ddd35f41-c363-5c0c-8258-86c6c8ebfff9
+    - id: b1f0fd06-8c03-5e4a-b253-40dffe008535
       mark:
         type: bar
         color: CUSTOM3_20
@@ -772,56 +968,56 @@ components:
       encodings:
         x:
           field:
-          - ccb378bb-82cd-540a-aeec-2c93298cb8bd
+          - c483cae1-b72a-5d9b-bc5e-fdfeaad2aecc
         y:
           axis:
             hide: false
             title: Exp. subsanados
             position: left
-          field: 840e039d-f3c9-50f7-8a26-bcdabbdd374d
+          field: df680d20-81fa-5f6a-97ea-40bbfd1b33bb
         detail: []
-    - id: 727311f6-9662-542f-9851-7f3020d72ae0
+    - id: a7a0a85f-f1b3-53a4-b682-d63c14e2daa0
       mark:
-        type: line
-        color: HIGHLIGHT_20
+        type: bar
+        color: NEGATIVE
         orientation: vertical
       order: 200
       encodings:
         x:
           field:
-          - ccb378bb-82cd-540a-aeec-2c93298cb8bd
+          - c483cae1-b72a-5d9b-bc5e-fdfeaad2aecc
         y:
           axis:
             hide: false
-            title: Subsanaciones/día
-            position: right
-          field: 3909548c-8b94-5f75-a18c-5437d30191cd
-    - id: 58e8fbc4-2d1f-581e-8642-77448a3f8e87
+            title: AVC en bucle
+            position: left
+          field: 32948470-1339-589c-857c-a0d5be70c458
+        detail: []
+    - id: 9e2ce701-5c00-5f7a-865a-f8a2cd6cd17b
       mark:
-        type: bar
-        color: NEGATIVE
+        type: line
+        color: HIGHLIGHT_20
         orientation: vertical
       order: 300
       encodings:
         x:
           field:
-          - ccb378bb-82cd-540a-aeec-2c93298cb8bd
+          - c483cae1-b72a-5d9b-bc5e-fdfeaad2aecc
         y:
           axis:
             hide: false
-            title: AVC (entradas)
-            position: left
-          field: 2bb7ac00-a319-55c4-b545-bae80a15f44a
-        detail: []
+            title: Subsanaciones/día
+            position: right
+          field: 178b22a1-3b77-5bee-81b9-e34518a4d1ea
     infoText:
-      content: Por usuario que hace el cambio de estado a subsanación (60, 30, 25) o AVC (05, 20, 15). ⚠ Falta el tipo (propio o empresa externa).
+      content: Por login de quien pasa el expediente a subsanación (60, 30, 25) o a AVC (05, 20, 15). ⚠ Falta el tipo (propio o empresa externa).
     dataSources:
-    - id: 6fca9ebd-8da5-53db-836f-8bac4d94f428
+    - id: c8070260-bd23-5426-99bc-7d6fefd6b945
       filters:
       - pql: FILTER "el__EventosDependencia"."CodigoEstado" IN ('60','30','25','05','20','15')
         isReferenced: false
       attributes:
-      - id: ccb378bb-82cd-540a-aeec-2c93298cb8bd
+      - id: c483cae1-b72a-5d9b-bc5e-fdfeaad2aecc
         pql: |
           "el__EventosDependencia"."Usuario"
         columnType: string
@@ -829,7 +1025,7 @@ components:
         description: ''
         displayName: Trabajador
         shortDisplayName: ''
-      - id: 840e039d-f3c9-50f7-8a26-bcdabbdd374d
+      - id: df680d20-81fa-5f6a-97ea-40bbfd1b33bb
         pql: |
           COUNT(DISTINCT CASE WHEN "el__EventosDependencia"."CodigoEstado" IN ('60','30','25') THEN BIND("el__EventosDependencia", "o_custom_SolicitudDependencia"."ID") END)
         format: ',.0f'
@@ -838,7 +1034,16 @@ components:
         description: ''
         displayName: Exp. subsanados
         shortDisplayName: ''
-      - id: 3909548c-8b94-5f75-a18c-5437d30191cd
+      - id: 32948470-1339-589c-857c-a0d5be70c458
+        pql: |
+          COUNT(DISTINCT CASE WHEN "el__EventosDependencia"."CodigoEstado" IN ('05','20','15') AND PU_COUNT("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('05','20','15')) >= 2 THEN BIND("el__EventosDependencia", "o_custom_SolicitudDependencia"."ID") END)
+        format: ',.0f'
+        columnType: int
+        aggregation: true
+        description: ''
+        displayName: AVC en bucle
+        shortDisplayName: ''
+      - id: 178b22a1-3b77-5bee-81b9-e34518a4d1ea
         pql: |
           COUNT(CASE WHEN "el__EventosDependencia"."CodigoEstado" IN ('60','30','25') THEN "el__EventosDependencia"."TIMESTAMP" END) * 1.0 / COUNT(DISTINCT CASE WHEN "el__EventosDependencia"."CodigoEstado" IN ('60','30','25') THEN ROUND_DAY("el__EventosDependencia"."TIMESTAMP") END)
         format: ',.1f'
@@ -847,48 +1052,41 @@ components:
         description: ''
         displayName: Subsanaciones/día
         shortDisplayName: ''
-      - id: 2bb7ac00-a319-55c4-b545-bae80a15f44a
-        pql: |
-          COUNT(CASE WHEN "el__EventosDependencia"."CodigoEstado" IN ('05','20','15') THEN "el__EventosDependencia"."TIMESTAMP" END)
-        format: ',.0f'
-        columnType: int
-        aggregation: true
-        description: ''
-        displayName: AVC (entradas)
-        shortDisplayName: ''
       description: ''
-      displayName: 6fca9ebd-8da5-53db-836f-8bac4d94f428
+      displayName: c8070260-bd23-5426-99bc-7d6fefd6b945
       shortDisplayName: ''
     interactions:
       scrolling: true
-- id: text-box-57695eb1-365c-5c35-a4ea-05a1d9cd58b4
+- id: text-box-6e2fc68d-9fa5-5fe8-8f93-fa04fa0dd81f
   type: text-box
   filters: []
   settings:
     content: <p><strong>ESTA FASE</strong> · Equipos independientes por fase · objetivo ≤120 días</p>
     background: white
-- id: kpi-list-6bcfe020-831b-567b-b686-887e0ceba7b3
+- id: text-box-9d4a9f59-b5c5-5989-a48d-f1b878dc165a
+  type: text-box
+  filters: []
+  settings:
+    content: '<p><strong>Personas involucradas · % del equipo total</strong></p><p><em>⚠ Pendiente de datos: valorador de cada expediente y efectivos.</em></p>'
+    background: white
+- id: kpi-list-c28fa49d-40b5-5f3e-843c-d6f3968984cb
   type: kpi-list
   filters: []
   settings:
     data:
       kpis:
-      - id: bbb82819-5296-5c24-b38f-ab6160a435c4
-        kpi: f2db87bd-072d-5417-b859-3a0724a8069b.cfd95fde-63ed-576c-8484-229a5e18ba58
+      - id: cd1b95f5-ccaf-5036-95f1-40243fd14d99
+        kpi: e577d3d1-7166-537e-bad3-91f40e169794.0b8d2726-adda-57fa-8980-223447715db4
         show: true
         order: 100
-      - id: b03f1616-0d5c-5952-9876-820e010f33da
-        kpi: 0ec9e4e6-92e8-50fb-b425-36c6c3ea11b8.29579226-e5b5-5c0b-879b-4b60ca19e089
+      - id: 8a9136ff-adec-5b67-92a4-0ce1721d387d
+        kpi: 654f9c5e-6102-5f7f-b086-0141282475e2.2f89ffda-1ea9-5ae0-9e04-bd32716fddf7
         show: true
         order: 200
-      - id: 3da6dcb7-c5cc-545c-93a4-2a772439bc07
-        kpi: 8bfbd0e6-fef4-543c-b3e5-0da533585798.2268c107-1554-5df1-904d-4a024390b3a4
-        show: true
-        order: 300
     dataSources:
-    - id: f2db87bd-072d-5417-b859-3a0724a8069b
+    - id: e577d3d1-7166-537e-bad3-91f40e169794
       attributes:
-      - id: cfd95fde-63ed-576c-8484-229a5e18ba58
+      - id: 0b8d2726-adda-57fa-8980-223447715db4
         pql: |
           AVG(DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaAlta", PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('90','34','36'))))
         unit: d
@@ -899,90 +1097,131 @@ components:
         displayName: Tiempo E2E
         shortDisplayName: ''
       description: ''
-      displayName: f2db87bd-072d-5417-b859-3a0724a8069b
+      displayName: e577d3d1-7166-537e-bad3-91f40e169794
       shortDisplayName: ''
-    - id: 0ec9e4e6-92e8-50fb-b425-36c6c3ea11b8
+    - id: 654f9c5e-6102-5f7f-b086-0141282475e2
       attributes:
-      - id: 29579226-e5b5-5c0b-879b-4b60ca19e089
+      - id: 2f89ffda-1ea9-5ae0-9e04-bd32716fddf7
         pql: |
-          COUNT(CASE WHEN "o_custom_SolicitudDependencia"."FechaAlta" >= ADD_DAYS(TODAY(), -28) THEN "o_custom_SolicitudDependencia"."ID" END) / 4.0
-        format: ',.1f'
+          AVG(DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaAlta", PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('90','34','36')))) - 120
+        unit: d
+        format: +,.0f
         columnType: float
         aggregation: true
         description: ''
-        displayName: Previsión carga · entran / semana
+        displayName: vs objetivo 120d
         shortDisplayName: ''
       description: ''
-      displayName: 0ec9e4e6-92e8-50fb-b425-36c6c3ea11b8
+      displayName: 654f9c5e-6102-5f7f-b086-0141282475e2
       shortDisplayName: ''
-    - id: 8bfbd0e6-fef4-543c-b3e5-0da533585798
-      attributes:
-      - id: 2268c107-1554-5df1-904d-4a024390b3a4
-        pql: |
-          COUNT(CASE WHEN PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('90','34','36')) >= ADD_DAYS(TODAY(), -28) THEN "o_custom_SolicitudDependencia"."ID" END) / 4.0
-        format: ',.1f'
-        columnType: float
-        aggregation: true
-        description: ''
-        displayName: Previsión carga · resuelven / semana
-        shortDisplayName: ''
-      description: ''
-      displayName: 8bfbd0e6-fef4-543c-b3e5-0da533585798
-      shortDisplayName: ''
-- id: text-box-82519ff3-4fd1-5971-bebf-6ceedbf86c42
-  type: text-box
-  filters: []
-  settings:
-    content: '<h3><strong>Personas involucradas · % del equipo total</strong></h3><p><em>⚠ Pendiente de datos. Falta: valorador de cada expediente y efectivos de la fase.</em></p>'
-    background: white
-- id: text-box-6e79f4ff-1b42-5dfe-b4ee-e016d05e6b3e
-  type: text-box
-  filters: []
-  settings:
-    content: '<h2 style="text-align: center;"><strong>PRODUCTIVIDAD Y CARGA</strong></h2>'
-    background: white
-- id: text-box-81ad77ce-7df5-5404-82e1-1850a4034183
-  type: text-box
-  filters: []
-  settings:
-    content: '<h2 style="text-align: center;"><strong>PLAZOS DE TRAMITACIÓN</strong></h2>'
-    background: white
-- id: text-box-24744588-9640-5c15-97b5-5f64d24018e4
-  type: text-box
-  filters: []
-  settings:
-    content: '<h2 style="text-align: center;"><strong>VARIABILIDAD DE CRITERIO BVD</strong></h2>'
-    background: white
-- id: text-box-a2275385-c3d5-5572-bcb8-ada6b8402e2f
-  type: text-box
-  filters: []
-  settings:
-    content: '<h3><strong>Total trabajadores · Media exp/persona · Sobrecargados</strong></h3><p>↑ Distribución de expedientes activos por rango de carga (# valoradores por tramo de carga).</p><p><em>⚠ Pendiente de datos. Falta: valorador de cada expediente.</em></p>'
-    background: white
-- id: kpi-list-3d230088-a49b-5888-8373-e31b50f14b2e
+- id: kpi-list-afb0cecd-be20-52ce-8a3d-b8642f62c565
   type: kpi-list
   filters: []
   settings:
     data:
       kpis:
-      - id: f05afbb6-0a38-5a45-ab02-46b42d3f305b
-        kpi: 2f039c3a-33cb-5d1b-8f36-77cd32c77e24.0a6dca61-3ee6-5938-81e0-72424970f15c
+      - id: 1f63c7c5-2933-5705-b5ef-e20aba4f4464
+        kpi: 5a09f8cc-7dd1-5cbb-a0ee-938f2600a834.e1fa8b1d-88cf-5f25-a30b-6e52798bfb55
         show: true
         order: 100
-      - id: bf111298-8b2a-5805-927d-a248655a6ff4
-        kpi: 7a5f81d9-2cbf-54de-9e26-6cc80ffefe88.1b3bb4dc-08dd-5a6f-80c5-6bde08997b2f
+      - id: 51318dd7-d4ae-5c22-b967-1ee75fb3eff8
+        kpi: c917fbe1-0eb9-556c-b542-c6cb978bc4a5.59c64df6-1569-545c-a44f-ca60098fe569
         show: true
         order: 200
-      - id: ae5f88e4-bc2a-5c00-9ffe-1f32acf927c5
-        kpi: 0cb4a189-1e20-5fe0-9b3d-5feb125e3be3.36bb86dc-1f54-5cab-bdb0-cf2f577c0445
+      - id: 15751cf9-809a-5027-8073-dfb3e2d9f285
+        kpi: e3b79983-513f-53dd-9cdf-d3cec9f01665.22d6618f-af23-5f1f-a682-9e1a9735ee54
         show: true
         order: 300
     dataSources:
-    - id: 2f039c3a-33cb-5d1b-8f36-77cd32c77e24
+    - id: 5a09f8cc-7dd1-5cbb-a0ee-938f2600a834
       attributes:
-      - id: 0a6dca61-3ee6-5938-81e0-72424970f15c
+      - id: e1fa8b1d-88cf-5f25-a30b-6e52798bfb55
         pql: |
-          COUNT(CASE WHEN PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('47')) IS NOT NULL THEN "o_custom_SolicitudDependencia"."ID" END)
+          CASE WHEN COUNT(CASE WHEN "o_custom_SolicitudDependencia"."FechaAlta" > ADD_DAYS(PU_MAX(CONSTANT(), "o_custom_SolicitudDependencia"."FechaAlta"), -28) AND "o_custom_SolicitudDependencia"."FechaAlta" <= PU_MAX(CONSTANT(), "o_custom_SolicitudDependencia"."FechaAlta") THEN "o_custom_SolicitudDependencia"."ID" END) / 4.0 > COUNT(CASE WHEN PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('90','34','36')) > ADD_DAYS(PU_MAX(CONSTANT(), "o_custom_SolicitudDependencia"."FechaAlta"), -28) AND PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('90','34','36')) <= PU_MAX(CONSTANT(), "o_custom_SolicitudDependencia"."FechaAlta") THEN "o_custom_SolicitudDependencia"."ID" END) / 4.0 * 1.1 THEN 'Alta' WHEN COUNT(CASE WHEN "o_custom_SolicitudDependencia"."FechaAlta" > ADD_DAYS(PU_MAX(CONSTANT(), "o_custom_SolicitudDependencia"."FechaAlta"), -28) AND "o_custom_SolicitudDependencia"."FechaAlta" <= PU_MAX(CONSTANT(), "o_custom_SolicitudDependencia"."FechaAlta") THEN "o_custom_SolicitudDependencia"."ID" END) / 4.0 < COUNT(CASE WHEN PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('90','34','36')) > ADD_DAYS(PU_MAX(CONSTANT(), "o_custom_SolicitudDependencia"."FechaAlta"), -28) AND PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('90','34','36')) <= PU_MAX(CONSTANT(), "o_custom_SolicitudDependencia"."FechaAlta") THEN "o_custom_SolicitudDependencia"."ID" END) / 4.0 * 0.9 THEN 'Baja' WHEN COUNT(CASE WHEN "o_custom_SolicitudDependencia"."FechaAlta" > ADD_DAYS(PU_MAX(CONSTANT(), "o_custom_SolicitudDependencia"."FechaAlta"), -28) AND "o_custom_SolicitudDependencia"."FechaAlta" <= PU_MAX(CONSTANT(), "o_custom_SolicitudDependencia"."FechaAlta") THEN "o_custom_SolicitudDependencia"."ID" END) / 4.0 IS NULL THEN NULL ELSE 'Media' END
+        columnType: string
+        aggregation: true
+        description: ''
+        displayName: Previsión carga próx. mes
+        shortDisplayName: ''
+      description: ''
+      displayName: 5a09f8cc-7dd1-5cbb-a0ee-938f2600a834
+      shortDisplayName: ''
+    - id: c917fbe1-0eb9-556c-b542-c6cb978bc4a5
+      attributes:
+      - id: 59c64df6-1569-545c-a44f-ca60098fe569
+        pql: |
+          COUNT(CASE WHEN "o_custom_SolicitudDependencia"."FechaAlta" > ADD_DAYS(PU_MAX(CONSTANT(), "o_custom_SolicitudDependencia"."FechaAlta"), -28) AND "o_custom_SolicitudDependencia"."FechaAlta" <= PU_MAX(CONSTANT(), "o_custom_SolicitudDependencia"."FechaAlta") THEN "o_custom_SolicitudDependencia"."ID" END) / 4.0
+        format: ',.0f'
+        columnType: float
+        aggregation: true
+        description: ''
+        displayName: Entran / sem
+        shortDisplayName: ''
+      description: ''
+      displayName: c917fbe1-0eb9-556c-b542-c6cb978bc4a5
+      shortDisplayName: ''
+    - id: e3b79983-513f-53dd-9cdf-d3cec9f01665
+      attributes:
+      - id: 22d6618f-af23-5f1f-a682-9e1a9735ee54
+        pql: |
+          COUNT(CASE WHEN PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('90','34','36')) > ADD_DAYS(PU_MAX(CONSTANT(), "o_custom_SolicitudDependencia"."FechaAlta"), -28) AND PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('90','34','36')) <= PU_MAX(CONSTANT(), "o_custom_SolicitudDependencia"."FechaAlta") THEN "o_custom_SolicitudDependencia"."ID" END) / 4.0
+        format: ',.0f'
+        columnType: float
+        aggregation: true
+        description: ''
+        displayName: Resuelven / sem
+        shortDisplayName: ''
+      description: ''
+      displayName: e3b79983-513f-53dd-9cdf-d3cec9f01665
+      shortDisplayName: ''
+- id: text-box-6bc0f1e8-2fa7-581c-b141-37d025c33268
+  type: text-box
+  filters: []
+  settings:
+    content: '<h3 style="text-align: center;"><strong>PRODUCTIVIDAD Y CARGA</strong></h3>'
+    background: white
+- id: text-box-98eefc7c-fed8-568d-9883-b9dbaab74c46
+  type: text-box
+  filters: []
+  settings:
+    content: '<h3 style="text-align: center;"><strong>PLAZOS DE TRAMITACIÓN</strong></h3>'
+    background: white
+- id: text-box-06bdadf0-5138-551c-bd91-9054800d6c27
+  type: text-box
+  filters: []
+  settings:
+    content: '<h3 style="text-align: center;"><strong>VARIABILIDAD DE CRITERIO BVD</strong></h3>'
+    background: white
+- id: text-box-e0a02e50-8238-5eec-b07e-b8b2f5eb962d
+  type: text-box
+  filters: []
+  settings:
+    content: '<p><strong>Total trabajadores · Media exp/persona · Sobrecargados</strong></p><p>↑ Distribución de expedientes activos por rango de carga · # valoradores por tramo de carga (Baja &lt;70 % · Media 70–115 % · Alta 115–130 % · Sobrecarga &gt;130 %).</p><p><em>⚠ Pendiente de datos: valorador de cada expediente.</em></p>'
+    background: white
+- id: kpi-list-14a66c1b-2375-5e28-b7fd-d0d5f0b27bd7
+  type: kpi-list
+  filters: []
+  settings:
+    data:
+      kpis:
+      - id: d3653d15-5731-5a44-89fa-157a7fe69d11
+        kpi: 87364f93-af84-5631-a262-bf0e586079dc.1f2d9142-1f7b-5b82-9c28-f4c8aa32dcfe
+        show: true
+        order: 100
+      - id: ad128fa1-c7cc-556e-a82a-5c086e0f62d1
+        kpi: 9afce68b-9bc0-59d5-86be-e2eec7838c30.ce7a0a92-b14c-52d3-97f1-ac7c96ce94f5
+        show: true
+        order: 200
+      - id: 7184097a-b3a1-53a7-8ab9-d76992350191
+        kpi: dbc9b589-5488-56d6-bedd-11efcef8bfed.a923085c-f373-51bd-b988-9c8e2afcdab3
+        show: true
+        order: 300
+    dataSources:
+    - id: 87364f93-af84-5631-a262-bf0e586079dc
+      attributes:
+      - id: 1f2d9142-1f7b-5b82-9c28-f4c8aa32dcfe
+        pql: |
+          COUNT(PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('47')))
         format: ',.0f'
         columnType: int
         aggregation: true
@@ -990,11 +1229,11 @@ components:
         displayName: Expedientes valorados
         shortDisplayName: ''
       description: ''
-      displayName: 2f039c3a-33cb-5d1b-8f36-77cd32c77e24
+      displayName: 87364f93-af84-5631-a262-bf0e586079dc
       shortDisplayName: ''
-    - id: 7a5f81d9-2cbf-54de-9e26-6cc80ffefe88
+    - id: 9afce68b-9bc0-59d5-86be-e2eec7838c30
       attributes:
-      - id: 1b3bb4dc-08dd-5a6f-80c5-6bde08997b2f
+      - id: ce7a0a92-b14c-52d3-97f1-ac7c96ce94f5
         pql: |
           COUNT(CASE WHEN DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaAlta", PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('47'))) <= 120 THEN "o_custom_SolicitudDependencia"."ID" END)
         format: ',.0f'
@@ -1004,11 +1243,11 @@ components:
         displayName: Valorados en plazo
         shortDisplayName: ''
       description: ''
-      displayName: 7a5f81d9-2cbf-54de-9e26-6cc80ffefe88
+      displayName: 9afce68b-9bc0-59d5-86be-e2eec7838c30
       shortDisplayName: ''
-    - id: 0cb4a189-1e20-5fe0-9b3d-5feb125e3be3
+    - id: dbc9b589-5488-56d6-bedd-11efcef8bfed
       attributes:
-      - id: 36bb86dc-1f54-5cab-bdb0-cf2f577c0445
+      - id: a923085c-f373-51bd-b988-9c8e2afcdab3
         pql: |
           COUNT(CASE WHEN DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaAlta", PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('47'))) > 120 THEN "o_custom_SolicitudDependencia"."ID" END)
         format: ',.0f'
@@ -1018,16 +1257,61 @@ components:
         displayName: Valorados fuera de plazo
         shortDisplayName: ''
       description: ''
-      displayName: 0cb4a189-1e20-5fe0-9b3d-5feb125e3be3
+      displayName: dbc9b589-5488-56d6-bedd-11efcef8bfed
       shortDisplayName: ''
-- id: columns-line-chart-210ad98e-6b47-5c7c-a12d-6f8a86de299a
+- id: kpi-list-4391f65d-983b-5381-9dbd-13a6cca01295
+  type: kpi-list
+  filters: []
+  settings:
+    data:
+      kpis:
+      - id: ef40593a-1a7d-5740-b9b0-592cc22af82a
+        kpi: 5bd4b640-17c4-55de-b195-aaec3b15620c.60cf7017-490d-5a18-92c5-f84a84308a86
+        show: true
+        order: 100
+      - id: a15eebd0-695c-5f74-81c0-3d42e8bcc897
+        kpi: 63c78ff4-7f0a-5566-887d-b487a06765c0.8fc9359a-d138-5d69-9422-1076ccd89a6d
+        show: true
+        order: 200
+    dataSources:
+    - id: 5bd4b640-17c4-55de-b195-aaec3b15620c
+      attributes:
+      - id: 60cf7017-490d-5a18-92c5-f84a84308a86
+        pql: |
+          COUNT(CASE WHEN DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaAlta", PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('47'))) <= 120 THEN "o_custom_SolicitudDependencia"."ID" END) * 100.0 / COUNT(CASE WHEN DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaAlta", PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('47'))) IS NOT NULL THEN "o_custom_SolicitudDependencia"."ID" END)
+        unit: '%'
+        format: ',.1f'
+        columnType: float
+        aggregation: true
+        description: ''
+        displayName: '% en plazo (≤120 d)'
+        shortDisplayName: ''
+      description: ''
+      displayName: 5bd4b640-17c4-55de-b195-aaec3b15620c
+      shortDisplayName: ''
+    - id: 63c78ff4-7f0a-5566-887d-b487a06765c0
+      attributes:
+      - id: 8fc9359a-d138-5d69-9422-1076ccd89a6d
+        pql: |
+          COUNT(CASE WHEN DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaAlta", PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('47'))) > 120 THEN "o_custom_SolicitudDependencia"."ID" END) * 100.0 / COUNT(CASE WHEN DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaAlta", PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('47'))) IS NOT NULL THEN "o_custom_SolicitudDependencia"."ID" END)
+        unit: '%'
+        format: ',.1f'
+        columnType: float
+        aggregation: true
+        description: ''
+        displayName: '% fuera (>120 d)'
+        shortDisplayName: ''
+      description: ''
+      displayName: 63c78ff4-7f0a-5566-887d-b487a06765c0
+      shortDisplayName: ''
+- id: columns-line-chart-86962504-6178-5485-8bb7-4749ddad1a64
   type: columns-line-chart
   filters: []
   settings:
     name: '↑ Expedientes valorados: dentro vs fuera del plazo objetivo'
     limit: 1000
     visuals:
-    - id: e70e0140-0fe9-500c-a14e-adfc7b4a5d65
+    - id: 748e7ccf-83ab-5fea-b84c-7de6ede18c55
       mark:
         type: bar
         color: CUSTOM3_20
@@ -1036,15 +1320,15 @@ components:
       encodings:
         x:
           field:
-          - 4fc2271b-b87f-5bc0-83eb-d64057af3c61
+          - 07fc55ac-c0ac-5a0c-9b74-b39d47c438c0
         y:
           axis:
             hide: false
             title: Valorados en plazo
             position: left
-          field: 972312e7-fbae-5b75-b996-a327d597fc1b
+          field: 990fd3ad-6a7f-5d16-a1de-31290afef4c8
         detail: []
-    - id: 1b06efe7-a8f8-5aeb-b11c-e1f04fc1a8f3
+    - id: 80ddb7fc-8c0a-596e-a172-e9050bbe47ea
       mark:
         type: bar
         color: NEGATIVE
@@ -1053,15 +1337,15 @@ components:
       encodings:
         x:
           field:
-          - 4fc2271b-b87f-5bc0-83eb-d64057af3c61
+          - 07fc55ac-c0ac-5a0c-9b74-b39d47c438c0
         y:
           axis:
             hide: false
             title: Valorados fuera de plazo
             position: left
-          field: 3b668695-faec-5de2-83e6-0b46b6ab24e8
+          field: 372490db-518b-58f0-96b3-d13553515876
         detail: []
-    - id: 9b82c8bf-40ac-58b2-85f0-bcb6ea4f1454
+    - id: b1e43e39-6626-5d69-9841-37301103f8ec
       mark:
         type: line
         color: HIGHLIGHT_20
@@ -1070,14 +1354,14 @@ components:
       encodings:
         x:
           field:
-          - 4fc2271b-b87f-5bc0-83eb-d64057af3c61
+          - 07fc55ac-c0ac-5a0c-9b74-b39d47c438c0
         y:
           axis:
             hide: false
             title: Plazo medio (días)
             position: right
-          field: 08ad0d99-dee7-59c1-adcc-41cc36791ebb
-    - id: ea013c94-b694-5722-b54e-306dc8b955b5
+          field: fad76dc0-ef3b-5f6a-ae6c-a5cd5b38beef
+    - id: a1db678b-0246-533a-b50a-92dabda4c554
       mark:
         type: line
         color: WARNING
@@ -1086,22 +1370,22 @@ components:
       encodings:
         x:
           field:
-          - 4fc2271b-b87f-5bc0-83eb-d64057af3c61
+          - 07fc55ac-c0ac-5a0c-9b74-b39d47c438c0
         y:
           axis:
             hide: false
             title: Objetivo SLA 120d
             position: right
-          field: af87436d-ff31-5851-a8b6-4b1032cac0fe
+          field: 3321a7b0-29a6-5dfd-ae5b-a8aee872d5ab
     infoText:
       content: Por fecha de dictamen (entrada en el estado 47, por confirmar). El plazo se mide desde el alta hasta el dictamen.
     dataSources:
-    - id: eea29328-7b8c-5bfe-ae24-367bef987008
+    - id: 6021965a-2cb3-5a99-bbfb-96abd71161ac
       filters:
       - pql: FILTER PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('47')) IS NOT NULL
         isReferenced: false
       attributes:
-      - id: 4fc2271b-b87f-5bc0-83eb-d64057af3c61
+      - id: 07fc55ac-c0ac-5a0c-9b74-b39d47c438c0
         pql: |
           ROUND_MONTH(PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('47')))
         format: '%Y-%m'
@@ -1110,7 +1394,7 @@ components:
         description: ''
         displayName: Mes de dictamen
         shortDisplayName: ''
-      - id: 972312e7-fbae-5b75-b996-a327d597fc1b
+      - id: 990fd3ad-6a7f-5d16-a1de-31290afef4c8
         pql: |
           COUNT(CASE WHEN DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaAlta", PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('47'))) <= 120 THEN "o_custom_SolicitudDependencia"."ID" END)
         format: ',.0f'
@@ -1119,7 +1403,7 @@ components:
         description: ''
         displayName: Valorados en plazo
         shortDisplayName: ''
-      - id: 3b668695-faec-5de2-83e6-0b46b6ab24e8
+      - id: 372490db-518b-58f0-96b3-d13553515876
         pql: |
           COUNT(CASE WHEN DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaAlta", PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('47'))) > 120 THEN "o_custom_SolicitudDependencia"."ID" END)
         format: ',.0f'
@@ -1128,7 +1412,7 @@ components:
         description: ''
         displayName: Valorados fuera de plazo
         shortDisplayName: ''
-      - id: 08ad0d99-dee7-59c1-adcc-41cc36791ebb
+      - id: fad76dc0-ef3b-5f6a-ae6c-a5cd5b38beef
         pql: |
           AVG(DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaAlta", PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('47'))))
         unit: días
@@ -1138,7 +1422,7 @@ components:
         description: ''
         displayName: Plazo medio (días)
         shortDisplayName: ''
-      - id: af87436d-ff31-5851-a8b6-4b1032cac0fe
+      - id: 3321a7b0-29a6-5dfd-ae5b-a8aee872d5ab
         pql: |
           AVG(CASE WHEN PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('47')) IS NOT NULL THEN 120.0 END)
         unit: días
@@ -1149,65 +1433,111 @@ components:
         displayName: Objetivo SLA 120d
         shortDisplayName: ''
       description: ''
-      displayName: eea29328-7b8c-5bfe-ae24-367bef987008
+      displayName: 6021965a-2cb3-5a99-bbfb-96abd71161ac
       shortDisplayName: ''
     interactions:
       scrolling: true
-- id: text-box-bae104d6-75a8-5a5d-b082-eea8e9712fbc
+- id: text-box-0c5f3a0f-642e-5817-9dff-230abbd30e60
   type: text-box
   filters: []
   settings:
-    content: '<h3><strong>Valoradores activos · Criterio sesgado · % Alineación</strong></h3><p>Distribución de Grados BVD por valorador (% G0 / G1 / G2 / G3 y desviación frente a la media del equipo).</p><p><em>⚠ Pendiente de datos. Falta: grado propuesto y valorador de cada expediente.</em></p>'
+    content: '<p><strong>Valoradores activos · Criterio sesgado · % Alineación</strong></p><p>Distribución de Grados BVD por valorador: % G0 / G1 / G2 / G3 y desviación frente a la media del equipo (&gt;2σ = sesgo).</p><p><em>⚠ Pendiente de datos: grado propuesto y valorador de cada expediente.</em></p>'
     background: white
-- id: text-box-acd6200e-cd77-58b4-b384-5c87e7a4d1c0
+- id: text-box-d1c4c0a4-c099-5315-be2d-c394c056ef15
   type: text-box
   filters: []
   settings:
-    content: '<h3><strong>Detalle por Trabajador — Valoración</strong></h3><p>Trabajador · Tipo · Zona · Expedientes · Carga · Plazo medio · vs equipo · Variabilidad criterio · Estado.</p><p><em>⚠ Pendiente de datos. Falta: valorador, tipo de valoración, zona de geolocalización y grado.</em></p>'
+    content: '<p><strong>Detalle por Trabajador — Valoración</strong></p><p>Trabajador · Tipo · Zona de geolocalización · Expedientes · Carga · Plazo medio · vs equipo · Variabilidad criterio · Estado</p><p><em>⚠ Pendiente de datos: valorador, tipo de valoración, zona de geolocalización y grado.</em></p>'
     background: white
-- id: text-box-b7dfe944-abd0-59ef-9edc-2a797e85c5cd
+- id: text-box-a5f69209-1f7a-54b4-b134-b1a2eedbd034
   type: text-box
   filters: []
   settings:
-    content: <h3><strong>Plazos fraccionados por hito — Valoración individual (tiempos imputables)</strong></h3><p>① Citación → ② Fecha Valoración → ③ Grabación → ④ Dictamen · SIDEMA · cambios de estado</p>
+    content: <p><strong>Plazos fraccionados por hito — Valoración individual (tiempos imputables)</strong> · SIDEMA · cambios de estado</p><p>① Registro → ② Alta → ③ Pendiente de citación → ④ Citación → ⑤ Fecha de valoración → ⑥ Grabación → ⑦ Dictamen → ⑧ Comisión → ⑨ Resolución del grado</p>
     background: white
-- id: kpi-list-e3fd0c47-2430-513c-8147-717e309889e3
+- id: kpi-list-e2334528-78ab-50d0-bbe4-6c7ca74d76f9
   type: kpi-list
   filters: []
   settings:
     data:
       kpis:
-      - id: b95d1e68-2fb5-58c2-8a94-d78498fbfd2c
-        kpi: 3a030411-c234-5a97-afab-addae0654d85.ce9056ac-359a-5835-b862-dd8246f33c06
+      - id: 7a936f51-4d6c-50b7-a636-d48a7ba9f18f
+        kpi: b7fa40bb-43c0-5654-b19d-fdd374a0923c.5ee2496d-7c92-5ee0-b83b-f3c0cacb5b29
         show: true
         order: 100
-      - id: 26732e9e-794a-5bb5-bcdd-bad9541c3497
-        kpi: 427d90df-cccc-5999-8b9c-97f1cb7c2ed1.a63b836c-060c-5786-8593-a7604fbefe04
+      - id: bede31ef-fdef-5a1d-a70c-2389c2427869
+        kpi: a9717f37-7c37-5a69-93eb-ae80b38eec1b.718c8f5b-555d-511f-89d1-ce4f250c604c
         show: true
         order: 200
-      - id: 3ded09b2-9d76-5e48-92f0-1539cc24a0a3
-        kpi: 0e4f228f-5b5b-5cd2-bdb7-ac6df5c6bff7.f5aaa1d7-a2a5-5430-bb3a-14a5095f6f58
+      - id: ffc892cf-7414-5dee-8541-8981237c90a2
+        kpi: afcc694e-20b1-5a8f-bdec-53f8e46798e7.04cd1bc5-23bf-5f8d-8aa9-39617857807d
         show: true
         order: 300
+      - id: 8215e660-4157-5bab-a795-716f5b6db3ba
+        kpi: 3dfa89f5-bfb7-504e-b521-60169a62b6f3.bdca42f5-4fa2-50a3-9510-01059abf2ce8
+        show: true
+        order: 400
+      - id: c6ded694-a629-5877-ad09-7488e8bbe67c
+        kpi: 6a2aefe9-6727-51b5-a553-796d639006ad.73dd61cb-be5d-51e5-94a4-7458b24a1f1d
+        show: true
+        order: 500
+      - id: 185ad3c4-564c-522e-b10d-414f1941d64d
+        kpi: 260c8a2f-4e1c-5d64-82ec-9fdfc1bbe37a.53d8e4f6-60ba-5599-b1ca-a4de447d58e8
+        show: true
+        order: 600
+      - id: 7049c0b1-ee1c-53b6-80e6-0c610dbee392
+        kpi: 4dbf7b19-803b-578e-bd43-49f9ce6f3da6.e52e655a-4ed8-557d-8086-64066054be9d
+        show: true
+        order: 700
     dataSources:
-    - id: 3a030411-c234-5a97-afab-addae0654d85
+    - id: b7fa40bb-43c0-5654-b19d-fdd374a0923c
       attributes:
-      - id: ce9056ac-359a-5835-b862-dd8246f33c06
+      - id: 5ee2496d-7c92-5ee0-b83b-f3c0cacb5b29
         pql: |
-          AVG(DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaAlta", PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('43'))))
+          AVG(DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaRegistroEntrada", "o_custom_SolicitudDependencia"."FechaAlta"))
         unit: d
         format: ',.0f'
         columnType: float
         aggregation: true
         description: ''
-        displayName: Alta → ① Citación
+        displayName: ① Registro → ② Alta
         shortDisplayName: ''
       description: ''
-      displayName: 3a030411-c234-5a97-afab-addae0654d85
+      displayName: b7fa40bb-43c0-5654-b19d-fdd374a0923c
       shortDisplayName: ''
-    - id: 427d90df-cccc-5999-8b9c-97f1cb7c2ed1
+    - id: a9717f37-7c37-5a69-93eb-ae80b38eec1b
       attributes:
-      - id: a63b836c-060c-5786-8593-a7604fbefe04
+      - id: 718c8f5b-555d-511f-89d1-ce4f250c604c
+        pql: |
+          AVG(DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaAlta", PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('40','39','99','00'))))
+        unit: d
+        format: ',.0f'
+        columnType: float
+        aggregation: true
+        description: ''
+        displayName: ② Alta → ③ Pend. citación
+        shortDisplayName: ''
+      description: ''
+      displayName: a9717f37-7c37-5a69-93eb-ae80b38eec1b
+      shortDisplayName: ''
+    - id: afcc694e-20b1-5a8f-bdec-53f8e46798e7
+      attributes:
+      - id: 04cd1bc5-23bf-5f8d-8aa9-39617857807d
+        pql: |
+          AVG(DAYS_BETWEEN(PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('40','39','99','00')), PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('43'))))
+        unit: d
+        format: ',.0f'
+        columnType: float
+        aggregation: true
+        description: ''
+        displayName: ③ → ④ Citación
+        shortDisplayName: ''
+      description: ''
+      displayName: afcc694e-20b1-5a8f-bdec-53f8e46798e7
+      shortDisplayName: ''
+    - id: 3dfa89f5-bfb7-504e-b521-60169a62b6f3
+      attributes:
+      - id: bdca42f5-4fa2-50a3-9510-01059abf2ce8
         pql: |
           AVG(DAYS_BETWEEN(PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('43')), PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('47'))))
         unit: d
@@ -1215,397 +1545,490 @@ components:
         columnType: float
         aggregation: true
         description: ''
-        displayName: ① Citación → ④ Dictamen
+        displayName: ④ Citación → ⑦ Dictamen
         shortDisplayName: ''
       description: ''
-      displayName: 427d90df-cccc-5999-8b9c-97f1cb7c2ed1
+      displayName: 3dfa89f5-bfb7-504e-b521-60169a62b6f3
       shortDisplayName: ''
-    - id: 0e4f228f-5b5b-5cd2-bdb7-ac6df5c6bff7
+    - id: 6a2aefe9-6727-51b5-a553-796d639006ad
       attributes:
-      - id: f5aaa1d7-a2a5-5430-bb3a-14a5095f6f58
+      - id: 73dd61cb-be5d-51e5-94a4-7458b24a1f1d
         pql: |
-          AVG(DAYS_BETWEEN(PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('47')), PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('90','34','36'))))
+          AVG(DAYS_BETWEEN(PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('47')), PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('50'))))
         unit: d
         format: ',.0f'
         columnType: float
         aggregation: true
         description: ''
-        displayName: ④ Dictamen → Resolución del grado
+        displayName: ⑦ Dictamen → ⑧ Comisión
         shortDisplayName: ''
       description: ''
-      displayName: 0e4f228f-5b5b-5cd2-bdb7-ac6df5c6bff7
+      displayName: 6a2aefe9-6727-51b5-a553-796d639006ad
       shortDisplayName: ''
-- id: text-box-81915f0f-aa35-53ad-8ae7-1b5f77934e94
+    - id: 260c8a2f-4e1c-5d64-82ec-9fdfc1bbe37a
+      attributes:
+      - id: 53d8e4f6-60ba-5599-b1ca-a4de447d58e8
+        pql: |
+          AVG(DAYS_BETWEEN(PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('50')), PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('90','34','36'))))
+        unit: d
+        format: ',.0f'
+        columnType: float
+        aggregation: true
+        description: ''
+        displayName: ⑧ Comisión → ⑨ Grado
+        shortDisplayName: ''
+      description: ''
+      displayName: 260c8a2f-4e1c-5d64-82ec-9fdfc1bbe37a
+      shortDisplayName: ''
+    - id: 4dbf7b19-803b-578e-bd43-49f9ce6f3da6
+      attributes:
+      - id: e52e655a-4ed8-557d-8086-64066054be9d
+        pql: |
+          AVG(DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaRegistroEntrada", PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('90','34','36'))))
+        unit: d
+        format: ',.0f'
+        columnType: float
+        aggregation: true
+        description: ''
+        displayName: Total E2E (① → ⑨)
+        shortDisplayName: ''
+      description: ''
+      displayName: 4dbf7b19-803b-578e-bd43-49f9ce6f3da6
+      shortDisplayName: ''
+- id: text-box-9c02e5ff-c1bc-55c2-9fc3-f72a191f65dc
   type: text-box
   filters: []
   settings:
-    content: '<h3><strong>② Fecha Valoración · ③ Grabación · Total imputable por valorador</strong></h3><p>Sin la fecha de la visita no se separa el tramo no imputable (citación → valoración).</p><p><em>⚠ Pendiente de datos. Falta: fecha de la visita, fecha de grabación de la valoración y valorador.</em></p>'
+    content: '<p><strong>⑤ Fecha de valoración · ⑥ Grabación · Valorador · Total imputable</strong></p><p>Sin la fecha de la visita no se separa el tramo no imputable (citación → valoración). Los hitos ⑦, ⑧ y ⑨ usan los estados 47, 50 y 90/34/36: por confirmar con la unidad.</p><p><em>⚠ Pendiente de datos: fecha de la visita, fecha de grabación de la valoración y valorador.</em></p>'
     background: white
-- id: text-box-741abf50-9192-5577-bc6e-0e97bd7621d4
+- id: text-box-e19e756a-99f6-5a99-82f0-86db9b881881
   type: text-box
   filters: []
   settings:
-    content: '<h3><strong>ESTA FASE · Personas involucradas · Tiempo E2E · % del equipo total · Previsión carga</strong></h3><p>Objetivo ≤180 días.</p><p><em>⚠ Pendiente de datos. Falta: estados y fechas del PIA y técnicos PIA.</em></p>'
+    content: '<p><strong>ESTA FASE</strong> · Equipos independientes por fase · objetivo ≤180 días</p><p><em>⚠ Personas involucradas · Tiempo E2E · % del equipo total · Previsión carga: pendientes de los datos del PIA.</em></p>'
     background: white
-- id: text-box-10f903e7-4bd6-5ec8-a480-e686f4a70ea5
+- id: text-box-c9fece3b-7c03-5367-8364-24e416aba42c
   type: text-box
   filters: []
   settings:
-    content: '<h2 style="text-align: center;"><strong>PRODUCTIVIDAD Y CARGA</strong></h2>'
+    content: '<h3 style="text-align: center;"><strong>PRODUCTIVIDAD Y CARGA</strong></h3>'
     background: white
-- id: text-box-b9dd7600-abb5-5a4a-bb05-b2085cf3c083
+- id: text-box-4a3dccca-e4f7-5b07-874a-59d63f8b20c6
   type: text-box
   filters: []
   settings:
-    content: '<h2 style="text-align: center;"><strong>PLAZOS DE TRAMITACIÓN</strong></h2>'
+    content: '<h3 style="text-align: center;"><strong>PLAZOS DE TRAMITACIÓN</strong></h3>'
     background: white
-- id: text-box-3b0ff8c7-59a7-5e97-8d45-7e61d0bdf770
+- id: text-box-81f16b9e-2d6c-5c34-a5a7-c8ad16f39bca
   type: text-box
   filters: []
   settings:
-    content: '<h2 style="text-align: center;"><strong>VARIABILIDAD — TIPO DE PRESTACIÓN</strong></h2>'
+    content: '<h3 style="text-align: center;"><strong>VARIABILIDAD — TIPO DE PRESTACIÓN</strong></h3>'
     background: white
-- id: text-box-148e3799-38c3-517e-9bcf-4b948acdf729
+- id: text-box-d313aa9a-6811-5e6e-8c6a-3d1cea7876b1
   type: text-box
   filters: []
   settings:
-    content: '<h3><strong>Total trabajadores · Media exp/persona · Sobrecargados</strong></h3><p>↑ Distribución de expedientes activos por rango de carga (# técnicos PIA por tramo de carga).</p><p><em>⚠ Pendiente de datos. Falta: login del técnico PIA.</em></p>'
+    content: '<p><strong>Total trabajadores · Media exp/persona · Sobrecargados</strong></p><p>↑ Distribución de expedientes activos por rango de carga · # técnicos PIA por tramo de carga.</p><p><em>⚠ Pendiente de datos: login del técnico PIA.</em></p>'
     background: white
-- id: text-box-386ba7e3-8edc-5765-a670-a7412ffde13f
+- id: text-box-383f78cf-561b-5d97-a80a-837b0f12d47a
   type: text-box
   filters: []
   settings:
-    content: '<h3><strong>PIA resueltos · Resueltos en plazo · Resueltos fuera de plazo</strong></h3><p>↑ PIA resueltos: dentro vs fuera del plazo objetivo (objetivo SLA 180d).</p><p><em>⚠ Pendiente de datos. Falta: estados y fechas del PIA.</em></p>'
+    content: '<p><strong>PIA resueltos · Resueltos en plazo · Resueltos fuera de plazo</strong></p><p>↑ PIA resueltos: dentro vs fuera del plazo objetivo (objetivo SLA 180d).</p><p><em>⚠ Pendiente de datos: estados y fechas del PIA.</em></p>'
     background: white
-- id: text-box-bba55f69-6824-58b4-a17a-f690186e0e64
+- id: text-box-8f7a961e-ebbc-5b9f-ba1b-27f582a8dd95
   type: text-box
   filters: []
   settings:
-    content: '<h3><strong>Territorios clave · Territorios atípicos · Mayor dispersión</strong></h3><p>Variabilidad de prestación por territorio o por técnico (Residencia · SAD · Teleasistencia).</p><p><em>⚠ Pendiente de datos. Falta: prestación del PIA y territorio.</em></p>'
+    content: '<p><strong>Territorios clave · Territorios atípicos · Mayor dispersión</strong></p><p>Variabilidad de prestación por territorio (recomendado) o por técnico: Residencia · SAD · Teleasistencia.</p><p><em>⚠ Pendiente de datos: prestación del PIA y territorio.</em></p>'
     background: white
-- id: text-box-40fbcb5a-72ba-507e-9a1a-4c9fa027b373
+- id: text-box-1b18d0eb-0573-56b8-aa39-2835caf463de
   type: text-box
   filters: []
   settings:
-    content: '<h3><strong>Detalle por Trabajador — Resolución de PIA</strong></h3><p>Trabajador · Tipo · Territorio · Expedientes · Carga · Plazo medio · vs equipo · Variabilidad prescrip. · Estado.</p><p><em>⚠ Pendiente de datos. Falta: técnico PIA, tipo, territorio y prestación.</em></p>'
+    content: '<p><strong>Detalle por Trabajador — Resolución de PIA</strong></p><p>Trabajador · Tipo · Territorio · Expedientes · Carga · Plazo medio · vs equipo · Variabilidad prescrip. · Estado</p><p><em>⚠ Pendiente de datos: técnico PIA, tipo, territorio y prestación.</em></p>'
     background: white
-- id: text-box-c0e5c7fd-272e-5daa-a776-abd095a79d74
+- id: text-box-69c02c80-0014-532a-806f-e8b1f1bffa05
   type: text-box
   filters: []
   settings:
-    content: '<h3><strong>Evaluación individual del tramitador — Gestión del PIA</strong></h3><p>Tramitador · Exp. resueltos · Plazo imputable · vs equipo · % con requerimiento · Llamadas/exp · Perfil de gestión.</p><p><em>⚠ Pendiente de datos. Falta: tramitador, requerimientos y llamadas del PIA.</em></p>'
+    content: '<p><strong>Evaluación individual del tramitador — Gestión del PIA</strong></p><p>Tramitador · Exp. resueltos · Plazo imputable · vs equipo · % con requerimiento · Llamadas/exp · Perfil de gestión</p><p><em>⚠ Pendiente de datos: tramitador, requerimientos y llamadas del PIA.</em></p>'
     background: white
 grid:
   mode: full-height
   elements:
-  - id: d262313d-6174-54e5-90df-203f067deb1f
+  - id: 522bc337-628f-57fb-b309-c61a63c80d15
     position:
-      width: 10
-      height: 8
+      width: 8
+      height: 14
       positionX: 1
       positionY: 1
-    componentId: text-box-b881f211-9d53-5329-8325-2956a28132cd
-  - id: ae7dad3a-b2f3-5980-bb9a-7806c67a83c5
+    componentId: text-box-c8d8b695-6260-5c97-9e3b-ec5009a98d3b
+  - id: 0ca28cae-75f0-58ce-98ba-6d80f3196742
     position:
-      width: 26
-      height: 8
-      positionX: 11
+      width: 7
+      height: 7
+      positionX: 9
       positionY: 1
-    componentId: kpi-list-29730969-4d34-531e-85eb-842ce0b9b638
-  - id: 433cd439-5d4a-54aa-8475-b293d9c88254
+    componentId: kpi-list-62a2386b-c1ed-51fd-8445-a1d6f2f8932d
+  - id: 0217e355-2098-5ca6-baee-37909345dd2d
+    position:
+      width: 7
+      height: 7
+      positionX: 16
+      positionY: 1
+    componentId: kpi-list-384a7912-dfbb-569e-9c19-3bfabb2481ef
+  - id: c671be92-2326-5eb9-9931-edd7fad9ffc3
+    position:
+      width: 7
+      height: 7
+      positionX: 23
+      positionY: 1
+    componentId: kpi-list-e5569f35-ed4e-5ebd-83e2-e5062777a490
+  - id: 4f5b5519-efa9-5131-b6e0-11cc31916eea
+    position:
+      width: 7
+      height: 7
+      positionX: 30
+      positionY: 1
+    componentId: kpi-list-9fef72dd-7c71-5f84-b40e-963cd536ccf0
+  - id: 28de1839-13fb-584e-b388-01ac2c9f3408
+    position:
+      width: 21
+      height: 7
+      positionX: 9
+      positionY: 8
+    componentId: text-box-c001b7bb-151d-5346-9a0f-0f2b2e03e8e4
+  - id: e170297a-1536-56fc-8664-7db8472c1e7f
+    position:
+      width: 7
+      height: 7
+      positionX: 30
+      positionY: 8
+    componentId: kpi-list-b58c6b53-38de-5aed-851d-f85969dd7d5f
+  - id: 317fd621-d2ee-592f-8bb3-940e838a2e19
     position:
       width: 36
       height: 4
       positionX: 1
-      positionY: 9
-    componentId: text-box-b62c4b1a-35ee-5ea4-ba1e-d1f20c8fe5e0
-  - id: 6148b15e-cc0e-5234-96b8-76259ed9f8ce
+      positionY: 15
+    componentId: text-box-c07d8f25-3a82-57d0-a35f-36dbe0394912
+  - id: fbfc5f14-ae69-5aa9-b908-48ca6e1189e0
     position:
       width: 36
-      height: 4
+      height: 130
       positionX: 1
-      positionY: 13
-    componentId: text-box-f3b2af92-afcb-5936-bbc4-1a83b3cb7830
-  - id: 22ef35eb-824c-52fb-a9c0-7a0a44e40ec6
-    position:
-      width: 36
-      height: 122
-      positionX: 1
-      positionY: 17
+      positionY: 19
     container:
       tabs:
-      - id: 6ae90f17-66be-5bd8-969c-0716c258425e
+      - id: 1a70d9cf-f07b-5d1d-a36e-d50aa0d698d7
         name: Fase 1 · Grabación de solicitudes
         filters: []
         elements:
-        - id: 865f44db-618c-535e-8266-f5bb224173cf
+        - id: b2c8d299-66e1-5ce4-9821-557a2819c544
           position:
             width: 36
             height: 3
             positionX: 1
             positionY: 1
-          componentId: text-box-fd47d897-c8d6-55f7-ab2b-2ad4d26b75f9
-        - id: 834462b4-adc1-5d1a-b033-1bac5f7f562a
+          componentId: text-box-0d332462-1811-5b96-8f60-7ffc1b00ca3b
+        - id: ae972c86-13dd-5619-aaed-df9348e4e3b1
           position:
-            width: 28
-            height: 7
+            width: 7
+            height: 8
             positionX: 1
             positionY: 4
-          componentId: kpi-list-453ce250-24fe-5a89-a0be-549a7d240e9b
-        - id: 0c563a33-69a7-517d-9ad7-475f0fefa86b
+          componentId: kpi-list-ecc6e5ad-bab7-57f7-95e1-5b63a5409818
+        - id: a42451de-a9fc-5013-8a89-876a9a7c3425
+          position:
+            width: 9
+            height: 8
+            positionX: 8
+            positionY: 4
+          componentId: kpi-list-95683ee0-b960-5ada-9bb9-67d2d651533b
+        - id: bfee5a7b-5602-5a23-a6ae-2113116cda00
           position:
             width: 8
-            height: 7
-            positionX: 29
+            height: 8
+            positionX: 17
             positionY: 4
-          componentId: text-box-e374489f-8cc0-5450-8fbf-9fa6b01b03a8
-        - id: ad4ca319-ce2c-556e-bcba-884d3aa7ec16
-          position:
-            width: 14
-            height: 4
-            positionX: 1
-            positionY: 11
-          componentId: text-box-aebd487b-6ac0-5a35-9f9b-81789544fdcf
-        - id: 62ce5938-9871-59be-8001-b70b5b587190
-          position:
-            width: 22
-            height: 4
-            positionX: 15
-            positionY: 11
-          componentId: text-box-1da3e2f2-2ab2-5f8d-b531-44c582b8a15e
-        - id: e4b4aca4-d6ee-511b-ba11-78446534b20d
-          position:
-            width: 10
-            height: 8
-            positionX: 1
-            positionY: 15
-          componentId: kpi-list-6d5b955b-44f7-5116-b74f-611708567068
-        - id: 56a8241a-71f2-507c-9a10-79f97b5d8bc5
-          position:
-            width: 4
-            height: 8
-            positionX: 11
-            positionY: 15
-          componentId: text-box-84618f62-6f27-5c07-b31a-fccc8a7884cd
-        - id: fbe5cf2c-3714-5cb7-91b2-30974a10cb13
-          position:
-            width: 22
-            height: 8
-            positionX: 15
-            positionY: 15
-          componentId: kpi-list-5420203b-4633-575b-b775-bdf19cc8701e
-        - id: 6959ee1c-0728-55ca-862c-c07d91d71f83
-          position:
-            width: 14
-            height: 34
-            positionX: 1
-            positionY: 23
-          componentId: columns-line-chart-654508a9-da63-5367-842d-7038f0415bab
-        - id: 8dc08e27-1700-542e-9140-eda0e5f774fc
+          componentId: text-box-deef8952-7ec7-571c-994f-91beb324af7b
+        - id: f01af33e-b3f1-509c-a17d-9c61b6122638
           position:
             width: 12
-            height: 34
-            positionX: 15
-            positionY: 23
-          componentId: columns-line-chart-cfc28b6e-11db-53c3-8438-dff45d534b29
-        - id: e69d0ed5-7d7d-537e-9ed5-5c337afcd4c1
+            height: 8
+            positionX: 25
+            positionY: 4
+          componentId: kpi-list-b154b890-3ae8-5f0e-b7b4-4b7e258555ca
+        - id: 55ece6df-f687-55ed-ac45-339fac716896
           position:
-            width: 10
-            height: 17
-            positionX: 27
-            positionY: 23
-          componentId: text-box-689ad309-1862-546a-b6c2-2aef987b49e5
-        - id: f047bf44-6daf-5827-9732-9db5a7a99eaf
+            width: 18
+            height: 4
+            positionX: 1
+            positionY: 12
+          componentId: text-box-461913e5-1fba-5687-9b50-fa5f7e4a94cc
+        - id: 0be7ebc7-0c8a-5580-adf2-b001d915edd7
           position:
-            width: 10
-            height: 17
-            positionX: 27
-            positionY: 40
-          componentId: text-box-a56e48fc-6d3a-5983-a6e1-244be9c4a598
-        - id: 839c191f-caae-5bc3-a2d3-3565f1ab0712
+            width: 18
+            height: 4
+            positionX: 19
+            positionY: 12
+          componentId: text-box-141e5fb6-4d11-5663-9cf3-29e7d822982a
+        - id: cac6dd1e-10ad-5bbd-b289-53fd8c0abdb5
+          position:
+            width: 18
+            height: 8
+            positionX: 1
+            positionY: 16
+          componentId: kpi-list-369de107-ddda-599e-b306-d3f248054169
+        - id: d62c9d0c-7a2d-5fbd-8057-53b83555867b
+          position:
+            width: 18
+            height: 8
+            positionX: 19
+            positionY: 16
+          componentId: kpi-list-d28a9b8d-0fa2-57ef-83ba-12fc7f213b37
+        - id: 2db72dd6-7e95-5759-b6a9-c9d858cc3fdb
+          position:
+            width: 18
+            height: 4
+            positionX: 1
+            positionY: 24
+          componentId: text-box-6867c2e7-0c19-5717-b0b9-766354ddea89
+        - id: 74fdaa59-7925-5a31-b6ed-4763db2fa5f1
+          position:
+            width: 18
+            height: 4
+            positionX: 19
+            positionY: 24
+          componentId: text-box-b9a9b9df-da38-5e9f-b34b-a1ff8b94c822
+        - id: 4261dc1b-2602-5fd2-abd1-e872ef9bd632
+          position:
+            width: 18
+            height: 36
+            positionX: 1
+            positionY: 28
+          componentId: columns-line-chart-9b51ce99-b9ac-5aac-b889-a1e416b6cc8f
+        - id: 700782ce-5b96-5521-85e2-73afa42cc51b
+          position:
+            width: 9
+            height: 36
+            positionX: 19
+            positionY: 28
+          componentId: columns-line-chart-5ca642d8-7933-5170-b73b-a74171e34a95
+        - id: b1fcc1ad-767d-501c-af78-c4ee0836b94f
+          position:
+            width: 9
+            height: 18
+            positionX: 28
+            positionY: 28
+          componentId: text-box-261d46d8-7b5d-52f5-91d4-a32a98f1b180
+        - id: 4bf11499-2a6b-50ca-a184-da6c73f8439a
+          position:
+            width: 9
+            height: 18
+            positionX: 28
+            positionY: 46
+          componentId: text-box-367d8290-bb41-5672-8692-7a4cd230bc65
+        - id: 6400af6d-48eb-5aaa-8dae-e67da6afdc04
           position:
             width: 36
-            height: 30
+            height: 32
             positionX: 1
-            positionY: 57
-          componentId: columns-line-chart-890b320e-abe9-58a3-8fbe-c68457a03356
-        - id: 8643a2ad-cc31-5e16-9b36-599dd413f429
+            positionY: 64
+          componentId: columns-line-chart-16a44f82-5c16-5143-a3c7-576be43588b1
+        - id: e31eabfe-1958-5520-9dca-b133d1fb7a0c
           position:
             width: 36
-            height: 30
+            height: 32
             positionX: 1
-            positionY: 87
-          componentId: columns-line-chart-bfeba141-b15c-5181-9ae7-3592e5eb7d5e
-      - id: 4ccd3355-54a1-5edc-9dad-02f6566a52aa
+            positionY: 96
+          componentId: columns-line-chart-17f1e0c3-d2c2-5e23-9383-9326261697fb
+      - id: 619c8056-29b7-56b8-902f-036dc82cd500
         name: Fase 2 · Valoración
         filters: []
         elements:
-        - id: 355d4ad9-79ad-5ca4-9457-adbb706a1bc1
+        - id: d7613144-cbd9-52f2-96af-cfa5b78b3598
           position:
             width: 36
             height: 3
             positionX: 1
             positionY: 1
-          componentId: text-box-57695eb1-365c-5c35-a4ea-05a1d9cd58b4
-        - id: 2060875b-98a1-5465-9324-612e829848a9
+          componentId: text-box-6e2fc68d-9fa5-5fe8-8f93-fa04fa0dd81f
+        - id: a1b90383-1ae2-52da-8ff6-ae855c5fb355
           position:
-            width: 24
-            height: 7
+            width: 12
+            height: 8
             positionX: 1
             positionY: 4
-          componentId: kpi-list-6bcfe020-831b-567b-b686-887e0ceba7b3
-        - id: fdd4b62b-9270-5183-b36f-88bb1541e868
-          position:
-            width: 12
-            height: 7
-            positionX: 25
-            positionY: 4
-          componentId: text-box-82519ff3-4fd1-5971-bebf-6ceedbf86c42
-        - id: 57af5aa8-1523-52f6-bcde-0917b881a669
-          position:
-            width: 12
-            height: 4
-            positionX: 1
-            positionY: 11
-          componentId: text-box-6e79f4ff-1b42-5dfe-b4ee-e016d05e6b3e
-        - id: 6577e953-8294-58ec-addf-9fc9012e4c98
-          position:
-            width: 12
-            height: 4
-            positionX: 13
-            positionY: 11
-          componentId: text-box-81ad77ce-7df5-5404-82e1-1850a4034183
-        - id: 87c08d10-4139-52f2-9df4-23524a6e2781
-          position:
-            width: 12
-            height: 4
-            positionX: 25
-            positionY: 11
-          componentId: text-box-24744588-9640-5c15-97b5-5f64d24018e4
-        - id: 02c60010-9d5a-516f-a3d5-aea9ddd135c5
-          position:
-            width: 12
-            height: 42
-            positionX: 1
-            positionY: 15
-          componentId: text-box-a2275385-c3d5-5572-bcb8-ada6b8402e2f
-        - id: 2edf1825-e0cd-511f-b437-559d8a924b49
+          componentId: text-box-9d4a9f59-b5c5-5989-a48d-f1b878dc165a
+        - id: 0530a344-be4f-5c31-a2ce-20544f492d37
           position:
             width: 12
             height: 8
             positionX: 13
-            positionY: 15
-          componentId: kpi-list-3d230088-a49b-5888-8373-e31b50f14b2e
-        - id: a299ae30-160b-5327-bc7b-5b6e8b512938
+            positionY: 4
+          componentId: kpi-list-c28fa49d-40b5-5f3e-843c-d6f3968984cb
+        - id: ed719247-e7de-5a06-b687-65199add9bd9
           position:
             width: 12
-            height: 42
+            height: 8
             positionX: 25
-            positionY: 15
-          componentId: text-box-bae104d6-75a8-5a5d-b082-eea8e9712fbc
-        - id: 123af4d8-fbec-55d3-b132-68eca41edbc4
+            positionY: 4
+          componentId: kpi-list-afb0cecd-be20-52ce-8a3d-b8642f62c565
+        - id: 415f3062-431e-5a77-9a65-303167d4b5d1
+          position:
+            width: 12
+            height: 4
+            positionX: 1
+            positionY: 12
+          componentId: text-box-6bc0f1e8-2fa7-581c-b141-37d025c33268
+        - id: 3aa33a8f-c508-5cea-b6e4-17104c1b11d6
+          position:
+            width: 12
+            height: 4
+            positionX: 13
+            positionY: 12
+          componentId: text-box-98eefc7c-fed8-568d-9883-b9dbaab74c46
+        - id: ad829256-1d46-5903-bd2e-69f2db92b240
+          position:
+            width: 12
+            height: 4
+            positionX: 25
+            positionY: 12
+          componentId: text-box-06bdadf0-5138-551c-bd91-9054800d6c27
+        - id: 19ce64f5-38a1-55f4-bcad-0d42d696dfee
+          position:
+            width: 12
+            height: 48
+            positionX: 1
+            positionY: 16
+          componentId: text-box-e0a02e50-8238-5eec-b07e-b8b2f5eb962d
+        - id: 08437de4-346a-5016-9ce5-f6fd626ad39c
+          position:
+            width: 12
+            height: 8
+            positionX: 13
+            positionY: 16
+          componentId: kpi-list-14a66c1b-2375-5e28-b7fd-d0d5f0b27bd7
+        - id: 6cfa38b5-8534-5af6-b98c-183dde42aa09
+          position:
+            width: 12
+            height: 48
+            positionX: 25
+            positionY: 16
+          componentId: text-box-0c5f3a0f-642e-5817-9dff-230abbd30e60
+        - id: 6ac793d1-e0c3-5315-bdc8-f59cf5a5c911
+          position:
+            width: 12
+            height: 6
+            positionX: 13
+            positionY: 24
+          componentId: kpi-list-4391f65d-983b-5381-9dbd-13a6cca01295
+        - id: c787fe68-d0a0-529d-8785-a986ea715e49
           position:
             width: 12
             height: 34
             positionX: 13
-            positionY: 23
-          componentId: columns-line-chart-210ad98e-6b47-5c7c-a12d-6f8a86de299a
-        - id: d68e2195-b764-5ac9-b8e7-3ae1dccb9373
+            positionY: 30
+          componentId: columns-line-chart-86962504-6178-5485-8bb7-4749ddad1a64
+        - id: 9abb02a3-aae1-50cf-abf1-b06c2adb0ab0
           position:
             width: 36
-            height: 10
+            height: 9
             positionX: 1
-            positionY: 57
-          componentId: text-box-acd6200e-cd77-58b4-b384-5c87e7a4d1c0
-        - id: 6ba636c7-7029-5485-ad21-af6c512f2046
+            positionY: 64
+          componentId: text-box-d1c4c0a4-c099-5315-be2d-c394c056ef15
+        - id: a6a369de-4faa-55b7-9fdc-641a18f5538c
           position:
             width: 36
-            height: 5
+            height: 6
             positionX: 1
-            positionY: 67
-          componentId: text-box-b7dfe944-abd0-59ef-9edc-2a797e85c5cd
-        - id: 235e941d-a0dc-5c49-8528-00adbcc3ec42
+            positionY: 73
+          componentId: text-box-a5f69209-1f7a-54b4-b134-b1a2eedbd034
+        - id: 5130e68d-ef88-5537-b5cb-072f1e3e915f
           position:
-            width: 24
+            width: 36
             height: 8
             positionX: 1
-            positionY: 72
-          componentId: kpi-list-e3fd0c47-2430-513c-8147-717e309889e3
-        - id: 60b96594-6015-52a5-a906-7ed0a508a242
+            positionY: 79
+          componentId: kpi-list-e2334528-78ab-50d0-bbe4-6c7ca74d76f9
+        - id: 8090ff35-670d-56b6-b566-13ae531354cd
           position:
-            width: 12
+            width: 36
             height: 8
-            positionX: 25
-            positionY: 72
-          componentId: text-box-81915f0f-aa35-53ad-8ae7-1b5f77934e94
-      - id: 35514b1a-cda0-5f9b-8aac-dfc9219c92e8
+            positionX: 1
+            positionY: 87
+          componentId: text-box-9c02e5ff-c1bc-55c2-9fc3-f72a191f65dc
+      - id: 0ddc277f-091c-5ac6-a9b2-8a21a53151a1
         name: Fase 3 · Resolución de PIA
         filters: []
         elements:
-        - id: 80a98f6c-11a4-5425-9e7a-8e09ce40c981
+        - id: db17a229-c4a0-53b9-9afe-920b41704191
           position:
             width: 36
-            height: 7
+            height: 6
             positionX: 1
             positionY: 1
-          componentId: text-box-741abf50-9192-5577-bc6e-0e97bd7621d4
-        - id: 69b30c05-1669-5d85-bbe7-0bbbb425decc
+          componentId: text-box-e19e756a-99f6-5a99-82f0-86db9b881881
+        - id: c60ef327-f594-5454-bdb2-8a2cb26575c1
           position:
             width: 12
             height: 4
             positionX: 1
-            positionY: 8
-          componentId: text-box-10f903e7-4bd6-5ec8-a480-e686f4a70ea5
-        - id: 7d3c71ef-319f-5e46-94e5-c95268b1c700
+            positionY: 7
+          componentId: text-box-c9fece3b-7c03-5367-8364-24e416aba42c
+        - id: 11249a64-e0cd-58f9-b0ab-5c3b945db44e
           position:
             width: 12
             height: 4
             positionX: 13
-            positionY: 8
-          componentId: text-box-b9dd7600-abb5-5a4a-bb05-b2085cf3c083
-        - id: 770e91bf-d2a8-5e6a-836c-d243bc72b60f
+            positionY: 7
+          componentId: text-box-4a3dccca-e4f7-5b07-874a-59d63f8b20c6
+        - id: d735f45b-6e4e-52d1-b66c-ee0cf39775ff
           position:
             width: 12
             height: 4
             positionX: 25
-            positionY: 8
-          componentId: text-box-3b0ff8c7-59a7-5e97-8d45-7e61d0bdf770
-        - id: 4941f65f-0beb-52e4-8088-e84e15128fcf
+            positionY: 7
+          componentId: text-box-81f16b9e-2d6c-5c34-a5a7-c8ad16f39bca
+        - id: 046304bc-eefe-5753-9c51-aff430862061
           position:
             width: 12
             height: 14
             positionX: 1
-            positionY: 12
-          componentId: text-box-148e3799-38c3-517e-9bcf-4b948acdf729
-        - id: 19944251-bf27-553e-aa6f-0ff5ca12ee66
+            positionY: 11
+          componentId: text-box-d313aa9a-6811-5e6e-8c6a-3d1cea7876b1
+        - id: 15b47569-67f1-5c8e-8ef9-4ade79237f58
           position:
             width: 12
             height: 14
             positionX: 13
-            positionY: 12
-          componentId: text-box-386ba7e3-8edc-5765-a670-a7412ffde13f
-        - id: bd370633-b17c-5faa-a186-4e0de1d15f0e
+            positionY: 11
+          componentId: text-box-383f78cf-561b-5d97-a80a-837b0f12d47a
+        - id: 3f7aaa6d-c267-5257-9c65-5eac7663e7c2
           position:
             width: 12
             height: 14
             positionX: 25
-            positionY: 12
-          componentId: text-box-bba55f69-6824-58b4-a17a-f690186e0e64
-        - id: 87b5c408-8a22-566d-8289-555a2ccb89f1
+            positionY: 11
+          componentId: text-box-8f7a961e-ebbc-5b9f-ba1b-27f582a8dd95
+        - id: b194d47f-07a0-59a7-820e-9ca4a029e1be
           position:
             width: 36
             height: 9
             positionX: 1
-            positionY: 26
-          componentId: text-box-40fbcb5a-72ba-507e-9a1a-4c9fa027b373
-        - id: bc5d0d6a-18e9-5d40-930c-ce64bb6764e9
+            positionY: 25
+          componentId: text-box-1b18d0eb-0573-56b8-aa39-2835caf463de
+        - id: 4e661aed-d3a5-5cdc-a935-8fce5b71741e
           position:
             width: 36
             height: 9
             positionX: 1
-            positionY: 35
-          componentId: text-box-c0e5c7fd-272e-5daa-a776-abd095a79d74
+            positionY: 34
+          componentId: text-box-69c02c80-0014-532a-806f-e8b1f1bffa05
       background: white
-      defaultTab: 6ae90f17-66be-5bd8-969c-0716c258425e
+      defaultTab: 1a70d9cf-f07b-5d1d-a36e-d50aa0d698d7
       displayName: FASE DEL PROCESO
       tabsVisible: true
