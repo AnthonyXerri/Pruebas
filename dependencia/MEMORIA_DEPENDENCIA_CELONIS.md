@@ -168,6 +168,18 @@ LEFT JOIN "SIDM_ESTADO_SOLICITUD" e ON RIGHT(e."CDESTADO", 2) = RIGHT(h."CDESTAD
 | Fase 3 · PIA | No: faltan las tablas del PIA |
 | Filtros de territorio y edad | No: falta la tabla de personas |
 
+## 8b. Auditoría completa del mockup CU1 (04/11, leyendo el código entero)
+El mockup tiene más de lo que se ve en la vista por defecto:
+- **Cabecera global:** solicitudes activas, plazo del proceso completo (suma de las fases 1–3), SLA global ≤180 d, altas al mes, personas por fase, tiempo E2E por fase (del primer al último cambio de estado dentro de la fase), % del equipo y previsión de carga.
+- **Fase 1:** grabadas (por fecha de grabación), plazo **FCSOLICITUD → FCALTA** (≤30 d), grabadas en plazo y fuera de plazo, pendientes de grabar (bandeja), trabajadores propios o externos, media por persona, sobrecarga >115 %.
+- **Fase 2:** activos (y sin asignar), valorados (por fecha de **dictamen**), ≤120 d desde el alta, valoradores, variabilidad de grados BVD; valoración individual con hitos Citación → Fecha de valoración (no imputable) → Grabación → Dictamen.
+- **Fase 3 PIA:** resueltos, ≤180 d, técnicos, variabilidad de prestación por territorio y por técnico.
+- **Subsanación y AVC:** tasa (1 por expediente), número, expedientes en bucle de AVC, iteraciones, y tablas por motivo, territorio, origen y edad.
+- **Ciclo de vida (9 hitos):** Registro → Alta → Pendiente de citación → Citación → Fecha de valoración → Grabación → Dictamen → Comisión → Resolución del grado.
+- **Olvidos corregidos:** atributo `UsuarioAlta` (`IDALTA`, quien graba) e `IdSolicitante` (`IDSOLICITANTE`, para cruzar con personas); evento **`AltaSolicitudDependencia`** (`FCALTA`) además del registro.
+- **«Lo que tenemos» lo tenemos por estructura, no validado:** falta ver recorridos completos, confirmar que `FCMODI` es la entrada en el estado, que el histórico trae todos los cambios y que `IDMODI`/`IDALTA` son personas.
+- Faltas añadidas a la lista del grupo: bandeja pendiente de grabar, tipo de trabajador (propio/externo) y equipos, efectivos por fase, fechas de visita y de grabación de la valoración, asignación expediente → valorador, motivo de subsanación, tipo de resolución (desistimiento, caducidad, denegatoria) y grado.
+
 ## 9. SQL del modelo (validadas el 04/11 en «Pruebas Anthony»)
 
 Están en **`dependencia/sql/`**, listas para pegar en Objects & Events:

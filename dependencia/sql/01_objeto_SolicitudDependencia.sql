@@ -15,7 +15,9 @@ SELECT
     s."IT_TRASLADO"   AS "Traslado",
     s."ITEXTINGUIDO"  AS "Extinguido",
     s."NMREVISION"    AS "NumeroRevision",
-    CAST(s."IDSOLICITUD_ORIG_REVISION" AS VARCHAR) AS "IdSolicitudOriginal"
+    CAST(s."IDSOLICITUD_ORIG_REVISION" AS VARCHAR) AS "IdSolicitudOriginal",
+    s."IDALTA"        AS "UsuarioAlta",                          -- quien graba la solicitud (fase 1)
+    CAST(s."IDSOLICITANTE" AS VARCHAR) AS "IdSolicitante"        -- para cruzar con la tabla de personas
 FROM "SIDM_SOLICITUD" s
 LEFT JOIN "SIDM_ESTADO_SOLICITUD" e
        ON RIGHT(e."CDESTADO", 2) = RIGHT(s."CDESTADO", 2);
