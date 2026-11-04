@@ -1339,6 +1339,28 @@ table.eco-t td.neg{color:var(--cred);}
 .cmp-hd h3{font-size:13px;font-weight:700;color:var(--cnavy);margin:0 auto 0 0;display:flex;align-items:center;gap:5px;}
 .cmp-sub{font-size:11px;color:var(--cgy);margin:2px 0 8px;line-height:1.45;}
 .cmp-sub b{color:var(--cnavy);font-weight:600;}
+/* v27 · selector de los dos periodos, en la propia pestaña */
+.per-sel{display:flex;align-items:stretch;gap:12px;margin:10px 0 12px;flex-wrap:wrap;}
+.per{flex:1 1 300px;border:1px solid var(--cbd);border-top:3px solid var(--cnavy);border-radius:4px;padding:10px 12px 9px;background:#FAFAFB;}
+.per.p2{border-top-color:#D98324;}
+.per.p2.vacio{background:#fff;border-style:dashed;border-top-style:solid;}
+.per-h{display:flex;align-items:center;gap:7px;margin-bottom:8px;}
+.per-h b{font-size:12.5px;font-weight:700;color:var(--cnavy);}
+.per-h span{font-size:10.5px;color:var(--cgy);}
+.per-k{width:9px;height:9px;border-radius:2px;background:var(--cnavy);display:inline-block;}
+.per.p2 .per-k,.cmp-t th .pk.p2::before{background:#D98324;}
+.per-x{margin-left:auto;border:0;background:none;color:var(--blue);font-family:var(--f);font-size:11px;cursor:pointer;padding:0;}
+.per-x:hover{text-decoration:underline;}
+.per-f{display:flex;gap:8px;flex-wrap:wrap;}
+.per-f .fsel{flex:1 1 140px;}
+.per-f .fsel select{flex:1;min-width:0;}
+.per-r{font-size:11px;color:var(--cgy);margin-top:8px;line-height:1.4;}
+.per-r b{color:var(--cnavy);font-weight:600;}
+.per-r .per-av{color:#9A5B00;}
+.per-vs{align-self:center;font-size:10px;font-weight:700;color:var(--cgy);text-transform:uppercase;letter-spacing:.08em;}
+.cmp-t th .pk{display:inline-flex;align-items:center;gap:5px;font-weight:700;color:var(--cnavy);}
+.cmp-t th .pk::before{content:'';width:8px;height:8px;border-radius:2px;background:var(--cnavy);}
+.cmp-t th .pd{display:block;font-weight:400;font-size:10px;color:var(--cgy);margin-top:1px;}
 table.cmp-t th{white-space:normal;line-height:1.3;vertical-align:bottom;}
 table.cmp-t tr.grp td{background:#F7F8FA;font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--cgy);text-align:left;padding-top:8px;}
 table.cmp-t td .dl{display:block;font-size:10px;color:var(--cgy);font-weight:400;margin-top:1px;white-space:nowrap;}
@@ -1613,12 +1635,31 @@ table.cmp-t tr.sub td{font-size:11px;}
 <div class="tabpane" id="paneCmp">
   <div class="cmpw">
     <div class="cmp-blk">
-      <div class="cmp-hd"><h3>El periodo elegido frente a otro <i class="ii" data-t="Qué es: la cabecera en los dos periodos, con la diferencia en número y en %. De momento, sin reprocesos ni gestión económica.&#10;Ojo: si el indicador ya es un %, la diferencia va en puntos.">i</i></h3>
-        <div class="fsel mini"><span>Comparar desde</span><select id="cmpDesde2"></select>
-          <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
-        <div class="fsel mini"><span>hasta</span><select id="cmpHasta2"></select>
-          <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+      <div class="cmp-hd"><h3>Periodo 1 frente a periodo 2 <i class="ii" data-t="Qué es: la cabecera en los dos periodos, con la diferencia en número y en %. De momento, sin reprocesos ni gestión económica.&#10;Cómo se usa: elige el mes de inicio y el de fin de cada periodo.&#10;Ojo: si el indicador ya es un %, la diferencia va en puntos.">i</i></h3>
         <button class="btn-outline" id="cmpCSV1">&darr; Exportar a Excel</button></div>
+      <div class="per-sel">
+        <div class="per p1">
+          <div class="per-h"><i class="per-k"></i><b>Periodo 1</b><span>el de toda la pantalla</span></div>
+          <div class="per-f">
+            <div class="fsel mini"><span>Desde</span><select id="p1Desde"></select>
+              <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+            <div class="fsel mini"><span>Hasta</span><select id="p1Hasta"></select>
+              <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+          </div>
+          <div class="per-r" id="p1Res"></div>
+        </div>
+        <div class="per-vs">frente a</div>
+        <div class="per p2" id="p2Box">
+          <div class="per-h"><i class="per-k"></i><b>Periodo 2</b><span>con el que se compara</span><button type="button" class="per-x" id="p2Quitar">Quitar</button></div>
+          <div class="per-f">
+            <div class="fsel mini"><span>Desde</span><select id="cmpDesde2"></select>
+              <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+            <div class="fsel mini"><span>Hasta</span><select id="cmpHasta2"></select>
+              <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+          </div>
+          <div class="per-r" id="p2Res"></div>
+        </div>
+      </div>
       <div class="cmp-sub" id="cmpSub1"></div>
       <div class="tbl-wrap"><table class="mat cmp-t" id="cmpT1"></table></div>
     </div>
@@ -3144,15 +3185,23 @@ const celdaDif = x => x ? `<td class="dp">${x.fl} ${x.n}</td><td>${x.p || '—'}
 function renderComparativa(){
   const t1 = document.getElementById('cmpT1'), X = XCAB;
   const pa = `${fdate(P0)} – ${fdate(P1)}`;
+  /* bajo cada periodo, sus fechas exactas y cuántos meses tiene */
+  const nMes = n => n === 1 ? '1 mes' : `${n} meses`, n1 = F.hasta - F.desde + 1;
+  document.getElementById('p1Res').innerHTML = `${pa} · <b>${nMes(n1)}</b>` + (P1 >= HOY - 1 ? ' · hasta hoy' : '');
+  const p2r = document.getElementById('p2Res');
+  if (CMP){ const n2 = Math.abs(F.cmpHasta - F.cmpDesde) + 1;
+    p2r.innerHTML = `${fdate(CMP.p0)} – ${fdate(CMP.p1)} · <b>${nMes(n2)}</b>` + (n2 !== n1 ? ` · <span class="per-av">no dura lo mismo que el periodo 1</span>` : '') +
+      (CMP.corto ? ' · <span class="per-av">los datos empiezan el 01/01/2022</span>' : ''); }
+  else p2r.innerHTML = 'Elige el mes de inicio: el de fin se pone solo, con la misma duración que el periodo 1. Luego puedes cambiarlo.';
   cmpT1 = [];
   if (!CMP){
     document.getElementById('cmpSub1').innerHTML = '';
-    t1.innerHTML = `<tbody><tr><td class="vac">Elegid el mes de inicio y el de fin del periodo con el que comparar, aquí o en «Comparar desde» y «hasta», en los filtros de arriba.</td></tr></tbody>`;
+    t1.innerHTML = `<tbody><tr><td class="vac">Elegid arriba el periodo 2, con su mes de inicio y el de fin, para ver la comparación.</td></tr></tbody>`;
   } else {
     const pb = `${fdate(CMP.p0)} – ${fdate(CMP.p1)}`;
-    document.getElementById('cmpSub1').innerHTML = `Periodo elegido <b>${pa}</b> frente a <b>${pb}</b>` +
-      (CMP.corto ? ' · los datos empiezan el 01/01/2022: el periodo de comparación está incompleto' : '') + ' · con los mismos filtros de año, tipo y canal · de momento, sin reprocesos ni gestión económica.';
-    let h = `<thead><tr><th>Indicador</th><th>${pa}</th><th>${pb}</th><th>Diferencia</th><th>Variación</th></tr></thead><tbody>`;
+    document.getElementById('cmpSub1').innerHTML = `Periodo 1 <b>${pa}</b> frente a periodo 2 <b>${pb}</b>` +
+      ' · con los mismos filtros de año, tipo y canal · de momento, sin reprocesos ni gestión económica.';
+    let h = `<thead><tr><th>Indicador</th><th><span class="pk">Periodo 1</span><span class="pd">${pa}</span></th><th><span class="pk p2">Periodo 2</span><span class="pd">${pb}</span></th><th>Diferencia</th><th>Variación</th></tr></thead><tbody>`;
     CMP_FILAS.forEach(([g, fs]) => { h += `<tr class="grp"><td colspan="5">${g}</td></tr>`;
       fs.forEach(([k, n, sub]) => { const x = dif(k, X[k], CMP.X[k]);
         h += `<tr${sub ? ' class="sub"' : ''}><td class="nm">${n}</td><td>${fmtV(k, X[k])}</td><td>${fmtV(k, CMP.X[k])}</td>${celdaDif(x)}</tr>`;
@@ -3213,7 +3262,7 @@ function renderEvolucion(){
 }
 function cmpCSV1(){
   if (!CMP) return;
-  descargar('comparativa_de_periodos.csv', [['Bloque', 'Indicador', `${fdate(P0)} – ${fdate(P1)}`, `${fdate(CMP.p0)} – ${fdate(CMP.p1)}`, 'Diferencia', 'Variación (%)'], ...cmpT1]);
+  descargar('comparativa_de_periodos.csv', [['Bloque', 'Indicador', `Periodo 1 (${fdate(P0)} – ${fdate(P1)})`, `Periodo 2 (${fdate(CMP.p0)} – ${fdate(CMP.p1)})`, 'Diferencia', 'Variación (%)'], ...cmpT1]);
 }
 function cmpCSV2(){
   const head = ['Periodo']; EVOL_COL.forEach(c => head.push(c[1], c[1] + ' · diferencia con las mismas fechas del tramo anterior'));
@@ -3401,19 +3450,27 @@ function initUI(){
   /* v27 · comparar: solo mes de inicio y de fin. «Sin comparar» es la primera opción del inicio.
      Al elegir el inicio, el fin se pone para que dure lo mismo que el periodo de arriba; se puede cambiar */
   const CD = ['fCmpDesde','cmpDesde2'], CH = ['fCmpHasta','cmpHasta2'];
-  CD.forEach(id => document.getElementById(id).innerHTML = '<option value="">Sin comparar</option>' + opts.join(''));
-  CH.forEach(id => document.getElementById(id).innerHTML = opts.join(''));
+  CD.forEach(id => document.getElementById(id).innerHTML = `<option value="">${id === 'cmpDesde2' ? 'Elegir mes' : 'Sin comparar'}</option>` + opts.join(''));
+  CH.forEach(id => document.getElementById(id).innerHTML = '<option value="">—</option>' + opts.join(''));
   pintaCmp = () => {
     CD.forEach(id => document.getElementById(id).value = F.cmp ? F.cmpDesde : '');
-    CH.forEach(id => { const el = document.getElementById(id); el.value = F.cmpHasta; el.disabled = !F.cmp; el.closest('.fsel').classList.toggle('off', !F.cmp); });
-    document.getElementById('fCmpBox').classList.toggle('act', !!F.cmp); };
+    CH.forEach(id => { const el = document.getElementById(id); el.value = F.cmp ? F.cmpHasta : ''; el.disabled = !F.cmp; el.closest('.fsel').classList.toggle('off', !F.cmp); });
+    document.getElementById('fCmpBox').classList.toggle('act', !!F.cmp);
+    document.getElementById('p2Box').classList.toggle('vacio', !F.cmp);
+    document.getElementById('p2Quitar').style.display = F.cmp ? '' : 'none'; };
+  document.getElementById('p2Quitar').addEventListener('click', () => { F.cmp = ''; pintaCmp(); refresh(); });
+  /* periodo 1 de la pestaña: es el «Desde» y «Hasta» de arriba */
+  [['p1Desde', 'desde'], ['p1Hasta', 'hasta']].forEach(([id, k]) => { const el = document.getElementById(id);
+    el.innerHTML = opts.join(''); el.value = F[k];
+    el.addEventListener('change', e => { F[k] = +e.target.value; refresh(); syncF(); }); });
   const largo = () => F.hasta - F.desde;
   CD.forEach(id => document.getElementById(id).addEventListener('change', e => { const v = e.target.value;
     if (v === ''){ F.cmp = ''; }
     else { const nuevo = !F.cmp; F.cmp = 'otro'; F.cmpDesde = +v;
       if (nuevo || F.cmpHasta < F.cmpDesde) F.cmpHasta = Math.min(YM_HOY, F.cmpDesde + Math.max(0, largo())); }
     pintaCmp(); refresh(); }));
-  CH.forEach(id => document.getElementById(id).addEventListener('change', e => { F.cmpHasta = +e.target.value;
+  CH.forEach(id => document.getElementById(id).addEventListener('change', e => { if (e.target.value === ''){ F.cmp = ''; pintaCmp(); refresh(); return; }
+    F.cmpHasta = +e.target.value;
     if (F.cmpHasta < F.cmpDesde) F.cmpDesde = Math.max(YM0, F.cmpHasta - Math.max(0, largo()));
     pintaCmp(); refresh(); }));
   pintaCmp();
@@ -3504,7 +3561,7 @@ function initUI(){
     if (y + h > window.innerHeight - 8) y = e.clientY - h - 12;
     tip.style.left = x + 'px'; tip.style.top = y + 'px'; });
 }
-function syncF(){ document.getElementById('fDesde').value = F.desde; document.getElementById('fHasta').value = F.hasta; }
+function syncF(){ ['fDesde','p1Desde'].forEach(id => document.getElementById(id).value = F.desde); ['fHasta','p1Hasta'].forEach(id => document.getElementById(id).value = F.hasta); }
 
 initUI();
 renderHoja();
