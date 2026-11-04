@@ -18,6 +18,7 @@ Documento vivo. Se actualiza cada vez que se aprende o se decide algo. Última a
   - **CU1 · Reconocimiento del grado y PIA:** 1) Grabación (registro, alta, subsanación) · 2) Valoración (citación, visita, dictamen, comisión, resolución del grado) · 3) Resolución del PIA. Objetivos: 30 / 120 / 180 días (180 = plazo legal total).
   - **CU2 · Adjudicación de servicios comunitarios (EELL):** lista de espera → contacto → asignación → alta del servicio. Después del CU1. Sistemas SIDEMA y SAP.
 - **Mockup de referencia:** `mockups/MockupCU1_v2.html` («Cuadro de Mando de Gestión de Equipo · CU1», 01/10). El archivo `20261001_MineriaDeProcesos_DependenciaMockup.html` que tiene Anthony es idéntico.
+- **Canal:** grupo de Teams «Minería de Procesos - Dependencia» (creado por Andrés el 04/11) para pedir datos y resolver dudas.
 - **Equipo:** Andrés Esteban Zambrana Valle (lidera), Roberto Samir Astudillo Chehab (Celonis; hace PNC con Atlantix y discapacidad), Javi/Javier (natalidad), Javier Olmeda (soporte Celonis, para errores de extracción).
 
 ## 3. Celonis: dónde está cada cosa
@@ -190,4 +191,5 @@ Convenciones: `ID` y la relación `SolicitudDependencia` siempre con `CAST(... A
 - [ ] Roberto: ¿existe ya el objeto de solicitud de dependencia en Objects & Events? ¿Qué nombre usar?
 - [ ] ¿`IDMODI` es el usuario que hace el cambio?
 - [ ] Andrés: qué son AVC y RA; validar las fases; empezar el proceso en `FCREGENTRADA` (el plazo legal cuenta desde ahí: `FC_FIN_PLAZO` ≈ registro + 6 meses) y no en `FCALTA`; qué es `CDTIPO` = «RS».
+- [ ] 04/11: enviada al grupo la lista de lo que falta del mockup CU1 (grado, municipio, edad, tipo de valoración, canal, PIA, valorador, asignaciones, usuarios y equipos). Esperando respuesta.
 - [ ] Pedir tablas para lo que falta: personas (edad, municipio), asignaciones o valoradores, grado, PIA.
