@@ -3,7 +3,7 @@
 -- Fases: propuesta pendiente de validar con Andrés (AVC y RA por aclarar).
 SELECT
     'CE_' || CAST(h."IDSOLICITUD" AS VARCHAR) || '_' || RIGHT(h."CDESTADO", 2)
-          || '_' || TO_CHAR(h."FCMODI", 'YYYYMMDDHH24MISS')   AS "ID",
+          || '_' || CAST(h."FCMODI" AS VARCHAR)               AS "ID",   -- TO_CHAR no existe en la validación de Objects & Events
     h."FCMODI"                                                AS "Time",
     CAST(h."IDSOLICITUD" AS VARCHAR)                          AS "SolicitudDependencia",
     RIGHT(h."CDESTADO", 2)                                    AS "CodigoEstado",
