@@ -168,6 +168,8 @@ LEFT JOIN "SIDM_ESTADO_SOLICITUD" e ON RIGHT(e."CDESTADO", 2) = RIGHT(h."CDESTAD
 | Fase 3 · PIA | No: faltan las tablas del PIA |
 | Filtros de territorio y edad | No: falta la tabla de personas |
 
+> **Mapeo definitivo, elemento a elemento: `dependencia/MAPEO_MOCKUP_CU1.md`** (inventario con el mockup abierto en un navegador: 8 filtros, 5 gráficos y 11 tablas).
+
 ## 8b. Auditoría completa del mockup CU1 (04/11, leyendo el código entero)
 El mockup tiene más de lo que se ve en la vista por defecto:
 - **Cabecera global:** solicitudes activas, plazo del proceso completo (suma de las fases 1–3), SLA global ≤180 d, altas al mes, personas por fase, tiempo E2E por fase (del primer al último cambio de estado dentro de la fase), % del equipo y previsión de carga.
