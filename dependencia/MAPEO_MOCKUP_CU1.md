@@ -92,3 +92,23 @@ Todo ❌: PIA resueltos, en plazo y fuera, tiempo E2E (≤180 d), técnicos (per
 
 ## Qué hay que pedir para los ❌
 Personas (municipio, nacimiento) · campo origen o canal · valoración (tipo, valorador, fechas de cita, visita y grabación, grado propuesto, zona) · resolución del grado (grado, tipo de resolución: desistimiento, caducidad, denegatoria) · motivo de subsanación · bandeja de registro pendiente de grabar · usuarios y equipos (tipo propio/externo, equipo, efectivos por fase) · asignación expediente → valorador · PIA completo (estados, fechas, prestación, login, requerimientos, llamadas).
+
+## Revisión del 05/11 (código entero: tooltips, definiciones (i), selectores, datos del JS)
+Además de lo anterior, hace falta:
+- **Catálogo de territorio:** municipio → mancomunidad de servicios sociales y zona (Metropolitana, Periferia), y distrito en Madrid capital. El tooltip dice que la mancomunidad se deriva del municipio informado en SIDEMA.
+- **Usuarios:** nombre, tipo (subcontrata/adscrito en grabación; propio/empresa externa en subsanación), rol en el PIA (gestión/tramitación, elaboración, supervisión/resolución), sede y territorio o zona.
+- **Efectivos por fase:** en grabación y PIA son una estimación del equipo gestor; en valoración salen de SIDEMA. Total de referencia del mockup: 280.
+- **PIA:** estados «Pendiente de propuesta», «Pendiente de resolución» y «PIA resuelto y notificado»; fecha de consulta al beneficiario (inicio del plazo imputable); catálogo de prestaciones (residencia, SAD, teleasistencia, prestación por cuidados, centro de día, prestación vinculada, promoción de la autonomía, otros).
+- **Claves:** cada tabla nueva tiene que enlazar con `IDSOLICITUD`.
+- **Producción:** tablas completas, no muestras del entorno de pruebas.
+
+Lo que el mockup ya define (no hay que preguntarlo):
+- Carga = frente a la media del equipo. Baja < 70 %, media 70–115 %, alta 115–130 %, sobrecarga > 130 %. Sobrecargado: > 115 %.
+- Sesgo de criterio: > 2σ de la media del equipo.
+- Inicio de los plazos: fase 1, solicitud → grabación; fase 2, desde el alta (120 d); PIA, solicitud → resolución (180 d).
+- Perfil del tramitador PIA: con la media del equipo de % de requerimiento (24 %) y de llamadas (2,1).
+
+Definiciones del mockup que la View tiene que respetar:
+- **Altas / mes:** media mensual de grabadas en el periodo.
+- **Tiempo E2E:** del primer al último cambio de estado dentro de la fase.
+- **Personas involucradas:** efectivos de la fase.
