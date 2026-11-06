@@ -16,9 +16,15 @@ Anthony (Madrid Digital, primera vez con Celonis) está montando en **Celonis St
 ## 2. Modelo de datos en Celonis (lo que funciona en PQL)
 
 - Objeto: **`"o_custom_SolicitudDependencia"`** con atributos `ID`, `NumeroSolicitud`, `FechaSolicitud`, `FechaRegistroEntrada`, `FechaAlta`, `FechaFinPlazo`, `FechaBaja`, `CodigoEstadoActual`, `EstadoActual`, `TipoSolicitud`, `Urgente`, `Traslado`, `Extinguido`, `NumeroRevision`, `IdSolicitudOriginal`, `UsuarioAlta`, `IdSolicitante`.
-- Eventos: **a través del event log `"el__EventosDependencia"`** (perspectiva «Dependencia», event log EventosDependencia, objeto principal SolicitudDependencia, eventos Registro, Alta y CambioEstado). Columnas comprobadas: `TIMESTAMP`, `ACTIVITY`, `CodigoEstado`. `Usuario` no comprobada.
+- Eventos: **a través del event log `"el__EventosDependencia"`** (perspectiva «Dependencia», event log EventosDependencia, objeto principal SolicitudDependencia, eventos Registro, Alta y CambioEstado). Columnas (comprobadas en el KM el 06/11): `ID`, `ACTIVITY`, `TIMESTAMP`, `CodigoEstado`, `Estado`, `Fase`, `Usuario`, `SolicitudDependencia_ID`, `LEAD_OBJECT_ID`, `epoch`, `_CELONIS_CHANGE_DATE`.
 - Las tablas `"e_custom_…"` existen pero **no están conectadas** al objeto (PU_MIN da «tables are not connected»): no usarlas.
-- En el editor de datos aparece también un «SolicitudDependencia Event Log»; no se ha usado.
+- El KM tiene también **`"el_custom_SolicitudDependencia"`** («SolicitudDependencia Event Log»), con las mismas columnas y marcado como **Default**. No se usa: en los PQL, nombrar siempre `"el__EventosDependencia"` de forma explícita.
+
+### Revisión en el navegador (06/11, solo lectura)
+- **Objects & Events** (pool «OCPM DataPool VALIDACION y PRODUCCION»): objeto `SolicitudDependencia` con 17 atributos tipados (ID String PK; fechas Datetime; resto String) y etiqueta Dependencia. Eventos relacionados («involves one»): `RegistroEntradaDependencia` (ID, Time), `AltaSolicitudDependencia` (ID, Usuario, Time) y `CambioEstadoDependencia` (ID, CodigoEstado, Estado, Fase, Usuario, Time).
+- Perspectiva «Dependencia»: 1 objeto, 1 event log, data model **Successful** (última ejecución 06/11 07:17), enlazada al paquete Dependencia (Draft) como `test:perspective_custom_Dependencia`.
+- **Ojo:** en la lista de transformaciones, `SolicitudDependencia` y `CambioEstadoDependencia` se ejecutaron el 06/11 a las 07:15, pero `RegistroEntradaDependencia` y `AltaSolicitudDependencia` salen **«Not executed»**. La View sigue mostrando eventos. Comprobar con un recuento por `ACTIVITY` y, si faltan, preguntar a Roberto.
+- Studio: 3 cambios sin versionar (contador de Create version). No se ha tocado.
 - Datos cargados (entorno de pruebas): **200 solicitudes** (100 de 2007 y 100 del 1.er semestre de 2025, metidas con INSERT por Anthony), **399 eventos** (registro + alta; una solicitud sin fecha de registro), **0 cambios de estado** porque el histórico local es de otras solicitudes. Por eso subsanación, AVC, citación, dictamen y grado salen a 0 o «–».
 
 ## 3. Lecciones de PQL en esta View (importante)
@@ -67,7 +73,7 @@ Estábamos **dejando perfecto el gráfico de plazos de la fase 1**. Sus Settings
 2. Tablas «Detalle por Trabajador — Equipo de Grabación» (Trabajador `UsuarioAlta`, Expedientes, Carga % frente a la media, Plazo medio, vs equipo, Subsanaciones, Estado: crítico > 115 %, subcarga < 70 %) y «Equipo de Subsanación» (usuario del evento en estados 60/30/25 y 05/20/15).
 3. KPI días bloqueado en subsanación.
 4. **Interactions:** que la cabecera solo escuche los filtros comunes y que los filtros de cada fase no se queden puestos en las otras.
-5. Fases 2 y 3: barras de filtros (variables `objetivo_f2`, `objetivo_f3`), revisar KPIs y gráficos, tabla «Ver por expediente» con los 9 hitos.
+5. Fases 2 y 3: barras de filtros (variables `objetivo_f2`, `objetivo_f3`), revisar KPIs y gráficos, tabla «Ver por expediente» con los 9 hitos. Visto el 06/11: los Input box de objetivo ya están (120 y 180), pero **el bloque «ESTA FASE» de las fases 2 y 3 es una copia del de la fase 1** (6 personas, 77 d, +47 d, Baja, 3 y 6): hay que cambiar sus PQL o dejarlos como «pendiente de datos». En la fase 2 hay además un hueco grande en blanco, un bloque «Previsión carga» repetido dentro de «Variabilidad de criterio BVD» y textos cortados en los hitos.
 6. **Cargar el histórico de las mismas 100 solicitudes de 2025** (lo que enciende subsanación, AVC, citación, dictamen, grado, plazo total y SLA): en «Pruebas Anthony», tabla `SIDM_HIST_ESTADO`, filtro `IDSOLICITUD IN (…)` por **lotes de 10** (el Preview solo trae 100 filas; si un lote devuelve justo 100, partirlo). Anthony tiene el fichero de lotes (se le envió el 05/11; los IDs **no** están en el repo). Me pega el Preview → genero `INSERT INTO "SIDM_HIST_ESTADO"` en el scratchpad → él lo ejecuta como hizo con `SIDM_SOLICITUD` → recargar.
 
 ## 6. PQL listos para usar
