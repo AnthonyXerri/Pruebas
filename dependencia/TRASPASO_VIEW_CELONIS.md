@@ -10,7 +10,7 @@ Anthony (Madrid Digital, primera vez con Celonis) está montando en **Celonis St
 
 - Ruta: **Studio > Implementación > Dependencia** → «Dependencia View» y el Knowledge Model `dm_test_perspective_custom_dependencia-km` (vacío; no se toca sin Roberto).
 - **Ahora lo hace desde el editor visual, NO por YAML** (lo pidió él). Le guío **paso a paso**: qué hacemos, por qué, cómo, qué debería ver. Un paso cada vez; él manda capturas.
-- **No puedo controlar su navegador** desde la sesión en la nube (lo preguntó dos veces). Si quisiera, haría falta Claude in Chrome o uso del ordenador en local, y consultarlo antes con Roberto/seguridad (es el Celonis del cliente).
+- Desde la sesión en la nube no se puede controlar su navegador. **El 06/11 se trabajó en local con Claude in Chrome** (Anthony lo pidió): solo editor visual y lectura del DOM; leer la View por API lo bloquea el clasificador de permisos.
 - Nada de **Create version** ni **Deploy** sin Roberto. En «Pruebas Anthony» (tarea de extracción), salir siempre con **Discard**.
 
 ## 2. Modelo de datos en Celonis (lo que funciona en PQL)
@@ -37,44 +37,55 @@ Anthony (Madrid Digital, primera vez con Celonis) está montando en **Celonis St
 - Fechas de referencia sobre el último dato (`PU_MAX(CONSTANT(), …)`) mejor que `TODAY()` mientras haya muestras antiguas.
 - Un filtro (desplegable o fechas) **filtra toda la View**, aunque esté dentro de una pestaña. Pendiente de configurar en **Interactions** qué escucha cada componente.
 - El placeholder de un Input box no se ve si la variable tiene valor por defecto: se usa un Text box como etiqueta.
+- Un KPI de texto (Previsión, Estado) **sin agregación** devuelve una fila por expediente: envolverlo en un `CASE` sobre agregados (`COUNT`, `AVG`…).
+- Para «pendiente de datos» sin romper el KPI: un comentario `/* Pendiente de datos: … */` y una expresión agregada que da nulo (`AVG(CASE WHEN "o_custom_SolicitudDependencia"."ID" IS NULL THEN 0.0 END)`). Sale «–» y queda el PQL documentado.
+- Formato de porcentaje: **Rounded con unidad «%»** si el PQL ya multiplica por 100 (el formato «Percentage» vuelve a multiplicar).
+- Nunca números fijos de objetivo en los PQL (había `120` en el gráfico y KPIs de la fase 2): siempre `${objetivo_dias}`, `${objetivo_f2}`, `${objetivo_f3}`.
+- Un componente vacío (sin filas) muestra «There's data missing» en rojo. Con los datos de prueba pasa en todo lo que depende de cambios de estado (47, 90/34/36, 60/30/25…). No es un error de PQL.
 
-## 4. Cómo está la View ahora (según sus capturas del 05–06/11)
+### Trucos del editor (Studio)
+- Abrir el PQL de cada KPI: pinchar el componente y luego el chip del KPI en Settings. El botón `</>` del panel abre el editor de todo el componente (en gráficos y tablas, pinchando la cabecera de cada columna del Preview se cambia de métrica).
+- **Done no cierra** si el Preview dice «Data requirements … not met»: antes, Ctrl+Enter para ejecutar.
+- Mover componentes: arrastrar el asa «Move Component» (arriba a la izquierda del componente seleccionado). Se puede soltar encima de otro; algunos huecos el editor no los acepta.
+- Reordenar columnas con teclado: foco en el chip, Espacio, flechas **de una en una**, Espacio.
+- Guardar con **Save** (borrador). Cancelar un editor con cambios pide «Close Editor» y descarta todo lo del editor.
+
+## 4. Cómo está la View ahora (revisada en el navegador el 06/11, guardada como borrador)
 
 **Cabecera (fuera de las pestañas):** logo de la Comunidad de Madrid + texto de la DG · Solicitudes activas (199) · Plazo proceso completo («–») · Cumplimiento SLA global y Fuera de plazo («–») · Altas / mes (29, media del periodo) y vs mes anterior. Los «–» necesitan el histórico (fecha de resolución del grado).
 
 **Título** «Cuadro de Mando de Gestión de Equipo» y **barra de filtros común:** Periodo (Date range sobre `"o_custom_SolicitudDependencia"."FechaAlta"`, display name «Periodo») · Territorio · Edad (marcadores «Pendiente de datos»). Planeados también: botón **Limpiar** y KPI **Actualizado** (`MAX("el__EventosDependencia"."TIMESTAMP")`).
 
 **Contenedor con 3 pestañas:**
-- **Fase 1 · Grabación de solicitudes:**
+- **Fase 1 · Grabación de solicitudes** (completa con los datos actuales):
   - Filtros propios: Estado (4 grupos), Origen (marcador), Objetivo (Input box → `objetivo_dias`).
-  - «ESTA FASE»: Personas involucradas (6), Tiempo E2E (77 d), vs objetivo, % del equipo total (pendiente), Previsión carga (Baja), Entran/sem, Resuelven/sem.
-  - Plazos de tramitación: Solicitudes grabadas 200 · en plazo 97 · fuera 103 · Pendientes de grabar 0. **Ya leen `${objetivo_dias}`.**
-  - Gráfico «↑ Solicitudes grabadas: dentro vs fuera del plazo objetivo» (columnas apiladas + líneas Plazo medio y Objetivo SLA, objetivo con `${objetivo_dias}`).
-  - Subsanaciones y AVC: Tasa, Número, En bucle, Iteraciones (a 0 hasta cargar el histórico).
-  - Gráfico AVC · Reproceso en bucle (pendiente de pasar a tabla), textos «pendiente de datos» de Subsanación por motivo y Flujo por atributo.
-  - Detalle por Trabajador — Equipo de Subsanación (da «There's data missing»: no hay histórico) y Equipo de Grabación (gráfico; pendiente de pasar a tabla).
-- **Fase 2 · Valoración:** filtros Estado (8 estados, PQL abajo), Tipo de valoración y Resolución de grado (marcadores), Objetivo (`objetivo_f2`, planeado). Contenido del YAML v2 (KPIs de plazos por dictamen, hitos ① a ⑨, pendientes).
-- **Fase 3 · Resolución de PIA:** filtros Estado y Tipo de prestación (marcadores), Objetivo (`objetivo_f3`, planeado). Todo «Pendiente de datos».
+  - «ESTA FASE»: Personas involucradas, Tiempo E2E, vs objetivo, % del equipo total (pendiente), Previsión carga, Entran/sem, Resuelven/sem.
+  - Plazos de tramitación (KPIs y gráfico dentro/fuera de plazo con Plazo medio y Objetivo SLA): leen `${objetivo_dias}`.
+  - Subsanaciones y AVC (KPIs a 0 hasta cargar el histórico).
+  - **Tabla «AVC · Reproceso en bucle»** (antes gráfico): Nº de vueltas AVC (0 / 1 / 2 / 3+, `PU_COUNT` de los estados 05/20/15) · Exp. · % · Plazo +. Ordenada por nº de vueltas.
+  - Textos «pendiente de datos»: Subsanación por motivo y Flujo por atributo.
+  - **Detalle por Trabajador — Equipo de Grabación** (arriba, como en el mockup; antes gráfico): Trabajador (`UsuarioAlta`) · Expedientes · Carga (% frente a la media del equipo) · Plazo medio · vs equipo · Subsanaciones · Estado (Crítico — sobrecarga > 115 %, Subcarga — reasignar < 70 %, Óptimo). Ordenada por Carga.
+  - **Detalle por Trabajador — Equipo de Subsanación** (debajo): Trabajador (`Usuario` del evento) · Exp. subsanados (60/30/25) · Subsanaciones/día · AVC en bucle · Carga · Estado («Sin subsanaciones» si 0). Ordenada por Carga. **Hoy sale vacía**: no hay cambios de estado en los datos de prueba.
+- **Fase 2 · Valoración:**
+  - «ESTA FASE» con PQL propios (ya no es copia de la fase 1): Personas involucradas (usuarios distintos en eventos de fase 2a/2b; aproximación por el usuario que modifica), Tiempo E2E (alta → grado resuelto 90/34/36), vs objetivo (`- ${objetivo_f2}`), Entran/sem y Resuelven/sem (últimas 4 semanas sobre el último dato), Previsión (Alta/Media/Baja ±10 %).
+  - Borrados los bloques repetidos (Previsión dentro de Variabilidad BVD, Tiempo E2E dentro de Plazos, texto Personas en Productividad) y subido el contenido para cerrar el hueco. Queda un hueco pequeño encima de «% en plazo / % fuera» (el editor no deja moverlo).
+  - Gráfico «Expedientes valorados: dentro vs fuera del plazo objetivo» (por mes de dictamen, estado 47) y KPIs «% en plazo / % fuera»: **ahora con `${objetivo_f2}`** (tenían 120 fijo). Salen «There's data missing» o «–» hasta que haya histórico.
+  - Hitos ① a ⑨, ⑤ Fecha de valoración y «Detalle por Trabajador — Valoración» como textos «pendiente de datos».
+- **Fase 3 · Resolución de PIA:**
+  - «ESTA FASE»: Entran/sem = grados resueltos en las últimas 4 semanas / 4 (lo que entra en PIA). El resto, marcadores con comentario `/* Pendiente de datos: … */` que dan «–» (login del técnico PIA, fecha de resolución de PIA…); vs objetivo ya con `${objetivo_f3}`.
+  - Contenido subido para cerrar el hueco grande.
 
 ## 5. Dónde nos quedamos (siguiente paso exacto)
 
-Estábamos **dejando perfecto el gráfico de plazos de la fase 1**. Sus Settings tienen: Dimensions (Mes de grabación), Metrics (Grabadas en plazo, Grabadas fuera de plazo, Plazo medio (días), Objetivo SLA 30d), Tooltips, Annotation lines, Data Settings, Alternative display options, Interactions, Axis settings, Coloring, Style. Pasos pendientes de ese gráfico:
-1. Renombrar la serie «Objetivo SLA 30d» → «Objetivo SLA» (y el KPI «vs objetivo 30d» → «vs objetivo»).
-2. Rojo (fuera de plazo) **encima** de la barra, como en el mockup: cambiar el orden de las métricas y comprobar.
-3. Axis settings: eje izquierdo «Solicitudes grabadas», derecho «Plazo (días)»; las dos líneas en el eje derecho.
-4. Coloring: en plazo azul o gris oscuro (#464C6A), fuera de plazo rojo, plazo medio negro o azul muy oscuro, objetivo rojo.
-5. Style: puntos en Plazo medio, objetivo discontinuo si existe.
-6. Formato del mes (`%b %Y`).
-7. Tooltip «% fuera de plazo» (PQL abajo).
-8. Subtítulo en un Text box: «El reparto se calcula comparando la fecha de solicitud con la fecha de grabación, no por el estado actual del expediente.»
+Todo lo anterior está **guardado con Save (borrador)**. No se ha hecho Create version ni Deploy (eso, con Roberto).
 
-**Después, en este orden:**
-1. Tabla «AVC · Reproceso en bucle» (PQL abajo) y borrar el gráfico.
-2. Orden como en el mockup: primero **Equipo de Grabación** y debajo **Equipo de Subsanación** (en la View están al revés). Tablas «Detalle por Trabajador — Equipo de Grabación» (Trabajador `UsuarioAlta`, Expedientes, Carga % frente a la media, Plazo medio, vs equipo, Subsanaciones, Estado: crítico > 115 %, subcarga < 70 %) y «Equipo de Subsanación» (usuario del evento en estados 60/30/25 y 05/20/15).
-3. KPI días bloqueado en subsanación.
+Pendiente, en este orden:
+1. **Cargar el histórico de las mismas 100 solicitudes de 2025** (enciende subsanación, AVC, citación, dictamen, grado, plazo total, SLA y la tabla de Subsanación): en «Pruebas Anthony», tabla `SIDM_HIST_ESTADO`, filtro `IDSOLICITUD IN (…)` por **lotes de 10** (el Preview solo trae 100 filas; si un lote devuelve justo 100, partirlo). Anthony tiene el fichero de lotes (los IDs **no** están en el repo). Me pega el Preview → genero `INSERT INTO "SIDM_HIST_ESTADO"` en el scratchpad → él lo ejecuta → recargar. Después, revisar que los «–» y los «There's data missing» se llenan.
+2. Con los datos nuevos que pidió el grupo (sección 8), cambiar los marcadores de las fases 2 y 3 (buscar el comentario `/* Pendiente de datos */` en cada PQL).
+3. Fase 2 · Personas involucradas: cambiar la aproximación por el valorador real cuando llegue.
 4. **Interactions:** que la cabecera solo escuche los filtros comunes y que los filtros de cada fase no se queden puestos en las otras.
-5. Fases 2 y 3: barras de filtros (variables `objetivo_f2`, `objetivo_f3`), revisar KPIs y gráficos, tabla «Ver por expediente» con los 9 hitos. Visto el 06/11: los Input box de objetivo ya están (120 y 180), pero **el bloque «ESTA FASE» de las fases 2 y 3 es una copia del de la fase 1** (6 personas, 77 d, +47 d, Baja, 3 y 6): hay que cambiar sus PQL o dejarlos como «pendiente de datos». En la fase 2 hay además un hueco grande en blanco, un bloque «Previsión carga» repetido dentro de «Variabilidad de criterio BVD» y textos cortados en los hitos.
-6. **Cargar el histórico de las mismas 100 solicitudes de 2025** (lo que enciende subsanación, AVC, citación, dictamen, grado, plazo total y SLA): en «Pruebas Anthony», tabla `SIDM_HIST_ESTADO`, filtro `IDSOLICITUD IN (…)` por **lotes de 10** (el Preview solo trae 100 filas; si un lote devuelve justo 100, partirlo). Anthony tiene el fichero de lotes (se le envió el 05/11; los IDs **no** están en el repo). Me pega el Preview → genero `INSERT INTO "SIDM_HIST_ESTADO"` en el scratchpad → él lo ejecuta como hizo con `SIDM_SOLICITUD` → recargar.
+5. Detalles: botón Limpiar, KPI Actualizado, formato del mes del gráfico de la fase 1 (sale MM/AAAA; mockup `%b %Y`), hueco pequeño de «% en plazo» en la fase 2, KPI días bloqueado en subsanación, tabla «Ver por expediente» con los 9 hitos.
+6. Enseñárselo a Roberto y, si le parece bien, Create version.
 
 ## 6. PQL listos para usar
 
@@ -138,6 +149,24 @@ END
 - ⑨ resolución del grado: 90/34/36
 
 ⑦ a ⑨ están por confirmar.
+
+**Carga del trabajador (Grabación)**, % frente a la media del equipo; Estado con > 115 / < 70:
+```
+COUNT(DISTINCT "o_custom_SolicitudDependencia"."ID") * 100.0 / (GLOBAL(COUNT(DISTINCT "o_custom_SolicitudDependencia"."ID")) * 1.0 / GLOBAL(COUNT(DISTINCT "o_custom_SolicitudDependencia"."UsuarioAlta")))
+```
+En Subsanación, lo mismo con `COUNT(DISTINCT CASE WHEN "el__EventosDependencia"."CodigoEstado" IN ('60','30','25') THEN BIND("el__EventosDependencia", "o_custom_SolicitudDependencia"."ID") END)` y el divisor de usuarios con el mismo `CASE` sobre `"el__EventosDependencia"."Usuario"`.
+
+**ESTA FASE · fase 2:**
+- Personas: `COUNT(DISTINCT CASE WHEN "el__EventosDependencia"."Fase" IN ('2a · Citación','2b · Valoración') THEN "el__EventosDependencia"."Usuario" END)`
+- Tiempo E2E: `AVG(DAYS_BETWEEN("o_custom_SolicitudDependencia"."FechaAlta", PU_MIN("o_custom_SolicitudDependencia", "el__EventosDependencia"."TIMESTAMP", "el__EventosDependencia"."CodigoEstado" IN ('90','34','36'))))`; vs objetivo, lo mismo `- ${objetivo_f2}`.
+- Entran/sem (últimas 4 semanas sobre el último dato):
+```
+COUNT(CASE WHEN "o_custom_SolicitudDependencia"."FechaAlta" > ADD_DAYS(PU_MAX(CONSTANT(), "o_custom_SolicitudDependencia"."FechaAlta"), -28) AND "o_custom_SolicitudDependencia"."FechaAlta" <= PU_MAX(CONSTANT(), "o_custom_SolicitudDependencia"."FechaAlta") THEN "o_custom_SolicitudDependencia"."ID" END) / 4.0
+```
+- Resuelven/sem: igual, cambiando `FechaAlta` por el `PU_MIN(…)` de los estados 90/34/36.
+- Previsión: `CASE WHEN E > R * 1.1 THEN 'Alta' WHEN E < R * 0.9 THEN 'Baja' WHEN E IS NULL THEN NULL ELSE 'Media' END` (E = Entran, R = Resuelven, escritos enteros).
+
+**Gráfico y KPIs de plazo de la fase 2** (estado 47): en plazo `DAYS_BETWEEN(FechaAlta, PU_MIN(… IN ('47'))) <= ${objetivo_f2}`, fuera `> ${objetivo_f2}`, línea de objetivo `AVG(CASE WHEN PU_MIN(… IN ('47')) IS NOT NULL THEN ${objetivo_f2} * 1.0 END)`.
 
 ## 7. Ficheros del repositorio
 
