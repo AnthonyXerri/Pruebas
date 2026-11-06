@@ -70,7 +70,7 @@ Estábamos **dejando perfecto el gráfico de plazos de la fase 1**. Sus Settings
 
 **Después, en este orden:**
 1. Tabla «AVC · Reproceso en bucle» (PQL abajo) y borrar el gráfico.
-2. Tablas «Detalle por Trabajador — Equipo de Grabación» (Trabajador `UsuarioAlta`, Expedientes, Carga % frente a la media, Plazo medio, vs equipo, Subsanaciones, Estado: crítico > 115 %, subcarga < 70 %) y «Equipo de Subsanación» (usuario del evento en estados 60/30/25 y 05/20/15).
+2. Orden como en el mockup: primero **Equipo de Grabación** y debajo **Equipo de Subsanación** (en la View están al revés). Tablas «Detalle por Trabajador — Equipo de Grabación» (Trabajador `UsuarioAlta`, Expedientes, Carga % frente a la media, Plazo medio, vs equipo, Subsanaciones, Estado: crítico > 115 %, subcarga < 70 %) y «Equipo de Subsanación» (usuario del evento en estados 60/30/25 y 05/20/15).
 3. KPI días bloqueado en subsanación.
 4. **Interactions:** que la cabecera solo escuche los filtros comunes y que los filtros de cada fase no se queden puestos en las otras.
 5. Fases 2 y 3: barras de filtros (variables `objetivo_f2`, `objetivo_f3`), revisar KPIs y gráficos, tabla «Ver por expediente» con los 9 hitos. Visto el 06/11: los Input box de objetivo ya están (120 y 180), pero **el bloque «ESTA FASE» de las fases 2 y 3 es una copia del de la fase 1** (6 personas, 77 d, +47 d, Baja, 3 y 6): hay que cambiar sus PQL o dejarlos como «pendiente de datos». En la fase 2 hay además un hueco grande en blanco, un bloque «Previsión carga» repetido dentro de «Variabilidad de criterio BVD» y textos cortados en los hitos.
