@@ -4,7 +4,7 @@ Repositorio de trabajo de Anthony (Madrid Digital): servicio de minería de proc
 
 ## Antes de nada
 - **Datos de la Comunidad de Madrid: nunca subir datos sensibles a GitHub ni a nada público** (artifacts incluidos). Eso abarca filas de tablas de los sistemas (SIDEMA, Atlantix, eReg, Nexus…), logins de usuarios, DNIs, números de solicitud o de expediente reales y cualquier dato personal. En el repositorio solo van consultas SQL, estructura (nombres de tablas y columnas), decisiones y documentación sin datos. Los ficheros con datos (INSERT, CSV, extractos) van solo al scratchpad.
-- **Dependencia en Celonis** (en curso): lee **`dependencia/MEMORIA_DEPENDENCIA_CELONIS.md`**. Tiene las tablas de SIDEMA, la regla del join de estados, las fases, las decisiones de modelado y los pendientes. **Actualízala** cada vez que se aprenda o se decida algo importante.
+- **Dependencia en Celonis** (en curso): lee **`dependencia/TRASPASO_VIEW_CELONIS.md`** (dónde nos quedamos con la View) y **`dependencia/MEMORIA_DEPENDENCIA_CELONIS.md`**. Tiene las tablas de SIDEMA, la regla del join de estados, las fases, las decisiones de modelado y los pendientes. **Actualízala** cada vez que se aprenda o se decida algo importante.
 - **Anthony está aprendiendo Celonis:** guía paso a paso. En cada paso, qué hacemos, por qué y qué esperamos ver; explica el SQL nuevo línea a línea. Un paso cada vez.
 
 ## Proyectos del repositorio
