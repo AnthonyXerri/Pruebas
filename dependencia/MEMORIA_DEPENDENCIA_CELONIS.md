@@ -205,6 +205,23 @@ Convenciones: `ID` y la relación `SolicitudDependencia` siempre con `CAST(... A
 - Otro usuario pasa unas 20 solicitudes a 50 en el mismo segundo (acción masiva).
 - ⇒ Hay estados que son clics o lotes, no esperas reales: **medir las fases de entrada a salida de la fase**, no estado por estado.
 
+## 9b. Tablas de SIDEMA para lo que falta (Sergio, 10/11; por confirmar)
+| Dato | Tabla | Campo |
+|---|---|---|
+| Municipio del expediente | `SIDM_SOLICITANTE` | `CDMUNI` |
+| Catálogo de territorios | Catálogos SUCA | ? |
+| Edad | `SIDM_SOLICITANTE` | `FCNACIMIENTO` |
+| Valorador | `SIDM_VALORACION_BVD`, `SIDM_VALORACION_EVE` | `CDVALORADOR` |
+| Tipo de valoración | las mismas (BVD o EVE según en cuál esté la solicitud) | ? |
+| Fecha de visita | las mismas | `FCVALORACION` |
+| Grado propuesto | `SIDM_DICTAMEN` | ? |
+| Grado reconocido y tipo de resolución | `SIDM_DICTAMEN`, `SIDM_MR_RESOLUCIONES` (+ `SIDM_MR_TIPOS_DOCUMENTOS` para el tipo) | ? |
+| Estados y fechas del PIA | `SIDM_RI_PIA`, `SIDM_RI_ESTADOS_PIA` | ? |
+| Prestación del PIA | `SIDM_RI_PIA`, `SIDM_RI_TPPIA`, `SIDM_RI_TPPIA_TRANS` | ? |
+| Requerimientos y llamadas del PIA | `SIDM_RI_SUBS_*` (varias) | ? |
+
+Sin respuesta: tablas de producción, canal de entrada, registradas sin grabar, motivo de subsanación, usuarios, efectivos, técnico del PIA. Se devuelve al cliente la Excel `dependencia/Datos_pendientes_Dependencia.xlsx` (Dato · Tabla · Campo · Estado · Qué necesitamos) para que completen y confirmen (Andrés, 10/11). Sergio está al 100 % en otro proyecto: preguntarle solo lo imprescindible.
+
 ## 10. Pendientes y preguntas abiertas
 
 - [ ] Roberto o Javier Olmeda: error de Snappy en la extracción.
