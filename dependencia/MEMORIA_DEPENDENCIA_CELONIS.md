@@ -222,6 +222,26 @@ Convenciones: `ID` y la relación `SolicitudDependencia` siempre con `CAST(... A
 
 Sin respuesta: tablas de producción, canal de entrada, registradas sin grabar, motivo de subsanación, usuarios, efectivos, técnico del PIA. Se devuelve al cliente la Excel `dependencia/Datos_pendientes_Dependencia.xlsx` (Dato · Tabla · Campo · Estado · Qué necesitamos) para que completen y confirmen (Andrés, 10/11). Sergio está al 100 % en otro proyecto: preguntarle solo lo imprescindible.
 
+## 9c. Respuesta del cliente (10/11): tablas para lo que falta
+| Dato | Tabla | Columna | Catálogo |
+|---|---|---|---|
+| Municipio | `SIDM_SOLICITANTE` | `CDPROV`, `CDMUNI` | `SUCA_MUNICIPIO` (CDPROV + CDMUNI) |
+| Territorios | `SUCA_PROVINCIA`, `SUCA_MUNICIPIO` | `CDPROV`, `CDMUNI`, `DSMUNI` | SUCA (sin mancomunidad ni zona) |
+| Edad | `SIDM_SOLICITANTE` | `FCNACIMIENTO` | |
+| Canal de entrada | `SIDM_SOLICITUD` | `CDMOTALTA` | `SIDM_MOTALTA` |
+| Registradas sin grabar | `SIDM_BANDEJA_RECEPCIONADOS` + `SIDM_CAT_BANDEJA_EREG` | consulta: `IT_ESTADO='1'`, `FCBAJA` nula y sin solicitud con el mismo `NMREFERENCIA` (según `CD_BANDEJA`: INI, REVRA, REVPIA, REVCE, TRASIN, TRASOUT, URG) | |
+| Motivo de subsanación | `SIDM_SUBSANACION_DOCUMENTACION` | `DSTEXTO_LIBRE`, `CDESTADO_DOCUMENTACION` | |
+| Usuarios | `SIDM_DATOS_VALORADOR` (solo valoradores) | | |
+| Valorador / tipo (BVD o EVE según tabla) | `SIDM_VALORACION_BVD`, `SIDM_VALORACION_EVE` | `CDVALORADOR`, `FCVALORACION` (visita), `FCINICIO_SISTEMA`/`FCFIN_SISTEMA` (grabación) | |
+| Grado propuesto | `SIDM_DICTAMEN_TECNICO` | `CDGRADO`, `CDNIVEL`, `DSGRADO_NIVEL` | |
+| Grado reconocido y tipo de resolución | `SIDM_DICTAMEN`, `SIDM_MR_RESOLUCIONES`, `SIDM_MR_TIPOS_DOCUMENTOS` | `CDGRADO`, `CDNIVEL`, `DSGRADO_NIVEL` | |
+| PIA: estados e histórico | `SIDM_RI_PIA`, `SIDM_RI_TRAMITES` (histórico), `SIDM_RI_ESTADOS_PIA` | | |
+| Prestación del PIA | `SIDM_RI_PIA`, `SIDM_RI_TPPIA`, `SIDM_RI_TPPIA_TRANS` | | |
+| Técnico del PIA | `SIDM_RI_TRAMITES` | `IDALTA` (por confirmar) | |
+| Requerimientos y llamadas | `SIDM_RI_SUBS_PIA`, `SIDM_RI_LLAMADA` | | |
+
+Sigue faltando: claves de unión con la solicitud, mancomunidad o zona, efectivos por fase (no lo entendieron: es el número de personas por fase, lo da la unidad), usuarios de grabación y PIA, tablas de producción.
+
 ## 10. Pendientes y preguntas abiertas
 
 - [ ] Roberto o Javier Olmeda: error de Snappy en la extracción.
