@@ -258,6 +258,12 @@ Sigue faltando: claves de unión con la solicitud, mancomunidad o zona, efectivo
 
 Sin respuesta: lote y empresa, EELL y mancomunidad por lote, zonas de especial dificultad, intentos de contacto (¿`SIDM_RI_LLAMADA`?), incidencias, periodo de gracia, aceptación y visita, asignación a la empresa, acuerdo de conformidad, instalación TA, visado de alta, exclusión, reingreso, datos de SAP. Probablemente están en SAP o en las empresas, no en SIDEMA.
 
+## 9e. Qué se puede y qué no en una View de Celonis Studio (para diseñar mockups, 17/11)
+Fuentes: lo visto montando la Dependencia View y la documentación y el foro de Celonis (docs.celonis.com no se puede abrir desde la sesión en la nube; está en el buscador).
+- **Sí:** KPI card y KPI list (con reglas de color e iconos), KPI meter (barra de progreso), gráficos de columnas, barras, líneas y áreas (apilados con «Split by»; tipo «Columns + line» con eje secundario; cambio de dimensión con desplegable), tarta (máx. 4 categorías + «otros»), tabla (exportable, formato condicional), filtros desplegable y rango de fechas, Input box guardando en una variable, botones que cambian una variable, contenedor con pestañas, cuadro de texto (puede llevar el valor de un KPI como marcador), imagen y explorador de procesos. Pinchar en un gráfico filtra los demás componentes (Interactions).
+- **No (o no sin desarrollo a medida):** barras dibujadas a mano con marcadores (tipo «banda de tramos»), pasos con flechas, botones colocados bajo el eje de un gráfico, rellenos con rayas, barras proporcionales hechas con divs, columnas de cifras pegadas a una barra, chips con contadores, enlaces a la aplicación de origen, árboles o embudos dibujados (el explorador nativo muestra actividades y pasos), celdas editables que se guardan (hoja de validación), mostrar u ocultar bloques según una selección.
+- En los mockups: todo lo de «No» se quita o se sustituye por el componente equivalente (pestaña, desplegable, KPI card, tabla).
+
 ## 10. Pendientes y preguntas abiertas
 
 - [ ] Roberto o Javier Olmeda: error de Snappy en la extracción.
