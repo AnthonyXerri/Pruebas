@@ -242,6 +242,22 @@ Sin respuesta: tablas de producción, canal de entrada, registradas sin grabar, 
 
 Sigue faltando: claves de unión con la solicitud, mancomunidad o zona, efectivos por fase (no lo entendieron: es el número de personas por fase, lo da la unidad), usuarios de grabación y PIA, tablas de producción.
 
+## 9d. CU2 · Lista de espera de SAD y Teleasistencia: respuesta interna (17/11)
+| Dato | Tabla | Columna | Catálogo / notas |
+|---|---|---|---|
+| Lista de espera (SIDEMA web EELL) | `SIDM_V_RI_WEBEL_ALTAS_TA`, `SIDM_V_RI_WEBEL_ALTAS_SAD` (vistas) | | |
+| Histórico de la lista | las mismas vistas | `FC_EFECTO` | falta la fecha de grabación |
+| Estado de la lista | — | — | **No hay estados en la lista de espera** |
+| Servicio (SAD o TA) | `SIDM_RI_PIA`, `SIDM_RI_TPPIA` | | `SIDM_RI_TPPIA_TRANS` |
+| Notificación de la resolución del PIA | `sidm_ri_doc_generado` | `FC_ENV_NOTIFICACION`, `FC_ENVIO_NOTE` con `CD_TPOFICIO IN ('100','44','45','46','47','47X')`, por `ID_PIA` | sustituye a `SIDM_RI_TRAMITES` |
+| Alta en la lista | `SIDM_RI_SAD`, `SIDM_RI_TA` | `FC_INCLUSION_LAU` | |
+| Capacidad económica | `SIDM_RI_CE_GENERAL` | `NM_CAPACIDAD_ECON` | |
+| Orden de prelación | vistas `..._ALTAS_TA/SAD` | «ordenar vistas por criterios» | ¿qué criterios? |
+| Baja del servicio | `SIDM_V_RI_WEBEL_BAJAS_SAD`, `SIDM_V_RI_WEBEL_BAJAS_TA` | `Origen`, `FC_EFECTOS` | ¿`Origen` es el motivo? |
+| Unión con PIA / solicitud | | `IDSOLICITUD`, `ID_PIA` | |
+
+Sin respuesta: lote y empresa, EELL y mancomunidad por lote, zonas de especial dificultad, intentos de contacto (¿`SIDM_RI_LLAMADA`?), incidencias, periodo de gracia, aceptación y visita, asignación a la empresa, acuerdo de conformidad, instalación TA, visado de alta, exclusión, reingreso, datos de SAP. Probablemente están en SAP o en las empresas, no en SIDEMA.
+
 ## 10. Pendientes y preguntas abiertas
 
 - [ ] Roberto o Javier Olmeda: error de Snappy en la extracción.
