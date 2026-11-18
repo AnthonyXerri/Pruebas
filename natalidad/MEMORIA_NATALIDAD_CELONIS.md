@@ -292,6 +292,7 @@ Además, Nexus (pagos, Intervención) y eReg (canal, tipo de asiento) tampoco es
   - **Mantenimiento:** modificaciones, bajas e incidencias.
   - **Pago único.**
   - Lo que no case queda como «Sin clasificar».
+- **18/11: `Fase` añadido a `NatEtapas`** y comprobado en el Preview. Los 30 nombres del catálogo están todos en el CASE (comprobado contra la lista), así que no debería salir ninguno «Sin clasificar».
 - **Etapas del mockup que no aparecen en los datos del 3163:** «No Fiscalizable Concesión» y «Desfavorable Concesión».
 
 ## 4. Estado y pendientes
