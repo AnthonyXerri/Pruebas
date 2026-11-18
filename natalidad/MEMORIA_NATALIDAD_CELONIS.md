@@ -535,6 +535,9 @@ Además, Nexus (pagos, Intervención) y eReg (canal, tipo de asiento) tampoco es
   - Interesados no principales: unos 300.
   - `GRUPO_INTE` está siempre vacío.
 - **Aproximación por documento:** unas **23 % de las solicitantes tienen NIE** (extranjeras), según el documento.
+- **18/11: `NatInteresados` creado y funcionando.**
+  - **Pero `FC_NACIMIENTO` casi no está informada en Natalidad.** Solicitantes con fecha: 2022 7 %, 2023 6 %, 2024 22 %, 2025 26 %, 2026 32 % (en total, alrededor del 21 %).
+  - **La edad no sirve para la composición:** pasa a la lista de datos que hay que pedir. `TramoEdad` se queda, con «No informado».
 - **`NatInteresados`** (`natalidad/sql/11_objeto_NatInteresados.sql`):
   - `EsSolicitante`, `TipoInteresado`, `TipoDocumento`, `NacionalidadAprox`;
   - `TramoEdad` (menos de 20, 20-24, 25-29, 30-34, 35-39, 40 o más);
