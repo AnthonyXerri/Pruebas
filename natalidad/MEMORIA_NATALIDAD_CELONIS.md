@@ -110,6 +110,25 @@ Solo estructura (nombres y tipos de atributos), vista el 18/11:
 - [x] **`D032` existe** en `GSTA_V_CEL_EXPEDIENTE` (18/11). Roberto ya había pegado en `NatExpedientes` la SQL de PnC con `CDAPLICACION = 'D032'`; está guardada y su Data Source es OCPM DataPool IMPLEMENTA…
   - Aplicaciones en la vista: `BSTE` (1 procedimiento: 2906, ¿Bono Social Térmico?), `PNCA` (0375, 1922) y `D032`.
   - **`D032` tiene 12 procedimientos:** 0296, 1246, 3163, 3224, 3252, 3331, 3356, 3559, 3630, 3656, 4068, 4074. Falta saber si **todos son de Natalidad** o si `D032` abarca más ayudas de la Consejería.
+  - Tamaño y fechas de inicio (18/11). Solo recuentos, sin datos personales:
+
+    | Proc. | Expedientes | Primer inicio | Último inicio | Lectura |
+    |---|---|---|---|---|
+    | **3163** | **53.375** | 01/2022 | 11/2026 | **El grueso, activo** |
+    | **3331** | 4.681 | 09/2022 | 11/2026 | Activo |
+    | 3630 | 1.299 | 01/2024 | 11/2026 | Activo |
+    | 3559 | 1.233 | 09/2023 | 11/2026 | Activo |
+    | 3356 | 522 | 10/2022 | 04/2024 | Cerrado |
+    | 1246 | 420 | 04/2018 | 06/2026 | Antiguo |
+    | 0296 | 272 | 01/2024 | 06/2026 | — |
+    | 3224 | 57 | 03/2024 | 10/2026 | — |
+    | 3252 | 43 | 07/2022 | 09/2022 | Puntual |
+    | 3656 | 16 | 11/2024 | 11/2024 | Puntual |
+    | 4068 | 10 | 10/2026 | 11/2026 | Nuevo |
+    | 4074 | 2 | 10/2026 | 11/2026 | Nuevo |
+
+  - **Pendiente de Roberto o la unidad:** el nombre de cada procedimiento y cuáles entran en el cuadro de Natalidad.
+  - **Mientras tanto:** el objeto lleva todos los de `D032`, con `CodigoProcedimiento` como atributo para poder filtrar después.
 - **Truco del editor:** *Preview selection* solo muestra las columnas mapeadas al objeto (el `ID`) y exige que haya columna `ID`. Para ver otras columnas, usar *Execute query selection* o meter la información en el `ID` concatenando con `||`.
 - [x] Objeto de Roberto (18/11): **`NatExpedientes`** en «OCPM DataPool VALI…», namespace custom, etiqueta **Natalidad** (Custom Processes), descripción «Expedientes de Natalidad Atlantix». Solo tiene `ID` (PK, String). Los objetos de Atlantix de referencia llevan, probablemente, la etiqueta **«PnC ATL»**.
 - [ ] Completar los atributos y la transformación de `NatExpedientes`.
