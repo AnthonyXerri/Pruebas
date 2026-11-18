@@ -34,7 +34,7 @@ SELECT DISTINCT
         WHEN A."DSACTIVIDAD" LIKE 'Añadido documento requerido%'                   THEN 'Documento requerido añadido'
         WHEN A."DSACTIVIDAD" LIKE 'Eliminado documento requerido%'                 THEN 'Documento requerido eliminado'
         WHEN A."DSACTIVIDAD" LIKE 'Eliminado documento%'
-          OR A."DSACTIVIDAD" LIKE 'Aportaci%n o elaboraci%n de [Dd]ocumentaci%n%'
+          OR A."DSACTIVIDAD" LIKE 'Aportaci%n o elaboraci%n de %ocumentaci%n%'
           OR A."DSACTIVIDAD" LIKE 'Documento aportado%'                            THEN 'Gestión de Documentos Requeridos'
         WHEN A."DSACTIVIDAD" LIKE 'Incorporado documento elaborado%'
           OR A."DSACTIVIDAD" LIKE 'Adjuntado fichero%'                             THEN 'Incorporación de Documento'
