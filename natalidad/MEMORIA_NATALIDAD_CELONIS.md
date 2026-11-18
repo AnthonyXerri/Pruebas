@@ -129,6 +129,8 @@ Solo estructura (nombres y tipos de atributos), vista el 18/11:
 
   - **Pendiente de Roberto o la unidad:** el nombre de cada procedimiento y cuáles entran en el cuadro de Natalidad.
   - **Mientras tanto:** el objeto lleva todos los de `D032`, con `CodigoProcedimiento` como atributo para poder filtrar después.
+- **«N columns ignored» en el Preview:** son columnas de la SQL que el objeto aún no tiene declaradas. *Add attributes* abre «Edit attributes», que **no las rellena solo**: se añaden a mano con *+ Add*, con el nombre idéntico al alias de la SQL y su tipo.
+- Prefijos de los expedientes de `D032`: AFN, SCP, ANA, GEF. Probablemente corresponden a procedimientos distintos; sirven como pista para saber cuáles son de Natalidad.
 - **Truco del editor:** *Preview selection* solo muestra las columnas mapeadas al objeto (el `ID`) y exige que haya columna `ID`. Para ver otras columnas, usar *Execute query selection* o meter la información en el `ID` concatenando con `||`.
 - [x] Objeto de Roberto (18/11): **`NatExpedientes`** en «OCPM DataPool VALI…», namespace custom, etiqueta **Natalidad** (Custom Processes), descripción «Expedientes de Natalidad Atlantix». Solo tiene `ID` (PK, String). Los objetos de Atlantix de referencia llevan, probablemente, la etiqueta **«PnC ATL»**.
 - [ ] Completar los atributos y la transformación de `NatExpedientes`.
