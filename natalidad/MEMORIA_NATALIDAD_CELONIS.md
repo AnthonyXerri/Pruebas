@@ -233,7 +233,7 @@ Además, Nexus (pagos, Intervención) y eReg (canal, tipo de asiento) tampoco es
 - Prefijos de los expedientes de `D032`: AFN, SCP, ANA, GEF. Probablemente corresponden a procedimientos distintos; sirven como pista para saber cuáles son de Natalidad.
 - **Truco del editor:** *Preview selection* solo muestra las columnas mapeadas al objeto (el `ID`) y exige que haya columna `ID`. Para ver otras columnas, usar *Execute query selection* o meter la información en el `ID` concatenando con `||`.
 - [x] Objeto de Roberto (18/11): **`NatExpedientes`** en «OCPM DataPool VALI…», namespace custom, etiqueta **Natalidad** (Custom Processes), descripción «Expedientes de Natalidad Atlantix». Solo tiene `ID` (PK, String). Los objetos de Atlantix de referencia llevan, probablemente, la etiqueta **«PnC ATL»**.
-- [x] `NatExpedientes` (18/11): transformación con `natalidad/sql/01_objeto_NatExpedientes.sql` y 18 atributos declarados a mano (10 String y 8 Datetime). Pendiente de confirmar el Preview sin columnas ignoradas y el Save with Validation.
+- [x] `NatExpedientes` (18/11): transformación con `natalidad/sql/01_objeto_NatExpedientes.sql` y 18 atributos declarados a mano (10 String y 8 Datetime). Preview correcto, filtro 3163 añadido, guardado con Save with Validation (sin Deploy). **Hecho.**
 - [ ] `NatProcedimiento`, `NatEtapa`, `NatDocumento` (y `NatExpediente`): atributos, transformación con el filtro y relaciones.
 - [ ] Eventos `Nat…`: todos los de Atlantix, con el mismo filtro.
 - [ ] Revisar con Roberto antes de Create version / Deploy.
