@@ -369,6 +369,24 @@ Además, Nexus (pagos, Intervención) y eReg (canal, tipo de asiento) tampoco es
   - **`N_INTE`** va de 0 a 3 (número de interesados del expediente).
   - **2026 tiene casi el triple que 2025:** ¿cambio de convocatoria, de criterio de alta o incluye otros expedientes? Preguntar.
 
+## 3h5. Bitácora y columnas que faltaban (18/11)
+
+- **`GSTA_REGISTRO_ACTIVIDAD` = la bitácora de Atlantix.** Columnas:
+  - `NM_REGISTRO`: número de la anotación, no es eReg.
+  - **`DS_REGISTRO`**: qué actividad es.
+  - `CD_EXPEDIENTE`.
+  - `CD_USUARIO`: login, **dato sensible, no sacar**.
+  - **`FC_REALIZACION`**: cuándo.
+  - **`ID_ETAPA_TRAM`**: en qué etapa.
+  - **`ID_ENVIO`**: ¿lote de envío a la Intervención?
+  - **`IT_AUTOMATICO`**: si es manual o automática.
+  - `IT_SINGULAR`, `ID_ORGA_GESTION`.
+  - **Sirve para:** días sin actuación (última `FC_REALIZACION`), actividades del explorador y, quizá, la revisión de conformidad y los pasos de terceros. Catálogo en `natalidad/sql/00c_catalogo_bitacora.sql`.
+- **`GSTA_V_CEL_EXPEDIENTE` tiene `REF_SOLICITUD`**, que no está en `NatExpedientes`. ¿Es la referencia o el número de registro de la solicitud? Junto con `CD_SOLICITUD` de `GSTA_V_EXPEDIENTE`, es candidata a unir con eReg.
+- **Prueba de que existen tablas propias por aplicación:** `PNCA_EXPEDIENTE` (de PnC) tiene `IT_TIPO_SOLICITUD`, `CD_MES_PRIM_NOMINA` / `CD_ANO_PRIM_NOMINA`, `CD_MES_ULT_NOMINA` / `CD_ANO_ULT_NOMINA`, `NM_CUANTIA_MES`, `FC_EFECTO`, `ID_SITU_EXPE`, `ID_MOTIVO_ARCHIVO`…
+  - Es justo lo que le falta a Natalidad: tipo de solicitud, mes de nómina, cuantía, fecha de efectos, bajas.
+  - **Hay que pedir a Roberto** las tablas equivalentes de la aplicación de Natalidad (`D032` / AFN) en Atlantix.
+
 ## 3i. Revisión del mockup v31 frente a los datos (18/11)
 
 Esta lista es la base de la tabla final de lo que falta (Atlantix, eReg, Nexus y unidad). Estados posibles:
