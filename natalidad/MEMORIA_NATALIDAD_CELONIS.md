@@ -54,6 +54,38 @@ INNER JOIN exp_nat n                       -- INNER: solo las filas de expedient
 - `TO_CHAR` no funciona; usar `CAST(... AS VARCHAR)`.
 - **Orden que funciona:** crear el objeto o evento, después la relación (*Related objects*) y por último la transformación. Así la plantilla trae la columna de la relación.
 
+## 3b. Objetos de referencia: etiqueta «PnC ATL» (7 de 17 objetos)
+
+Solo estructura (nombres y tipos de atributos), vista el 18/11:
+
+- **`PnCExpedientes`** (23 + ID):
+  - `DescripcionProcedimiento`, `CodigoProcedimiento`, `Aplicacion`, `CodigoExpediente`, `EjercicioConvocatoria`, `CodigoConvocatoria`.
+  - `idUnidad`, `DescripcionUnidad`, `idEstado`, `DescripcionEstado`, `UsuarioAsignado`.
+  - Fechas: `FechaPresentacionInteresado`, `FechaEntradaSistemaRegistro`, `FechaEntradaRegistroConsejeria`, `FechaInicio`, `FechaFinTramitacion`, `FechaResolucion`, `FechaCierre`, `FechaAnulacion`.
+  - **Duplicadas:** `FCINICIO`, `FCRESOLUCION` y `FCFINTRAMITACION` repiten fechas que ya están arriba; no copiarlas sin preguntar.
+  - **El objeto ya trae `Aplicacion`**: aquí el filtro de Natalidad es un `WHERE`, sin join.
+- **`PnCEtapas`** (3 + ID): `IDEtapa`, `DescripcionEtapa`, `Confiscalizacion`.
+- **`PnCExpedienteDetalle`** (21 + ID): datos propios de PnC.
+  - Nacionalidad y país de nacimiento.
+  - Trasvase y tipo de pensión.
+  - Personas en la unidad de convivencia (UEC).
+  - Usuarios y códigos de tramitador.
+  - Último trámite, estado, registro de entrada, observaciones, número de solicitud y número de expediente.
+- **`PnCInteresados`** (16 + ID):
+  - Edad y fecha de nacimiento.
+  - Es principal.
+  - Tipo de notificación.
+  - Provincia, municipio y país (de residencia y de notificación).
+- **`PnCPropuesta`** (15 + ID):
+  - Tipo, código, indicador, origen y estado de la propuesta.
+  - Fecha de propuesta y fecha de resolución.
+  - Cuantía mensual, cuantía anual, cuantía de tercera persona y atrasos.
+  - Usuario y código del tramitador.
+  - Es migrada.
+- `PnCPropuestaMotivos`, `PnCRevision`: pendientes de ver.
+
+**Ojo:** Roberto habló de Procedimiento, Etapa y Documento, pero en «PnC ATL» no aparecen ni Procedimiento ni Documento. Pueden estar entre los otros 10 objetos o sin etiqueta. Hay que preguntarle cuáles son.
+
 ## 4. Estado y pendientes
 
 - [ ] Confirmar el nombre de la tabla de expedientes, de sus columnas y el código de aplicación de Natalidad.
