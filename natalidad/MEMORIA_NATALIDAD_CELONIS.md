@@ -387,6 +387,45 @@ Además, Nexus (pagos, Intervención) y eReg (canal, tipo de asiento) tampoco es
   - Es justo lo que le falta a Natalidad: tipo de solicitud, mes de nómina, cuantía, fecha de efectos, bajas.
   - **Hay que pedir a Roberto** las tablas equivalentes de la aplicación de Natalidad (`D032` / AFN) en Atlantix.
 
+## 3h6. Catálogo de la bitácora del 3163 (18/11, las 80 más frecuentes)
+
+- **`DS_REGISTRO` es un texto de catálogo** («Finalización de la Etapa - X», «Informado el hito Y en la etapa Z»…), no texto libre. **`IT_AUTOMATICO` es siempre N**, así que no sirve para separar manual y automático.
+- **Lo que hay** (veces / expedientes):
+  - **Etapas:**
+    - «Finalización de la Etapa - …» de todas las etapas.
+    - **«Anulación de la Etapa - …»**: REQUERIMIENTO 26.944 / 25.400; PROPUESTA FAVORABLE 7.360 / 6.234; VALIDACIÓN TERCERO 7.309 / 6.200; PTE. ENVÍO INTERVENCIÓN 3.480 / 3.200; RESOLUCIÓN DENEGACIÓN 1.747 / 1.419; RESOLUCIÓN DESESTIMIENTO 225; PTE.ENVÍO MODIF. SIN REPERC. 273.
+  - **Hitos** («Informado el hito …»):
+    - Requerimiento Documentación (26.878 / 25.213);
+    - CONCESIÓN APROBADA (20.703);
+    - Resolución Favorable (9.991);
+    - Resolución Desfavorable en DENEGACIÓN (8.635) y en DESESTIMIENTO (1.640 + 1.465);
+    - INCIDENCIA APROBADA (3.298);
+    - Instrucción en GESTIÓN EXPEDIENTE (2.946).
+  - **Envío a la Intervención:** «Envio a Intervencion. Generado indice documental» (42.405 / 38.352), con fecha. ¿`ID_ENVIO` es el lote?
+  - **Cambio de unidad de gestión:** a la Sección de Natalidad (233.094 + 95.859 veces) y a la Intervención Delegada FJAS (27.070) o FJPS (15.336). Sirve para ver las idas y vueltas a la Intervención.
+  - **Documentos requeridos** («Añadido / Eliminado documento requerido … en/de Revisión administrativa»):
+    - qué documentación se pide: libro de familia o certificado de nacimiento, empadronamiento de 10 años, IRPF, titularidad bancaria, DNI/NIE, informe médico de la semana 21 de gestación, Anexos 2, 3 y 4…;
+    - y «Adjuntado fichero a documento requerido».
+  - **Consultas ICDA** (interoperabilidad): datos de nacimiento, identidad e IRPF, con sus errores.
+  - **Cambio de convocatoria:** «Se ha cambiado el expediente a la convocatoria AFN1 - 2026» (4.536) y 2025 (2.775). **Explica en parte el salto de 2026.**
+  - Situación de Expedientes (ciudadano): estado Vivo y baja.
+- **⚠ Hallazgo clave: `GSTA_V_CEL_ETAPA` solo trae las etapas NO anuladas.**
+  - REQUERIMIENTO: la vista de etapas tiene 6.001 expedientes, pero la bitácora tiene 25.400 con la etapa anulada y unos 25.200 con el hito de requerimiento.
+  - PROPUESTA FAVORABLE: 38.368 en la vista frente a 6.234 anuladas.
+  - **Consecuencia:**
+    - **los requerimientos y los reprocesos** («propuesta deshecha: vuelta a Gestión», del mockup) **hay que sacarlos de la bitácora**: anulaciones de etapa y hitos;
+    - con solo los eventos de etapa se quedarían muy cortos.
+  - **Preguntar a la unidad:** ¿un requerimiento normal acaba con «Anulación de la Etapa REQUERIMIENTO»?
+- **No aparece** (entre las 80 más frecuentes) nada de «revisión de conformidad» ni de «fichero de terceros / Nexus». Se puede buscar con `LIKE '%CONFORMIDAD%'`, `'%TERCERO%'` o `'%REVIS%'`. Otra posibilidad es que la revisión sea la «Revisión administrativa» de los documentos requeridos.
+- **Eventos nuevos que salen de aquí** (sobre `GSTA_REGISTRO_ACTIVIDAD`):
+  - Anulación de etapa (reprocesos);
+  - Hitos;
+  - Envío a la Intervención (con lote);
+  - Documento requerido añadido (requerimientos);
+  - Cambio de convocatoria;
+  - Última actuación (días sin actuación).
+  - **Antes de crearlos:** ver cómo están hechos los eventos de actividad de PnC.
+
 ## 3i. Revisión del mockup v31 frente a los datos (18/11)
 
 Esta lista es la base de la tabla final de lo que falta (Atlantix, eReg, Nexus y unidad). Estados posibles:
