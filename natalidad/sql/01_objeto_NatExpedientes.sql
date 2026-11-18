@@ -25,7 +25,7 @@ SELECT
     CAST(MIN(e."FC_SOL_EREG") AS TIMESTAMP)       AS "FechaEntradaSistemaRegistro",
     CAST(MIN(e."FC_SOL_CONS") AS TIMESTAMP)       AS "FechaEntradaRegistroConsejeria",
     CAST(MIN(e."FCCIERRE") AS TIMESTAMP)          AS "FechaCierre",
-    MIN(e."REF_SOLICITUD")                        AS "ReferenciaSolicitud",
+    CAST(MIN(e."REF_SOLICITUD") AS VARCHAR)       AS "ReferenciaSolicitud",
     MIN(v."CD_SOLICITUD")                         AS "CodigoSolicitud",
     MIN(v."DS_CONVOCATORIA")                      AS "Convocatoria"
 FROM "GSTA_V_CEL_EXPEDIENTE" e
