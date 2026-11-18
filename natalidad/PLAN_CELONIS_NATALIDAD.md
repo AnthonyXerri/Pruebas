@@ -11,7 +11,7 @@ Prefijo `Nat` y etiqueta **Natalidad**. Memoria detallada: `natalidad/MEMORIA_NA
 | Bloque | Qué | Tabla origen | Para el mockup | Estado |
 |---|---|---|---|---|
 | A | `NatExpedientes`, `NatEtapas`, `NatEtapaIniciada`, `NatEtapaFinalizada` | `GSTA_V_CEL_EXPEDIENTE`, `GSTA_V_CEL_ETAPA` | Cabecera de tramitación, tiempos por fase, stock por fase, explorador | ✅ |
-| B | Eventos de entrada y cierre: `NatSolicitudPresentada` ✅; alta del expediente, expediente resuelto, expediente anulado | `GSTA_V_CEL_EXPEDIENTE` | Fase 1 (registro → alta), tiempo E2E, registro → alta, alta → resolución, entradas/salidas | ▶ en curso |
+| B | Eventos de entrada y cierre: `NatSolicitudPresentada` ✅, `NatExpedienteAbierto` ✅; expediente resuelto, expediente anulado | `GSTA_V_CEL_EXPEDIENTE` | Fase 1 (registro → alta), tiempo E2E, registro → alta, alta → resolución, entradas/salidas | ▶ en curso |
 | C | Bitácora: etapa anulada (reprocesos, requerimientos), hitos, envío a la Intervención, documento requerido, cambio de convocatoria, última actuación | `GSTA_REGISTRO_ACTIVIDAD` | Reprocesos, requerimientos, Intervención, expedientes sin actividad, explorador | Pendiente |
 | D | Notificaciones, documentos aportados y elaborados, hitos de la vista CEL | `GSTA_V_CEL_NOTIFICACION`, `GSTA_V_CEL_DOC_*`, `GSTA_V_CEL_HITO` | Notificación y acuse del requerimiento, aportaciones, plazo vencido | Pendiente |
 | E | `NatInteresados` (edad en tramos, nacionalidad, país, municipio; sin nombres ni DNI) | `GSTA_V_INTERESADOS` | Composición | Pendiente |
