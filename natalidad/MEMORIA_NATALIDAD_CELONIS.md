@@ -295,6 +295,17 @@ Además, Nexus (pagos, Intervención) y eReg (canal, tipo de asiento) tampoco es
 - **18/11: `Fase` añadido a `NatEtapas`** y comprobado en el Preview. Los 30 nombres del catálogo están todos en el CASE (comprobado contra la lista), así que no debería salir ninguno «Sin clasificar».
 - **Etapas del mockup que no aparecen en los datos del 3163:** «No Fiscalizable Concesión» y «Desfavorable Concesión».
 
+## 3h2. Eventos de etapa: `PnCEtapaIniciada` → `NatEtapaIniciada` (18/11)
+
+- **Atributos de PnC:** `ID`, `Time` (Datetime), `Actividad`, `Etapas`, `Fecha Inicio Etapa` y `Fecha Fin Etapa` (Datetime, **con espacios** en el nombre), `Fase`.
+- **Relaciones:** *Involves one* `PnCEtapas` (relationship name `PnCEtapas`) e *Involves one* `PnCExpedientes` (`PnCExpedientes`).
+- **Columnas de `GSTA_V_CEL_ETAPA` que usa:** `FCINICIO`, `FCFIN`, `FCINICIO_SISTEMA`, `FCFIN_SISTEMA`.
+- **`ID` = `'EtapaIniciada_' + expediente + etapa + FCINICIO + rn`:** cada entrada en una etapa es un evento distinto. **Esto resuelve los reprocesos.**
+  - `rn` = `ROW_NUMBER()`, que desempata dos filas con la misma etapa y la misma fecha de inicio.
+- **`Time`:** `FCINICIO`, salvo cuando viene a las 00:00:00. En ese caso usa `FCINICIO_SISTEMA` si es del mismo día, para tener la hora real.
+- **La `Fase` de PnC** es un CASE con `LIKE` sobre sus etapas. En Natalidad usamos las fases del mockup, igual que en `NatEtapas`.
+- **SQL de Natalidad:** `natalidad/sql/03_evento_NatEtapaIniciada.sql`.
+
 ## 3i. Revisión del mockup v31 frente a los datos (18/11)
 
 Esta lista es la base de la tabla final de lo que falta (Atlantix, eReg, Nexus y unidad). Estados posibles:
