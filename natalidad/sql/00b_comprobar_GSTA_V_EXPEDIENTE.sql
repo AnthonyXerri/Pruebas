@@ -1,0 +1,17 @@
+-- Comprobación (no guardar): qué aporta GSTA_V_EXPEDIENTE para Natalidad, por convocatoria.
+-- Solo devuelve códigos, descripciones de convocatoria, recuentos y mínimos/máximos.
+SELECT
+    V."CD_CONVOCATORIA" || ' | ' || COALESCE(V."DS_CONVOCATORIA", '-')
+    || ' | exp ' || CAST(COUNT(DISTINCT V."CD_EXPEDIENTE") AS VARCHAR)
+    || ' | con CD_SOLICITUD ' || CAST(COUNT(DISTINCT CASE WHEN V."CD_SOLICITUD" IS NOT NULL THEN V."CD_EXPEDIENTE" END) AS VARCHAR)
+    || ' | DIAS_TRAM ' || COALESCE(CAST(MIN(V."DIAS_TRAM") AS VARCHAR), '-') || ' a ' || COALESCE(CAST(MAX(V."DIAS_TRAM") AS VARCHAR), '-')
+    || ' | DIAS_NOTIF ' || COALESCE(CAST(MIN(V."DIAS_NOTIF") AS VARCHAR), '-') || ' a ' || COALESCE(CAST(MAX(V."DIAS_NOTIF") AS VARCHAR), '-')
+    || ' | N_INTE ' || COALESCE(CAST(MIN(V."N_INTE") AS VARCHAR), '-') || ' a ' || COALESCE(CAST(MAX(V."N_INTE") AS VARCHAR), '-')
+    AS "ID"
+FROM "GSTA_V_EXPEDIENTE" V
+WHERE V."CD_EXPEDIENTE" IN (
+    SELECT "CDEXPEDIENTE"
+    FROM "GSTA_V_CEL_EXPEDIENTE"
+    WHERE "CDAPLICACION" = 'D032' AND "CDPROCEDIMIENTO" = '3163'
+)
+GROUP BY V."CD_CONVOCATORIA", V."DS_CONVOCATORIA"

@@ -330,6 +330,29 @@ Además, Nexus (pagos, Intervención) y eReg (canal, tipo de asiento) tampoco es
 - **Siguiente:** los eventos de solicitud y expediente, para la fase 1 de Entrada (registro → alta) y para la resolución.
 - **Después:** actividades, hitos, notificaciones y documentos, revisando antes sus catálogos para encontrar la revisión de conformidad y los pasos de terceros.
 
+## 3h4. Búsqueda de eReg (18/11)
+
+- **El buscador de tablas del editor también busca en los nombres de columna.**
+- **En PRATLX_RO no hay ninguna tabla de eReg.** Columnas relacionadas con el registro:
+  - `GSTA_V_CEL_EXPEDIENTE.FC_SOL_EREG`;
+  - `GSTA_V_EXPEDIENTE.FC_EREG`;
+  - `GSTA_REGISTRO_ACTIVIDAD.NM_REGISTRO` / `DS_REGISTRO` (por ver: ¿bitácora o registro?);
+  - `PNCA_EXPEDIENTE.IT_ENVIADO_ARCH_REG` (de PnC).
+- **Columnas de `GSTA_V_EXPEDIENTE`** (otra vista del expediente, 40 columnas). Las que **no** están en la vista CEL:
+  - `CD_ACRONIMO`, `DS_CONVOCATORIA` (¿explica AFN1/AFN2?) y `NM_EJERCICIO`;
+  - **`CD_SOLICITUD`** (¿número de solicitud o registro? posible enlace con eReg);
+  - `FC_PRES`, `FC_SOLICITUD`, `FC_EREG`;
+  - **`DIAS_TRAM`** (¿plazo de tramitación o días transcurridos?) y `DIAS_NOTIF`;
+  - `N_INTE` (número de interesados);
+  - **`EN_INTERVENCION`**;
+  - recursos: `EXP_RECURRIDO`, `EXP_REC_ATLX`, `UNIDAD_RECURRIDO`, `ACTO_RECURRIDO`;
+  - convocatoria: `FC_INI_PRESENT_SOL` / `FC_FIN_PRESENT_SOL`, órdenes estatal y de la CM;
+  - `GESTOR_ASIGNADO`, `ID_ORGA`, `ID_ORGA_GESTION`;
+  - `OBSERVACIONES`: texto libre, puede llevar datos personales, **no usar**.
+  - Claves: `CD_EXPEDIENTE`, `CD_APLICACION` (no tiene procedimiento: se filtra con `IN` sobre la vista CEL).
+- **Sin canal ni tipo de solicitud.**
+- **Comprobación:** `natalidad/sql/00b_comprobar_GSTA_V_EXPEDIENTE.sql`.
+
 ## 3i. Revisión del mockup v31 frente a los datos (18/11)
 
 Esta lista es la base de la tabla final de lo que falta (Atlantix, eReg, Nexus y unidad). Estados posibles:
