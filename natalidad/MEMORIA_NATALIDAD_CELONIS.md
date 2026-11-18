@@ -562,6 +562,17 @@ Consulta: `natalidad/sql/00h_buscar_revision_terceros.sql`.
 - **El salto de 2026, explicado en parte:** muchas solicitudes **presentadas en 2025** tienen convocatoria **2026**. Encaja con la bitácora («Se ha cambiado el expediente a la convocatoria AFN1 - 2026», unos 4.500).
   - Para comparar años, usar el **año de presentación**, no el de la convocatoria.
 
+## 3h14. Test changes (18/11): no se lanzó
+
+- La ventana pide:
+  - un **Target**: «Development (Currently deployed: Draft)»;
+  - la casilla «Execute Data Job after deployment»;
+  - y **elegir perspectivas**. Solo hay «Name» y «DMPensionesNoContributiva» (la de PnC); **no hay perspectiva de Natalidad**.
+- El botón dice **Deploy**: despliega el borrador en el entorno de desarrollo, que es compartido, y ejecuta el data job.
+- **Decisión: Cancel.**
+  1. Primero se crea la **perspectiva de Natalidad** (borrador).
+  2. Después se lanza el Test changes **con Roberto**, para no afectar a PnC ni a Dependencia.
+
 ## 3i. Revisión del mockup v31 frente a los datos (18/11)
 
 Esta lista es la base de la tabla final de lo que falta (Atlantix, eReg, Nexus y unidad). Estados posibles:
