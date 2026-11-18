@@ -305,6 +305,13 @@ Además, Nexus (pagos, Intervención) y eReg (canal, tipo de asiento) tampoco es
 - **`Time`:** `FCINICIO`, salvo cuando viene a las 00:00:00. En ese caso usa `FCINICIO_SISTEMA` si es del mismo día, para tener la hora real.
 - **La `Fase` de PnC** es un CASE con `LIKE` sobre sus etapas. En Natalidad usamos las fases del mockup, igual que en `NatEtapas`.
 - **SQL de Natalidad:** `natalidad/sql/03_evento_NatEtapaIniciada.sql`.
+- **18/11: `NatEtapaIniciada` creado y funcionando.**
+  - Etiqueta Natalidad, 7 atributos y relaciones *involves one* `NatEtapas` y `NatExpedientes`.
+  - Preview correcto: `Time` con hora y `Fase` asignada.
+  - **Ojo:** al crear `Fecha Inicio Etapa` y `Fecha Fin Etapa` quedaron como String y la validación falló («Expected VARCHAR… analyzed TIMESTAMP»). Se corrigieron a Datetime. **Revisar siempre el tipo al crear atributos.**
+- **Lo que se ve en los datos:**
+  - **`Fecha Fin Etapa` (`FCFIN`) viene sin hora** (00:00:00, a menudo del día siguiente). Para medir duraciones, mejor usar el inicio de la etapa siguiente, que sí lleva hora.
+  - Las respuestas de la Intervención (FAVORABLE CONCESIÓN, FAVORABLE CON OBS) se graban **por lotes**: cientos de expedientes en el mismo minuto.
 
 ## 3i. Revisión del mockup v31 frente a los datos (18/11)
 
