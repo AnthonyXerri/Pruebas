@@ -493,6 +493,14 @@ Además, Nexus (pagos, Intervención) y eReg (canal, tipo de asiento) tampoco es
   - clases propias: Anulación de Etapa, cambio de unidad a o desde la Intervención Delegada, documento requerido añadido o eliminado;
   - excluye también la apertura y la anulación del expediente, que ya son eventos.
 - **`DescripcionActividad` no debe mostrarse en las vistas** (DNI, nombres).
+- **18/11: `NatActividadRealizada` creado y funcionando.**
+  - La clasificación funciona: Anulación de Etapa, Anulación de Hito, hitos con su texto, Envío a Intervención, cambio de unidad a la Intervención o a la Sección, documento requerido añadido o eliminado, notificación, acuse, ICDA, firma…
+  - `IdEtapa` viene casi siempre vacío, así que la relación con `NatEtapas` solo existe en unas pocas anotaciones. Es normal.
+  - **`DescripcionActividad` contiene DNI y nombres de firmantes:** no pegarla ni mostrarla.
+- **Se ve en la muestra:**
+  - **El envío a la Intervención** se graba junto con el «Cambio de unidad: Intervención Delegada», en el mismo segundo.
+  - **El requerimiento** sigue la secuencia: genera «01- Notificación Requerimiento» → firma → notificación telemática → acuse.
+  - **La resolución favorable** aparece como hito con hora 00:00, por lotes.
 
 ## 3i. Revisión del mockup v31 frente a los datos (18/11)
 
