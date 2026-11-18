@@ -15,9 +15,9 @@ Prefijo `Nat` y etiqueta **Natalidad**. Memoria detallada: `natalidad/MEMORIA_NA
 | C | Bitácora: `NatActividadRealizada` ✅ (anulaciones de etapa, hitos, envío a la Intervención, cambios de unidad, documentos requeridos, notificaciones y acuses, ICDA, cambio de convocatoria; la última actuación sale de su `Time`). Pendiente: revisar los otros eventos de PnC (hitos, notificaciones, documentos, actividad inicio/resolución, automáticos, fase) por si aportan algo que no esté | `GSTA_V_CEL_ACTIVIDAD` | Reprocesos, requerimientos, Intervención, expedientes sin actividad, explorador | ▶ siguiente |
 | D | `NatNotificaciones` ✅ (todas, con fecha de acuse y tipo). Documentos aportados y elaborados, e hitos: ya cubiertos en la bitácora y en `NatExpedienteResuelto`; revisar los eventos de PnC solo si falta algo | `GSTA_V_CEL_NOTIFICACION`, `GSTA_V_CEL_DOC_*`, `GSTA_V_CEL_HITO` | Notificación y acuse del requerimiento, aportaciones, plazo vencido | ✅ lo principal |
 | E ✅ | `NatInteresados` (edad en tramos, nacionalidad, país, municipio; sin nombres ni DNI) | `GSTA_V_INTERESADOS` | Composición | Pendiente |
-| F ▶ siguiente | Completar `NatExpedientes`: `REF_SOLICITUD`, año y nombre de la convocatoria (`GSTA_V_EXPEDIENTE`), nombre del procedimiento | `GSTA_V_CEL_EXPEDIENTE`, `GSTA_V_EXPEDIENTE`, `GSTA_V_CEL_CAT_PROC` | Filtros, enlace futuro con eReg | Pendiente |
+| F ✅ | Completar `NatExpedientes`: `REF_SOLICITUD`, año y nombre de la convocatoria (`GSTA_V_EXPEDIENTE`), nombre del procedimiento | `GSTA_V_CEL_EXPEDIENTE`, `GSTA_V_EXPEDIENTE`, `GSTA_V_CEL_CAT_PROC` | Filtros, enlace futuro con eReg | Pendiente |
 | G ✅ (no están: se piden) | Búsquedas: revisión de conformidad, fichero o tercero de Nexus, plazo de requerimiento (`LIKE` en la bitácora y en los hitos) | Bitácora, hitos | «Revisados sin proponer», subestados de terceros | Pendiente |
-| H | Test changes, perspectiva («Natalidad»), Knowledge Model (KPIs en PQL) y View | — | El cuadro | Con Roberto |
+| H ▶ siguiente | Test changes, perspectiva («Natalidad»), Knowledge Model (KPIs en PQL) y View | — | El cuadro | Con Roberto |
 
 Para cada evento de PnC que se copie: ver su SQL, atributos y relaciones; crear el evento Nat (tipos bien puestos); relaciones; transformación con PRATLX_RO; Preview; Save with Validation.
 

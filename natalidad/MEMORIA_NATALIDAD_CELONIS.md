@@ -555,6 +555,13 @@ Consulta: `natalidad/sql/00h_buscar_revision_terceros.sql`.
 - **Documentos elaborados a mano** con el mes de nómina en el título (pagos únicos, modificaciones positivas o negativas, bajas, resolución favorable de nómina…). Son pocos, de texto libre, llevan el nombre del gestor y **no sirven para medir**.
 - **Decisión:** la revisión de conformidad (fecha y marca), el mes de nómina propuesto y los pasos de terceros en Nexus **se piden a la unidad, a Atlantix (tabla propia) o a Nexus**. No se siguen buscando en la bitácora.
 
+## 3h13. `NatExpedientes` completado (bloque F, 18/11)
+
+- **Atributos nuevos:** `ReferenciaSolicitud` (`REF_SOLICITUD`), `CodigoSolicitud` (`CD_SOLICITUD` de `GSTA_V_EXPEDIENTE`) y `Convocatoria` (`DS_CONVOCATORIA`).
+- **`ReferenciaSolicitud` = `CodigoSolicitud`** y tienen formato de **número de registro de eReg** (`NN/NNNNNN.N/AA`). **Es la clave para unir con eReg** cuando lleguen sus datos. Es un dato sensible: no copiarlo fuera de Celonis.
+- **El salto de 2026, explicado en parte:** muchas solicitudes **presentadas en 2025** tienen convocatoria **2026**. Encaja con la bitácora («Se ha cambiado el expediente a la convocatoria AFN1 - 2026», unos 4.500).
+  - Para comparar años, usar el **año de presentación**, no el de la convocatoria.
+
 ## 3i. Revisión del mockup v31 frente a los datos (18/11)
 
 Esta lista es la base de la tabla final de lo que falta (Atlantix, eReg, Nexus y unidad). Estados posibles:
