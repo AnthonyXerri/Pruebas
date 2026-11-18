@@ -57,7 +57,8 @@ INNER JOIN exp_nat n                       -- INNER: solo las filas de expedient
 ## 4. Estado y pendientes
 
 - [ ] Confirmar el nombre de la tabla de expedientes, de sus columnas y el código de aplicación de Natalidad.
-- [ ] Ver qué objeto creó Roberto (nombre) y completar sus atributos.
+- [x] Objeto de Roberto (18/11): **`NatExpedientes`** en «OCPM DataPool VALI…», namespace custom, etiqueta **Natalidad** (Custom Processes), descripción «Expedientes de Natalidad Atlantix». Solo tiene `ID` (PK, String). Los objetos de Atlantix de referencia llevan, probablemente, la etiqueta **«PnC ATL»**.
+- [ ] Completar los atributos y la transformación de `NatExpedientes`.
 - [ ] `NatProcedimiento`, `NatEtapa`, `NatDocumento` (y `NatExpediente`): atributos, transformación con el filtro y relaciones.
 - [ ] Eventos `Nat…`: todos los de Atlantix, con el mismo filtro.
 - [ ] Revisar con Roberto antes de Create version / Deploy.
