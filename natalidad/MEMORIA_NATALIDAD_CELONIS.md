@@ -441,6 +441,31 @@ Además, Nexus (pagos, Intervención) y eReg (canal, tipo de asiento) tampoco es
 - **Para Natalidad hacen falta sus plantillas:** catálogo en `natalidad/sql/00d_catalogo_doc_elaborada.sql`.
   - Con ellas: sentido de la resolución (favorable, denegación o desistimiento), **fecha de firma** («resolución firmada» del mockup) y, quizá, los documentos de requerimiento.
 
+## 3h8. Plantillas de documentos elaborados del 3163 (18/11)
+
+- **Los códigos de plantilla (`CDPLANTILLA`) cambian en cada convocatoria**, pero los **nombres** se mantienen, con un número delante. Por eso se clasifica por **nombre** con `UPPER(...) LIKE`.
+- **Tipos de plantilla** (expedientes aproximados, sumando todos los códigos):
+  - **01- Notificación Requerimiento documentación** ≈ 30.900. Las de 2022 (35024) casi nunca están firmadas.
+  - **06- Notificación Resolución Favorable Concesión** (y la 05 «exped. individual» y «Notificación de Resolución Favorable») ≈ 32.200. La resolución favorable parece **colectiva**, y lo individual es la notificación.
+  - **02- Resolución Denegatoria por Incumplimiento de Requisitos** ≈ 9.140 (la etapa RESOLUCIÓN DENEGACIÓN tiene 9.232 ✔).
+  - **03- Resolución Desestimiento** ≈ 2.990 (la etapa tiene 2.989 ✔).
+  - **16 - Notificación Modificación datos de la Ayuda** ≈ 3.560.
+  - **14- Notificación Baja** ≈ 190.
+  - **18 / 19 - Acuerdo / Resolución de procedimiento de Reintegro** ≈ 60.
+  - **Informe RR** (recursos de reposición: incumplimiento, desistimiento, estimatoria, baja…) ≈ 120.
+  - «07 -____» es una plantilla en blanco, sin firmar: se ignora.
+- **`NatExpedienteResuelto`** (`natalidad/sql/07_evento_NatExpedienteResuelto.sql`):
+  - plantillas favorable, denegatoria y desistimiento, sin los Informe RR;
+  - **`Time` = firma (si `ITESTADO = 'F'`) > generación > `FCRESOLUCION`**;
+  - `SentidoResolucion` = Favorable / Denegación / Desistimiento / Sin documento.
+  - Unos 2.600 favorables (por etapa) no tienen documento: se quedan con `FCRESOLUCION`.
+- **Otros usos de estas plantillas:**
+  - **01** → evento de requerimiento (con firma);
+  - **16** → modificación;
+  - **14** → baja;
+  - **18 / 19** → reintegro;
+  - **Informe RR** → recursos.
+
 ## 3i. Revisión del mockup v31 frente a los datos (18/11)
 
 Esta lista es la base de la tabla final de lo que falta (Atlantix, eReg, Nexus y unidad). Estados posibles:
