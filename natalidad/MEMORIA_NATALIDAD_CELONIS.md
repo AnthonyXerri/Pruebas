@@ -107,7 +107,10 @@ Solo estructura (nombres y tipos de atributos), vista el 18/11:
 ## 4. Estado y pendientes
 
 - [x] Tabla y columnas: `GSTA_V_CEL_EXPEDIENTE`, `CDAPLICACION`, `CDEXPEDIENTE`.
-- [ ] Confirmar el código de aplicación de Natalidad con `00_comprobar_codigos.sql`.
+- [x] **`D032` existe** en `GSTA_V_CEL_EXPEDIENTE` (18/11). Roberto ya había pegado en `NatExpedientes` la SQL de PnC con `CDAPLICACION = 'D032'`; está guardada y su Data Source es OCPM DataPool IMPLEMENTA…
+  - Aplicaciones en la vista: `BSTE` (1 procedimiento: 2906, ¿Bono Social Térmico?), `PNCA` (0375, 1922) y `D032`.
+  - **`D032` tiene 12 procedimientos:** 0296, 1246, 3163, 3224, 3252, 3331, 3356, 3559, 3630, 3656, 4068, 4074. Falta saber si **todos son de Natalidad** o si `D032` abarca más ayudas de la Consejería.
+- **Truco del editor:** *Preview selection* solo muestra las columnas mapeadas al objeto (el `ID`) y exige que haya columna `ID`. Para ver otras columnas, usar *Execute query selection* o meter la información en el `ID` concatenando con `||`.
 - [x] Objeto de Roberto (18/11): **`NatExpedientes`** en «OCPM DataPool VALI…», namespace custom, etiqueta **Natalidad** (Custom Processes), descripción «Expedientes de Natalidad Atlantix». Solo tiene `ID` (PK, String). Los objetos de Atlantix de referencia llevan, probablemente, la etiqueta **«PnC ATL»**.
 - [ ] Completar los atributos y la transformación de `NatExpedientes`.
 - [ ] `NatProcedimiento`, `NatEtapa`, `NatDocumento` (y `NatExpediente`): atributos, transformación con el filtro y relaciones.
