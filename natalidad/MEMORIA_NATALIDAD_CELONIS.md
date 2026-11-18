@@ -237,7 +237,7 @@ Además, Nexus (pagos, Intervención) y eReg (canal, tipo de asiento) tampoco es
 - **El objeto no tiene fechas.** Cuándo empieza y termina cada etapa saldrá de los eventos `EtapaIniciada` y `EtapaFinalizada`.
 - **Catálogo completo** (18/11). Expedientes del 3163 que pasan por cada etapa (`DSETAPA`, todos los años):
 
-| Etapa | Exp. | Grupo propuesto |
+| Etapa | Exp. | Grupo inicial (sustituido por `Fase`, ver abajo) |
 |---|---|---|
 | GESTIÓN EXPEDIENTE | 52.983 | 1. Gestión |
 | REQUERIMIENTO | 6.001 | 1. Gestión |
@@ -275,8 +275,24 @@ Además, Nexus (pagos, Intervención) y eReg (canal, tipo de asiento) tampoco es
   - Tipo de resolución (favorable, denegación o desistimiento).
   - Modificaciones y bajas.
   - Pago único.
-- **El mockup NO tiene fases.** `GrupoEtapa` sirve para filtrar por etapa y agrupar el explorador, no para crear fases nuevas en el cuadro.
-- **Propuesta:** atributo `GrupoEtapa` (CASE sobre `DSETAPA`) en `NatEtapas`, en `natalidad/sql/02_objeto_NatEtapas.sql`. **Por validar con la unidad.** Si alguna etapa no casa, queda como «Sin clasificar».
+- **El mockup SÍ tiene fases** (v31, `const FASES`). Su catálogo dice «etapas administrativas de Atlantix (**procedimiento 3163**, documento E2E)», lo que **confirma el filtro 3163**.
+  - Las fases del mockup son:
+    1. Entrada (registro → alta), que no es una etapa de Atlantix.
+    2. Gestión del expediente.
+    3. Validación de terceros.
+    4. Intervención.
+    5. Resolución y pago.
+  - Las modificaciones van en mantenimiento.
+- **Atributo `Fase` en `NatEtapas`** (CASE sobre `DSETAPA`, en `natalidad/sql/02_objeto_NatEtapas.sql`):
+  - **2. Gestión del expediente:** GESTIÓN EXPEDIENTE, REQUERIMIENTO.
+  - **3. Validación de terceros:** PROPUESTA FAVORABLE, VALIDACIÓN TERCERO. En el mockup, tras la propuesta favorable el expediente pasa a terceros.
+  - **4. Intervención:** PTE. ENVÍO INTERVENCIÓN, INTERVENCIÓN CONCESIÓN, ACTUACIÓN INTERESADA y DEV A INSTANCIA PROMO (respuestas no favorables).
+  - **5. Resolución y pago:** FAVORABLE CONCESIÓN, FAVORABLE CON OBS, RESOLUCIÓN FAVORABLE. El primer pago vendrá de Nexus.
+  - **Fin sin concesión:** RESOLUCIÓN DENEGACIÓN, RESOLUCIÓN DESESTIMIENTO.
+  - **Mantenimiento:** modificaciones, bajas e incidencias.
+  - **Pago único.**
+  - Lo que no case queda como «Sin clasificar».
+- **Etapas del mockup que no aparecen en los datos del 3163:** «No Fiscalizable Concesión» y «Desfavorable Concesión».
 
 ## 4. Estado y pendientes
 

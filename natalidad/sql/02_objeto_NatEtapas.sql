@@ -3,7 +3,7 @@
 -- Patrón de Roberto: CTE con los expedientes de Natalidad + INNER JOIN (solo quedan las etapas de esos expedientes).
 -- La columna "NatExpedientes" es la relación con el objeto NatExpedientes (FK; relación 1 — N creada antes).
 -- Data Source: OCPM DataPool IMPLEMENTACION _Conexión Producción PRATLX_RO.
--- IDETAPA cambia cada convocatoria/año: para agrupar se usa DSETAPA (GrupoEtapa, propuesta del 18/11, por validar).
+-- IDETAPA cambia cada convocatoria/año: para agrupar se usa DSETAPA. "Fase" = fases del mockup v31 (const FASES).
 WITH Expedientes AS (
     SELECT DISTINCT CDEXPEDIENTE
     FROM "GSTA_V_CEL_EXPEDIENTE"
@@ -15,28 +15,29 @@ SELECT DISTINCT
     CAST("IDETAPA" AS VARCHAR)            AS "IDEtapa",
     "DSETAPA"                             AS "DescripcionEtapa",
     "CONFISCALIZACION"                    AS "Confiscalizacion",
-    CASE
+    CASE   -- fases del mockup v31 (FASES): 1. Entrada no es etapa de Atlantix (sale de las fechas del expediente)
         WHEN "DSETAPA" IN ('GESTIÓN EXPEDIENTE', 'REQUERIMIENTO')
-            THEN '1. Gestión'
-        WHEN "DSETAPA" IN ('VALIDACIÓN TERCERO', 'PROPUESTA FAVORABLE')
-            THEN '2. Propuesta'
+            THEN '2. Gestión del expediente'
+        WHEN "DSETAPA" IN ('PROPUESTA FAVORABLE', 'VALIDACIÓN TERCERO')
+            THEN '3. Validación de terceros'
         WHEN "DSETAPA" IN ('PTE. ENVÍO INTERVENCIÓN', 'INTERVENCIÓN CONCESIÓN',
-                           'FAVORABLE CONCESIÓN', 'FAVORABLE CON OBS CONCESIÓN',
-                           'DEV A INSTANCIA PROMO CONCESIÓN', 'ACTUACIÓN INTERESADA CONCESIÓN')
-            THEN '3. Intervención'
-        WHEN "DSETAPA" IN ('RESOLUCIÓN FAVORABLE', 'RESOLUCIÓN DENEGACIÓN', 'RESOLUCIÓN DESESTIMIENTO')
-            THEN '4. Resolución'
+                           'ACTUACIÓN INTERESADA CONCESIÓN', 'DEV A INSTANCIA PROMO CONCESIÓN')
+            THEN '4. Intervención'
+        WHEN "DSETAPA" IN ('FAVORABLE CONCESIÓN', 'FAVORABLE CON OBS CONCESIÓN', 'RESOLUCIÓN FAVORABLE')
+            THEN '5. Resolución y pago'
+        WHEN "DSETAPA" IN ('RESOLUCIÓN DENEGACIÓN', 'RESOLUCIÓN DESESTIMIENTO')
+            THEN 'Fin sin concesión'
         WHEN "DSETAPA" IN ('MODIFICACIÓN CONCESIÓN', 'RESOLUCIÓN MODIFICACIÓN', 'RESOLUCIÓN BAJA',
                            'PTE.ENVÍO MODIFICACIÓN ECONÓM. NEGATIVA', 'PTE.ENVÍO MODIFICACIÓN ECONÓM. POSITIVA',
                            'PTE.ENVÍO MODIFICACIÓN SIN REPERC. ECONÓM.', 'PTE.ENVÍO BAJA DE LA AYUDA',
                            'INTERV INCIDEND. NEGATIVA', 'INTERV INCIDEND. POSITIVA', 'INTERV INCIDEND. BAJA AYUDA',
                            'INTERV SIN VARIAC. IMP. AYUDA', 'FAVORABLE INCIDENCIA', 'FAVORABLE CON OBS INCIDENCIA',
                            'DEV A INSTANCIA PROMO INCIDENCIA', 'ACTUACIÓN INTERESADA INCIDENCIA')
-            THEN '5. Mantenimiento'
+            THEN 'Mantenimiento'
         WHEN "DSETAPA" IN ('PTE. ENVIO INTERV. PAGO UNICO', 'INTERVENCION PAGO UNICO')
-            THEN '6. Pago único'
+            THEN 'Pago único'
         ELSE 'Sin clasificar'
-    END                                   AS "GrupoEtapa",
+    END                                   AS "Fase",
     "GSTA_V_CEL_ETAPA"."CDEXPEDIENTE"     AS "NatExpedientes"
 FROM "GSTA_V_CEL_ETAPA"
 INNER JOIN Expedientes
