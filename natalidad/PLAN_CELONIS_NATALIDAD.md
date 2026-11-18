@@ -63,7 +63,7 @@ Para cada evento de PnC que se copie: ver su SQL, atributos y relaciones; crear 
 
 ## Petición de datos (18/11)
 
-- **Para enviar a la Comunidad:** `mockups/Datos_que_faltan_Natalidad.xlsx`, una sola tabla sencilla (Campo | Tabla | Columna | Catálogo, por sistema; en blanco y amarillo lo que falta). Se genera con `natalidad/gen_tabla_peticion.py`.
+- **Para enviar a la Comunidad:** `mockups/Datos_que_faltan_Natalidad.xlsx`, una sola tabla sencilla con solo lo que falta: 21 datos por sistema (Nº | Qué necesitamos | Para qué lo usamos | Prioridad | ¿Dónde está?, esta última en amarillo para que la rellenen). Se genera con `natalidad/gen_tabla_peticion.py`.
 - **Detalle interno:** `mockups/Datos_que_faltan_Natalidad_detalle.xlsx`, tres hojas, generadas con `natalidad/gen_datos_que_faltan.py`.
   - **Qué pedir:** 30 datos (eReg 5, Atlantix propias 13, Nexus 7, unidad 5), con estado, prioridad y columnas amarillas para que rellenen tabla, columna e histórico.
   - **Dudas a confirmar:** 10.
