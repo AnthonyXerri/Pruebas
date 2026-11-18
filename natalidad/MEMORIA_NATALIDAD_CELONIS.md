@@ -352,6 +352,22 @@ Además, Nexus (pagos, Intervención) y eReg (canal, tipo de asiento) tampoco es
   - Claves: `CD_EXPEDIENTE`, `CD_APLICACION` (no tiene procedimiento: se filtra con `IN` sobre la vista CEL).
 - **Sin canal ni tipo de solicitud.**
 - **Comprobación:** `natalidad/sql/00b_comprobar_GSTA_V_EXPEDIENTE.sql`.
+- **Resultado (18/11), 3163 por convocatoria:**
+
+  | Código | Convocatoria | Expedientes | Con `CD_SOLICITUD` |
+  |---|---|---|---|
+  | AFN1 | Ayudas Fomento Natalidad 2022 | 7.189 | 7.066 |
+  | AFN2 | Ayudas Fomento Natalidad 2023 | 10.388 | 10.294 |
+  | AFN1 | Ayudas Fomento de la Natalidad 2024 | 9.455 | 9.406 |
+  | AFN1 | Ayudas Fomento de la Natalidad 2025 | 6.631 | 6.587 |
+  | AFN1 | Ayudas Fomento Natalidad 2026 | 19.712 | 19.620 |
+
+  - **AFN1 / AFN2 no son tipos de ayuda:** hay **una convocatoria por año**, y el año está en `DS_CONVOCATORIA` y `NM_EJERCICIO_CONV`. El código se repite entre años. La suma, 53.375, cuadra con el total del 3163.
+  - **`CD_SOLICITUD`** está en el 99 % de los expedientes. Es la candidata a **clave para unir con eReg**: hay que confirmar qué es.
+  - **`DIAS_TRAM` va de 0 a unos 600:** son **días transcurridos**, no el plazo normativo. El plazo lo tiene que dar la unidad.
+  - **`DIAS_NOTIF`** está siempre vacío.
+  - **`N_INTE`** va de 0 a 3 (número de interesados del expediente).
+  - **2026 tiene casi el triple que 2025:** ¿cambio de convocatoria, de criterio de alta o incluye otros expedientes? Preguntar.
 
 ## 3i. Revisión del mockup v31 frente a los datos (18/11)
 
