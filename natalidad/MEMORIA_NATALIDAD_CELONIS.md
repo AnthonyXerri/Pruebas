@@ -529,6 +529,17 @@ Además, Nexus (pagos, Intervención) y eReg (canal, tipo de asiento) tampoco es
   - **No usar (identifican a la persona):** `DS_CIF` (número de documento), nombre y apellidos, teléfonos, email, todo el domicilio (vía, número, portal, piso, puerta, código postal).
   - **No hay nacionalidad ni país de nacimiento.** Aproximación posible: **tipo de documento** (DNI → española; NIE o pasaporte → extranjera). Confirmarlo con la unidad. La nacionalidad real tiene que venir de la tabla propia de Natalidad.
 - **Catálogo de tipos:** `natalidad/sql/00f_catalogo_interesados.sql`.
+- **Tipos en el 3163** (recuentos del 18/11):
+  - Interesado / principal S: NIF 40.845, NIE 12.462, Otros 52, Pasaporte 4. Son unos 53.360, uno por expediente: **la solicitante**.
+  - Representantes: unos 2.200 (NIF, CIF, NIE).
+  - Interesados no principales: unos 300.
+  - `GRUPO_INTE` está siempre vacío.
+- **Aproximación por documento:** unas **23 % de las solicitantes tienen NIE** (extranjeras), según el documento.
+- **`NatInteresados`** (`natalidad/sql/11_objeto_NatInteresados.sql`):
+  - `EsSolicitante`, `TipoInteresado`, `TipoDocumento`, `NacionalidadAprox`;
+  - `TramoEdad` (menos de 20, 20-24, 25-29, 30-34, 35-39, 40 o más);
+  - `MedioNotificacion`, provincia y municipio de residencia;
+  - relación 1 — N con `NatExpedientes`.
 
 ## 3i. Revisión del mockup v31 frente a los datos (18/11)
 
