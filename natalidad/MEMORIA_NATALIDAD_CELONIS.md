@@ -105,6 +105,32 @@ Solo estructura (nombres y tipos de atributos), vista el 18/11:
   - `00_comprobar_codigos.sql`: lista las aplicaciones y los procedimientos de la vista, para confirmar el código de Natalidad.
   - `01_objeto_NatExpedientes.sql`: la SQL del objeto `NatExpedientes`.
 
+## 3d. Lo que se ve en `NatExpedientes` (Preview del 18/11, unas 100 filas; sin datos)
+
+- **El filtro funciona:** todo es del procedimiento 3163 y de la Sección de Ayudas Económicas a la Natalidad (`IdUnidad` siempre igual).
+- **`DescripcionEstado` no sirve para seguir el proceso:** casi todo sale «Iniciado», aunque tenga fecha de resolución; solo aparece también «Anulado». El avance real del expediente tendrá que salir de etapas e hitos.
+- **`IdEstado` no es un código de estado común:** va por convocatoria y ejercicio (un valor distinto por año y por estado). Para estados, usar `DescripcionEstado`.
+- **`CodigoConvocatoria`:** AFN1 y AFN2. ¿Qué diferencia hay entre las dos líneas? Preguntar.
+- **`EjercicioConvocatoria`** es el año de la convocatoria y puede no coincidir con el año del expediente.
+- **Las tres fechas de entrada** (`FechaPresentacionInteresado`, `FechaEntradaSistemaRegistro`, `FechaEntradaRegistroConsejeria`) son **iguales** en la muestra.
+- **`FechaInicio`** (alta en Atlantix) llega días o meses después del registro: sirve para medir el tiempo de registro a alta.
+- **`FechaResolucion`:**
+  - Está vacía en muchos expedientes.
+  - Muchas llevan hora 00:00:00 y se repiten los mismos días: parecen resoluciones por lotes o fechas de efecto.
+- **Columnas siempre vacías en la muestra:** `FechaCierre`, `FechaFinTramitacion`, `UsuarioAsignado`. En los anulados, solo hay `FechaAnulacion` y no hay fechas de entrada.
+- **Lo que cubre el objeto del mockup:**
+  - Entradas (fecha de registro).
+  - Alta, resolución y anulación.
+  - Convocatoria y ejercicio.
+- **Lo que falta, por buscar en otras tablas:**
+  - Histórico de etapas e hitos.
+  - Tipo de solicitud, número de hijos y fechas del menor.
+  - Datos de la solicitante.
+  - Requerimientos y notificaciones.
+  - Revisión de conformidad, propuesta a nómina, Intervención y pagos (Nexus).
+  - Tipo de resolución y motivo de denegación.
+  - Bajas y modificaciones.
+
 ## 4. Estado y pendientes
 
 - [x] Tabla y columnas: `GSTA_V_CEL_EXPEDIENTE`, `CDAPLICACION`, `CDEXPEDIENTE`.
