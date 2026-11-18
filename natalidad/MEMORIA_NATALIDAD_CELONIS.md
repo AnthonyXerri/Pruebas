@@ -459,6 +459,12 @@ Además, Nexus (pagos, Intervención) y eReg (canal, tipo de asiento) tampoco es
   - **`Time` = firma (si `ITESTADO = 'F'`) > generación > `FCRESOLUCION`**;
   - `SentidoResolucion` = Favorable / Denegación / Desistimiento / Sin documento.
   - Unos 2.600 favorables (por etapa) no tienen documento: se quedan con `FCRESOLUCION`.
+- **18/11: `NatExpedienteResuelto` creado y funcionando** (11 atributos, relación con `NatExpedientes`). El Preview cuadra: sentido Favorable / Denegación / Desistimiento y `Time` con la hora de la firma.
+- **⚠ Duda de fechas para la unidad:**
+  - **Favorables:** `FCRESOLUCION` (00:00, por lotes, por ejemplo 16/03/2026) va **antes** que la firma de la «06- Notificación» (por ejemplo 16/04/2026). Parece que la resolución favorable es **colectiva** (`FCRESOLUCION`) y la notificación individual llega en torno a un mes después.
+  - **Denegaciones y desistimientos:** `FCRESOLUCION` lleva hora y va semanas o meses antes de la firma del documento.
+  - **Pregunta:** ¿qué fecha cuenta como «resolución» para el plazo, la de `FCRESOLUCION` o la firma del documento? De momento, `Time` = firma. `FechaResolucionExpediente` queda guardada para poder cambiarlo.
+  - **2022:** las notificaciones favorables (plantilla 35027) no están firmadas en Atlantix, así que se usa la fecha de generación (00:00).
 - **Otros usos de estas plantillas:**
   - **01** → evento de requerimiento (con firma);
   - **16** → modificación;
