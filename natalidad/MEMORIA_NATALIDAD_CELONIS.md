@@ -510,6 +510,12 @@ Además, Nexus (pagos, Intervención) y eReg (canal, tipo de asiento) tampoco es
   - **todas** las notificaciones, `Time` = `FCNOTIFICACION`, con `Fecha Acuse` y `ConAcuse` como atributos. Así se calcula el **plazo del requerimiento** y se ven las que no tienen acuse.
   - `TipoNotificacion` sale del título: Requerimiento / Resolución favorable / Denegación / Desistimiento / Modificación / Baja / Reintegro / Otra.
   - El acuse como actividad ya está en `NatActividadRealizada`.
+- **Catálogo de títulos (18/11, el número de expediente se quita con `SUBSTRING(TITULO FROM 24)`):**
+  - **Requerimientos** («REQUERIMIENTO», «REQUERIMIENTO DE DOCUMENTACIÓN», «AEN REQUERIMIENTO …»): unas 20.000 notificaciones, con acuse alrededor del 85 %.
+  - **Resoluciones con el sentido en el título:** «AEN RESOLUCION FAVORABLE(S) / FAV <MES> <AÑO>», «AEN RESOLUCION DESISTIMIENTO».
+  - **Resoluciones sin sentido en el título:** «RESOLUCIÓN», «RESOLUCIÓN 2022», «AEN RESOLUCIÓN MARZO 2023», «RESOLUCION D.».
+  - **Las favorables van por lotes mensuales:** el título lleva el mes y el año. Confirma que la resolución favorable es **colectiva y mensual**.
+  - «AEN» parece el prefijo del procedimiento (¿Ayudas Económicas Natalidad?).
 
 ## 3i. Revisión del mockup v31 frente a los datos (18/11)
 
