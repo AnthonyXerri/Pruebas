@@ -235,7 +235,48 @@ Además, Nexus (pagos, Intervención) y eReg (canal, tipo de asiento) tampoco es
   - **Salidas:** RESOLUCIÓN DENEGACIÓN, RESOLUCIÓN DESESTIMIENTO.
   - **Después de conceder:** MODIFICACIÓN CONCESIÓN, INTERVENCION PAGO UNICO (`S`).
 - **El objeto no tiene fechas.** Cuándo empieza y termina cada etapa saldrá de los eventos `EtapaIniciada` y `EtapaFinalizada`.
-- Pendiente: sacar el catálogo completo de etapas con su recuento (consulta de comprobación) para definir las fases del cuadro.
+- **Catálogo completo** (18/11). Expedientes del 3163 que pasan por cada etapa (`DSETAPA`, todos los años):
+
+| Etapa | Exp. | Grupo propuesto |
+|---|---|---|
+| GESTIÓN EXPEDIENTE | 52.983 | 1. Gestión |
+| REQUERIMIENTO | 6.001 | 1. Gestión |
+| VALIDACIÓN TERCERO | 38.368 | 2. Propuesta |
+| PROPUESTA FAVORABLE | 38.368 | 2. Propuesta |
+| PTE. ENVÍO INTERVENCIÓN | 37.792 | 3. Intervención |
+| INTERVENCIÓN CONCESIÓN | 37.790 | 3. Intervención |
+| FAVORABLE CONCESIÓN | 34.105 | 3. Intervención (respuesta) |
+| FAVORABLE CON OBS CONCESIÓN | 764 | 3. Intervención (respuesta) |
+| ACTUACIÓN INTERESADA CONCESIÓN | 156 | 3. Intervención (respuesta) |
+| DEV A INSTANCIA PROMO CONCESIÓN | 14 | 3. Intervención (respuesta) |
+| RESOLUCIÓN FAVORABLE | 34.869 | 4. Resolución |
+| RESOLUCIÓN DENEGACIÓN | 9.232 | 4. Resolución |
+| RESOLUCIÓN DESESTIMIENTO | 2.989 | 4. Resolución |
+| MODIFICACIÓN CONCESIÓN | 15.241 | 5. Mantenimiento |
+| FAVORABLE INCIDENCIA | 3.725 | 5. Mantenimiento |
+| RESOLUCIÓN MODIFICACIÓN | 3.590 | 5. Mantenimiento |
+| PTE.ENVÍO MODIFICACIÓN ECONÓM. NEGATIVA / INTERV INCIDEND. NEGATIVA | 2.619 | 5. Mantenimiento |
+| PTE.ENVÍO MODIFICACIÓN ECONÓM. POSITIVA / INTERV INCIDEND. POSITIVA | 973 | 5. Mantenimiento |
+| PTE.ENVÍO BAJA DE LA AYUDA / INTERV INCIDEND. BAJA AYUDA | 195 | 5. Mantenimiento |
+| RESOLUCIÓN BAJA | 192 | 5. Mantenimiento |
+| DEV A INSTANCIA PROMO INCIDENCIA | 109 | 5. Mantenimiento |
+| PTE.ENVÍO MODIFICACIÓN SIN REPERC. ECONÓM. / INTERV SIN VARIAC. IMP. AYUDA | 72 | 5. Mantenimiento |
+| FAVORABLE CON OBS INCIDENCIA | 42 | 5. Mantenimiento |
+| ACTUACIÓN INTERESADA INCIDENCIA | 11 | 5. Mantenimiento |
+| PTE. ENVIO INTERV. PAGO UNICO / INTERVENCION PAGO UNICO | 573 | 6. Pago único |
+
+- **Lectura:**
+  - El camino de la concesión es Gestión → Validación del tercero y Propuesta → envío a la Intervención → respuesta de la Intervención (favorable, favorable con observaciones, actuación interesada o devolución) → Resolución.
+  - Las salidas son la denegación (9.232) y el desistimiento (2.989).
+  - El **mantenimiento** (modificaciones positivas o negativas, bajas, sin variación) también pasa por la Intervención.
+- **Cubre del mockup:**
+  - Requerimientos.
+  - Envío a la Intervención y tipo de respuesta.
+  - Tipo de resolución (favorable, denegación o desistimiento).
+  - Modificaciones y bajas.
+  - Pago único.
+- **El mockup NO tiene fases.** `GrupoEtapa` sirve para filtrar por etapa y agrupar el explorador, no para crear fases nuevas en el cuadro.
+- **Propuesta:** atributo `GrupoEtapa` (CASE sobre `DSETAPA`) en `NatEtapas`, en `natalidad/sql/02_objeto_NatEtapas.sql`. **Por validar con la unidad.** Si alguna etapa no casa, queda como «Sin clasificar».
 
 ## 4. Estado y pendientes
 
