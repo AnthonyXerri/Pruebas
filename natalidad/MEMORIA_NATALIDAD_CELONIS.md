@@ -163,6 +163,34 @@ Data source «OCPM DataPool IMPLEMENTACION _Conexión Producción PRATLX_RO», c
 
 Además, Nexus (pagos, Intervención) y eReg (canal, tipo de asiento) tampoco están. **Hay que preguntar a Roberto** si existen las tablas de la aplicación de Natalidad en Atlantix y si se pueden extraer.
 
+## 3f. Qué se copia (objetos y eventos del pool de validación, 18/11)
+
+- **Objetos:** son 17 en total. **No existen** los objetos «Procedimiento» ni «Documento». Lo que Roberto llamó así son, en la práctica:
+  - `PnCEtapas`;
+  - los **eventos** de documentos;
+  - el procedimiento, que es un atributo del expediente.
+- **Objetos de otros proyectos** (no se tocan): Cita, Despistaje, Entradas, Expediente, Solicitud, SolicitudDependencia, SolicitudesPnc, TFACS, Usuarios.
+
+**Plan de objetos `Nat`:**
+
+| Objeto PnC | Objeto Nat | Notas |
+|---|---|---|
+| `PnCExpedientes` | `NatExpedientes` | Hecho |
+| `PnCEtapas` | `NatEtapas` | Siguiente |
+| `PnCInteresados` | `NatInteresados` | Solo si sale de `GSTA_V_INTERESADOS`; si sale de `PNCA_INTERESADO`, no hay equivalente |
+| `PnCExpedienteDetalle`, `PnCPropuesta`, `PnCPropuestaMotivos`, `PnCRevision` | — | Tablas `PNCA_`, propias de PnC |
+
+**Eventos PnC → Nat:** son 54 eventos en total; 21 llevan prefijo PnC.
+- **Se copian 19, basados en tablas `GSTA_`:**
+  - Actividades: `ActividadInicio`, `ActividadRealizada`, `ActividadResolucion`, `EventosAutomaticos`.
+  - Documentos: `DocAportadosConsultadosAdministracion`, `DocumentosAportadosCiudadano`, `DocumentosElaborados`.
+  - Etapas y fases: `EtapaIniciada`, `EtapaFinalizada`, `Etapas` (ver qué es), `FaseIniciada`.
+  - Hitos y notificaciones: `Hitos`, `Notificaciones`.
+  - Expediente: `ExpedienteAbierto`, `ExpedienteAnulado`, `ExpedienteCerrado`, `ExpedienteFinalizado`, `ExpedienteResuelto`.
+  - Solicitud: `SolicitudPresentada`, `SolicitudRecibidaConsejeria`, `SolicitudRegistrada`.
+- **No se copian:** `PnCRevisionAbierta` y `PnCRevisionPropuesta`, que son propios de PnC.
+- **Antes de copiar cada uno:** comprobar en su SQL que lee de tablas `GSTA_` (si lee de `PNCA_`, no se copia).
+
 ## 4. Estado y pendientes
 
 - [x] Tabla y columnas: `GSTA_V_CEL_EXPEDIENTE`, `CDAPLICACION`, `CDEXPEDIENTE`.
