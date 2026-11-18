@@ -82,7 +82,12 @@ Solo estructura (nombres y tipos de atributos), vista el 18/11:
   - Cuantía mensual, cuantía anual, cuantía de tercera persona y atrasos.
   - Usuario y código del tramitador.
   - Es migrada.
-- `PnCPropuestaMotivos`, `PnCRevision`: pendientes de ver.
+- **`PnCRevision`** (21 + ID), propio de PnC (revisiones de la pensión):
+  - Número, año, tipo, código de tipo, origen y código de origen de la revisión.
+  - Motivo, situación, estado y resultado de la revisión.
+  - Motivo sin variación, situación según estado y es migrada.
+  - Fechas: apertura, entrada, primera propuesta, resolución, resolución del documento, efecto y última modificación.
+- `PnCPropuestaMotivos`: pendiente de ver.
 
 **Ojo:** Roberto habló de Procedimiento, Etapa y Documento, pero en «PnC ATL» no aparecen ni Procedimiento ni Documento. Pueden estar entre los otros 10 objetos o sin etiqueta. Hay que preguntarle cuáles son.
 
