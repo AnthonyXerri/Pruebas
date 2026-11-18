@@ -30,14 +30,14 @@ Crear en **Objects & Events** los objetos y eventos de Natalidad a partir de las
 
 ```sql
 WITH exp_nat AS (                         -- lista de expedientes de Natalidad, sin repetidos
-    SELECT DISTINCT e."C_EXPEDIENTE"
-    FROM "GSTA_BC_EXPEDIENTE" e
-    WHERE e."C_APLICACION" = 'D032'        -- código de Natalidad (por confirmar)
+    SELECT DISTINCT e."CDEXPEDIENTE"
+    FROM "GSTA_V_CEL_EXPEDIENTE" e
+    WHERE e."CDAPLICACION" = 'D032'        -- código de Natalidad (por confirmar)
 )
 SELECT ...
 FROM "<tabla del objeto o evento>" t
 INNER JOIN exp_nat n                       -- INNER: solo las filas de expedientes de Natalidad
-        ON n."C_EXPEDIENTE" = t."C_EXPEDIENTE"
+        ON n."CDEXPEDIENTE" = t."CDEXPEDIENTE"
 ```
 
 - **`INNER JOIN`:** deja solo las filas que casan con la lista. Con este patrón **no hace falta** repetir el filtro en el `WHERE`.
@@ -91,9 +91,23 @@ Solo estructura (nombres y tipos de atributos), vista el 18/11:
 
 **Ojo:** Roberto habló de Procedimiento, Etapa y Documento, pero en «PnC ATL» no aparecen ni Procedimiento ni Documento. Pueden estar entre los otros 10 objetos o sin etiqueta. Hay que preguntarle cuáles son.
 
+## 3c. La SQL de `PnCExpedientes` (vista el 18/11)
+
+- **Origen confirmado:** la vista **`GSTA_V_CEL_EXPEDIENTE`** (no `GSTA_BC_EXPEDIENTE`, como se oyó en la daily).
+  - Columnas clave: **`CDEXPEDIENTE`** (ID), **`CDAPLICACION`** y `CDPROCEDIMIENTO`.
+  - PnC filtra con `CDAPLICACION = 'PNCA'`.
+- **La vista tiene varias filas por expediente** (una por solicitud o registro):
+  - Las fechas de solicitud (`FC_SOL_INTERESADO`, `FC_SOL_EREG`, `FC_SOL_CONS`) y `FCCIERRE` se agregan con `MIN`.
+  - El resto de columnas va en el `GROUP BY`, para que salga una sola fila por expediente.
+- El nombre del procedimiento sale de un `CASE` con los códigos de PnC (0375, 1922, 3931). En Natalidad habrá que poner los suyos.
+- **Las SQL de Natalidad están en `natalidad/sql/`:**
+  - `00_comprobar_codigos.sql`: lista las aplicaciones y los procedimientos de la vista, para confirmar el código de Natalidad.
+  - `01_objeto_NatExpedientes.sql`: la SQL del objeto `NatExpedientes`.
+
 ## 4. Estado y pendientes
 
-- [ ] Confirmar el nombre de la tabla de expedientes, de sus columnas y el código de aplicación de Natalidad.
+- [x] Tabla y columnas: `GSTA_V_CEL_EXPEDIENTE`, `CDAPLICACION`, `CDEXPEDIENTE`.
+- [ ] Confirmar el código de aplicación de Natalidad con `00_comprobar_codigos.sql`.
 - [x] Objeto de Roberto (18/11): **`NatExpedientes`** en «OCPM DataPool VALI…», namespace custom, etiqueta **Natalidad** (Custom Processes), descripción «Expedientes de Natalidad Atlantix». Solo tiene `ID` (PK, String). Los objetos de Atlantix de referencia llevan, probablemente, la etiqueta **«PnC ATL»**.
 - [ ] Completar los atributos y la transformación de `NatExpedientes`.
 - [ ] `NatProcedimiento`, `NatEtapa`, `NatDocumento` (y `NatExpediente`): atributos, transformación con el filtro y relaciones.
