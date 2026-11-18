@@ -45,6 +45,17 @@ INNER JOIN exp_nat n                       -- INNER: solo las filas de expedient
 - **`LEFT JOIN`:** deja todas las filas de la tabla base y deja vacías las que no casan. Si se usa `LEFT JOIN` con la tabla de expedientes, el filtro `C_APLICACION = …` va en el `WHERE`.
 - Si una tabla no tiene `C_EXPEDIENTE` (por ejemplo, documentos que cuelgan de una etapa), se llega a él a través de la tabla que sí lo tenga.
 
+## 2b. Data Source de Natalidad (¡en cada transformación nueva!)
+
+- Las tablas de Atlantix (`GSTA_…`) están en **«OCPM DataPool IMPLEMENTACION _Conexión Producción PRATLX_RO»** (36 tablas).
+- Cada transformación nueva se abre con **None (Global)**, que es el pool de validación y no tiene esas tablas. Si no se cambia, da el error «Object 'GSTA_V_CEL_EXPEDIENTE' not found».
+- **Otras opciones del desplegable (no usar para Natalidad):**
+  - OCDM Schema.
+  - IMPLEMENTACION _Conexion DISCA - DESARROLLO a DSSOCIAL.
+  - IMPLEMENTACION _Conexion PnC PRODUCCION PRSOCIAL.
+  - IMPLEMENTACION _ Conexion DISCA PRODUCCION PRSOCIAL.
+  - CM-Consejeria Familia y Asuntos Sociales - PNC_global.
+
 ## 3. Lo aprendido en Dependencia que vale aquí
 
 - Todas estas notas vienen de `dependencia/MEMORIA_DEPENDENCIA_CELONIS.md`, sección 3.
