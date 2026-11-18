@@ -426,6 +426,21 @@ Además, Nexus (pagos, Intervención) y eReg (canal, tipo de asiento) tampoco es
   - Última actuación (días sin actuación).
   - **Antes de crearlos:** ver cómo están hechos los eventos de actividad de PnC.
 
+## 3h7. `PnCExpedienteResuelto` (18/11)
+
+- **`Time`** = `FCRESOLUCION` del expediente; si no hay, la **fecha de generación del documento de resolución** (`GSTA_V_CEL_DOC_ELABORADA.FCGENERACION`).
+  - El documento elegido es el primero (`ROW_NUMBER` por `FCGENERACION`) entre las **plantillas de resolución de PnC**: 96255 Aprobada, 96336 Denegatoria, 96333 Abono de impagados, 96353, 96358, 96269.
+- **Atributos:**
+  - `FechaResolucionExpediente`;
+  - `FechaGeneracionResolucion`;
+  - **`FechaFirmaRechazoResolucion`** (`FCFIRMARECHAZO`: **firma real**, con hora);
+  - `OrigenFecha`;
+  - **`SentidoResolucion`** (Denegatoria si la plantilla es 96336 o 96358; si no, Aprobatoria);
+  - `CodigoPlantilla`, `DescripcionPlantilla`, `EstadoDocumento` (`ITESTADO`, F = firmado).
+- **Columnas de `GSTA_V_CEL_DOC_ELABORADA`:** `CDEXPEDIENTE`, `FCGENERACION`, `FCFIRMARECHAZO`, `CDPLANTILLA`, `DSPLANTILLA`, `ITESTADO`…
+- **Para Natalidad hacen falta sus plantillas:** catálogo en `natalidad/sql/00d_catalogo_doc_elaborada.sql`.
+  - Con ellas: sentido de la resolución (favorable, denegación o desistimiento), **fecha de firma** («resolución firmada» del mockup) y, quizá, los documentos de requerimiento.
+
 ## 3i. Revisión del mockup v31 frente a los datos (18/11)
 
 Esta lista es la base de la tabla final de lo que falta (Atlantix, eReg, Nexus y unidad). Estados posibles:
