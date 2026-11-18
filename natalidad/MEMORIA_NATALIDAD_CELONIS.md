@@ -472,6 +472,28 @@ Además, Nexus (pagos, Intervención) y eReg (canal, tipo de asiento) tampoco es
   - **18 / 19** → reintegro;
   - **Informe RR** → recursos.
 
+## 3h9. `PNCActividadRealizada` → `NatActividadRealizada` (18/11)
+
+- **PnC usa `GSTA_V_CEL_ACTIVIDAD`**, no `GSTA_REGISTRO_ACTIVIDAD`. Columnas:
+  - `CDEXPEDIENTE`;
+  - `ORDEN` (número de la anotación dentro del expediente);
+  - `IDETAPA`;
+  - `FCACTIVIDAD`;
+  - `ITAUTOMATICA`;
+  - `USUARIO` (login: **sensible**);
+  - `DSACTIVIDAD` (texto, **puede llevar DNI y nombres**).
+- **SQL de PnC:**
+  - `ID = 'ActividadRealizada_' + expediente + ORDEN`;
+  - relaciones con la etapa (`'Etapa_' + IDETAPA + expediente`) y con el expediente;
+  - **CASE con `LIKE`** que agrupa `DSACTIVIDAD` en unas 40 clases;
+  - excluye «Finalización de la Etapa» (ya en el evento) y los errores labelsMessage.
+  - Añade el perfil del usuario con tablas `PNCA_` (gestor, especialidad, jefe de sección).
+- **Versión Natalidad** (`natalidad/sql/09_evento_NatActividadRealizada.sql`):
+  - **sin usuarios**: el mockup no mide por persona, las tablas de gestores son de PnC y los logins son sensibles;
+  - clases propias: Anulación de Etapa, cambio de unidad a o desde la Intervención Delegada, documento requerido añadido o eliminado;
+  - excluye también la apertura y la anulación del expediente, que ya son eventos.
+- **`DescripcionActividad` no debe mostrarse en las vistas** (DNI, nombres).
+
 ## 3i. Revisión del mockup v31 frente a los datos (18/11)
 
 Esta lista es la base de la tabla final de lo que falta (Atlantix, eReg, Nexus y unidad). Estados posibles:
