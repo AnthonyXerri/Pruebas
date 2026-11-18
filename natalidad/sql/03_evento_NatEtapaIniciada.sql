@@ -51,9 +51,15 @@ SELECT
             THEN '5. Resolución y pago'
         WHEN "DSETAPA" IN ('RESOLUCIÓN DENEGACIÓN', 'RESOLUCIÓN DESESTIMIENTO')
             THEN 'Fin sin concesión'
+        WHEN "DSETAPA" IN ('MODIFICACIÓN CONCESIÓN', 'RESOLUCIÓN MODIFICACIÓN', 'RESOLUCIÓN BAJA',
+                           'PTE.ENVÍO MODIFICACIÓN ECONÓM. NEGATIVA', 'PTE.ENVÍO MODIFICACIÓN ECONÓM. POSITIVA',
+                           'PTE.ENVÍO MODIFICACIÓN SIN REPERC. ECONÓM.', 'PTE.ENVÍO BAJA DE LA AYUDA',
+                           'INTERV INCIDEND. NEGATIVA', 'INTERV INCIDEND. POSITIVA', 'INTERV INCIDEND. BAJA AYUDA',
+                           'INTERV SIN VARIAC. IMP. AYUDA', 'FAVORABLE INCIDENCIA', 'FAVORABLE CON OBS INCIDENCIA',
+                           'DEV A INSTANCIA PROMO INCIDENCIA', 'ACTUACIÓN INTERESADA INCIDENCIA')
+            THEN 'Mantenimiento'
         WHEN "DSETAPA" IN ('PTE. ENVIO INTERV. PAGO UNICO', 'INTERVENCION PAGO UNICO')
             THEN 'Pago único'
-        WHEN "DSETAPA" IS NOT NULL
-            THEN 'Mantenimiento'
+        ELSE 'Sin clasificar'
     END                                                                             AS "Fase"
 FROM SEC
