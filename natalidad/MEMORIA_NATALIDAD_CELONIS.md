@@ -313,6 +313,16 @@ Además, Nexus (pagos, Intervención) y eReg (canal, tipo de asiento) tampoco es
   - **`Fecha Fin Etapa` (`FCFIN`) viene sin hora** (00:00:00, a menudo del día siguiente). Para medir duraciones, mejor usar el inicio de la etapa siguiente, que sí lleva hora.
   - Las respuestas de la Intervención (FAVORABLE CONCESIÓN, FAVORABLE CON OBS) se graban **por lotes**: cientos de expedientes en el mismo minuto.
 
+## 3h3. `PnCEtapaFinalizada` → `NatEtapaFinalizada` (18/11)
+
+- **Igual que `PnCEtapaIniciada`**, con estas diferencias:
+  - `Time` = `FCFIN`, o `FCFIN_SISTEMA` si `FCFIN` viene a las 00:00 y es del mismo día. Así sale la **hora real** de salida.
+  - Actividad «Finalización de la Etapa - …».
+  - `WHERE "FCFIN" IS NOT NULL`: solo las etapas ya cerradas.
+- **El ID lleva la fecha de inicio**, no la de fin, para emparejar con la entrada.
+- **En PnC no tiene `Fase`.** En Natalidad sí se la ponemos, igual que en `NatEtapaIniciada`.
+- **SQL:** `natalidad/sql/04_evento_NatEtapaFinalizada.sql`.
+
 ## 3i. Revisión del mockup v31 frente a los datos (18/11)
 
 Esta lista es la base de la tabla final de lo que falta (Atlantix, eReg, Nexus y unidad). Estados posibles:
