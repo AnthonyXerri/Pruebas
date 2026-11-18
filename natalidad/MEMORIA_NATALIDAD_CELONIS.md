@@ -322,6 +322,13 @@ Además, Nexus (pagos, Intervención) y eReg (canal, tipo de asiento) tampoco es
 - **El ID lleva la fecha de inicio**, no la de fin, para emparejar con la entrada.
 - **En PnC no tiene `Fase`.** En Natalidad sí se la ponemos, igual que en `NatEtapaIniciada`.
 - **SQL:** `natalidad/sql/04_evento_NatEtapaFinalizada.sql`.
+- **18/11: `NatEtapaFinalizada` creado y funcionando.**
+  - Atributos con los tipos correctos y relaciones *involves one* con `NatEtapas` y `NatExpedientes`.
+  - Preview correcto: `Time` con la hora real de salida (de `FCFIN_SISTEMA`).
+
+**Estado de los eventos:** `NatEtapaIniciada` ✅ y `NatEtapaFinalizada` ✅.
+- **Siguiente:** los eventos de solicitud y expediente, para la fase 1 de Entrada (registro → alta) y para la resolución.
+- **Después:** actividades, hitos, notificaciones y documentos, revisando antes sus catálogos para encontrar la revisión de conformidad y los pasos de terceros.
 
 ## 3i. Revisión del mockup v31 frente a los datos (18/11)
 
