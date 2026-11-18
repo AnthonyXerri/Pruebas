@@ -45,3 +45,18 @@ Para cada evento de PnC que se copie: ver su SQL, atributos y relaciones; crear 
 ## Decisiones
 
 - **18/11: un solo evento de solicitud.** De 53.375 expedientes, solo 140 tienen la fecha de eReg distinta de la de presentación y 157 la de Consejería; a 408 les falta la de eReg. **No se crean** `NatSolicitudRegistrada` ni `NatSolicitudRecibidaConsejeria`: basta `NatSolicitudPresentada` (`FC_SOL_INTERESADO`).
+
+## Dimensiones de «Composición» del mockup (18/11)
+
+| Dimensión | De dónde sale | Estado |
+|---|---|---|
+| Tipo de solicitud (nacimiento, gestación, adopción, otros) | Tabla propia de Natalidad en Atlantix | ❌ Pedir |
+| Canal de entrada (sede, oficina, ORVE) | eReg | ❌ Pedir |
+| Edad de la solicitante | `NatInteresados.TramoEdad` | ✅ |
+| Nacionalidad | `NatInteresados.NacionalidadAprox` (por tipo de documento: DNI / NIE) | ⚠ Aproximación; pedir el dato real |
+| País de nacimiento | — | ❌ Pedir |
+| Municipio de residencia | `NatInteresados.Municipio` | ✅ |
+| Hijos por solicitud | Tabla propia de Natalidad | ❌ Pedir |
+| Sentido de la resolución | `NatExpedienteResuelto.SentidoResolucion` | ✅ |
+| Requisito incumplido | Tabla propia (motivo de denegación) | ❌ Pedir |
+| Respuesta de la Intervención | Etapas (FAVORABLE / CON OBS / ACTUACIÓN INTERESADA / DEV. A INSTANCIA) e hito CONCESIÓN APROBADA | ✅ |
