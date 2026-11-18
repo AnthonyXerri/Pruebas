@@ -11,8 +11,8 @@ Prefijo `Nat` y etiqueta **Natalidad**. Memoria detallada: `natalidad/MEMORIA_NA
 | Bloque | Qué | Tabla origen | Para el mockup | Estado |
 |---|---|---|---|---|
 | A | `NatExpedientes`, `NatEtapas`, `NatEtapaIniciada`, `NatEtapaFinalizada` | `GSTA_V_CEL_EXPEDIENTE`, `GSTA_V_CEL_ETAPA` | Cabecera de tramitación, tiempos por fase, stock por fase, explorador | ✅ |
-| B | Eventos de entrada y cierre: `NatSolicitudPresentada` ✅, `NatExpedienteAbierto` ✅, `NatExpedienteResuelto` ✅; expediente anulado | `GSTA_V_CEL_EXPEDIENTE` | Fase 1 (registro → alta), tiempo E2E, registro → alta, alta → resolución, entradas/salidas | ▶ en curso |
-| C | Bitácora: etapa anulada (reprocesos, requerimientos), hitos, envío a la Intervención, documento requerido, cambio de convocatoria, última actuación | `GSTA_REGISTRO_ACTIVIDAD` | Reprocesos, requerimientos, Intervención, expedientes sin actividad, explorador | Pendiente |
+| B | Eventos de entrada y cierre: `NatSolicitudPresentada`, `NatExpedienteAbierto`, `NatExpedienteResuelto` (sentido y firma), `NatExpedienteAnulado` | `GSTA_V_CEL_EXPEDIENTE`, `GSTA_V_CEL_DOC_ELABORADA` | Fase 1 (registro → alta), tiempo E2E, registro → alta, alta → resolución, entradas/salidas, sentido de la resolución | ✅ |
+| C | Bitácora: etapa anulada (reprocesos, requerimientos), hitos, envío a la Intervención, documento requerido, cambio de convocatoria, última actuación | `GSTA_REGISTRO_ACTIVIDAD` | Reprocesos, requerimientos, Intervención, expedientes sin actividad, explorador | ▶ siguiente |
 | D | Notificaciones, documentos aportados y elaborados, hitos de la vista CEL | `GSTA_V_CEL_NOTIFICACION`, `GSTA_V_CEL_DOC_*`, `GSTA_V_CEL_HITO` | Notificación y acuse del requerimiento, aportaciones, plazo vencido | Pendiente |
 | E | `NatInteresados` (edad en tramos, nacionalidad, país, municipio; sin nombres ni DNI) | `GSTA_V_INTERESADOS` | Composición | Pendiente |
 | F | Completar `NatExpedientes`: `REF_SOLICITUD`, año y nombre de la convocatoria (`GSTA_V_EXPEDIENTE`), nombre del procedimiento | `GSTA_V_CEL_EXPEDIENTE`, `GSTA_V_EXPEDIENTE`, `GSTA_V_CEL_CAT_PROC` | Filtros, enlace futuro con eReg | Pendiente |
