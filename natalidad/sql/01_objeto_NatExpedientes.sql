@@ -1,6 +1,6 @@
 -- Objeto NatExpedientes · atributos
 -- Adaptado de PnCExpedientes (18/11/2026): mismo origen, filtro por la aplicación de Natalidad.
--- Cambios respecto a PnC: filtro CDAPLICACION de Natalidad (por confirmar), sin el CASE de
+-- Cambios respecto a PnC: filtro D032 + procedimiento 3163 (D032 incluye otras ayudas de FJAS), sin el CASE de
 -- procedimientos de PnC y sin las fechas duplicadas FCINICIO, FCRESOLUCION, FCFINTRAMITACION.
 -- Los alias son los nombres de los atributos: declararlos igual en el objeto ("Add attributes").
 SELECT
@@ -25,7 +25,8 @@ SELECT
     CAST(MIN(e."FCCIERRE") AS TIMESTAMP)          AS "FechaCierre"
 FROM "GSTA_V_CEL_EXPEDIENTE" e
 WHERE e."CDEXPEDIENTE" IS NOT NULL
-  AND e."CDAPLICACION" = 'D032'                   -- Natalidad (por confirmar con 00_comprobar_codigos.sql)
+  AND e."CDAPLICACION" = 'D032'                   -- aplicación de Infancia, Familia y Natalidad
+  AND e."CDPROCEDIMIENTO" = '3163'                -- Natalidad: Sección de Ayudas Económicas a la Natalidad
 GROUP BY
     e."CDEXPEDIENTE",
     e."CDAPLICACION",

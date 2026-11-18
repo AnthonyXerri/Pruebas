@@ -32,7 +32,8 @@ Crear en **Objects & Events** los objetos y eventos de Natalidad a partir de las
 WITH exp_nat AS (                         -- lista de expedientes de Natalidad, sin repetidos
     SELECT DISTINCT e."CDEXPEDIENTE"
     FROM "GSTA_V_CEL_EXPEDIENTE" e
-    WHERE e."CDAPLICACION" = 'D032'        -- código de Natalidad (por confirmar)
+    WHERE e."CDAPLICACION" = 'D032'        -- aplicación de Infancia, Familia y Natalidad
+      AND e."CDPROCEDIMIENTO" = '3163'     -- ayudas económicas a la natalidad
 )
 SELECT ...
 FROM "<tabla del objeto o evento>" t
@@ -127,7 +128,20 @@ Solo estructura (nombres y tipos de atributos), vista el 18/11:
     | 4068 | 10 | 10/2026 | 11/2026 | Nuevo |
     | 4074 | 2 | 10/2026 | 11/2026 | Nuevo |
 
-  - **Pendiente de Roberto o la unidad:** el nombre de cada procedimiento y cuáles entran en el cuadro de Natalidad.
+  - **18/11: `D032` NO es solo Natalidad.** Es la aplicación de la Consejería (FJAS) para Infancia, Familia y Natalidad. Unidad que tramita cada procedimiento y prefijo del expediente:
+
+    | Proc. | Prefijo | Unidad |
+    |---|---|---|
+    | **3163** | **AFN** | **Sección de Ayudas Económicas a la Natalidad** |
+    | 3331 | SCP | Sección de Subvención de partos múltiples (7 expedientes en la DG) |
+    | 3630 | ANA | Sección de Subvención de partos múltiples |
+    | 1246 | SRM | D.G. de Infancia, Familia y Fomento de la Natalidad |
+    | 0296, 3224 | 029, 322 | Área de Adopción y Acogimiento Familiar (**pista para Acogimiento**) |
+    | 3252, 3356, 3559 | IN3, ATM, GEF | Subdirección General de Protección a la Infancia |
+    | 3656, 4068, 4074 | CDI, VSM, 407 | Subdirección General de Infancia y Adolescencia |
+
+  - **Decisión propuesta: Natalidad = `CDPROCEDIMIENTO = '3163'`**, además de `CDAPLICACION = 'D032'`.
+  - **Por confirmar con Roberto o la unidad:** si partos múltiples (3331, 3630) entra en el cuadro y qué es 1246.
   - **Mientras tanto:** el objeto lleva todos los de `D032`, con `CodigoProcedimiento` como atributo para poder filtrar después.
 - **«N columns ignored» en el Preview:** son columnas de la SQL que el objeto aún no tiene declaradas. *Add attributes* abre «Edit attributes», que **no las rellena solo**: se añaden a mano con *+ Add*, con el nombre idéntico al alias de la SQL y su tipo.
 - Prefijos de los expedientes de `D032`: AFN, SCP, ANA, GEF. Probablemente corresponden a procedimientos distintos; sirven como pista para saber cuáles son de Natalidad.
