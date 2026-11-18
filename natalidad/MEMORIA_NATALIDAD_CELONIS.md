@@ -180,8 +180,8 @@ Además, Nexus (pagos, Intervención) y eReg (canal, tipo de asiento) tampoco es
 | `PnCInteresados` | `NatInteresados` | Solo si sale de `GSTA_V_INTERESADOS`; si sale de `PNCA_INTERESADO`, no hay equivalente |
 | `PnCExpedienteDetalle`, `PnCPropuesta`, `PnCPropuestaMotivos`, `PnCRevision` | — | Tablas `PNCA_`, propias de PnC |
 
-**Eventos PnC → Nat:** son 54 eventos en total; 21 llevan prefijo PnC.
-- **Se copian 19, basados en tablas `GSTA_`:**
+**Eventos PnC → Nat:** son 54 eventos en total; 23 llevan prefijo PnC.
+- **Se copian 21, basados en tablas `GSTA_`:**
   - Actividades: `ActividadInicio`, `ActividadRealizada`, `ActividadResolucion`, `EventosAutomaticos`.
   - Documentos: `DocAportadosConsultadosAdministracion`, `DocumentosAportadosCiudadano`, `DocumentosElaborados`.
   - Etapas y fases: `EtapaIniciada`, `EtapaFinalizada`, `Etapas` (ver qué es), `FaseIniciada`.
