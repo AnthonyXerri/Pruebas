@@ -202,6 +202,12 @@ Además, Nexus (pagos, Intervención) y eReg (canal, tipo de asiento) tampoco es
 - **Relación:** la columna `"PnCExpedientes"` (= `CDEXPEDIENTE`) es la relación con el objeto expediente; en el Preview sale como `PnCExpedientes_ID`.
 - **Los `IDETAPA` son propios de cada procedimiento.** Las de PnC son del tipo alta, propuesta, Intervención, notificación, paso a nómina, archivo y migración. Natalidad tendrá las suyas.
 - SQL adaptada: `natalidad/sql/02_objeto_NatEtapas.sql` (filtro D032 + 3163, relación `"NatExpedientes"`).
+- **Relaciones de PnC (vistas el 18/11):**
+  - `PnCExpedientes` **1 — N** con `PnCEtapas`, `PnCInteresados`, `PnCPropuesta`, `PnCRevision` y `PnCExpedienteDetalle`.
+  - En cada una, la **FK se llama `PnCExpedientes`** y está en el objeto hijo (el del lado N).
+  - Aparece tanto en el padre como en el hijo.
+- **Para Natalidad:** `NatExpedientes` **1 — N** `NatEtapas`, con la FK `NatExpedientes`.
+- `NatEtapas` está **creado** (18/11): etiqueta Natalidad y 3 atributos String (`IDEtapa`, `DescripcionEtapa`, `Confiscalizacion`).
 
 ## 4. Estado y pendientes
 
