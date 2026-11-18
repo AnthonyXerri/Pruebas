@@ -544,6 +544,17 @@ Además, Nexus (pagos, Intervención) y eReg (canal, tipo de asiento) tampoco es
   - `MedioNotificacion`, provincia y municipio de residencia;
   - relación 1 — N con `NatExpedientes`.
 
+## 3h12. Búsqueda de revisión de conformidad y terceros (18/11)
+
+Consulta: `natalidad/sql/00h_buscar_revision_terceros.sql`.
+
+- **No hay** anotaciones de «revisión de conformidad», ni de fichero de terceros a gestión económica, ni de tercero creado o rechazado en Nexus.
+- **Solo aparecen:**
+  - las etapas PROPUESTA FAVORABLE y VALIDACIÓN TERCERO (fin y anulación);
+  - el hito «Instrucción» en GESTIÓN EXPEDIENTE (2.651 expedientes).
+- **Documentos elaborados a mano** con el mes de nómina en el título (pagos únicos, modificaciones positivas o negativas, bajas, resolución favorable de nómina…). Son pocos, de texto libre, llevan el nombre del gestor y **no sirven para medir**.
+- **Decisión:** la revisión de conformidad (fecha y marca), el mes de nómina propuesto y los pasos de terceros en Nexus **se piden a la unidad, a Atlantix (tabla propia) o a Nexus**. No se siguen buscando en la bitácora.
+
 ## 3i. Revisión del mockup v31 frente a los datos (18/11)
 
 Esta lista es la base de la tabla final de lo que falta (Atlantix, eReg, Nexus y unidad). Estados posibles:
