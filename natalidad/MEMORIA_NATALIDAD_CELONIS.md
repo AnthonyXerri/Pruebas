@@ -131,6 +131,38 @@ Solo estructura (nombres y tipos de atributos), vista el 18/11:
   - Tipo de resolución y motivo de denegación.
   - Bajas y modificaciones.
 
+## 3e. Tablas del data source (18/11)
+
+Data source «OCPM DataPool IMPLEMENTACION _Conexión Producción PRATLX_RO», con 36 tablas.
+
+**Atlantix genéricas (`GSTA_`), que valen para Natalidad filtrando por expediente:**
+
+| Tabla | Para qué nos sirve |
+|---|---|
+| `GSTA_V_CEL_EXPEDIENTE` | Objeto NatExpedientes (hecho) |
+| `GSTA_V_CEL_CAT_PROC` | Catálogo de procedimientos: el **nombre** de cada procedimiento, en lugar del `CASE` |
+| `GSTA_V_CEL_ETAPA`, `GSTA_V_ETAPAS`, `GSTA_ETAPA` | Etapas e histórico de etapas → objeto NatEtapas y eventos de cambio de etapa |
+| `GSTA_V_CEL_HITO` | Hitos con fecha → eventos |
+| `GSTA_V_CEL_ACTIVIDAD`, `GSTA_REGISTRO_ACTIVIDAD` | **Bitácora** (actividades con fecha) → eventos. Era una duda del documento funcional |
+| `GSTA_V_CEL_NOTIFICACION` | Notificaciones → requerimientos (puesta a disposición y acceso) |
+| `GSTA_V_CEL_DOC_APORT_CIUD` | Documentos que aporta la ciudadana (subsanaciones) → Documento |
+| `GSTA_V_CEL_DOC_APORT_ADMIN` | Documentos que aporta la administración → Documento |
+| `GSTA_V_CEL_DOC_ELABORADA` | Documentos elaborados (requerimientos, resoluciones…) → Documento |
+| `GSTA_V_CEL_CAT_DOCREQ` | Catálogo de documentación requerida |
+| `GSTA_V_INTERESADOS` | Solicitante → NatInteresados |
+| `GSTA_V_EXPEDIENTE` | Otra vista de expediente (por ver qué añade) |
+| `SUCA_PAIS`, `CELONIS_CALENDAR` | Catálogo de países y calendario |
+
+**Propias de PnC (`PNCA_`), que no sirven para Natalidad:** expediente, interesado, conviviente, propuesta, revisiones, reclamaciones, causas de denegación y catálogos.
+
+**No hay tablas propias de Natalidad.** Faltan los equivalentes de las `PNCA_`:
+- tipo de solicitud, número de hijos y fecha de nacimiento o de parto;
+- propuesta a nómina e importes;
+- tipo de resolución y motivo de denegación;
+- bajas y modificaciones.
+
+Además, Nexus (pagos, Intervención) y eReg (canal, tipo de asiento) tampoco están. **Hay que preguntar a Roberto** si existen las tablas de la aplicación de Natalidad en Atlantix y si se pueden extraer.
+
 ## 4. Estado y pendientes
 
 - [x] Tabla y columnas: `GSTA_V_CEL_EXPEDIENTE`, `CDAPLICACION`, `CDEXPEDIENTE`.
