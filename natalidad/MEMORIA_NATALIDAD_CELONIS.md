@@ -295,6 +295,47 @@ Además, Nexus (pagos, Intervención) y eReg (canal, tipo de asiento) tampoco es
 - **18/11: `Fase` añadido a `NatEtapas`** y comprobado en el Preview. Los 30 nombres del catálogo están todos en el CASE (comprobado contra la lista), así que no debería salir ninguno «Sin clasificar».
 - **Etapas del mockup que no aparecen en los datos del 3163:** «No Fiscalizable Concesión» y «Desfavorable Concesión».
 
+## 3i. Revisión del mockup v31 frente a los datos (18/11)
+
+Esta lista es la base de la tabla final de lo que falta (Atlantix, eReg, Nexus y unidad). Estados posibles:
+- ✅ lo tenemos;
+- 🔍 puede estar en el pool, hay que mirarlo;
+- ❌ no está en el pool.
+
+**Afecta ya al modelado en Celonis:**
+1. **Reprocesos y stock por fase:** `NatEtapas` usa `SELECT DISTINCT` con ID = etapa + expediente, así que si un expediente vuelve a la misma etapa se queda en una sola fila. Las vueltas atrás (de Terceros o de Intervención a Gestión) tienen que salir de los **eventos** `EtapaIniciada` y `EtapaFinalizada`, una fila por cada vez. Hay que comprobar en su SQL que el ID lleva la fecha o una secuencia.
+2. **Revisión de conformidad** («revisados sin proponer», un KPI clave de la cabecera): **no es una etapa** en los datos. 🔍 Buscarla en actividades o hitos (`GSTA_V_CEL_ACTIVIDAD`, `GSTA_V_CEL_HITO`).
+3. **Dentro de Validación de terceros:** fichero mensual a gestión económica, tercero creado o rechazado en Nexus, y carga en Atlantix. 🔍 Actividades o hitos.
+4. **Requerimientos:**
+   - notificación (puesta a disposición y acceso): 🔍 `GSTA_V_CEL_NOTIFICACION`;
+   - aportación de la solicitante: 🔍 `GSTA_V_CEL_DOC_APORT_CIUD`;
+   - **plazo de aportación**, para «plazo vencido»: 🔍.
+5. **Días sin actuación** (tabla de expedientes sin actividad): fecha de la última actuación. 🔍 Bitácora (`GSTA_V_CEL_ACTIVIDAD`, `GSTA_REGISTRO_ACTIVIDAD`).
+6. **Datos de la solicitante** (edad en tramos, nacionalidad, país de nacimiento, municipio): 🔍 `GSTA_V_INTERESADOS` → `NatInteresados`.
+7. **Nombre del procedimiento:** 🔍 `GSTA_V_CEL_CAT_PROC`. Es opcional.
+
+**No está en el pool:**
+- **Atlantix, tablas propias de Natalidad ❌:**
+  - **tipo de solicitud** (nacimiento, gestación, adopción, otros), que es un **filtro global** del mockup;
+  - hijos por solicitud y fecha de nacimiento o de parto (para extinciones y pagos únicos);
+  - **mes de nómina propuesto** e **importe propuesto por anualidad** (atrasos y mensualidades);
+  - **requisito incumplido** o motivo de denegación;
+  - **bandeja de registros:** entrada, alta y **descarte por duplicada**.
+- **eReg ❌:**
+  - asientos (solicitudes y aportaciones), **canal** (sede, oficina, ORVE) y tipo de documento;
+  - las solicitudes **pendientes de alta**: hoy solo vemos las que ya tienen expediente (`FC_SOL_EREG`);
+  - número de registro, para unir con Atlantix.
+- **Nexus ❌:**
+  - tercero creado o rechazado, **primer pago (ADOK)**;
+  - nóminas: altas en nómina, beneficiarias activas, pagos únicos y rectificaciones, beneficiarias que dejan de cobrar (extinción o baja);
+  - **A / D / OK** por línea y anualidad, y documento D.
+- **NOTE:** la notificación del requerimiento puede estar en `GSTA_V_CEL_NOTIFICACION` (🔍); si no, ❌.
+- **Unidad:** calendario mensual de nómina, plazo de tramitación (parámetro de 90 días por defecto) y quién mueve cada situación («Depende de»: Unidad, Solicitante, Gestión económica, Intervención, Calendario).
+- **Otros:**
+  - `FechaResolucion` lleva hora 00:00 y se repite: ¿es la de firma o la de efectos?
+  - `AFN1` / `AFN2`: ¿qué diferencia hay?
+  - Etapas del mockup que **no aparecen** en los datos: «No Fiscalizable Concesión» y «Desfavorable Concesión».
+
 ## 4. Estado y pendientes
 
 - [x] Tabla y columnas: `GSTA_V_CEL_EXPEDIENTE`, `CDAPLICACION`, `CDEXPEDIENTE`.
