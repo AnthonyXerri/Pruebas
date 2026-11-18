@@ -517,6 +517,19 @@ Además, Nexus (pagos, Intervención) y eReg (canal, tipo de asiento) tampoco es
   - **Las favorables van por lotes mensuales:** el título lleva el mes y el año. Confirma que la resolución favorable es **colectiva y mensual**.
   - «AEN» parece el prefijo del procedimiento (¿Ayudas Económicas Natalidad?).
 
+## 3h11. Interesados (18/11)
+
+- **`PnCInteresados`:**
+  - sale de `GSTA_V_INTERESADOS` (genérica);
+  - edad en la fecha de presentación (`YEAR`, `MONTH` y `DAYOFMONTH`, válida entre 16 y 110);
+  - residencia y notificación (provincia y municipio), medio de notificación, `IT_PRINCIPAL`;
+  - **la nacionalidad sale de `PNCA_INTERESADO` + `SUCA_PAIS`**, que es de PnC.
+- **Columnas de `GSTA_V_INTERESADOS`:**
+  - **Útiles:** `CD_INTERESADO`, `CD_EXPEDIENTE`, `TIPO`, `DS_TIPO_DOCUMENTO`, `GRUPO_INTE`, `REPRESENTADO`, `FC_NACIMIENTO` (solo para calcular la edad), `CD_MEDIO_NOTIF` / `DS_MEDIO_NOTIF`, `CDPAIS_RESID`, `CDPROV_RESID` / `DSPROV_RESID`, `CDMUNI_RESID` / `DSMUNI_RESID`, `IT_PRINCIPAL`.
+  - **No usar (identifican a la persona):** `DS_CIF` (número de documento), nombre y apellidos, teléfonos, email, todo el domicilio (vía, número, portal, piso, puerta, código postal).
+  - **No hay nacionalidad ni país de nacimiento.** Aproximación posible: **tipo de documento** (DNI → española; NIE o pasaporte → extranjera). Confirmarlo con la unidad. La nacionalidad real tiene que venir de la tabla propia de Natalidad.
+- **Catálogo de tipos:** `natalidad/sql/00f_catalogo_interesados.sql`.
+
 ## 3i. Revisión del mockup v31 frente a los datos (18/11)
 
 Esta lista es la base de la tabla final de lo que falta (Atlantix, eReg, Nexus y unidad). Estados posibles:
