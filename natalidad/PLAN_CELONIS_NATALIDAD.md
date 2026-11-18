@@ -60,3 +60,10 @@ Para cada evento de PnC que se copie: ver su SQL, atributos y relaciones; crear 
 | Sentido de la resolución | `NatExpedienteResuelto.SentidoResolucion` | ✅ |
 | Requisito incumplido | Tabla propia (motivo de denegación) | ❌ Pedir |
 | Respuesta de la Intervención | Etapas (FAVORABLE / CON OBS / ACTUACIÓN INTERESADA / DEV. A INSTANCIA) e hito CONCESIÓN APROBADA | ✅ |
+
+## Petición de datos (18/11)
+
+- `mockups/Datos_que_faltan_Natalidad.xlsx`: tres hojas, generadas con `natalidad/gen_datos_que_faltan.py`.
+  - **Qué pedir:** 30 datos (eReg 5, Atlantix propias 13, Nexus 7, unidad 5), con estado, prioridad y columnas amarillas para que rellenen tabla, columna e histórico.
+  - **Dudas a confirmar:** 10.
+  - **Ya disponible:** lo que sale de Atlantix y en qué objeto o evento de Celonis está.
