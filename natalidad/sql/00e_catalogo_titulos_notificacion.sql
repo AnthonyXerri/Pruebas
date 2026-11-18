@@ -1,8 +1,9 @@
 -- Comprobación (no guardar): títulos de las notificaciones de Natalidad, sin el número de expediente del principio.
--- POSITION busca dónde está el primer ' - '; SUBSTRING corta a partir de ahí. Si no hay ' - ', se deja el título entero.
+-- El motor de validación NO admite POSITION. Los títulos de Natalidad empiezan por el expediente con formato fijo
+-- «08-AFN1-00012.2/2022 - » (23 caracteres): si el título encaja con ese patrón, se quitan con RIGHT + CHAR_LENGTH.
 SELECT
-    UPPER(CASE WHEN POSITION(' - ' IN N."TITULO") > 0
-               THEN SUBSTRING(N."TITULO", POSITION(' - ' IN N."TITULO") + 3)
+    UPPER(CASE WHEN N."TITULO" LIKE '08-AFN%/20__ - %'
+               THEN RIGHT(N."TITULO", CHAR_LENGTH(N."TITULO") - 23)
                ELSE N."TITULO" END)
     || ' | ' || CAST(COUNT(*) AS VARCHAR) || ' notif'
     || ' | con acuse ' || CAST(SUM(CASE WHEN N."FCACUSE" IS NOT NULL THEN 1 ELSE 0 END) AS VARCHAR) AS "ID"
@@ -12,8 +13,8 @@ WHERE N."CDEXPEDIENTE" IN (
     FROM "GSTA_V_CEL_EXPEDIENTE"
     WHERE "CDAPLICACION" = 'D032' AND "CDPROCEDIMIENTO" = '3163'
 )
-GROUP BY UPPER(CASE WHEN POSITION(' - ' IN N."TITULO") > 0
-                    THEN SUBSTRING(N."TITULO", POSITION(' - ' IN N."TITULO") + 3)
+GROUP BY UPPER(CASE WHEN N."TITULO" LIKE '08-AFN%/20__ - %'
+                    THEN RIGHT(N."TITULO", CHAR_LENGTH(N."TITULO") - 23)
                     ELSE N."TITULO" END)
 ORDER BY COUNT(*) DESC
 LIMIT 60

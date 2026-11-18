@@ -63,7 +63,7 @@ INNER JOIN exp_nat n                       -- INNER: solo las filas de expedient
 - Cada columna de la SQL se declara en el objeto con **el mismo nombre** («Add attributes»).
 - SQL **sin punto y coma**.
 - **Data Source** = None (Global): cada transformación nueva se abre con OCDM Schema y hay que cambiarlo.
-- `TO_CHAR` no funciona; usar `CAST(... AS VARCHAR)`.
+- `TO_CHAR` no funciona; usar `CAST(... AS VARCHAR)`. **`POSITION` tampoco** («No match found for function signature POSITION»): para recortar textos usar `RIGHT` / `LEFT` con `CHAR_LENGTH`.
 - **Orden que funciona:** crear el objeto o evento, después la relación (*Related objects*) y por último la transformación. Así la plantilla trae la columna de la relación.
 
 ## 3b. Objetos de referencia: etiqueta «PnC ATL» (7 de 17 objetos)
