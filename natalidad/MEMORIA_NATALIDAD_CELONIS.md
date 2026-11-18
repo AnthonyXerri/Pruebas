@@ -502,6 +502,15 @@ Además, Nexus (pagos, Intervención) y eReg (canal, tipo de asiento) tampoco es
   - **El requerimiento** sigue la secuencia: genera «01- Notificación Requerimiento» → firma → notificación telemática → acuse.
   - **La resolución favorable** aparece como hito con hora 00:00, por lotes.
 
+## 3h10. Notificaciones: `PnCNotificaciones` → `NatNotificaciones` (18/11)
+
+- **`GSTA_V_CEL_NOTIFICACION`:** `CDEXPEDIENTE`, `CDNOTIFICACION`, `TITULO`, `FCNOTIFICACION` (envío o puesta a disposición), `FCACUSE` (acceso o acuse; a veces a las 00:00, ¿papel o postal?).
+- **PnC:** un evento por notificación con acuse; `Time` = `FCACUSE`; `ROW_NUMBER` por expediente y notificación.
+- **Natalidad** (`natalidad/sql/10_evento_NatNotificaciones.sql`):
+  - **todas** las notificaciones, `Time` = `FCNOTIFICACION`, con `Fecha Acuse` y `ConAcuse` como atributos. Así se calcula el **plazo del requerimiento** y se ven las que no tienen acuse.
+  - `TipoNotificacion` sale del título: Requerimiento / Resolución favorable / Denegación / Desistimiento / Modificación / Baja / Reintegro / Otra.
+  - El acuse como actividad ya está en `NatActividadRealizada`.
+
 ## 3i. Revisión del mockup v31 frente a los datos (18/11)
 
 Esta lista es la base de la tabla final de lo que falta (Atlantix, eReg, Nexus y unidad). Estados posibles:
