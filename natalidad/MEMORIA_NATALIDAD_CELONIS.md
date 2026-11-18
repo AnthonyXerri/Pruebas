@@ -220,6 +220,23 @@ Además, Nexus (pagos, Intervención) y eReg (canal, tipo de asiento) tampoco es
 - **Para Natalidad:** `NatExpedientes` **1 — N** `NatEtapas`, con la FK `NatExpedientes`.
 - `NatEtapas` está **creado** (18/11): etiqueta Natalidad y 3 atributos String (`IDEtapa`, `DescripcionEtapa`, `Confiscalizacion`).
 
+## 3h. Etapas de Natalidad (Preview de NatEtapas, 18/11)
+
+- **La transformación funciona** con el data source PRATLX_RO, y la relación sale como `NatExpedientes_ID`.
+- **`IDEtapa` cambia según la convocatoria o el año.** La misma etapa tiene un ID distinto cada año: por ejemplo, VALIDACIÓN TERCERO aparece como 42759, 55399, 70897 y 100598. **Para fases y actividades se usa `DescripcionEtapa`**, no el ID.
+- **Etapas vistas en la muestra** (nombres de catálogo, en orden lógico):
+  1. GESTIÓN EXPEDIENTE
+  2. VALIDACIÓN TERCERO (alta del tercero en Nexus)
+  3. PROPUESTA FAVORABLE
+  4. FAVORABLE CONCESIÓN / FAVORABLE INCIDENCIA
+  5. PTE. ENVÍO INTERVENCIÓN
+  6. INTERVENCIÓN CONCESIÓN (`Confiscalizacion = 'S'`)
+  7. RESOLUCIÓN FAVORABLE
+  - **Salidas:** RESOLUCIÓN DENEGACIÓN, RESOLUCIÓN DESESTIMIENTO.
+  - **Después de conceder:** MODIFICACIÓN CONCESIÓN, INTERVENCION PAGO UNICO (`S`).
+- **El objeto no tiene fechas.** Cuándo empieza y termina cada etapa saldrá de los eventos `EtapaIniciada` y `EtapaFinalizada`.
+- Pendiente: sacar el catálogo completo de etapas con su recuento (consulta de comprobación) para definir las fases del cuadro.
+
 ## 4. Estado y pendientes
 
 - [x] Tabla y columnas: `GSTA_V_CEL_EXPEDIENTE`, `CDAPLICACION`, `CDEXPEDIENTE`.
