@@ -191,6 +191,18 @@ Además, Nexus (pagos, Intervención) y eReg (canal, tipo de asiento) tampoco es
 - **No se copian:** `PnCRevisionAbierta` y `PnCRevisionPropuesta`, que son propios de PnC.
 - **Antes de copiar cada uno:** comprobar en su SQL que lee de tablas `GSTA_` (si lee de `PNCA_`, no se copia).
 
+## 3g. `PnCEtapas` → `NatEtapas` (18/11)
+
+- Hay dos transformaciones con el nombre «PnCEtapas»: la del **objeto** (`PnCEtapas - 2`) y la del **evento** PnCEtapas (`PnCEtapas - 1`).
+- **SQL del objeto:** el patrón de Roberto tal cual.
+  - CTE `Expedientes` = `SELECT DISTINCT CDEXPEDIENTE FROM GSTA_V_CEL_EXPEDIENTE WHERE CDAPLICACION = 'PNCA'`.
+  - Después, `INNER JOIN` de `GSTA_V_CEL_ETAPA` con esa CTE.
+- **`ID` = `'Etapa_' || IDETAPA || '_' || CDEXPEDIENTE`:** una fila por cada etapa de cada expediente, no un catálogo de etapas.
+- **Atributos:** `IDEtapa` (`IDETAPA`), `DescripcionEtapa` (`DSETAPA`), `Confiscalizacion` (`CONFISCALIZACION`, S/N).
+- **Relación:** la columna `"PnCExpedientes"` (= `CDEXPEDIENTE`) es la relación con el objeto expediente; en el Preview sale como `PnCExpedientes_ID`.
+- **Los `IDETAPA` son propios de cada procedimiento.** Las de PnC son del tipo alta, propuesta, Intervención, notificación, paso a nómina, archivo y migración. Natalidad tendrá las suyas.
+- SQL adaptada: `natalidad/sql/02_objeto_NatEtapas.sql` (filtro D032 + 3163, relación `"NatExpedientes"`).
+
 ## 4. Estado y pendientes
 
 - [x] Tabla y columnas: `GSTA_V_CEL_EXPEDIENTE`, `CDAPLICACION`, `CDEXPEDIENTE`.
