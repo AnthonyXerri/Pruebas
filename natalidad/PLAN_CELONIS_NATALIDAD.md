@@ -68,3 +68,8 @@ Para cada evento de PnC que se copie: ver su SQL, atributos y relaciones; crear 
   - **Qué pedir:** 30 datos (eReg 5, Atlantix propias 13, Nexus 7, unidad 5), con estado, prioridad y columnas amarillas para que rellenen tabla, columna e histórico.
   - **Dudas a confirmar:** 10.
   - **Ya disponible:** lo que sale de Atlantix y en qué objeto o evento de Celonis está.
+- **Respuesta de la unidad (20/11):**
+  - La unidad (Soluciones y la gestora) no conoce tablas ni columnas. Las etapas, sus fechas y el registro los tiene que informar el equipo de ATLX, así que se quitan de su tabla.
+  - Para los campos propios de Natalidad (3163) hay que indicar el punto exacto de la pantalla o pestaña donde aparece cada uno.
+  - Propuesta: una sesión de unos 30 minutos con la gestora viendo la pestaña de Natalidad (o capturas con los datos tapados). Después se envía al equipo de ATLX una tabla con dato, pestaña y etiqueta en pantalla.
+  - eReg, bandeja de registros y Nexus se piden a los equipos técnicos a través de Madrid Digital. Preguntar a Roberto cómo se pidieron las tablas PNCA_ de PnC.
