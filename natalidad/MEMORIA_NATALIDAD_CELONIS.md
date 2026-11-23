@@ -687,8 +687,40 @@ Lo construido y su PQL está en `MAPA_DATOS_CUADRO_NATALIDAD.md`, sección 7. Aq
 - **Column and line:** una métrica de columnas y varias líneas.
 - **Stacked bar:** una dimensión y varias métricas apiladas, una por tramo.
 
+**Filtros y parámetros de pantalla**
+- **Filter dropdown:** aplica un **filtro real** a toda la View. Sin nada elegido, muestra el nombre de la dimensión como etiqueta.
+- **Input dropdown:** **no filtra**, solo escribe una variable de la View.
+  - Con *Manual input → Free text*, cada opción tiene un texto visible y un valor.
+  - El «Label» de *Style* es solo un placeholder y desaparece al elegir un valor. Para que se lea qué es, la etiqueta va dentro del texto de cada opción («Plazo: 90 días»).
+- **Date range:** filtra por defecto. En *Style* hay selecciones rápidas, uno o dos calendarios y texto del placeholder.
+- **Input box:** se puede dejar vacío, y entonces el PQL que use la variable falla. Para números con pocas opciones, mejor un Input dropdown.
+- **Button**, interacciones posibles:
+  - *Add Action* (Action Flow o correo);
+  - *Switch container tabs*;
+  - *Open linked view*;
+  - *Go to view or URL* (pide una URL fija, que cambia entre entornos);
+  - *Update variable* (varias reglas variable = valor);
+  - *Open message*.
+
+  **No hay acción «quitar filtros».** El ✕ solo devuelve las variables a su valor inicial.
+- **Open linked view → Create view** crea una View nueva en el paquete:
+  - mismo KM;
+  - se abre como *Modal overlay* o *Side panel*;
+  - *Sync view filters*: *Forwards* (de la principal a la nueva), *Both* o *Backwards*;
+  - queda oculta en la navegación (ojo tachado).
+
+  Es la forma de tener «otra página» sin URLs fijas.
+
 **Editor**
 - **Mover componentes:** arrastrar el asa (⠿) funciona en saltos cortos; los largos, o cerca del borde de la pantalla, no. La página tiene scroll propio para hacer sitio abajo.
+- **Redimensionar** arrastrando las asas laterales sí funciona, incluso en arrastres largos.
+- **Componentes nuevos:** caen centrados en el cursor y estrechan a los vecinos de la fila.
+  - El *Text box* nace con 3 filas de alto y se monta sobre lo que haya.
+  - Si algo sale mal, el **Undo** de la barra del editor deshace paso a paso.
+- **⚠ Ctrl+A con el foco fuera de un campo selecciona todos los componentes del lienzo** («12 Selected»), y lo que se escriba va al lienzo. Para vaciar un campo, triple clic dentro.
+- **Campos ya rellenos** (p. ej. el valor de *Update variable*): triple clic antes de escribir, o el texto se suma («MesMes»).
+- **En modo lectura el lienzo se estira** al ancho de la ventana, y un desplegable puede salirse de su celda y montarse sobre el vecino. Revisar siempre la View fuera del editor.
 - **Vista previa del PQL Editor:** se corta en unas 50 filas.
+- **Leer o probar PQL sin teclear:** los editores son Monaco. `window.monaco.editor.getModels()` da el texto de cada uno desde la consola.
 
 **Hallazgos de datos (preguntas para la unidad):** MAPA, sección 7.

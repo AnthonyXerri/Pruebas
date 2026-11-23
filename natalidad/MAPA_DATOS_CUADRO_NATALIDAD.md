@@ -99,7 +99,7 @@ Abreviaturas de la sección 1, más:
 - `CORTE` = `PU_MAX(CONSTANT(), "el__EventosNatalidad"."TIMESTAMP")`: fecha del último dato.
 - `ID` = `"o_custom_NatExpedientes"."ID"`.
 
-Variable de la View: `plazo_dias` (Number, 90 por defecto). Filtro guardado en el KM: **«Expedientes pendientes»** (`expedientes_pendientes`, no global) = `FILTER ALTA IS NOT NULL AND "o_custom_NatExpedientes"."FechaAnulacion" IS NULL AND RES IS NULL;`.
+Variables de la View: `plazo_dias` (Number, 90 por defecto) y `ver_por` (String, «Mes» por defecto). Filtro guardado en el KM: **«Expedientes pendientes»** (`expedientes_pendientes`, no global) = `FILTER ALTA IS NOT NULL AND "o_custom_NatExpedientes"."FechaAnulacion" IS NULL AND RES IS NULL;`.
 
 **Cabecera (5 KPI lists):**
 
@@ -126,7 +126,17 @@ Comprobaciones hechas (sin copiar cifras aquí):
 
 **Gráficos:**
 - **Entradas, salidas y stock** (Column and line). La tabla común es el **event log**, porque altas y resoluciones van por fechas distintas.
-  - Eje: `ROUND_MONTH("el__EventosNatalidad"."TIMESTAMP")`, formato *Year & month*.
+  - Eje «Periodo (inicio)», formato fecha ISO (`%Y-%m-%d`), según el selector «Ver por»:
+    ```
+    CASE
+    WHEN '${ver_por}' = 'Semana' THEN ROUND_WEEK("el__EventosNatalidad"."TIMESTAMP")
+    WHEN '${ver_por}' = 'Quincena' THEN CASE WHEN DAY("el__EventosNatalidad"."TIMESTAMP") <= 15 THEN ROUND_MONTH("el__EventosNatalidad"."TIMESTAMP") ELSE ADD_DAYS(ROUND_MONTH("el__EventosNatalidad"."TIMESTAMP"), 15) END
+    WHEN '${ver_por}' = 'Trimestre' THEN ROUND_QUARTER("el__EventosNatalidad"."TIMESTAMP")
+    WHEN '${ver_por}' = 'Año' THEN ROUND_YEAR("el__EventosNatalidad"."TIMESTAMP")
+    ELSE ROUND_MONTH("el__EventosNatalidad"."TIMESTAMP")
+    END
+    ```
+    La quincena es «día 1» o «día 16» del mes. Comprobado: las dos quincenas suman lo del mes y el stock cuadra.
   - Columnas, Altas: `COUNT(CASE WHEN "el__EventosNatalidad"."Actividad" = 'Alta del expediente' THEN "el__EventosNatalidad"."ID" END)`.
   - Línea 1, Resueltos: `COUNT(DISTINCT CASE WHEN "el__EventosNatalidad"."SentidoResolucion" IS NOT NULL AND "el__EventosNatalidad"."TIMESTAMP" = RES THEN "el__EventosNatalidad"."NatExpedientes_ID" END)`: la primera resolución, una vez por expediente.
   - Línea 2, Stock pendiente: `RUNNING_TOTAL(altas − resueltos − anulados sin resolución)`, con anulados = `Actividad = 'Expediente anulado' AND RES IS NULL`.
@@ -142,7 +152,38 @@ Comprobaciones hechas (sin copiar cifras aquí):
   - Dimensión «Fase actual»: `CASE WHEN PU_LAST("o_custom_NatExpedientes", "el__EventosNatalidad"."Fase", "el__EventosNatalidad"."Fase" IS NOT NULL) IS NULL THEN 'Sin etapa' ELSE PU_LAST(…) END`.
   - 4 métricas, una por tramo de `DAYS_BETWEEN(ALTA, CORTE)`: ≤ 30, 31–60, 61–90, > 90.
   - Filtro guardado «Expedientes pendientes». La suma cuadra con la cabecera.
-  - ⚠ Tapa el gráfico de stock: **moverlo a mano** debajo; el arrastre automático no funcionó.
+  - Anthony lo movió a mano debajo del gráfico de stock.
+
+**Barra de filtros (entre la cabecera y «Fase previa», como en el mockup):**
+
+| Mockup | Componente | Qué hace |
+|---|---|---|
+| Desde / Hasta | *Date range* sobre `"o_custom_NatExpedientes"."FechaPresentacionInteresado"`, doble calendario | Filtro real. Filtra por **fecha de presentación**: lo que entra en el periodo y dónde está a la fecha de corte |
+| Ver por | *Input dropdown* → `${ver_por}`: Semana, Quincena, Mes, Trimestre, Año (textos «Ver por: …») | Solo cambia el eje del gráfico de entradas y salidas |
+| Año de solicitud | *Filter dropdown*: `YEAR("o_custom_NatExpedientes"."FechaPresentacionInteresado")` | Filtro real |
+| Tipo de solicitud | *Filter dropdown*: `/* Pendiente de datos: tipo de solicitud (Nacimiento, Gestación, Adopción, Otros) */ CASE WHEN "o_custom_NatExpedientes"."ID" IS NOT NULL THEN 'Pendiente de datos' ELSE NULL END` | Marcador. Con el dato (Soluciones / eReg) solo cambia este PQL |
+| Canal | *Filter dropdown*: `/* Pendiente de datos: canal de entrada (Sede electrónica, Oficina de registro, ORVE) */ CASE WHEN … THEN 'Pendiente de datos' ELSE NULL END` | Marcador, igual que el anterior |
+| Plazo de tramitación | *Input dropdown* → `${plazo_dias}` (Number): 30, 60, 90, 120 y 180 días (textos «Plazo: … días») | Cambia el KPI «Fuera de plazo» |
+| ✕ | *Button* → *Update variable*: `ver_por` = Mes, `plazo_dias` = 90 | Vuelve a los **parámetros** iniciales. Los filtros se quitan uno a uno o desde el embudo de la View: los botones no tienen acción «quitar filtros» |
+
+Diferencias con el mockup:
+- los tiempos del mockup son de «resueltos en el periodo», y aquí, de los presentados en el periodo;
+- la fecha de corte sigue siendo el último dato (`CORTE`), no el «Hasta».
+
+**Navegación (arriba a la derecha, junto al título):**
+- Botón «Explorador de procesos →»: *Open linked view* → View **«Natalidad Explorador de procesos»**.
+  - Contiene un *Process Explorer* sobre el event log `EventosNatalidad`, a todo el ancho.
+- Botón «Comparativa de periodos →»: *Open linked view* → View **«Natalidad Comparativa de periodos»**.
+  - Por ahora solo tiene un texto «en preparación» que adelanta lo que tendrá:
+    - periodo 1 (el de los filtros) frente a periodo 2;
+    - altas, resueltos, stock y tiempos;
+    - actividad por mes, trimestre, semestre o año;
+    - exportación a Excel.
+- Las dos Views:
+  - usan el mismo KM;
+  - se abren como *Modal overlay*;
+  - tienen *Sync view filters* en *Forwards*: heredan los filtros de la pantalla principal;
+  - están ocultas en la navegación (ojo tachado), así que solo se llega a ellas desde los botones.
 
 **Hallazgos para preguntar a la unidad (sin cifras):**
 1. Casi no hay altas entre **dic-2024 y abr-2025**. ¿Cambio de convocatoria o de sistema?
@@ -153,9 +194,8 @@ Comprobaciones hechas (sin copiar cifras aquí):
 **Falta en la View:**
 - expedientes sin actividad (tabla con exportar);
 - composición;
-- comparativa de periodos;
-- explorador de procesos;
+- el contenido de la comparativa de periodos;
 - % favorables;
-- títulos de cada bloque;
-- variables de fecha `${desde}` / `${hasta}`;
-- selector «Días de».
+- selector «Días de»;
+- datos de tipo de solicitud y canal, que hoy son marcadores;
+- ⚠ el texto de la cabecera dice «Dirección General de Atención al Mayor y a la Dependencia». El mockup dice «Dirección General de Infancia, Familia y Fomento de la Natalidad».
