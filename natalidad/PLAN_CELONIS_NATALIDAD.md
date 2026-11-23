@@ -73,3 +73,12 @@ Para cada evento de PnC que se copie: ver su SQL, atributos y relaciones; crear 
   - Para los campos propios de Natalidad (3163) hay que indicar el punto exacto de la pantalla o pestaña donde aparece cada uno.
   - Propuesta: una sesión de unos 30 minutos con la gestora viendo la pestaña de Natalidad (o capturas con los datos tapados). Después se envía al equipo de ATLX una tabla con dato, pestaña y etiqueta en pantalla.
   - eReg, bandeja de registros y Nexus se piden a los equipos técnicos a través de Madrid Digital. Preguntar a Roberto cómo se pidieron las tablas PNCA_ de PnC.
+- **Respuestas del 23/11:**
+  - **Soluciones** indicará el punto de la pantalla de los campos propios de 3163.
+  - **Revisión de conformidad:** no existe todavía; es un campo nuevo sin petición FARO. El indicador «revisados sin proponer» del mockup queda pendiente. Si se crea, pedir que se registre en la bitácora, para tener la fecha.
+  - **Primera nómina:** se paga en el mes de la propuesta favorable, así que sale de la etapa PROPUESTA FAVORABLE y no se pide.
+  - **Modificaciones:** no son representables según la unidad; se quitan. En las bajas basta con el último mes pagado.
+  - **Datos de la solicitante** (nacionalidad, país, fecha de nacimiento): no todos los expedientes los tienen; se muestran solo donde existan.
+  - **Calendario de nómina:** no hay día fijo. El envío a la Intervención es la fecha de propuesta (Atlantix) y la parte contable está en Nexus por documento contable. No se pide calendario.
+  - **Fichero de terceros:** se hace fuera del sistema. Referencias: fecha de generación del CSV que Familia envía a Gestión Económica y fecha de carga del CSV de vuelta. Pedir esas dos fechas por mes.
+  - **Plazos** de tramitación y de aportación: sin respuesta todavía.
