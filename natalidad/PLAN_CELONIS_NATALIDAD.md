@@ -87,7 +87,7 @@ Para cada evento de PnC que se copie: ver su SQL, atributos y relaciones; crear 
   - **Conversación con Soluciones (24/11):**
     - **Revisión de conformidad:** se crearán dos campos (marca y fecha) cuando llegue la petición oficial FARO; depende del proveedor. Solo existirán mientras el expediente no tenga propuesta favorable. **Riesgo:** si se borran al proponer, se pierde el histórico. Hay que pedir que la fecha se conserve o quede en la bitácora.
     - **Primer pago:** es el mes de la fecha de la propuesta favorable (confirmado).
-    - **Último mes pagado:** lo pueden dar, aunque dicen que es «relativo».
+    - **Último mes pagado:** Soluciones pasará el campo «fecha de baja», que coincide con el último mes pagado. Sirve para separar los expedientes con baja. Falta confirmar si incluye también las extinciones a los 2 años; si no, la extinción sale de la fecha de nacimiento del menor.
     - **Nacionalidad:** solo existe la de origen, del formulario, añadida hace pocos meses, no obligatoria y con pocos datos. Será una sola dimensión «Nacionalidad» con lo que haya; el país de nacimiento, solo si existe. Alternativa si sale casi vacía: aproximar por tipo de documento (DNI / NIE).
     - **Municipio de residencia:** ya lo tenemos (`GSTA_V_INTERESADOS`).
     - Lo que se pide es tabla y columna, nunca datos por correo.
