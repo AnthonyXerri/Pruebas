@@ -91,7 +91,7 @@ Para cada evento de PnC que se copie: ver su SQL, atributos y relaciones; crear 
       - **Fecha de baja:** solo existe cuando la ciudadana comunica algo que termina en baja; la rellena el gestor.
       - **Resto de expedientes:** llegan a término, hasta el último pago fijado desde el inicio, a los 2 años del menor.
       - **Soluciones dará** el mes de inicio de los pagos (coincide con el de la propuesta favorable), el último mes-año de pago y la fecha de baja.
-      - **Pedirles además** el mes desde el que corresponde el pago (inicio del derecho). Es distinto del inicio de los pagos y hace falta para los atrasos del mockup: atrasos acumulados, meses de atraso y atrasos por mes de solicitud.
+      - **Mes desde el que corresponde el pago** (inicio del derecho, para los atrasos): **no se pide de momento**. Se calcula con el importe de atrasos (punto 3) ÷ la cuantía mensual (punto 2), o con la fecha de nacimiento del menor (punto 5). Solo se pide si al cargar los datos no cuadra.
     - **Nacionalidad:** solo existe la de origen, del formulario, añadida hace pocos meses, no obligatoria y con pocos datos. Será una sola dimensión «Nacionalidad» con lo que haya; el país de nacimiento, solo si existe. Alternativa si sale casi vacía: aproximar por tipo de documento (DNI / NIE).
     - **Municipio de residencia:** ya lo tenemos (`GSTA_V_INTERESADOS`).
     - Lo que se pide es tabla y columna, nunca datos por correo.
