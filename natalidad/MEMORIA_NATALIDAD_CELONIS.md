@@ -727,9 +727,14 @@ Lo construido y su PQL está en `MAPA_DATOS_CUADRO_NATALIDAD.md`, sección 7. Aq
 
 **Filtros y parámetros de pantalla**
 - **Filter dropdown:** aplica un **filtro real** a toda la View. Sin nada elegido, muestra el nombre de la dimensión como etiqueta.
-- **Input dropdown:** **no filtra**, solo escribe una variable de la View.
+- **Input dropdown:** **no filtra**, solo escribe una variable: de la View o del KM. En *Save user selection to* el picker tiene casillas y deja marcar varias; dejar marcada solo una.
   - Con *Manual input → Free text*, cada opción tiene un texto visible y un valor.
   - Cada opción: *Add Item* → texto → clic en «Add value» → valor → *Save*. Si el valor queda vacío sale un error en rojo, y el botón *Save* baja de sitio.
+  - **Al cambiar la variable**, las opciones se quedan sin valor («No value provided for …», borde rojo): el valor se guarda por variable. Para cada opción: lápiz (*Edit*; la papelera *Delete* está justo al lado) → clic en «Add value» → esperar a que sea una caja de texto → escribir → *Save*. Un clic en «Add value» sin el lápiz no hace nada.
+  - Con *Load items* la lista sale de un dato (PQL, admite *Add Filter* con filtros guardados). Las opciones nuevas del dato aparecen solas.
+    - En *Single* **no se puede deseleccionar**: no hay botón para borrar, y pulsar otra vez la opción no la quita. No sirve para «todas».
+    - En *Multiple* hay casillas, buscador y «Select all». La variable llega al PQL como **lista entre comillas** (`'A', 'B'`, también con una sola). Si se desmarca todo, vuelve a su **valor por defecto**.
+    - Receta: valor por defecto `'Todas'` (con las comillas) y en el PQL `('Todas' IN (${var}) OR dato IN (${var}))`.
   - El «Label» de *Style* es solo un placeholder y desaparece al elegir un valor. Para que se lea qué es, la etiqueta va dentro del texto de cada opción («Plazo: 90 días»).
 - **Date range:** filtra por defecto. En *Style* hay selecciones rápidas, uno o dos calendarios y texto del placeholder.
 - **Input box:** se puede dejar vacío, y entonces el PQL que use la variable falla. Para números con pocas opciones, mejor un Input dropdown.
@@ -740,6 +745,29 @@ Lo construido y su PQL está en `MAPA_DATOS_CUADRO_NATALIDAD.md`, sección 7. Aq
   - *Go to view or URL* (pide una URL fija, que cambia entre entornos);
   - *Update variable* (varias reglas variable = valor);
   - *Open message*.
+
+**Variables en filtros guardados del KM (sin actividad, 23/11)**
+- **Una variable de la View NO llega a un filtro guardado del KM en el lienzo**, aunque se llame igual que una variable del KM. El filtro usa el valor de la variable del KM.
+  - La vista previa del PQL Editor sí usa el valor de la View, y eso **engaña**: parecía que funcionaba.
+  - Probar siempre **en el lienzo, en modo lectura**, cambiando el selector y mirando si cambian el número y las filas.
+- La solución es una **variable del KM moderna**: icono *Variables* de la View → **KNOWLEDGE MODEL** → «+» (*Create knowledge model Variable*). El Input dropdown puede escribir en ella.
+  - Las variables antiguas del KM (pestaña *Variables* de la experiencia antigua) no salen en ese picker.
+  - Al editarla tiene *Default Value* y *Current Value*. Para que tome el valor por defecto, la flecha junto al actual. Studio avisa: «el valor actual se aplica a todos los usuarios». Pendiente de comprobar con Roberto qué ve cada usuario.
+- Un *placeholder* que cuenta con un filtro guardado se recalcula al cambiar el selector si su PQL nombra las variables en un comentario (`/* … ${sa_umbral} · ${sa_etapa} … */`).
+
+**Text box**
+- Es texto enriquecido; no tiene API. Al escribir `${` sale «Insert placeholders», con los *placeholders* PQL y las variables de la View y del KM.
+  - Al elegir una variable entra como ficha, pero el `${` que se escribió **se queda como texto** delante: hay que borrarlo.
+  - Junto a un *placeholder* del menú hay lápiz (editar su PQL) y **X, que lo borra**.
+- Para cambiar una ficha: poner el cursor justo detrás (por código, con `Range.setStartAfter(ficha)`) → Retroceso → `${` → elegir la nueva.
+
+**Lienzo y tabla**
+- Para mover un componente, arrastrarlo desde su cuerpo. La barra con el nombre puede quedar debajo de otro componente y moverías el otro.
+- Los tiradores para cambiar el tamaño son `.vc-grid-item-resize--visible .drag-container` (lados y esquinas). La rejilla tiene 36 columnas; los componentes pueden solaparse y Studio no los empuja.
+- Columna de una tabla: engranaje → *Data settings* → *Data display*, *Column behaviour*, *Interactions*, *Coloring* e *Icons*.
+  - *Coloring* → *Visual mapping* → *Thresholds* (cortes y un color por tramo). *Color Style*: *Background color* (toda la celda) o *Value highlight* (pastilla).
+- **Exportar una tabla:** *Interactions* → *Export settings* → «Allow exporting from table». Sin marcar, el menú ⋮ de la tabla en modo lectura no ofrece exportar.
+- Studio **sale solo del modo edición** tras un rato sin actividad (guarda antes). Se vuelve con el lápiz de arriba a la derecha.
 
   **No hay acción «quitar filtros».** El ✕ solo devuelve las variables a su valor inicial.
 - **Open linked view → Create view** crea una View nueva en el paquete:

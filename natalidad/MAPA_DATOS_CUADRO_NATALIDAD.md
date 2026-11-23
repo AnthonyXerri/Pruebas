@@ -57,7 +57,7 @@ Lógica del mockup: **tramitación** = embudo de las solicitudes presentadas en 
 | Entradas, salidas y stock | alta, resolución | ✅ | por `ROUND_MONTH`: altas = `COUNT` por mes de `ALTA`; salidas = por mes de `RES`; stock = `RUNNING_SUM(altas − salidas)` |
 | Stock pendiente por fase y antigüedad | abiertos por fase actual, tramos 0–30, 31–60, 61–90, > 90 | ✅ | fase de la última etapa iniciada (`PU_LAST`); tramo con `CASE WHEN DAYS_BETWEEN(ALTA, fecha de corte) <= 30 THEN '0–30' WHEN … END` |
 | Composición | ver tabla de dimensiones | ✅ 5 de 10 dimensiones (23/11); el resto, «Pendiente de datos» | dimensión elegible con un selector (variable `comp_dim`); PQL en la sección 7 |
-| Expedientes sin actividad | última `NatActividadRealizada.TIMESTAMP` | ✅ (sin «Atrasos» ni «Meses de atraso») | días sin actuación = `DAYS_BETWEEN(PU_MAX(bitácora), fecha de corte)`; filtro de etapa y umbral 30/60/90/180; **sin** `UsuarioAsignado`; botón de exportar |
+| Expedientes sin actividad | último evento del expediente (cualquier tipo) | ✅ 23/11 (sin «Atrasos» ni «Meses de atraso»: Nexus; exportar, sin decidir) | días sin actuación = `DAYS_BETWEEN(PU_MAX(expediente, TIMESTAMP), fecha de corte)`; selectores de etapa (una o varias, lista sacada de los datos), días (30/60/90/180) y «Depende de», con variables del KM; **sin** `UsuarioAsignado`. PQL en la sección 7 |
 | Gestión económica (crédito, atrasos, remesa, revisados sin proponer) | Nexus, Soluciones | ⏳ Pendiente de datos | textos «Pendiente de datos» con lo que falta |
 | Comparativa de periodos | la cabecera en dos periodos | ✅ | mismos KPIs con dos rangos de fechas (variables) y diferencia en número y % |
 | Explorador de procesos | event log | ✅ | componente Process Explorer sobre `"el__EventosNatalidad"` |
@@ -90,7 +90,7 @@ Un expediente resuelto tiene reproceso si alguna etapa empieza en una fase **ant
 1. ✅ 23/11: perspectiva «Natalidad» guardada (borrador): objetos `NatExpedientes`, `NatEtapas` y `NatInteresados` (dos relaciones 1–N incluidas); event log **`EventosNatalidad`** (Default), objeto principal `NatExpedientes`, los 8 eventos marcados **sin** dividir la actividad por atributos. Data model «Not executed», sin paquetes enlazados. El primer Save dio «Perspective not saved» (error genérico); el segundo funcionó y no quedó duplicada. Celonis avisa de que crear event logs en la perspectiva se va a retirar (pasará al Knowledge Model) y que crea solo un event log por objeto con sus eventos directos.
 2. ✅ 23/11: Test changes solo de esa perspectiva, con el visto bueno de Roberto.
 3. ✅ 23/11: nombres reales comprobados en el KM; coinciden con la sección 1 salvo el texto de inicio de etapa.
-4. ▶ Montar la View por bloques: cabecera ✅ → tiempos por fase ✅ → entradas/salidas/stock ✅ → stock por antigüedad ✅ → composición ✅ → sin actividad → comparativa → explorador. Lo que espera datos, con «Pendiente de datos».
+4. ▶ Montar la View por bloques: cabecera ✅ → tiempos por fase ✅ → entradas/salidas/stock ✅ → stock por antigüedad ✅ → composición ✅ → sin actividad ✅ → comparativa → explorador. Lo que espera datos, con «Pendiente de datos».
 
 ## 7. Lo montado en «Natalidad View» (23/11, borrador)
 
@@ -262,6 +262,78 @@ Colores: solo hay tokens de la paleta. El gris pizarra del mockup (#464C6A) es *
     - el gris claro es Context (70) (#A9AED1); el #D3D3DD del mockup no está en la paleta;
     - queda una fila en blanco al final en Sentido y en Respuesta de la Intervención.
 
+**Expedientes sin actividad (23/11):**
+
+Debajo de la rejilla: una fila con el título y tres selectores, y la tabla a todo el ancho. Solo entran expedientes **pendientes** (con alta, sin anular y sin resolución).
+
+Abreviaturas de este bloque:
+- `ETAPA` = `COALESCE(PU_LAST("o_custom_NatExpedientes", "el__EventosNatalidad"."Etapas", "el__EventosNatalidad"."Fase" IS NOT NULL), 'Sin etapa')`: etapa actual. Es la misma regla que el gráfico de stock por fase.
+- `ULTIMO` = `PU_MAX("o_custom_NatExpedientes", "el__EventosNatalidad"."TIMESTAMP")`: la última anotación del expediente, sea del tipo que sea.
+- `DEPENDE` = el `CASE` de la columna «Depende de» (abajo).
+
+*Variables del KM* (las modernas; se crean desde la View: icono *Variables* → **KNOWLEDGE MODEL** → «+»):
+
+| Variable | Tipo | Por defecto | La escribe |
+|---|---|---|---|
+| `sa_umbral` | Number | 30 | selector de días |
+| `sa_etapa` | String | `'Todas'`, **con** las comillas | selector «Etapa» |
+| `sa_resp` | String | Todos | selector «Depende de» |
+
+*Filtro guardado del KM* «Sin actividad (selectores)» (`sin_actividad_umbral`, no global). El PQL real lleva un comentario que explica cada variable:
+```
+FILTER ALTA IS NOT NULL
+  AND "o_custom_NatExpedientes"."FechaAnulacion" IS NULL
+  AND RES IS NULL
+  AND DAYS_BETWEEN(ULTIMO, CORTE) > ${sa_umbral}
+  AND ('Todas' IN (${sa_etapa}) OR ETAPA IN (${sa_etapa}))
+  AND ('${sa_resp}' = 'Todos' OR '${sa_resp}' = '' OR DEPENDE = '${sa_resp}');
+```
+- `sa_etapa` llega como lista entre comillas (`'A', 'B'`), porque el selector admite varias etapas. Si no se marca ninguna, vuelve a su valor por defecto `'Todas'` y pasan todas.
+- `sa_resp` llega sin comillas (selector de una sola opción). Por eso se compara con `'${sa_resp}'`.
+
+*Selectores* (Input dropdown):
+
+| Selector | Opciones | Selección | Variable |
+|---|---|---|---|
+| Etapa | *Load items*: dato `ETAPA` con el filtro guardado «Expedientes pendientes». La lista sale de los datos, con buscador y «Select all» | *Multiple* | `sa_etapa` |
+| Días | *Manual input*: «Días sin actuación: más de 30 / 60 / 90 / 180» = 30 / 60 / 90 / 180 | *Single* | `sa_umbral` |
+| Depende de | *Manual input*: «Depende de: todos» = Todos; Unidad gestora; Solicitante; Gestión económica; Intervención; Calendario | *Single* | `sa_resp` |
+
+*Título* (Text box): «Expedientes sin actividad» y, debajo, «`n_sin_actividad` con más de `${sa_umbral}` días sin actuación».
+- `n_sin_actividad` es un *placeholder* PQL: `COUNT("o_custom_NatExpedientes"."ID")` con el filtro guardado «Sin actividad (selectores)». Es el mismo filtro que usa la tabla, así que el número cuadra con ella.
+- Lleva un comentario que nombra `${sa_umbral} · ${sa_etapa} · ${sa_resp}`, para que Studio lo recalcule al cambiar un selector.
+
+*Tabla* (filtro guardado «Sin actividad (selectores)»; orden: «Días sin actuación», de más a menos):
+
+| Columna | PQL |
+|---|---|
+| Expediente | `"o_custom_NatExpedientes"."CodigoExpediente"` |
+| Fecha de registro | `PRES` |
+| Etapa de Atlantix | `ETAPA` |
+| Situación | `CASE` por la etapa actual: GESTIÓN EXPEDIENTE, REQUERIMIENTO y VALIDACIÓN TERCERO → «Pendiente de datos» (subestados de gestión, plazo del requerimiento, terceros); PROPUESTA FAVORABLE → «Esperando el fichero mensual»; INTERVENCIÓN CONCESIÓN → «En fiscalización»; ACTUACIÓN INTERESADA CONCESIÓN y DEV A INSTANCIA PROMO CONCESIÓN → «Respuesta desfavorable, sin devolver a gestión»; FAVORABLE CONCESIÓN y FAVORABLE CON OBS CONCESIÓN → «Respuesta favorable, pendiente de resolver»; RESOLUCIÓN FAVORABLE → «Esperando la nómina»; el resto, «—» |
+| Depende de | `CASE` por la etapa actual: REQUERIMIENTO → Solicitante; VALIDACIÓN TERCERO → Gestión económica; INTERVENCIÓN CONCESIÓN → Intervención; PROPUESTA FAVORABLE y RESOLUCIÓN FAVORABLE → Calendario; el resto → Unidad gestora. Es el reparto del mockup, **sin validar** por la unidad. El filtro guardado repite este `CASE`: si se cambia uno, hay que cambiar el otro |
+| Días desde el registro | `DAYS_BETWEEN(PRES, CORTE)` |
+| Días sin actuación | `DAYS_BETWEEN(ULTIMO, CORTE)`. Pastilla de color: engranaje → *Data settings* → *Coloring* → *Thresholds* 60,5 y 90,5 → sin color / naranja / rojo, estilo *Value highlight* |
+| Atrasos acumulados, Meses de atraso | marcador `/* Pendiente de datos: … vendrán de la nómina de Nexus */ 'Pendiente de datos'` |
+
+Listo para los datos que faltan:
+- «Días sin actuación» cuenta **cualquier** evento. Los que se añadan al event log (Atlantix, eReg o datos internos de la unidad) entran solos.
+- La lista de etapas sale de los datos: una etapa nueva aparece sola en el selector.
+- Una etapa nueva cae en «Unidad gestora» en «Depende de» y en «—» en «Situación». Así queda hasta que se añada a los dos `CASE` (el de la columna y el del filtro guardado).
+- «Atrasos» y «Meses de atraso»: cuando llegue Nexus, solo cambia el PQL de la columna.
+
+Probado en el lienzo, en modo lectura: cambian el contador y las filas con los días, con una etapa, con varias, con todas, sin ninguna y con «Depende de». Después se dejaron los tres selectores en su valor por defecto.
+
+Para revisar con Roberto:
+- Studio avisa de que el valor actual de una variable del KM «se aplica a todos los usuarios». Antes del Deploy, comprobar con dos usuarios si lo que elige uno en un selector lo ve también el otro.
+- Han quedado **sin uso** las variables antiguas del KM `umbral_sin_actividad`, `etapa_sin_actividad` y `resp_sin_actividad`, y las de la View con el mismo nombre. Borrarlas con él.
+- Exportar: la casilla de la tabla *Interactions* → *Export settings* → «Allow exporting from table» está **sin marcar**. Marcarla dejaría descargar números de expediente. Hay que decidirlo.
+
+Diferencias con el mockup:
+- no hay enlace «Abrir en Atlantix» (falta la dirección);
+- «Atrasos» y «Meses de atraso» esperan a Nexus;
+- no se puede exportar (pendiente de decidir).
+
 **Barra de filtros (entre la cabecera y «Fase previa», como en el mockup):**
 
 | Mockup | Componente | Qué hace |
@@ -301,9 +373,13 @@ Diferencias con el mockup:
 5. Hay expedientes pendientes cuya última etapa es **Mantenimiento** o **Pago único**, o que **no tienen etapa**. ¿Son stock de tramitación o seguimiento posterior a la concesión? El mockup solo cuenta las fases 1–5.
 6. Hay expedientes **sin fecha de presentación**: salen como «-» en el filtro «Año de solicitud» y no entran en los tiempos desde el registro.
 7. En `NatInteresados`, algunos **representantes** llevan `EsPrincipal = 'S'` y unos pocos expedientes **no tienen solicitante** (`EsSolicitante = 'S'`). ¿Es correcto? En Composición salen como «No informado».
+8. En la etapa **PTE. ENVÍO INTERVENCIÓN**, el «Envío a Intervención» de la bitácora es siempre muy anterior (más de 60 días) al inicio de la etapa actual. ¿Qué fecha marca el inicio de esa etapa?
+9. Arriba de «Expedientes sin actividad» salen expedientes de **2022** en RESOLUCIÓN FAVORABLE o FAVORABLE CONCESIÓN que llevan **años** sin actuación. ¿Están cerrados en otro sistema (por ejemplo, ya pagados en Nexus)?
+10. ¿Vale el reparto de «Depende de» del mockup (requerimiento → solicitante, validación de terceros → gestión económica, etc.)? En el requerimiento falta la fecha límite de aportación para separar «en plazo» y «plazo vencido».
+11. Para el enlace «Abrir en Atlantix», ¿qué dirección abre un expediente?
 
 **Falta en la View:**
-- expedientes sin actividad (tabla con exportar);
+- decidir si la tabla de expedientes sin actividad se puede exportar;
 - el contenido de la comparativa de periodos;
 - % favorables;
 - selector «Días de»;
