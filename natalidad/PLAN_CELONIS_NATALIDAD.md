@@ -84,3 +84,7 @@ Para cada evento de PnC que se copie: ver su SQL, atributos y relaciones; crear 
   - **Calendario de nómina:** no hay día fijo. El envío a la Intervención es la fecha de propuesta (Atlantix) y la parte contable está en Nexus por documento contable. No se pide calendario.
   - **Fichero de terceros:** se hace fuera del sistema. Referencias: fecha de generación del CSV que Familia envía a Gestión Económica y fecha de carga del CSV de vuelta. Pedir esas dos fechas por mes.
   - **Plazos** de tramitación y de aportación: sin respuesta todavía.
+  - **Respuesta a Pablo:**
+    - Del fichero de terceros se piden solo las fechas por mes, nunca el contenido del CSV (lleva datos personales y bancarios).
+    - Se le pregunta si la carga del CSV de vuelta es lo que cierra la etapa VALIDACIÓN TERCERO. Si lo es, solo falta la fecha de generación.
+    - El ciclo mensual sale de los datos: propuesta favorable, «Envío a Intervención» de la bitácora, respuestas por lotes y resolución mensual.
