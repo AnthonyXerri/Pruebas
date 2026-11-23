@@ -5,7 +5,7 @@ Para cada pieza del mockup `mockups/MockupNatalidad_v32.html`: de dónde sale, s
 ## 0. Qué hay en Celonis (visto el 23/11, solo lectura)
 
 - Pool «OCPM DataPool VALIDACION y PRODUCCION» → Objects & Events: **3 objetos** (`NatExpedientes`, `NatEtapas`, `NatInteresados`) y **8 eventos** Nat… en borrador. 23 cambios sin versionar en el pool (no son solo nuestros).
-- Perspectivas: Dependencia, PnCAtlantix, Discapacidad, DMPensionesNoContributiva. **No hay perspectiva «Natalidad»**.
+- Perspectivas: Dependencia, PnCAtlantix, Discapacidad, DMPensionesNoContributiva. **23/11: creada la perspectiva «Natalidad»** (borrador, ver sección 6).
 - Data models: ninguno de Natalidad. `test:perspective_custom_PnCAtlantix` es de Pensiones No Contributivas (PnCExpedientes, PnCPropuesta, PnCRevision…): no sirve para Natalidad.
 - Studio › Implementación › **«Familia Natalidad»**: paquete **vacío** (sin View ni KM), enlazado al data model `test:perspective_custom_DMPensionesNoContributiva`. Al crear la View habrá que enlazarlo al de Natalidad.
 - Conclusión: **sin la perspectiva y su Test changes no hay datos que pintar**. La View no se puede empezar con datos hasta entonces.
@@ -86,7 +86,7 @@ Un expediente resuelto tiene reproceso si alguna etapa empieza en una fase **ant
 
 ## 6. Orden propuesto
 
-1. Crear la perspectiva «Natalidad» (borrador): objeto principal `NatExpedientes`, objetos `NatEtapas` y `NatInteresados`, event log `EventosNatalidad` con los 8 eventos. **Necesita el «adelante» de Anthony.**
+1. ✅ 23/11: perspectiva «Natalidad» guardada (borrador): objetos `NatExpedientes`, `NatEtapas` y `NatInteresados` (dos relaciones 1–N incluidas); event log **`EventosNatalidad`** (Default), objeto principal `NatExpedientes`, los 8 eventos marcados **sin** dividir la actividad por atributos. Data model «Not executed», sin paquetes enlazados. El primer Save dio «Perspective not saved» (error genérico); el segundo funcionó y no quedó duplicada. Celonis avisa de que crear event logs en la perspectiva se va a retirar (pasará al Knowledge Model) y que crea solo un event log por objeto con sus eventos directos.
 2. Test changes solo de esa perspectiva → **solo con el visto bueno de Roberto**.
 3. Comprobar nombres reales en el KM (sección 1) y probar estos PQL en una View de borrador dentro de «Familia Natalidad».
 4. Montar la View por bloques: cabecera → tiempos por fase → entradas/salidas/stock → stock por antigüedad → sin actividad → composición → comparativa → explorador. Lo que espera datos, con «Pendiente de datos».
