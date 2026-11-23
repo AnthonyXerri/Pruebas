@@ -84,6 +84,13 @@ Para cada evento de PnC que se copie: ver su SQL, atributos y relaciones; crear 
   - **Calendario de nómina:** no hay día fijo. El envío a la Intervención es la fecha de propuesta (Atlantix) y la parte contable está en Nexus por documento contable. No se pide calendario.
   - **Fichero de terceros:** se hace fuera del sistema. Referencias: fecha de generación del CSV que Familia envía a Gestión Económica y fecha de carga del CSV de vuelta. Pedir esas dos fechas por mes.
   - **Plazos** de tramitación y de aportación: sin respuesta todavía.
+  - **Conversación con Soluciones (24/11):**
+    - **Revisión de conformidad:** se crearán dos campos (marca y fecha) cuando llegue la petición oficial FARO; depende del proveedor. Solo existirán mientras el expediente no tenga propuesta favorable. **Riesgo:** si se borran al proponer, se pierde el histórico. Hay que pedir que la fecha se conserve o quede en la bitácora.
+    - **Primer pago:** es el mes de la fecha de la propuesta favorable (confirmado).
+    - **Último mes pagado:** lo pueden dar, aunque dicen que es «relativo».
+    - **Nacionalidad:** solo existe la de origen, del formulario, añadida hace pocos meses, no obligatoria y con pocos datos. Será una sola dimensión «Nacionalidad» con lo que haya; el país de nacimiento, solo si existe. Alternativa si sale casi vacía: aproximar por tipo de documento (DNI / NIE).
+    - **Municipio de residencia:** ya lo tenemos (`GSTA_V_INTERESADOS`).
+    - Lo que se pide es tabla y columna, nunca datos por correo.
   - **Respuesta a Pablo:**
     - Del fichero de terceros se piden solo las fechas por mes, nunca el contenido del CSV (lleva datos personales y bancarios).
     - Se le pregunta si la carga del CSV de vuelta es lo que cierra la etapa VALIDACIÓN TERCERO. Si lo es, solo falta la fecha de generación.
