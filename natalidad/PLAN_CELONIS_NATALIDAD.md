@@ -91,6 +91,10 @@ Para cada evento de PnC que se copie: ver su SQL, atributos y relaciones; crear 
     - **Nacionalidad:** solo existe la de origen, del formulario, añadida hace pocos meses, no obligatoria y con pocos datos. Será una sola dimensión «Nacionalidad» con lo que haya; el país de nacimiento, solo si existe. Alternativa si sale casi vacía: aproximar por tipo de documento (DNI / NIE).
     - **Municipio de residencia:** ya lo tenemos (`GSTA_V_INTERESADOS`).
     - Lo que se pide es tabla y columna, nunca datos por correo.
+  - **eReg y Nexus (24/11):** lista para Andrés auditada contra el Excel v9 y el mockup v32. Añadidos en la auditoría:
+    - el campo que identifica en eReg los asientos de esta ayuda;
+    - qué hacer si Nexus solo identifica por DNI: usarlo solo para unir, sin mostrarlo, o con un código seudonimizado;
+    - conexión al data pool como PRATLX_RO.
   - **Respuesta a Pablo:**
     - Del fichero de terceros se piden solo las fechas por mes, nunca el contenido del CSV (lleva datos personales y bancarios).
     - Se le pregunta si la carga del CSV de vuelta es lo que cierra la etapa VALIDACIÓN TERCERO. Si lo es, solo falta la fecha de generación.
