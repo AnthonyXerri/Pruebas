@@ -124,8 +124,15 @@ Comprobaciones hechas (sin copiar cifras aquí):
 - resueltos + pendientes + anulados sin resolver = dados de alta;
 - favorables + denegados o desistidos + «Sin documento» = resueltos.
 
-**Gráficos:**
-- **Entradas, salidas y stock** (Column and line). La tabla común es el **event log**, porque altas y resoluciones van por fechas distintas.
+**Gráficos.** Van en una rejilla de 2 × 2, como en el mockup:
+- fila 1: [Tiempo por fase | Entradas y salidas];
+- fila 2: [Stock por fase | hueco para «Composición»].
+
+La rejilla de Studio tiene 36 columnas y filas de 8 px. Las posiciones son: gráficos en las filas 73–109 y 109–145, mitad izquierda en las columnas 1–19 y mitad derecha en las 19–37.
+
+Colores: solo hay tokens de la paleta. El gris pizarra del mockup (#464C6A) es **Context (20)**, exacto.
+
+- **Entradas, salidas y stock** (*Grouped column*: dos métricas de columnas y una línea). La tabla común es el **event log**, porque altas y resoluciones van por fechas distintas.
   - Eje «Periodo (inicio)», formato fecha ISO (`%Y-%m-%d`), según el selector «Ver por»:
     ```
     CASE
@@ -137,22 +144,66 @@ Comprobaciones hechas (sin copiar cifras aquí):
     END
     ```
     La quincena es «día 1» o «día 16» del mes. Comprobado: las dos quincenas suman lo del mes y el stock cuadra.
-  - Columnas, Altas: `COUNT(CASE WHEN "el__EventosNatalidad"."Actividad" = 'Alta del expediente' THEN "el__EventosNatalidad"."ID" END)`.
-  - Línea 1, Resueltos: `COUNT(DISTINCT CASE WHEN "el__EventosNatalidad"."SentidoResolucion" IS NOT NULL AND "el__EventosNatalidad"."TIMESTAMP" = RES THEN "el__EventosNatalidad"."NatExpedientes_ID" END)`: la primera resolución, una vez por expediente.
-  - Línea 2, Stock pendiente: `RUNNING_TOTAL(altas − resueltos − anulados sin resolución)`, con anulados = `Actividad = 'Expediente anulado' AND RES IS NULL`.
-  - `RUNNING_TOTAL` acepta agregaciones. El stock final cuadra con «Pendientes de resolver».
-  - El componente solo admite **una** métrica de columnas.
-- **Tiempo medio por fase** (Bar).
-  - Dimensión: `"el__EventosNatalidad"."Fase"`.
-  - Métrica: `AVG(DAYS_BETWEEN("Fecha Inicio Etapa", "Fecha Fin Etapa"))`. Inicio y fin de etapa llevan las mismas fechas, así que la media no se altera.
-  - Tooltip: `COUNT(DISTINCT "el__EventosNatalidad"."NatExpedientes_ID")`.
-  - Filtro del componente: *Attribute filter* con las 7 fases marcadas, para que no salga la barra vacía. ⚠ La lista es fija: una fase nueva no saldría.
-  - Es la media **por etapa**, no la suma por expediente. Falta el selector «Días de».
+  - Columna 1, Altas: `COUNT(CASE WHEN "el__EventosNatalidad"."Actividad" = 'Alta del expediente' THEN "el__EventosNatalidad"."ID" END)`. Color Context (20).
+  - Columna 2, Resueltos: `COUNT(DISTINCT CASE WHEN "el__EventosNatalidad"."SentidoResolucion" IS NOT NULL AND "el__EventosNatalidad"."TIMESTAMP" = RES THEN "el__EventosNatalidad"."NatExpedientes_ID" END)`: la primera resolución, una vez por expediente. Color Context (70).
+  - Línea, Stock pendiente: `RUNNING_TOTAL(altas − resueltos − anulados sin resolución)`, con anulados = `Actividad = 'Expediente anulado' AND RES IS NULL`.
+    - Va en el **eje secundario** y en Context (10).
+    - `RUNNING_TOTAL` acepta agregaciones. El stock final cuadra con «Pendientes de resolver».
+  - Ejes:
+    - Y: «Expedientes dados de alta y resueltos»;
+    - X: `${ver_por} (fecha de inicio)`;
+    - Y secundario: «Pendientes al final del periodo».
+- **Tiempo medio por fase** (*Column and line*), como el gráfico 1 del mockup.
+  - Dimensión «Fase». Es un «cubo»: todo lo que no es fase 2–5 cae en Entrada, y las métricas deciden qué cuentan ahí.
+    ```
+    /* Las cinco fases del mockup. Los eventos que no son de las fases 2–5 caen en «1. Entrada»,
+       pero ahí las métricas solo cuentan el evento de alta. Así no sale una barra «null» */
+    CASE
+    WHEN "el__EventosNatalidad"."Fase" IN ('2. Gestión del expediente', '3. Validación de terceros', '4. Intervención', '5. Resolución y pago') THEN "el__EventosNatalidad"."Fase"
+    ELSE '1. Entrada (registro → alta)'
+    END
+    ```
+  - Columnas, «Días de media» (Rounded, «d»).
+    - En Entrada es registro → alta, por expediente. Cuadra con el KPI «Registro → alta».
+    - En las fases 2–5 es la media **por etapa** (inicio → fin). Las etapas abiertas no cuentan.
+    ```
+    AVG(
+      CASE
+      WHEN "el__EventosNatalidad"."Actividad" = 'Alta del expediente' THEN DAYS_BETWEEN(PRES, ALTA)
+      WHEN "el__EventosNatalidad"."Fase" IN (fases 2–5) THEN DAYS_BETWEEN("el__EventosNatalidad"."Fecha Inicio Etapa", "el__EventosNatalidad"."Fecha Fin Etapa")
+      ELSE NULL
+      END
+    )
+    ```
+  - Línea, «Expedientes en la fase ahora» (eje secundario, Rounded). Con `N` =
+    ```
+    COUNT(DISTINCT CASE WHEN "el__EventosNatalidad"."Fase" IN (fases 2–5)
+      AND ALTA IS NOT NULL AND "o_custom_NatExpedientes"."FechaAnulacion" IS NULL AND RES IS NULL
+      AND PU_LAST("o_custom_NatExpedientes", "el__EventosNatalidad"."Fase", "el__EventosNatalidad"."Fase" IS NOT NULL) = "el__EventosNatalidad"."Fase"
+      THEN "el__EventosNatalidad"."NatExpedientes_ID" ELSE NULL END)
+    ```
+    la métrica es `CASE WHEN N = 0 THEN NULL ELSE N END`.
+    - Así Entrada queda vacía en vez de 0, porque los pendientes de alta son «Pendiente de datos» (eReg).
+    - Comprobado: en cada fase coincide con el total de la barra del gráfico de stock.
+  - **Sin filtro de componente.** Se quitó el *Attribute filter* de 7 fases: un filtro sobre eventos cambiaría `RES` y `PU_LAST` (MEMORIA, sección 5).
+  - Colores:
+    - barras con *Color mapping* por «Fase», regla «Entrada en gris claro»: Entrada en Context (70) y el resto (*Not Mapped*) en Context (20);
+    - línea en Context (10).
+  - Ejes: «Días de media en cada fase» / «Fase» / «Expedientes en la fase ahora». Leyenda sin título.
+  - Diferencias con el mockup:
+    - la leyenda solo puede mostrar las categorías de la regla («1. Entrada…») y la línea; el mockup dice «Antes del alta» y «Días de media en tramitación»;
+    - falta el selector «Días de».
 - **Stock pendiente por fase y antigüedad** (Stacked bar).
   - Dimensión «Fase actual»: `CASE WHEN PU_LAST("o_custom_NatExpedientes", "el__EventosNatalidad"."Fase", "el__EventosNatalidad"."Fase" IS NOT NULL) IS NULL THEN 'Sin etapa' ELSE PU_LAST(…) END`.
-  - 4 métricas, una por tramo de `DAYS_BETWEEN(ALTA, CORTE)`: ≤ 30, 31–60, 61–90, > 90.
-  - Filtro guardado «Expedientes pendientes». La suma cuadra con la cabecera.
-  - Anthony lo movió a mano debajo del gráfico de stock.
+  - 4 métricas, una por tramo de `DAYS_BETWEEN(ALTA, CORTE)`, con los colores del mockup:
+    - ≤ 30: Context (70);
+    - 31–60: Context (50);
+    - 61–90: Context (20);
+    - > 90: Negative.
+  - Filtro guardado «Expedientes pendientes». Es un filtro de **expedientes**: a los que quedan no les quita eventos, así que `PU_LAST` sigue bien. La suma cuadra con la cabecera.
+  - Ejes: «Pendientes a la fecha de corte, por fase actual» / «Expedientes pendientes».
+  - Se dejan Mantenimiento, Pago único y Sin etapa para que la suma cuadre con la cabecera, aunque el mockup solo tiene las 5 fases (pregunta 5).
+  - Faltan las columnas «Pendientes» y «Antig. media» del mockup.
 
 **Barra de filtros (entre la cabecera y «Fase previa», como en el mockup):**
 
@@ -190,6 +241,8 @@ Diferencias con el mockup:
 2. «Anulación de Etapa» aparece en **más de la mitad** de los resueltos. Parece un apunte rutinario, no un reproceso. Hasta validarlo, el KPI se llama «con anulación de etapa». La versión buena es la vuelta a una fase anterior (sección 5).
 3. «Fin sin concesión» tiene **duración media negativa**: hay etapas con fin anterior al inicio (calidad de datos).
 4. Con 90 días, la **gran mayoría** de los resueltos está fuera de plazo. Confirmar el plazo real.
+5. Hay expedientes pendientes cuya última etapa es **Mantenimiento** o **Pago único**, o que **no tienen etapa**. ¿Son stock de tramitación o seguimiento posterior a la concesión? El mockup solo cuenta las fases 1–5.
+6. Hay expedientes **sin fecha de presentación**: salen como «-» en el filtro «Año de solicitud» y no entran en los tiempos desde el registro.
 
 **Falta en la View:**
 - expedientes sin actividad (tabla con exportar);

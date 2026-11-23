@@ -681,11 +681,31 @@ Lo construido y su PQL está en `MAPA_DATOS_CUADRO_NATALIDAD.md`, sección 7. Aq
 - **`RUNNING_TOTAL(agregación)`** funciona para acumulados por mes, por ejemplo el stock.
 - **Gráficos con dos fechas** (altas y resoluciones en el mismo eje): usar el **event log** como tabla común. Cada métrica cuenta su tipo de evento. La primera resolución se reconoce con `TIMESTAMP = PU_MIN(…)`.
 - **«Pendiente de datos»:** con `/* Pendiente de datos: … */` + `AVG(CASE WHEN "o_custom_NatExpedientes"."ID" IS NULL THEN 0.0 END)` el KPI muestra «–». Así queda listo para cambiar solo la fórmula.
+- **Filtros y funciones `PU_`.** Las `PU_` (`PU_MIN`, `PU_LAST`…) agregan solo las filas que dejan los filtros. Es el comportamiento documentado de PQL; aquí no se probó, se evitó.
+  - Un filtro de **eventos** (p. ej. «solo eventos de las fases 2–5») haría que `RES` no viera los eventos de resolución. Todos parecerían pendientes.
+  - Un filtro de **expedientes**, como «Expedientes pendientes», quita expedientes enteros. A los que quedan no les quita eventos, así que no rompe nada.
+- **Quitar la categoría «null» de un gráfico sin filtrar:** no hay opción para ocultarla, y sigue saliendo aunque todas sus métricas sean NULL.
+  - La solución es un **«cubo»**: la dimensión manda lo sobrante a una categoría que sí se muestra (`ELSE '1. Entrada…'`).
+  - Cada métrica excluye esas filas con su propio `CASE`.
+- **Dejar vacío un punto de la línea en vez de 0:** `CASE WHEN COUNT(…) = 0 THEN NULL ELSE COUNT(…) END`. `COUNT` nunca da NULL; `AVG` sobre todo NULL, sí.
+- Los comentarios `/* … */` también funcionan dentro de métricas y dimensiones de gráficos.
 
 **Componentes**
 - **KPI list:** «Add data or drag it here» solo se ve con el componente seleccionado. Cada KPI nuevo baja el siguiente hueco unos 55 px.
 - **Column and line:** una métrica de columnas y varias líneas.
+- **Grouped column:** varias métricas de columnas.
+  - En el engranaje de una métrica → *Data settings* → *Mark type* = *Line* (y *Show on secondary axis*), esa métrica pasa a línea en el eje derecho.
+  - Si solo queda una columna más una línea, Studio lo convierte en *Column and line*.
 - **Stacked bar:** una dimensión y varias métricas apiladas, una por tramo.
+- **Colores:** sección *Coloring*, al final de *Settings*. El círculo junto al nombre de la métrica abre su PQL Editor, no el color.
+  - Solo hay tokens de la paleta, sin hex libre: Primary, Secondary, Context, tres Custom, Negative, Warning y Positive.
+  - **Context (20) = #464C6A**, el gris pizarra del mockup.
+  - El lápiz del final **no es color a medida: es Transparent**.
+- **Color mapping** (pestaña del selector de color): colorea por valores de la dimensión.
+  - Regla con nombre, categorías con su color y un color para el resto (*Not Mapped*).
+  - La leyenda pasa a mostrar las categorías de la regla, no el nombre de la métrica. Se le puede quitar el título con *Show legend title*.
+- **Axis settings:** etiquetas de Y, X e Y secundario. Aceptan variables (`${ver_por}`).
+- **Data settings de una dimensión:** solo nombre, unidad, formato y PQL. No hay opción para ocultar nulos.
 
 **Filtros y parámetros de pantalla**
 - **Filter dropdown:** aplica un **filtro real** a toda la View. Sin nada elegido, muestra el nombre de la dimensión como etiqueta.
@@ -712,7 +732,10 @@ Lo construido y su PQL está en `MAPA_DATOS_CUADRO_NATALIDAD.md`, sección 7. Aq
   Es la forma de tener «otra página» sin URLs fijas.
 
 **Editor**
-- **Mover componentes:** arrastrar el asa (⠿) funciona en saltos cortos; los largos, o cerca del borde de la pantalla, no. La página tiene scroll propio para hacer sitio abajo.
+- **Mover componentes:** con el componente seleccionado sale «Click & drag to arrange components».
+  - Arrastrarlo **desde su centro** funciona también en saltos largos (hasta 72 filas), si origen y destino se ven a la vez en pantalla. Antes, subir o bajar el lienzo.
+  - Con el asa (⠿) solo iban bien los saltos cortos.
+  - La rejilla tiene 36 columnas y filas de 8 px. La posición exacta se lee en el `grid-area` del DOM (`.bp-board__grid .grid-items`).
 - **Redimensionar** arrastrando las asas laterales sí funciona, incluso en arrastres largos.
 - **Componentes nuevos:** caen centrados en el cursor y estrechan a los vecinos de la fila.
   - El *Text box* nace con 3 filas de alto y se monta sobre lo que haya.
@@ -722,5 +745,12 @@ Lo construido y su PQL está en `MAPA_DATOS_CUADRO_NATALIDAD.md`, sección 7. Aq
 - **En modo lectura el lienzo se estira** al ancho de la ventana, y un desplegable puede salirse de su celda y montarse sobre el vecino. Revisar siempre la View fuera del editor.
 - **Vista previa del PQL Editor:** se corta en unas 50 filas.
 - **Leer o probar PQL sin teclear:** los editores son Monaco. `window.monaco.editor.getModels()` da el texto de cada uno desde la consola.
+  - Para escribir: `editor.executeEdits(…)` dentro de un `setTimeout`. Llamado directo, la consola se quedó colgada.
+  - Después, **Ctrl+Enter** ejecuta la vista previa.
+- **PQL Editor de un gráfico:** la vista previa enseña todas las columnas, pero solo se edita la que se abrió. Las métricas («MET») se abren desde su campo.
+  - ⚠ El ⋮ de cada cabecera tiene «Remove Column».
+- **Tras un apagado:** la View puede abrir en «Read only Mode! This View is already opened in a different tab». Se arregla con *Exit Edit mode* y volviendo a `/edit`, o cerrando las otras pestañas de Celonis.
+- **`scrollIntoView` desde la consola mueve la página entera** (`.ce-burger-content__body-container`) y el lienzo desaparece. Se arregla volviendo su `scrollTop` a 0.
+- En modo lectura sale a veces una **encuesta de Celonis** abajo a la derecha. Se cierra con la ✕, sin contestar.
 
 **Hallazgos de datos (preguntas para la unidad):** MAPA, sección 7.
