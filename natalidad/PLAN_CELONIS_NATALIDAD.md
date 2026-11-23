@@ -78,6 +78,7 @@ Para cada evento de PnC que se copie: ver su SQL, atributos y relaciones; crear 
   - **Revisión de conformidad:** no existe todavía; es un campo nuevo sin petición FARO. El indicador «revisados sin proponer» del mockup queda pendiente. Si se crea, pedir que se registre en la bitácora, para tener la fecha.
   - **Primera nómina:** se paga en el mes de la propuesta favorable, así que sale de la etapa PROPUESTA FAVORABLE y no se pide.
   - **Propuesta a nómina:** el mes es el de la propuesta favorable; solo se pide el importe propuesto (lo calcula la aplicación al grabar la propuesta).
+  - **Revisado contra `Datos_necesarios_cuadro_Natalidad_v9.xlsx`:** faltaban en la lista dos datos propios de Atlantix. Son la documentación requerida en cada requerimiento (dimensión del explorador) y los datos económicos del expediente: pagos previstos y realizados por mes (la unidad dijo que Atlantix los tiene). Se piden a Soluciones con tabla y columna; el acceso desde Celonis se pide después.
   - **Bajas y modificaciones:** no se piden. Las etapas de baja y de modificación ya salen de Atlantix y los pagos saldrán de Nexus.
   - **Datos de la solicitante** (nacionalidad, país, fecha de nacimiento): no todos los expedientes los tienen; se muestran solo donde existan.
   - **Calendario de nómina:** no hay día fijo. El envío a la Intervención es la fecha de propuesta (Atlantix) y la parte contable está en Nexus por documento contable. No se pide calendario.
