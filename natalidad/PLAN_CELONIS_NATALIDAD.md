@@ -6,6 +6,8 @@ Filtro en todo: `CDAPLICACION = 'D032'` y `CDPROCEDIMIENTO = '3163'`.
 Data Source en todas las transformaciones: **OCPM DataPool IMPLEMENTACION _Conexión Producción PRATLX_RO**.
 Prefijo `Nat` y etiqueta **Natalidad**. Memoria detallada: `natalidad/MEMORIA_NATALIDAD_CELONIS.md`. SQL: `natalidad/sql/`.
 
+**Mapa de datos del mockup v32 con PQL de partida (23/11):** `natalidad/MAPA_DATOS_CUADRO_NATALIDAD.md`. Visto en Celonis el 23/11: no hay perspectiva ni data model de Natalidad; el paquete «Familia Natalidad» está vacío.
+
 ## Bloques de trabajo
 
 | Bloque | Qué | Tabla origen | Para el mockup | Estado |
