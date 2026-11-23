@@ -660,3 +660,35 @@ Esta lista es la base de la tabla final de lo que falta (Atlantix, eReg, Nexus y
 - [ ] `NatProcedimiento`, `NatEtapa`, `NatDocumento` (y `NatExpediente`): atributos, transformación con el filtro y relaciones.
 - [ ] Eventos `Nat…`: todos los de Atlantix, con el mismo filtro.
 - [ ] Revisar con Roberto antes de Create version / Deploy.
+
+## 5. El cuadro en Studio (23/11)
+
+Lo construido y su PQL está en `MAPA_DATOS_CUADRO_NATALIDAD.md`, sección 7. Aquí, lo aprendido del editor.
+
+**Montaje**
+- **Para crear la View hace falta un KM.** El formulario *Create View* pide un Knowledge Model existente.
+  - En Dependencia ya existía cuando se creó el paquete.
+  - Aquí hubo que crear antes **«Natalidad KM»** y una variable de paquete (Package Settings → Variables → Perspective) que apunta a `test:perspective_custom_Natalidad`.
+- **Variables de la View:** icono *Variables* de la barra del editor → **VIEW** → «+» → nombre, tipo (*Number*) y valor por defecto. En el PQL se usan como `${plazo_dias}`.
+- **Filtros guardados en el KM:** pestaña *Filters* del KM → *Create Knowledge* → *Filter*.
+  - Se escriben en PQL: `FILTER …;`.
+  - **Global Filter apagado.** Encendido se aplicaría a todo el KM.
+  - En un componente se usan con el embudo de *Data* → *Add Filter* → *Saved filters*.
+  - Es la única forma de filtrar por algo calculado, como la fecha de resolución.
+- **Attribute filter de un componente:** marcar un valor lo **incluye**. Para quitar los vacíos hay que marcar todos los demás valores. La lista queda fija.
+
+**PQL**
+- **`RUNNING_TOTAL(agregación)`** funciona para acumulados por mes, por ejemplo el stock.
+- **Gráficos con dos fechas** (altas y resoluciones en el mismo eje): usar el **event log** como tabla común. Cada métrica cuenta su tipo de evento. La primera resolución se reconoce con `TIMESTAMP = PU_MIN(…)`.
+- **«Pendiente de datos»:** con `/* Pendiente de datos: … */` + `AVG(CASE WHEN "o_custom_NatExpedientes"."ID" IS NULL THEN 0.0 END)` el KPI muestra «–». Así queda listo para cambiar solo la fórmula.
+
+**Componentes**
+- **KPI list:** «Add data or drag it here» solo se ve con el componente seleccionado. Cada KPI nuevo baja el siguiente hueco unos 55 px.
+- **Column and line:** una métrica de columnas y varias líneas.
+- **Stacked bar:** una dimensión y varias métricas apiladas, una por tramo.
+
+**Editor**
+- **Mover componentes:** arrastrar el asa (⠿) funciona en saltos cortos; los largos, o cerca del borde de la pantalla, no. La página tiene scroll propio para hacer sitio abajo.
+- **Vista previa del PQL Editor:** se corta en unas 50 filas.
+
+**Hallazgos de datos (preguntas para la unidad):** MAPA, sección 7.

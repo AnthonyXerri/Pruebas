@@ -6,7 +6,7 @@ Filtro en todo: `CDAPLICACION = 'D032'` y `CDPROCEDIMIENTO = '3163'`.
 Data Source en todas las transformaciones: **OCPM DataPool IMPLEMENTACION _Conexión Producción PRATLX_RO**.
 Prefijo `Nat` y etiqueta **Natalidad**. Memoria detallada: `natalidad/MEMORIA_NATALIDAD_CELONIS.md`. SQL: `natalidad/sql/`.
 
-**Mapa de datos del mockup v32 con PQL de partida (23/11):** `natalidad/MAPA_DATOS_CUADRO_NATALIDAD.md`. Visto en Celonis el 23/11: no hay perspectiva ni data model de Natalidad; el paquete «Familia Natalidad» está vacío.
+**Mapa de datos del mockup v32 con PQL de partida (23/11):** `natalidad/MAPA_DATOS_CUADRO_NATALIDAD.md`. Visto en Celonis el 23/11 por la mañana: no había perspectiva ni data model de Natalidad, y el paquete «Familia Natalidad» estaba vacío. Por la tarde ya están la perspectiva, el Test changes, el KM y la View en borrador (MAPA, sección 7).
 
 ## Bloques de trabajo
 
@@ -19,7 +19,7 @@ Prefijo `Nat` y etiqueta **Natalidad**. Memoria detallada: `natalidad/MEMORIA_NA
 | E ✅ | `NatInteresados` (edad en tramos, nacionalidad, país, municipio; sin nombres ni DNI) | `GSTA_V_INTERESADOS` | Composición | Pendiente |
 | F ✅ | Completar `NatExpedientes`: `REF_SOLICITUD`, año y nombre de la convocatoria (`GSTA_V_EXPEDIENTE`), nombre del procedimiento | `GSTA_V_CEL_EXPEDIENTE`, `GSTA_V_EXPEDIENTE`, `GSTA_V_CEL_CAT_PROC` | Filtros, enlace futuro con eReg | Pendiente |
 | G ✅ (no están: se piden) | Búsquedas: revisión de conformidad, fichero o tercero de Nexus, plazo de requerimiento (`LIKE` en la bitácora y en los hitos) | Bitácora, hitos | «Revisados sin proponer», subestados de terceros | Pendiente |
-| H ▶ siguiente | Perspectiva «Natalidad» ✅ (23/11, borrador). Falta: Test changes, Knowledge Model (KPIs en PQL) y View | — | El cuadro | Test changes con Roberto |
+| H ▶ en curso | Perspectiva «Natalidad» ✅ (23/11, borrador). Test changes ✅ (23/11, con OK de Roberto). «Natalidad KM» ✅ y «Natalidad View» ▶ en «Familia Natalidad» (borrador). Hechos: cabecera, entradas/salidas/stock, tiempo por fase y stock por antigüedad. Falta: sin actividad, composición, comparativa y explorador (ver `MAPA_DATOS_CUADRO_NATALIDAD.md`, sección 7) | — | El cuadro | Create version y Deploy, solo con Roberto |
 
 Para cada evento de PnC que se copie: ver su SQL, atributos y relaciones; crear el evento Nat (tipos bien puestos); relaciones; transformación con PRATLX_RO; Preview; Save with Validation.
 
