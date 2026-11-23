@@ -670,6 +670,8 @@ Lo construido y su PQL está en `MAPA_DATOS_CUADRO_NATALIDAD.md`, sección 7. Aq
   - En Dependencia ya existía cuando se creó el paquete.
   - Aquí hubo que crear antes **«Natalidad KM»** y una variable de paquete (Package Settings → Variables → Perspective) que apunta a `test:perspective_custom_Natalidad`.
 - **Variables de la View:** icono *Variables* de la barra del editor → **VIEW** → «+» → nombre, tipo (*Number*) y valor por defecto. En el PQL se usan como `${plazo_dias}`.
+  - También desde el PQL Editor: *Variables* → *View* → *Add*.
+  - Para cambiarla: icono *Variables* → lápiz de la variable (al lado está la papelera). Tiene *Default value* y *Current value*; la flecha circular junto al actual lo devuelve al de por defecto.
 - **Filtros guardados en el KM:** pestaña *Filters* del KM → *Create Knowledge* → *Filter*.
   - Se escriben en PQL: `FILTER …;`.
   - **Global Filter apagado.** Encendido se aplicaría a todo el KM.
@@ -689,6 +691,12 @@ Lo construido y su PQL está en `MAPA_DATOS_CUADRO_NATALIDAD.md`, sección 7. Aq
   - Cada métrica excluye esas filas con su propio `CASE`.
 - **Dejar vacío un punto de la línea en vez de 0:** `CASE WHEN COUNT(…) = 0 THEN NULL ELSE COUNT(…) END`. `COUNT` nunca da NULL; `AVG` sobre todo NULL, sí.
 - Los comentarios `/* … */` también funcionan dentro de métricas y dimensiones de gráficos.
+- **Una dimensión elegible con un selector** (Composición): `CASE WHEN '${comp_dim}' = 'Edad de la solicitante' THEN … WHEN … END`. Studio sustituye la variable antes de ejecutar, y cada rama puede usar tablas distintas si todas acaban a nivel expediente (`PU_`).
+  - Que la variable guarde el **nombre visible** («Sentido de la resolución») y no un código: así el título del eje puede ser `${comp_dim}`.
+  - Para probar el PQL, escribir primero el valor fijo (`'Edad de la solicitante' = …`) y cambiarlo por la variable al final.
+- **Atributo de un objeto hijo con condición:** `PU_FIRST("o_custom_NatExpedientes", "o_custom_NatInteresados"."TramoEdad", "o_custom_NatInteresados"."EsSolicitante" = 'S')`. Con una sola fila por expediente que cumpla la condición, da igual el orden.
+- **Una categoría sin barra:** `SUM(CASE WHEN … THEN NULL ELSE 1 END)` da NULL si todas sus filas son NULL (`COUNT` daría 0). La categoría sigue saliendo, pero vacía.
+- **% sobre el total del gráfico:** `100.0 * X / GLOBAL(X)`. `GLOBAL` calcula la misma agregación sin repartir por la dimensión.
 
 **Componentes**
 - **KPI list:** «Add data or drag it here» solo se ve con el componente seleccionado. Cada KPI nuevo baja el siguiente hueco unos 55 px.
@@ -706,11 +714,22 @@ Lo construido y su PQL está en `MAPA_DATOS_CUADRO_NATALIDAD.md`, sección 7. Aq
   - La leyenda pasa a mostrar las categorías de la regla, no el nombre de la métrica. Se le puede quitar el título con *Show legend title*.
 - **Axis settings:** etiquetas de Y, X e Y secundario. Aceptan variables (`${ver_por}`).
 - **Data settings de una dimensión:** solo nombre, unidad, formato y PQL. No hay opción para ocultar nulos.
+- **Bar (Composición):**
+  - *Tooltips*: una métrica que solo sale al pasar el ratón (aquí, el %).
+  - *Sorting*: elegir la métrica; asc. o desc. en sus *Data settings*.
+  - Etiquetas de valor: engranaje de la métrica → *Data settings* → *Data labels* → *Show data labels*.
+  - *Allow scrolling*: con muchas categorías (municipios) se ven unas 10 y el resto con scroll.
+  - Quitar la leyenda: *Style* → *Legend* → *Hide*.
+- **Add Filter de un componente:** solo *Attribute*, *Process flow*, *Event*, *Throughput time*, *Event count* y *Saved filters*. **No admite PQL libre**: para eso, un filtro guardado en el KM.
+- **Color mapping con una dimensión PQL:** el desplegable de valores dice «No values available». Con el icono *fx* se escribe el valor a mano.
+- **Context (70)** es el gris más claro de la paleta: #A9AED1.
+- **Títulos de los ejes:** son editores Monaco pequeños; se pueden escribir con `executeEdits` como el PQL.
 
 **Filtros y parámetros de pantalla**
 - **Filter dropdown:** aplica un **filtro real** a toda la View. Sin nada elegido, muestra el nombre de la dimensión como etiqueta.
 - **Input dropdown:** **no filtra**, solo escribe una variable de la View.
   - Con *Manual input → Free text*, cada opción tiene un texto visible y un valor.
+  - Cada opción: *Add Item* → texto → clic en «Add value» → valor → *Save*. Si el valor queda vacío sale un error en rojo, y el botón *Save* baja de sitio.
   - El «Label» de *Style* es solo un placeholder y desaparece al elegir un valor. Para que se lea qué es, la etiqueta va dentro del texto de cada opción («Plazo: 90 días»).
 - **Date range:** filtra por defecto. En *Style* hay selecciones rápidas, uno o dos calendarios y texto del placeholder.
 - **Input box:** se puede dejar vacío, y entonces el PQL que use la variable falla. Para números con pocas opciones, mejor un Input dropdown.

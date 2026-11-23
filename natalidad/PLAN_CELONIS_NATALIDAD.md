@@ -19,7 +19,7 @@ Prefijo `Nat` y etiqueta **Natalidad**. Memoria detallada: `natalidad/MEMORIA_NA
 | E ✅ | `NatInteresados` (edad en tramos, nacionalidad, país, municipio; sin nombres ni DNI) | `GSTA_V_INTERESADOS` | Composición | Pendiente |
 | F ✅ | Completar `NatExpedientes`: `REF_SOLICITUD`, año y nombre de la convocatoria (`GSTA_V_EXPEDIENTE`), nombre del procedimiento | `GSTA_V_CEL_EXPEDIENTE`, `GSTA_V_EXPEDIENTE`, `GSTA_V_CEL_CAT_PROC` | Filtros, enlace futuro con eReg | Pendiente |
 | G ✅ (no están: se piden) | Búsquedas: revisión de conformidad, fichero o tercero de Nexus, plazo de requerimiento (`LIKE` en la bitácora y en los hitos) | Bitácora, hitos | «Revisados sin proponer», subestados de terceros | Pendiente |
-| H ▶ en curso | Perspectiva «Natalidad» ✅ (23/11, borrador). Test changes ✅ (23/11, con OK de Roberto). «Natalidad KM» ✅ y «Natalidad View» ▶ en «Familia Natalidad» (borrador). Hechos: cabecera, barra de filtros, entradas/salidas/stock con «Ver por», tiempo por fase (las 5 fases del mockup, con expedientes en la fase ahora), stock por antigüedad (colores del mockup), rejilla 2 × 2 como en el mockup, y botones a «Natalidad Explorador de procesos» (Process Explorer) y «Natalidad Comparativa de periodos» (en preparación). Falta: sin actividad, composición, contenido de la comparativa, y tipo y canal con datos reales (ver `MAPA_DATOS_CUADRO_NATALIDAD.md`, sección 7) | — | El cuadro | Create version y Deploy, solo con Roberto |
+| H ▶ en curso | Perspectiva «Natalidad» ✅ (23/11, borrador). Test changes ✅ (23/11, con OK de Roberto). «Natalidad KM» ✅ y «Natalidad View» ▶ en «Familia Natalidad» (borrador). Hechos: cabecera, barra de filtros, entradas/salidas/stock con «Ver por», tiempo por fase (las 5 fases del mockup, con expedientes en la fase ahora), stock por antigüedad (colores del mockup), composición (selector de 10 dimensiones: 5 con datos y 5 «Pendiente de datos»), rejilla 2 × 2 como en el mockup, y botones a «Natalidad Explorador de procesos» (Process Explorer) y «Natalidad Comparativa de periodos» (en preparación). Falta: sin actividad, contenido de la comparativa, y tipo y canal con datos reales (ver `MAPA_DATOS_CUADRO_NATALIDAD.md`, sección 7) | — | El cuadro | Create version y Deploy, solo con Roberto |
 
 Para cada evento de PnC que se copie: ver su SQL, atributos y relaciones; crear el evento Nat (tipos bien puestos); relaciones; transformación con PRATLX_RO; Preview; Save with Validation.
 
@@ -49,6 +49,8 @@ Para cada evento de PnC que se copie: ver su SQL, atributos y relaciones; crear 
 - **18/11: un solo evento de solicitud.** De 53.375 expedientes, solo 140 tienen la fecha de eReg distinta de la de presentación y 157 la de Consejería; a 408 les falta la de eReg. **No se crean** `NatSolicitudRegistrada` ni `NatSolicitudRecibidaConsejeria`: basta `NatSolicitudPresentada` (`FC_SOL_INTERESADO`).
 
 ## Dimensiones de «Composición» del mockup (18/11)
+
+Montado el 23/11 en la View: las 5 dimensiones con ✅ o ⚠; las ❌ salen como «Pendiente de datos». Se cuenta la solicitante (`EsSolicitante = 'S'`). Detalle y PQL en `MAPA_DATOS_CUADRO_NATALIDAD.md`, secciones 4 y 7.
 
 | Dimensión | De dónde sale | Estado |
 |---|---|---|

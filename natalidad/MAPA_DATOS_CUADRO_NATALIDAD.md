@@ -56,7 +56,7 @@ Lógica del mockup: **tramitación** = embudo de las solicitudes presentadas en 
 | Tiempo medio y expedientes resueltos por fase | `NatEtapaIniciada` / `NatEtapaFinalizada` (`Fase`, fechas de etapa) | ✅ tiempos; ⚠ selector «Días de» parcial | dimensión `"el__EventosNatalidad"."Fase"`; días = `AVG(DAYS_BETWEEN("Fecha Inicio Etapa", "Fecha Fin Etapa"))` en eventos de inicio. «Días de» (unidad, solicitante, Intervención…): de momento por grupos de fase |
 | Entradas, salidas y stock | alta, resolución | ✅ | por `ROUND_MONTH`: altas = `COUNT` por mes de `ALTA`; salidas = por mes de `RES`; stock = `RUNNING_SUM(altas − salidas)` |
 | Stock pendiente por fase y antigüedad | abiertos por fase actual, tramos 0–30, 31–60, 61–90, > 90 | ✅ | fase de la última etapa iniciada (`PU_LAST`); tramo con `CASE WHEN DAYS_BETWEEN(ALTA, fecha de corte) <= 30 THEN '0–30' WHEN … END` |
-| Composición | ver tabla de dimensiones | ⚠ parcial | dimensión elegible con un selector |
+| Composición | ver tabla de dimensiones | ✅ 5 de 10 dimensiones (23/11); el resto, «Pendiente de datos» | dimensión elegible con un selector (variable `comp_dim`); PQL en la sección 7 |
 | Expedientes sin actividad | última `NatActividadRealizada.TIMESTAMP` | ✅ (sin «Atrasos» ni «Meses de atraso») | días sin actuación = `DAYS_BETWEEN(PU_MAX(bitácora), fecha de corte)`; filtro de etapa y umbral 30/60/90/180; **sin** `UsuarioAsignado`; botón de exportar |
 | Gestión económica (crédito, atrasos, remesa, revisados sin proponer) | Nexus, Soluciones | ⏳ Pendiente de datos | textos «Pendiente de datos» con lo que falta |
 | Comparativa de periodos | la cabecera en dos periodos | ✅ | mismos KPIs con dos rangos de fechas (variables) y diferencia en número y % |
@@ -68,14 +68,14 @@ Fecha de corte: el último dato, `PU_MAX(CONSTANT(), "el__EventosNatalidad"."TIM
 
 | Dimensión | Fuente | Estado |
 |---|---|---|
-| Edad de la solicitante | `NatInteresados.TramoEdad` (principal) | ⚠ solo ~21 % informado: mucho «No informado» |
-| Nacionalidad | `NatInteresados.NacionalidadAprox` (DNI / NIE) | ⚠ aproximación |
-| Municipio de residencia | `NatInteresados.Municipio` | ✅ (comprobar cuántos informados: `sql/00i_comprobar_municipio.sql`) |
-| Sentido de la resolución | `SentidoResolucion` | ✅ |
-| Respuesta de la Intervención | etapas FAVORABLE CONCESIÓN / FAVORABLE CON OBS / ACTUACIÓN INTERESADA / DEV A INSTANCIA PROMO | ✅ |
+| Edad de la solicitante | `NatInteresados.TramoEdad` de la solicitante | ✅ montada; ⚠ la mayoría «No informado». Tramos del dato: `1. Menos de 20`, `2. 20-24`, `3. 25-29`, `4. 30-34`, `5. 35-39`, `6. 40 o más`, `No informado` (el mockup usa otros cortes) |
+| Nacionalidad | `NatInteresados.NacionalidadAprox` de la solicitante: `Española (DNI)`, `Extranjera (NIE o pasaporte)`, `No informado` | ✅ montada; ⚠ aproximación por tipo de documento |
+| Municipio de residencia | `NatInteresados.Municipio` de la solicitante | ✅ montada; sin municipio → «No informado» |
+| Sentido de la resolución | `SentidoResolucion` (`SENT`): Favorable, Denegación, Desistimiento, Sin documento | ✅ montada |
+| Respuesta de la Intervención | columna **`Etapas`** del event log (eventos `NatEtapaFinalizada`): `FAVORABLE CONCESIÓN`, `FAVORABLE CON OBS CONCESIÓN`, `ACTUACIÓN INTERESADA CONCESIÓN`, `DEV A INSTANCIA PROMO CONCESIÓN` | ✅ montada (última respuesta de cada expediente) |
 | Tipo de solicitud, Canal, País, Hijos, Requisito incumplido | Soluciones / eReg | ⏳ Pendiente de datos |
 
-En la composición, contar solo el interesado principal (`EsPrincipal`) para no duplicar expedientes.
+En la composición se cuenta **la solicitante**: `EsSolicitante = 'S'`. Hay exactamente una por expediente. No sirve `EsPrincipal`: también lo llevan algunos representantes, y unos pocos expedientes no tienen ninguna solicitante.
 
 ## 5. Reprocesos (borrador)
 
@@ -90,7 +90,7 @@ Un expediente resuelto tiene reproceso si alguna etapa empieza en una fase **ant
 1. ✅ 23/11: perspectiva «Natalidad» guardada (borrador): objetos `NatExpedientes`, `NatEtapas` y `NatInteresados` (dos relaciones 1–N incluidas); event log **`EventosNatalidad`** (Default), objeto principal `NatExpedientes`, los 8 eventos marcados **sin** dividir la actividad por atributos. Data model «Not executed», sin paquetes enlazados. El primer Save dio «Perspective not saved» (error genérico); el segundo funcionó y no quedó duplicada. Celonis avisa de que crear event logs en la perspectiva se va a retirar (pasará al Knowledge Model) y que crea solo un event log por objeto con sus eventos directos.
 2. ✅ 23/11: Test changes solo de esa perspectiva, con el visto bueno de Roberto.
 3. ✅ 23/11: nombres reales comprobados en el KM; coinciden con la sección 1 salvo el texto de inicio de etapa.
-4. ▶ Montar la View por bloques: cabecera ✅ → tiempos por fase ✅ → entradas/salidas/stock ✅ → stock por antigüedad ✅ → sin actividad → composición → comparativa → explorador. Lo que espera datos, con «Pendiente de datos».
+4. ▶ Montar la View por bloques: cabecera ✅ → tiempos por fase ✅ → entradas/salidas/stock ✅ → stock por antigüedad ✅ → composición ✅ → sin actividad → comparativa → explorador. Lo que espera datos, con «Pendiente de datos».
 
 ## 7. Lo montado en «Natalidad View» (23/11, borrador)
 
@@ -99,7 +99,7 @@ Abreviaturas de la sección 1, más:
 - `CORTE` = `PU_MAX(CONSTANT(), "el__EventosNatalidad"."TIMESTAMP")`: fecha del último dato.
 - `ID` = `"o_custom_NatExpedientes"."ID"`.
 
-Variables de la View: `plazo_dias` (Number, 90 por defecto) y `ver_por` (String, «Mes» por defecto). Filtro guardado en el KM: **«Expedientes pendientes»** (`expedientes_pendientes`, no global) = `FILTER ALTA IS NOT NULL AND "o_custom_NatExpedientes"."FechaAnulacion" IS NULL AND RES IS NULL;`.
+Variables de la View: `plazo_dias` (Number, 90 por defecto), `ver_por` (String, «Mes» por defecto) y `comp_dim` (String, «Sentido de la resolución» por defecto). Filtro guardado en el KM: **«Expedientes pendientes»** (`expedientes_pendientes`, no global) = `FILTER ALTA IS NOT NULL AND "o_custom_NatExpedientes"."FechaAnulacion" IS NULL AND RES IS NULL;`.
 
 **Cabecera (5 KPI lists):**
 
@@ -126,9 +126,9 @@ Comprobaciones hechas (sin copiar cifras aquí):
 
 **Gráficos.** Van en una rejilla de 2 × 2, como en el mockup:
 - fila 1: [Tiempo por fase | Entradas y salidas];
-- fila 2: [Stock por fase | hueco para «Composición»].
+- fila 2: [Stock por fase | Composición].
 
-La rejilla de Studio tiene 36 columnas y filas de 8 px. Las posiciones son: gráficos en las filas 73–109 y 109–145, mitad izquierda en las columnas 1–19 y mitad derecha en las 19–37.
+La rejilla de Studio tiene 36 columnas y filas de 8 px. Las posiciones son: gráficos en las filas 73–109 y 109–145, mitad izquierda en las columnas 1–19 y mitad derecha en las 19–37. Composición: selector en 109–114 (columnas 29–37) y gráfico en 115–145.
 
 Colores: solo hay tokens de la paleta. El gris pizarra del mockup (#464C6A) es **Context (20)**, exacto.
 
@@ -204,6 +204,63 @@ Colores: solo hay tokens de la paleta. El gris pizarra del mockup (#464C6A) es *
   - Ejes: «Pendientes a la fecha de corte, por fase actual» / «Expedientes pendientes».
   - Se dejan Mantenimiento, Pago único y Sin etapa para que la suma cuadre con la cabecera, aunque el mockup solo tiene las 5 fases (pregunta 5).
   - Faltan las columnas «Pendientes» y «Antig. media» del mockup.
+- **Composición** (*Bar*, horizontal), con un selector encima.
+  - **Selector:** *Input dropdown* → *Manual input* → *Free text*, selección única, guarda en `${comp_dim}`.
+    - 10 opciones: el texto es «Dimensión: …» y el valor, el nombre de la dimensión.
+    - Opciones: Tipo de solicitud, Canal de entrada, Edad de la solicitante, Nacionalidad, País de nacimiento, Municipio de residencia, Hijos por solicitud, Sentido de la resolución, Requisito incumplido y Respuesta de la Intervención.
+    - La variable guarda el **nombre** y no un código («sent»). Así el título del eje puede ser `${comp_dim}` tal cual: «↑ Sentido de la resolución».
+  - Abreviatura nueva: `RINT` = `PU_LAST("o_custom_NatExpedientes", "el__EventosNatalidad"."Etapas", "el__EventosNatalidad"."Etapas" IN ('FAVORABLE CONCESIÓN', 'FAVORABLE CON OBS CONCESIÓN', 'ACTUACIÓN INTERESADA CONCESIÓN', 'DEV A INSTANCIA PROMO CONCESIÓN'))`. Es la última respuesta de la Intervención de cada expediente.
+  - Dimensión «Categoría» (tabla común: `NatExpedientes`, una fila por expediente):
+    ```
+    /* Composición: el selector guarda en la variable comp_dim el nombre de la dimensión.
+       Cada rama da una sola categoría por expediente. Los expedientes sin resolver
+       (sentido) o sin respuesta (Intervención) van a una fila en blanco que no se pinta */
+    CASE
+    WHEN '${comp_dim}' = 'Edad de la solicitante' THEN COALESCE(PU_FIRST("o_custom_NatExpedientes", "o_custom_NatInteresados"."TramoEdad", "o_custom_NatInteresados"."EsSolicitante" = 'S'), 'No informado')
+    WHEN '${comp_dim}' = 'Nacionalidad' THEN COALESCE(PU_FIRST("o_custom_NatExpedientes", "o_custom_NatInteresados"."NacionalidadAprox", "o_custom_NatInteresados"."EsSolicitante" = 'S'), 'No informado')
+    WHEN '${comp_dim}' = 'Municipio de residencia' THEN COALESCE(PU_FIRST("o_custom_NatExpedientes", "o_custom_NatInteresados"."Municipio", "o_custom_NatInteresados"."EsSolicitante" = 'S'), 'No informado')
+    WHEN '${comp_dim}' = 'Sentido de la resolución' THEN COALESCE(SENT, ' ')
+    WHEN '${comp_dim}' = 'Respuesta de la Intervención' THEN COALESCE(RINT, ' ')
+    /* Pendiente de datos: tipo de solicitud, canal de entrada, país de nacimiento, hijos por solicitud y requisito incumplido */
+    ELSE 'Pendiente de datos'
+    END
+    ```
+  - Métrica «Expedientes» (barra, con etiqueta de valor; orden descendente):
+    ```
+    /* Expedientes de cada categoría (suma 1 por expediente). No pintan barra:
+       las dimensiones que aún no tienen datos y la fila en blanco de los expedientes
+       sin resolver (sentido) o sin respuesta de la Intervención. SUM de todo NULL da NULL */
+    CASE
+    WHEN '${comp_dim}' IN ('Tipo de solicitud', 'Canal de entrada', 'País de nacimiento', 'Hijos por solicitud', 'Requisito incumplido') THEN NULL
+    ELSE SUM(CASE
+      WHEN '${comp_dim}' = 'Sentido de la resolución' AND SENT IS NULL THEN NULL
+      WHEN '${comp_dim}' = 'Respuesta de la Intervención' AND RINT IS NULL THEN NULL
+      ELSE 1
+      END)
+    END
+    ```
+  - Tooltip «% del total» (Rounded, «%»). Con `X` = el `SUM(CASE …)` de la métrica:
+    ```
+    /* % de cada categoría sobre el total de la dimensión (sin la fila en blanco).
+       GLOBAL calcula la misma suma sin repartir por categorías */
+    CASE
+    WHEN '${comp_dim}' IN (las 5 pendientes) THEN NULL
+    ELSE 100.0 * X / GLOBAL(X)
+    END
+    ```
+    Comprobado: las categorías suman 100 %.
+  - **Sin filtro de componente.** *Add Filter* del gráfico solo ofrece filtros por columna (o guardados en el KM), no PQL libre. Por eso los expedientes sin resolver no se filtran: van a la fila en blanco `' '` y la métrica los deja en NULL.
+  - Colores: *Color mapping* por «Categoría», regla «Gris: sin dato o pendiente». «No informado», «Pendiente de datos» y «Sin documento» en Context (70); el resto (*Not Mapped*) en Context (20). Leyenda oculta (*Style* → *Legend* → *Hide*).
+  - Ejes: Y = `${comp_dim}`; X = «Expedientes». *Allow scrolling* activado: en Municipio se ven 10 barras y el resto con scroll.
+  - Probado en modo lectura con Sentido, Edad, Municipio, Respuesta de la Intervención y una pendiente (Tipo de solicitud).
+  - Diferencias con el mockup:
+    - cuenta **expedientes** según los filtros de la View (fecha de presentación), no «solicitudes recibidas» ni «resueltos en el periodo»;
+    - en Respuesta de la Intervención cuenta la **última** respuesta de cada expediente; el mockup cuenta todas las respuestas del periodo;
+    - los tramos de edad son los del dato, y salen ordenados por número de expedientes, no por edad;
+    - la etiqueta solo muestra N; el % va en el tooltip (el mockup pone «N · X%»);
+    - falta el subtítulo «N … · X % sin informar»;
+    - el gris claro es Context (70) (#A9AED1); el #D3D3DD del mockup no está en la paleta;
+    - queda una fila en blanco al final en Sentido y en Respuesta de la Intervención.
 
 **Barra de filtros (entre la cabecera y «Fase previa», como en el mockup):**
 
@@ -243,10 +300,10 @@ Diferencias con el mockup:
 4. Con 90 días, la **gran mayoría** de los resueltos está fuera de plazo. Confirmar el plazo real.
 5. Hay expedientes pendientes cuya última etapa es **Mantenimiento** o **Pago único**, o que **no tienen etapa**. ¿Son stock de tramitación o seguimiento posterior a la concesión? El mockup solo cuenta las fases 1–5.
 6. Hay expedientes **sin fecha de presentación**: salen como «-» en el filtro «Año de solicitud» y no entran en los tiempos desde el registro.
+7. En `NatInteresados`, algunos **representantes** llevan `EsPrincipal = 'S'` y unos pocos expedientes **no tienen solicitante** (`EsSolicitante = 'S'`). ¿Es correcto? En Composición salen como «No informado».
 
 **Falta en la View:**
 - expedientes sin actividad (tabla con exportar);
-- composición;
 - el contenido de la comparativa de periodos;
 - % favorables;
 - selector «Días de»;
