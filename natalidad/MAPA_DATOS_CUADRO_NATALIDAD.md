@@ -197,5 +197,6 @@ Diferencias con el mockup:
 - el contenido de la comparativa de periodos;
 - % favorables;
 - selector «Días de»;
-- datos de tipo de solicitud y canal, que hoy son marcadores;
-- ⚠ el texto de la cabecera dice «Dirección General de Atención al Mayor y a la Dependencia». El mockup dice «Dirección General de Infancia, Familia y Fomento de la Natalidad».
+- datos de tipo de solicitud y canal, que hoy son marcadores.
+
+Cabecera de texto: «Dirección General de Infancia, Familia y Fomento de la Natalidad» (corregida el 23/11; venía copiada de Dependencia) / «Consejería de Familia, Juventud y Asuntos Sociales» / «Cuadro de mando de Ayudas por gestación, nacimiento o adopción · Seguimiento del proceso».
