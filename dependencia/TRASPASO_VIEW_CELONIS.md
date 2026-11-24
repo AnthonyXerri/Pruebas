@@ -1,6 +1,6 @@
 # Traspaso · Cuadro de mando de Dependencia en Celonis (View)
 
-Documento para que una conversación nueva siga exactamente donde se quedó la anterior (06/11/2026). Leer **antes** que nada: `CLAUDE.md`, `dependencia/MEMORIA_DEPENDENCIA_CELONIS.md` y `dependencia/MAPEO_MOCKUP_CU1.md`.
+Documento para que una conversación nueva siga exactamente donde se quedó la anterior (06/11/2026; tablas nuevas, 24/11). Leer **antes** que nada: `CLAUDE.md`, `dependencia/MEMORIA_DEPENDENCIA_CELONIS.md`, `dependencia/MAPEO_MOCKUP_CU1.md` y `dependencia/MAPEO_TABLAS_SIDEMA.md`.
 
 **Regla de oro:** datos de la Comunidad de Madrid, nunca a GitHub ni a nada público (artifacts incluidos). Ni logins, ni IDs de solicitud reales, ni filas. Los ficheros con datos van solo al scratchpad. En el repositorio, solo SQL, PQL, estructura y decisiones.
 
@@ -79,8 +79,17 @@ Anthony (Madrid Digital, primera vez con Celonis) está montando en **Celonis St
 
 Todo lo anterior está **guardado con Save (borrador)**. No se ha hecho Create version ni Deploy (eso, con Roberto).
 
+**24/11: llegaron las tablas de SIDEMA para el CU1 y el CU2.** Son 29 tablas en la extracción «Extraccion Dependencia» (data job «Dependencia VASOCIAL_SIDM»).
+- Mapeo: `dependencia/MAPEO_TABLAS_SIDEMA.md`.
+- Script de vistas para Roberto: `dependencia/sql/VistasSIDMPRODv2.sql`.
+- La extracción **sigue fallando por Snappy** (20/11): en Celonis solo están las muestras de siempre.
+- La sección 4 del mapeo dice qué elementos del mockup se podrán montar con las tablas nuevas.
+
 Pendiente, en este orden:
-1. **Cargar el histórico de las mismas 100 solicitudes de 2025** (enciende subsanación, AVC, citación, dictamen, grado, plazo total, SLA y la tabla de Subsanación): en «Pruebas Anthony», tabla `SIDM_HIST_ESTADO`, filtro `IDSOLICITUD IN (…)` por **lotes de 10** (el Preview solo trae 100 filas; si un lote devuelve justo 100, partirlo). Anthony tiene el fichero de lotes (los IDs **no** están en el repo). Me pega el Preview → genero `INSERT INTO "SIDM_HIST_ESTADO"` en el scratchpad → él lo ejecuta → recargar. Después, revisar que los «–» y los «There's data missing» se llenan.
+0. **Roberto** revisa el script v2 y las preguntas (sección 6 del mapeo).
+   - Cuando estén las vistas en PROD y funcione la extracción, se apunta la extracción a `SIDM_V_DEP_*` con «Rename target table», para no cambiar los nombres de las tablas.
+   - Después: nuevos eventos y atributos en Objects & Events (valoración, comisión, resolución del grado, estados del PIA, subsanación, requerimientos, llamadas; municipio, edad, origen y grado en el objeto) y cambiar los marcadores de las fases 2 y 3.
+1. Mientras falle la extracción: **cargar el histórico de las mismas 100 solicitudes de 2025** (enciende subsanación, AVC, citación, dictamen, grado, plazo total, SLA y la tabla de Subsanación): en «Pruebas Anthony», tabla `SIDM_HIST_ESTADO`, filtro `IDSOLICITUD IN (…)` por **lotes de 10** (el Preview solo trae 100 filas; si un lote devuelve justo 100, partirlo). Anthony tiene el fichero de lotes (los IDs **no** están en el repo). Me pega el Preview → genero `INSERT INTO "SIDM_HIST_ESTADO"` en el scratchpad → él lo ejecuta → recargar. Después, revisar que los «–» y los «There's data missing» se llenan.
 2. Con los datos nuevos que pidió el grupo (sección 8), cambiar los marcadores de las fases 2 y 3 (buscar el comentario `/* Pendiente de datos */` en cada PQL).
 3. Fase 2 · Personas involucradas: cambiar la aproximación por el valorador real cuando llegue.
 4. **Interactions:** que la cabecera solo escuche los filtros comunes y que los filtros de cada fase no se queden puestos en las otras.
@@ -172,6 +181,8 @@ COUNT(CASE WHEN "o_custom_SolicitudDependencia"."FechaAlta" > ADD_DAYS(PU_MAX(CO
 
 - `dependencia/MEMORIA_DEPENDENCIA_CELONIS.md`: memoria viva del proyecto (tablas, estados y fases, decisiones, SQL, pendientes).
 - `dependencia/MAPEO_MOCKUP_CU1.md`: mockup elemento a elemento (✅/🟡/❌) y revisión completa del 05/11 (tooltips, selectores, datos del JS, definiciones del mockup).
+- `dependencia/MAPEO_TABLAS_SIDEMA.md` (24/11): las 29 tablas de la extracción, claves de unión, uso en CU1 y CU2, qué columnas van en las vistas y preguntas para Roberto.
+- `dependencia/sql/VistasSIDMPRODv2.sql` (24/11): script Oracle de las 29 vistas `SIDM_V_DEP_*` con lista de columnas, para Roberto.
 - `dependencia/sql/01…04_*.sql`: SQL del objeto y de los 3 eventos (Objects & Events).
 - `dependencia/celonis/DependenciaView.yaml`: YAML v2 de la View (referencia; ahora se trabaja en el editor visual). Se generaba con un script del scratchpad que ya no existe en sesiones nuevas.
 - `dependencia/celonis/logo_comunidad_madrid.png`: logo para el componente Imagen.
@@ -192,6 +203,6 @@ Por confirmar:
 
 ## 9. Pendiente fuera de la View
 
-- Error de Snappy en la extracción (Roberto / Javier Olmeda): por eso solo hay muestras.
+- Error de Snappy en la extracción (Roberto / Javier Olmeda): por eso solo hay muestras. Seguía igual el 20/11; hay una pista sin comprobar en la sección 1 de `MAPEO_TABLAS_SIDEMA.md`.
 - Create version, Deploy y perspectiva definitiva con Roberto.
 - Natalidad: correo de convocatoria con [día] [hora] por completar (jueves 5 o 12 de noviembre).

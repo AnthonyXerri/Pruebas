@@ -1,6 +1,6 @@
 # Memoria · Dependencia en Celonis
 
-Documento vivo. Se actualiza cada vez que se aprende o se decide algo. Última actualización: 06/11/2026.
+Documento vivo. Se actualiza cada vez que se aprende o se decide algo. Última actualización: 24/11/2026.
 
 ## 1. Cómo trabajar con Anthony
 
@@ -264,12 +264,47 @@ Fuentes: lo visto montando la Dependencia View y la documentación y el foro de 
 - **No (o no sin desarrollo a medida):** barras dibujadas a mano con marcadores (tipo «banda de tramos»), pasos con flechas, botones colocados bajo el eje de un gráfico, rellenos con rayas, barras proporcionales hechas con divs, columnas de cifras pegadas a una barra, chips con contadores, enlaces a la aplicación de origen, árboles o embudos dibujados (el explorador nativo muestra actividades y pasos), celdas editables que se guardan (hoja de validación), mostrar u ocultar bloques según una selección.
 - En los mockups: todo lo de «No» se quita o se sustituye por el componente equivalente (pestaña, desplegable, KPI card, tabla).
 
+## 9f. Las 29 tablas de la extracción y el script de vistas v2 (24/11)
+
+Detalle completo en **`dependencia/MAPEO_TABLAS_SIDEMA.md`**. Script para Roberto: **`dependencia/sql/VistasSIDMPRODv2.sql`**.
+
+- **Origen:** extracción «Extraccion Dependencia» del data job «Dependencia VASOCIAL_SIDM» (pool IMPLEMENTACION). Tiene las 29 tablas de `VistasSIDMPRODv1`:
+  - 27 de `DBA_SIDM`;
+  - 2 de `DBA_SUCA`.
+- **Cómo se miraron:** con «Configure columns» (nombres y tipos) y la vista previa (100 filas de validación). No se guardó nada.
+- **La extracción sigue fallando por Snappy** (última ejecución, 20/11). La vista previa sí funciona.
+- **Script v2:**
+  - es el mismo que el v1, pero cada `SELECT *` pasa a una lista de columnas;
+  - deja fuera lo que identifica a la persona, la dirección, los datos bancarios, los textos libres, la salud de detalle, el detalle fiscal y los ficheros guardados en la tabla;
+  - cada vista lleva un comentario «Fuera:» con el motivo;
+  - las 3 vistas del v1 quedan igual (con el `;` que faltaba en el primer `DROP`);
+  - los nombres se han comparado con SIDEMA y coinciden en las 29.
+- **Claves:**
+  - `IDSOLICITUD`, o `ID_SOLICITUD` en las `RI_*`, es entero en todas las tablas de este origen;
+  - el PIA se une por `ID_PIA`;
+  - la bandeja, por `NMREFERENCIA`;
+  - la capacidad económica, por `NMSOLICITUD` = `NM_SOLICITUD`.
+  - `CDGRADO` es entero en `DICTAMEN` y texto en `DICTAMEN_TECNICO`.
+  - `CDMUNI` necesita `LPAD(…, 3, '0')`.
+- **Hitos que ya tienen columna:**
+  - comisión: `DICTAMEN_TECNICO.FCVALIDACION_COMISION`;
+  - resolución del grado: `MR_RESOLUCIONES.FCRESOLUCION` con su tipo;
+  - visita: `FCVALORACION`;
+  - estados del PIA: `RI_TRAMITES` y el catálogo de 12 estados;
+  - origen: `BANDEJA_RECEPCIONADOS.DSORIGENDOC`;
+  - valoración telemática: `IT_VALORACION_ONLINE`.
+- **Sigue faltando:**
+  - las tablas del CU2 (`SIDM_V_RI_WEBEL_*`, `SIDM_RI_SAD`, `SIDM_RI_TA`, `SIDM_RI_DOC_GENERADO`);
+  - los catálogos de zonas, mancomunidades, motivos y estados de la documentación;
+  - los efectivos por fase.
+
 ## 10. Pendientes y preguntas abiertas
 
-- [ ] Roberto o Javier Olmeda: error de Snappy en la extracción.
+- [ ] Roberto: revisar el script de vistas v2 y las 8 preguntas de `MAPEO_TABLAS_SIDEMA.md` (sección 6).
+- [ ] Roberto o Javier Olmeda: error de Snappy en la extracción (sigue igual el 20/11).
 - [ ] Roberto: ¿los códigos casan por los 2 últimos dígitos en SIDEMA? ¿Puede darnos una muestra **coherente** (el histórico de las mismas solicitudes)?
 - [ ] Roberto: ¿existe ya el objeto de solicitud de dependencia en Objects & Events? ¿Qué nombre usar?
 - [ ] ¿`IDMODI` es el usuario que hace el cambio?
 - [ ] Andrés: qué son AVC y RA; validar las fases; empezar el proceso en `FCREGENTRADA` (el plazo legal cuenta desde ahí: `FC_FIN_PLAZO` ≈ registro + 6 meses) y no en `FCALTA`; qué es `CDTIPO` = «RS».
 - [ ] 04/11: enviada al grupo la lista de lo que falta del mockup CU1 (grado, municipio, edad, tipo de valoración, canal, PIA, valorador, asignaciones, usuarios y equipos). Esperando respuesta.
-- [ ] Pedir tablas para lo que falta: personas (edad, municipio), asignaciones o valoradores, grado, PIA.
+- [x] Pedir tablas para lo que falta: personas (edad, municipio), asignaciones o valoradores, grado, PIA. Llegaron el 24/11 (sección 9f).
