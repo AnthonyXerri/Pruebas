@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CU2 — Adjudicación de Servicios Comunitarios | Comunidad de Madrid</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --red: #C01828; --red2: #DC2626; --red3: #FEF2F2; --redB: #FECACA;
+  --amber: #E8A33D; --amber2: #D97706; --amber3: #FFFBEB; --amberB: #FDE68A;
+  --green: #2A9D5C; --green2: #059669; --green3: #ECFDF5; --greenB: #A7F3D0;
+  --blue: #2563EB; --blue3: #EFF6FF; --blueB: #BFDBFE;
+  --g900: #111827; --g800: #1F2937; --g700: #374151; --g600: #4B5563;
+  --g500: #6B7280; --g400: #9CA3AF; --g300: #D1D5DB;
+  --g200: #E5E5E5; --g150: #F3F4F6; --g100: #F9FAFB;
+  --white: #fff; --f: 'Inter', sans-serif; --br: 5px;
+  --shadow: 0 1px 2px rgba(16,24,40,.06), 0 1px 3px rgba(16,24,40,.04);
+}
+body { font-family: var(--f); background: #F4F5F7; color: var(--g900); font-size: 13px; line-height: 1.4; }
+.app { width: 1400px; margin: 0 auto; background: var(--white); min-height: 100vh; box-shadow: 0 0 0 1px var(--g200); }
+
+/* ───────── HEADER ───────── */
+.hdr { background: var(--white); border-bottom: 1px solid var(--g200); position: sticky; top: 0; z-index: 300; }
+.hdr-top { display: flex; align-items: stretch; min-height: 72px; }
+.brand { display: flex; align-items: center; gap: 13px; padding: 10px 20px; border-right: 1px solid var(--g200); min-width: 320px; flex-shrink: 0; }
+.brand-info strong { font-size: 11.5px; font-weight: 700; color: var(--g900); line-height: 1.35; display: block; }
+.brand-info em { font-size: 9.5px; font-style: normal; color: var(--g500); text-transform: uppercase; letter-spacing: .03em; display: block; margin-top: 2px; }
+.hdr-mid { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 8px 22px; }
+.hdr-mid h1 { font-size: 15px; font-weight: 800; color: var(--g900); letter-spacing: -.02em; }
+.hdr-mid .proc { font-size: 11px; color: var(--g500); margin-top: 3px; }
+.hdr-right { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 8px; padding: 8px 20px; border-left: 1px solid var(--g200); flex-shrink: 0; }
+.meta-tags { text-align: right; }
+.update-tag { font-size: 10px; color: var(--g500); font-weight: 500; }
+.src-tag { font-size: 9.5px; color: var(--g400); margin-top: 2px; }
+.btn-red { display: inline-flex; align-items: center; gap: 6px; background: var(--red); color: white; border: none; border-radius: var(--br); padding: 8px 15px; font-size: 11.5px; font-weight: 600; cursor: pointer; font-family: var(--f); white-space: nowrap; transition: background .15s; box-shadow: var(--shadow); }
+.btn-red:hover { background: #a01320; }
+
+/* ───────── KPI SECTION — 2 filas ───────── */
+.kpi-section { border-bottom: 2px solid var(--g200); }
+
+/* Fila 1: KPIs principales */
+.kpi-row-1 { display: grid; grid-template-columns: 220px 1fr 1fr 1fr; border-bottom: 1px solid var(--g200); }
+.kpi-card { padding: 11px 16px 10px; border-right: 1px solid var(--g200); position: relative; background: var(--white); }
+.kpi-card:last-child { border-right: none; }
+.kpi-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+.kc-total::before  { background: var(--amber); }
+.kc-fin::before    { background: var(--green); }
+.kc-curso::before  { background: var(--blue); }
+.kc-lista::before  { background: var(--amber2); }
+.kc-total { background: #FFFBF0; }
+.kc-label { font-size: 9px; color: var(--g500); font-weight: 700; margin-bottom: 5px; line-height: 1.3; text-transform: uppercase; letter-spacing: .04em; min-height: 22px; }
+.kc-num  { font-size: 9px; font-weight: 600; color: var(--g400); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 2px; }
+.kc-value { font-size: 28px; font-weight: 800; letter-spacing: -.05em; line-height: 1; color: var(--g900); display: flex; align-items: baseline; gap: 5px; }
+.kc-value .unit { font-size: 13px; font-weight: 600; color: var(--g500); letter-spacing: 0; }
+.kc-value.amber { color: var(--amber2); }
+.kc-value.green { color: var(--green); }
+.kc-value.blue  { color: var(--blue); }
+.kc-value.red   { color: var(--red); }
+.kc-delta { font-size: 10px; font-weight: 600; margin-top: 5px; display: flex; align-items: center; gap: 4px; }
+.kc-delta.up-bad  { color: var(--red2); }
+.kc-delta.down-ok { color: var(--green); }
+.kc-delta.muted   { color: var(--g400); }
+.kc-sub { font-size: 9.5px; color: var(--g500); margin-top: 4px; line-height: 1.3; }
+.kc-sub strong { color: var(--g700); }
+
+/* Fila 2: KPIs detalle */
+.kpi-row-2 { display: grid; grid-template-columns: repeat(6, 1fr); background: var(--g100); }
+.kpi-card-sm { padding: 8px 14px; border-right: 1px solid var(--g200); background: var(--g100); }
+.kpi-card-sm:last-child { border-right: none; }
+.kcs-label { font-size: 9px; font-weight: 700; color: var(--g500); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 4px; }
+.kcs-value { font-size: 18px; font-weight: 800; letter-spacing: -.04em; color: var(--g900); }
+.kcs-value.amber { color: var(--amber2); }
+.kcs-value.red   { color: var(--red); }
+.kcs-sub { font-size: 9px; color: var(--g500); margin-top: 2px; }
+
+/* ───────── FILTER BAR ───────── */
+.fbar { display: flex; align-items: center; gap: 7px; padding: 8px 20px; border-bottom: 1px solid var(--g200); background: var(--white); flex-wrap: wrap; row-gap: 8px; }
+.fsel { display: inline-flex; align-items: center; gap: 5px; border: 1px solid var(--g300); border-radius: var(--br); padding: 5px 8px 5px 10px; font-size: 11px; color: var(--g700); background: var(--white); cursor: pointer; transition: border-color .15s; }
+.fsel:hover, .fsel:focus-within { border-color: var(--blue); }
+.fsel > span { font-size: 9.5px; color: var(--g400); white-space: nowrap; font-weight: 600; text-transform: uppercase; letter-spacing: .03em; }
+.fsel select { border: none; outline: none; background: transparent; font-size: 11.5px; font-family: var(--f); color: var(--g800); cursor: pointer; appearance: none; -webkit-appearance: none; max-width: 150px; font-weight: 500; }
+.chev { width: 8px; height: 8px; color: var(--g400); flex-shrink: 0; }
+.fspace { flex: 1; }
+.btn-ghost { display: inline-flex; align-items: center; gap: 5px; border: 1px solid var(--g300); border-radius: var(--br); padding: 5px 12px; font-size: 11px; font-weight: 600; color: var(--g600); background: var(--white); cursor: pointer; font-family: var(--f); transition: all .15s; }
+.btn-ghost:hover { background: var(--g150); }
+.btn-outline { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--g400); border-radius: var(--br); padding: 5px 12px; font-size: 11px; font-weight: 600; color: var(--g700); background: var(--white); cursor: pointer; font-family: var(--f); transition: all .15s; }
+.btn-outline:hover { background: var(--g150); }
+
+/* ───────── MAIN GRID ───────── */
+.main-grid { display: grid; grid-template-columns: 360px 1fr; }
+.fcol { border-right: 1px solid var(--g200); padding: 18px 22px 24px; background: linear-gradient(180deg, var(--g100) 0%, var(--white) 220px); }
+.section-title { font-size: 10px; font-weight: 800; color: var(--g600); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 4px; display: flex; align-items: center; justify-content: space-between; }
+.section-sub { font-size: 9.5px; font-weight: 500; color: var(--g400); margin-bottom: 18px; }
+
+/* ───────── FUNNEL ───────── */
+.pf-flow { display: flex; flex-direction: column; align-items: stretch; position: relative; padding-left: 4px; }
+.pf-node { display: grid; grid-template-columns: 40px 1fr; align-items: start; gap: 12px; position: relative; }
+.pf-ic { display: flex; flex-direction: column; align-items: center; }
+.pf-circ { width: 32px; height: 32px; border-radius: 50%; border: 4px solid var(--red); background: var(--white); flex-shrink: 0; z-index: 2; position: relative; }
+.pf-circ.solid { background: var(--red); }
+.pf-circ.start { border-color: var(--g400); }
+.pf-circ::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 9px; height: 9px; border-radius: 50%; background: var(--red); opacity: .3; }
+.pf-circ.solid::after, .pf-circ.start::after { display: none; }
+.pf-line { width: 3px; background: var(--red); flex: 1; min-height: 34px; border-radius: 2px; margin: 2px 0; }
+.pf-body { padding-bottom: 8px; }
+.pf-name { font-size: 12.5px; font-weight: 700; color: var(--g900); }
+.pf-stat { font-size: 10.5px; color: var(--g600); margin-top: 2px; }
+.pf-stat strong { color: var(--g800); font-weight: 700; }
+.pf-stat .cnt { font-size: 13px; font-weight: 800; color: var(--g900); }
+.pf-alerts { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; }
+.pf-alert { display: inline-flex; align-items: center; gap: 5px; font-size: 9.5px; font-weight: 600; padding: 3px 7px; border-radius: 4px; line-height: 1.3; }
+.pf-alert.bad { background: var(--red3); color: var(--red); border: 1px solid var(--redB); }
+.pf-alert.warn { background: var(--amber3); color: var(--amber2); border: 1px solid var(--amberB); }
+.pf-alert.info { background: var(--blue3); color: var(--blue); border: 1px solid var(--blueB); }
+
+/* ───────── TABS ───────── */
+.tab-bar { display: flex; align-items: center; gap: 0; border-bottom: 1px solid var(--g200); padding: 0 20px; background: var(--white); }
+.tab-btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 16px; font-size: 11.5px; font-weight: 600; color: var(--g500); border: none; background: transparent; cursor: pointer; font-family: var(--f); border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .15s, border-color .15s; }
+.tab-btn:hover { color: var(--g800); }
+.tab-btn.active { color: var(--red); border-bottom-color: var(--red); }
+.tab-btn .tab-pill { font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 8px; background: var(--g150); color: var(--g500); }
+.tab-btn.active .tab-pill { background: var(--red3); color: var(--red); }
+.tab-panel { display: none; }
+.tab-panel.active { display: flex; flex-direction: column; }
+
+/* estado badge persona */
+.est-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 4px; border: 1px solid; white-space: nowrap; }
+.est-espera  { background: var(--amber3); color: var(--amber2); border-color: var(--amberB); }
+.est-gestion { background: var(--blue3);  color: var(--blue);   border-color: var(--blueB); }
+.est-gracia  { background: var(--red3);   color: var(--red);    border-color: var(--redB); }
+.est-visita  { background: var(--green3); color: var(--green);  border-color: var(--greenB); }
+.grado-badge { display: inline-flex; font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
+.gr-3 { background: var(--red3); color: var(--red); border: 1px solid var(--redB); }
+.gr-2 { background: var(--amber3); color: var(--amber2); border: 1px solid var(--amberB); }
+.gr-1 { background: var(--g150); color: var(--g600); border: 1px solid var(--g300); }
+.dias-cell { font-weight: 800; font-size: 12px; }
+
+/* ───────── TABLE ───────── */
+.tcol { display: flex; flex-direction: column; }
+.tbl-hdr { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px 11px; border-bottom: 1px solid var(--g200); }
+.tbl-title { font-size: 12.5px; font-weight: 800; color: var(--g900); display: flex; align-items: center; gap: 9px; }
+.pill { background: var(--g150); border: 1px solid var(--g200); border-radius: 10px; padding: 2px 9px; font-size: 10px; color: var(--g600); font-weight: 600; }
+.tbl-hint { font-size: 9.5px; color: var(--g400); display: flex; align-items: center; gap: 14px; }
+.legend-dot { display: inline-flex; align-items: center; gap: 4px; }
+.legend-dot i { width: 8px; height: 8px; border-radius: 2px; display: inline-block; }
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+thead th { padding: 8px 10px; text-align: left; font-size: 9px; font-weight: 700; color: var(--g500); background: var(--g100); border-bottom: 1px solid var(--g200); white-space: nowrap; letter-spacing: .04em; text-transform: uppercase; }
+thead th.r { text-align: right; }
+tbody tr { border-bottom: 1px solid var(--g150); }
+tbody tr:hover td { background: var(--g100); }
+td { padding: 9px 10px; font-size: 11.5px; color: var(--g700); vertical-align: middle; }
+td.nm { font-weight: 700; color: var(--g900); }
+td.r { text-align: right; }
+.badge { display: inline-flex; align-items: center; font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 4px; white-space: nowrap; border: 1px solid; }
+.b-lote { background: var(--g100); color: var(--g700); border-color: var(--g300); }
+.b-ad  { background: var(--green3); color: #065F46; border-color: var(--greenB); }
+.b-tel { background: var(--blue3);  color: #1E40AF; border-color: var(--blueB); }
+.tm { font-weight: 700; }
+.tm-g { color: var(--green); } .tm-a { color: var(--amber2); } .tm-r { color: var(--red); }
+.g3-pill { display: inline-flex; font-size: 9.5px; font-weight: 700; padding: 1px 6px; border-radius: 8px; }
+.g3-hi { background: var(--red3); color: var(--red); }
+.g3-lo { background: var(--g150); color: var(--g600); }
+.bk-cell { font-weight: 700; color: var(--g800); }
+.trend-up   { color: var(--red2); font-weight: 800; font-size: 13px; }
+.trend-down { color: var(--green); font-weight: 800; font-size: 13px; }
+.trend-flat { color: var(--g400); font-size: 12px; }
+.row-crit td { background: #FFFBFB; }
+.row-crit:hover td { background: var(--red3); }
+
+/* ───────── BOTTOM 3 BLOCKS ───────── */
+.bottom-grid { display: grid; grid-template-columns: 1fr 1fr 1.25fr; border-top: 1px solid var(--g200); }
+.bg-col { display: flex; flex-direction: column; }
+.bg-col + .bg-col { border-left: 1px solid var(--g200); }
+.panel-hdr { padding: 11px 18px; font-size: 10.5px; font-weight: 800; color: var(--g700); text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid var(--g200); display: flex; align-items: center; justify-content: space-between; background: var(--g100); }
+.panel-hdr .sub { background: var(--white); border: 1px solid var(--g200); border-radius: 10px; font-size: 9px; font-weight: 600; color: var(--g500); padding: 2px 8px; text-transform: none; letter-spacing: 0; }
+
+/* exclusion bars */
+.mot-body { padding: 16px 18px; display: flex; flex-direction: column; gap: 14px; }
+.mot-row { display: flex; flex-direction: column; gap: 5px; }
+.mot-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.mot-lbl { font-size: 11px; color: var(--g700); line-height: 1.3; }
+.mot-pct { font-size: 14px; font-weight: 800; color: var(--g900); white-space: nowrap; letter-spacing: -.02em; }
+.mot-track { height: 6px; background: var(--g150); border-radius: 3px; overflow: hidden; }
+.mot-fill { height: 100%; border-radius: 3px; }
+.mf-1 { background: var(--g800); } .mf-2 { background: var(--g600); } .mf-3 { background: var(--g400); } .mf-4 { background: var(--g300); }
+.mot-foot { margin-top: 4px; padding: 10px 12px; background: var(--red3); border: 1px solid var(--redB); border-radius: var(--br); font-size: 10px; color: var(--g700); line-height: 1.5; }
+.mot-foot strong { color: var(--red); font-weight: 700; }
+
+/* grado vs objetivo */
+.grado-body { padding: 16px 18px; display: flex; flex-direction: column; gap: 16px; }
+.grado-row { display: flex; flex-direction: column; gap: 6px; }
+.grado-top { display: flex; justify-content: space-between; align-items: baseline; }
+.grado-lbl { font-size: 11px; font-weight: 700; color: var(--g900); }
+.grado-val { font-size: 14px; font-weight: 800; letter-spacing: -.03em; }
+.grado-meta { font-size: 9.5px; color: var(--g500); margin-top: 1px; }
+.grado-meta strong { color: var(--g700); }
+.grado-track { height: 9px; background: var(--g150); border-radius: 5px; position: relative; overflow: visible; margin-top: 11px; }
+.grado-fill { height: 100%; border-radius: 5px; }
+.grado-obj { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--g800); border-radius: 1px; }
+.grado-obj::after { content: 'Obj. ' attr(data-obj) 'd'; position: absolute; top: -13px; left: 50%; transform: translateX(-50%); font-size: 7.5px; font-weight: 700; color: var(--g600); white-space: nowrap; }
+.grado-over { font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 7px; }
+.go-bad  { background: var(--red3);   color: var(--red); }
+.go-warn { background: var(--amber3); color: var(--amber2); }
+.go-ok   { background: var(--green3); color: var(--green); }
+
+/* chart */
+.chart-body { padding: 14px 18px 12px; flex: 1; display: flex; flex-direction: column; }
+.chart-sub { font-size: 10px; color: var(--g500); margin-bottom: 12px; line-height: 1.5; }
+.chart-wrap { position: relative; flex: 1; min-height: 180px; }
+.chart-legend { display: flex; gap: 14px; margin-top: 12px; flex-wrap: wrap; }
+.cl-item { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--g600); font-weight: 500; }
+.cl-line { width: 18px; height: 2.5px; border-radius: 1px; }
+.cl-line.dashed { background: repeating-linear-gradient(90deg, currentColor 0 4px, transparent 4px 7px); height: 2px; }
+
+/* footer */
+.attr { padding: 11px 22px; display: flex; justify-content: space-between; font-size: 9.5px; color: var(--g400); border-top: 1px solid var(--g200); background: var(--g100); }
+.attr strong { color: var(--g600); font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="app">
+
+<header class="hdr">
+  <div class="hdr-top">
+    <div class="brand">
+      <svg viewBox="0 0 90 112" width="48" height="60" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+        <rect width="90" height="90" fill="#C01828"/>
+        <polygon fill="white" points="18,17 20.6,24.4 28.5,24.6 22.3,29.4 24.5,36.9 18,32.5 11.5,36.9 13.7,29.4 7.5,24.6 15.4,24.4"/>
+        <polygon fill="white" points="45,11 47.6,18.4 55.5,18.6 49.3,23.4 51.5,30.9 45,26.5 38.5,30.9 40.7,23.4 34.5,18.6 42.4,18.4"/>
+        <polygon fill="white" points="72,17 74.6,24.4 82.5,24.6 76.3,29.4 78.5,36.9 72,32.5 65.5,36.9 67.7,29.4 61.5,24.6 69.4,24.4"/>
+        <polygon fill="white" points="9,49.5 11.1,55.2 17.1,55.4 12.3,59.1 14,64.9 9,61.5 4,64.9 5.7,59.1 0.9,55.4 6.9,55.2"/>
+        <polygon fill="white" points="31,58.5 33.1,64.2 39.1,64.4 34.3,68.1 36,73.9 31,70.5 26,73.9 27.7,68.1 22.9,64.4 28.9,64.2"/>
+        <polygon fill="white" points="59,58.5 61.1,64.2 67.1,64.4 62.3,68.1 64,73.9 59,70.5 54,73.9 55.7,68.1 50.9,64.4 56.9,64.2"/>
+        <polygon fill="white" points="81,49.5 83.1,55.2 89.1,55.4 84.3,59.1 86,64.9 81,61.5 76,64.9 77.7,59.1 72.9,55.4 78.9,55.2"/>
+        <text x="45" y="100" text-anchor="middle" font-family="Arial,sans-serif" font-size="9" font-weight="700" fill="#111827">Comunidad</text>
+        <text x="45" y="110" text-anchor="middle" font-family="Arial,sans-serif" font-size="9" font-weight="700" fill="#111827">de Madrid</text>
+      </svg>
+      <div class="brand-info">
+        <strong>Dirección General de Atención<br>al Mayor y a la Dependencia</strong>
+        <em>Consejería de Familia, Juventud y Asuntos Sociales</em>
+      </div>
+    </div>
+    <div class="hdr-mid">
+      <h1>Adjudicación de Servicios Comunitarios</h1>
+      <div class="proc">CU2 · Gestión de Lista de Espera — Ayuda a Domicilio (SAD) y Teleasistencia</div>
+    </div>
+    <div class="hdr-right">
+      <div class="meta-tags">
+        <div class="update-tag">Actualizado: 30/06/2025 · 08:15</div>
+        <div class="src-tag">SIDEMA · SAP · Ene–Jun 2025</div>
+      </div>
+      <button class="btn-red">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3" stroke-linecap="round"/></svg>
+        Análisis proceso
+      </button>
+    </div>
+  </div>
+
+  <!-- ── KPI FILA 1: Principales ── -->
+  <div class="kpi-section">
+    <div class="kpi-row-1">
+      <div class="kpi-card kc-total">
+        <div class="kc-num">① Total</div>
+        <div class="kc-label">Nº total de solicitudes en el proceso</div>
+        <div class="kc-value amber" id="k-total">1.186</div>
+        <div class="kc-delta up-bad">▲ +71 vs. mes anterior</div>
+      </div>
+      <div class="kpi-card kc-fin">
+        <div class="kc-num">② Finalizadas</div>
+        <div class="kc-label">Nº solicitudes con prestación activa</div>
+        <div class="kc-value green">219</div>
+        <div class="kc-sub"><strong>165 altas</strong> del periodo seleccionado</div>
+      </div>
+      <div class="kpi-card kc-curso">
+        <div class="kc-num">③ En curso</div>
+        <div class="kc-label">Nº solicitudes en gestión activa</div>
+        <div class="kc-value blue" id="k-curso">655</div>
+        <div class="kc-sub">Contacto o visita domiciliaria en marcha</div>
+      </div>
+      <div class="kpi-card kc-lista">
+        <div class="kc-num">④ Lista de espera</div>
+        <div class="kc-label">Nº solicitudes en lista de espera (%)</div>
+        <div class="kc-value amber" id="k-lista">312 <span class="unit">26,3%</span></div>
+        <div class="kc-delta up-bad">▲ +58 vs. mes anterior</div>
+      </div>
+    </div>
+
+    <!-- ── KPI FILA 2: Detalle ── -->
+    <div class="kpi-row-2">
+      <div class="kpi-card-sm">
+        <div class="kcs-label">T. medio notif. → prestación</div>
+        <div class="kcs-value amber">67 <span style="font-size:12px;font-weight:600;color:var(--g500)">días</span></div>
+        <div class="kcs-sub">Obj. interno: 45d · <strong style="color:var(--red)">+49%</strong></div>
+      </div>
+      <div class="kpi-card-sm">
+        <div class="kcs-label">T. medio en lista de espera</div>
+        <div class="kcs-value amber">52 <span style="font-size:12px;font-weight:600;color:var(--g500)">días</span></div>
+        <div class="kcs-sub">Mediana: 44d · máx.: 112d</div>
+      </div>
+      <div class="kpi-card-sm">
+        <div class="kcs-label">Nº solicitudes atascadas (&gt;90d)</div>
+        <div class="kcs-value red" id="k-backlog">312</div>
+        <div class="kcs-sub">25,1% del total lista espera</div>
+      </div>
+      <div class="kpi-card-sm">
+        <div class="kcs-label">Grado III con espera &gt; umbral</div>
+        <div class="kcs-value red">89</div>
+        <div class="kcs-sub">De 348 Grado III en lista · <strong style="color:var(--red)">Prelación incumplida</strong></div>
+      </div>
+      <div class="kpi-card-sm">
+        <div class="kcs-label">Expedientes en demora atribuible al usuario</div>
+        <div class="kcs-value amber">27</div>
+        <div class="kcs-sub">Hospitalización, ausencia o no localizable</div>
+      </div>
+      <div class="kpi-card-sm" style="background:var(--green3);border-left:3px solid var(--green);">
+        <div class="kcs-label" style="color:var(--green2);">Tasa de resultado del periodo</div>
+        <div class="kcs-value" style="color:var(--green)">78 <span style="font-size:12px;font-weight:600;color:var(--g500)">%</span></div>
+        <div class="kcs-sub">165 altas de 211 resueltos · <strong style="color:var(--green2)">alta en plazo (≤7d): 61%</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FILTER BAR ── -->
+  <div class="fbar">
+    <div class="fsel" style="border-color:var(--blue);background:var(--blue3);">
+      <span>Periodo</span>
+      <select id="f-periodo">
+        <option value="mes">Mensual · Jun 2025</option>
+        <option value="mes-ant">Mensual · May 2025</option>
+        <option value="sem">Semanal · última semana</option>
+        <option value="trim">Trimestral · Q2 2025</option>
+        <option value="ano">Anual · 2025</option>
+        <option value="acum">Acumulado histórico (Ene–Jun)</option>
+      </select>
+      <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </div>
+    <div class="fsel">
+      <span>Servicio</span>
+      <select id="f-servicio">
+        <option value="">Todos</option>
+        <option value="AD">Ayuda a domicilio (SAD)</option>
+        <option value="TEL">Teleasistencia</option>
+      </select>
+      <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </div>
+    <div class="fsel" title="Lotes territoriales comunes: un municipio pertenece al mismo lote en Ayuda a Domicilio y en Teleasistencia (cubren toda la Comunidad de Madrid).">
+      <span>Lote</span>
+      <select id="f-lote">
+        <option value="">Todos</option>
+        <option value="1">Lote 1 · Sur Metropolitano</option>
+        <option value="2">Lote 2 · Oeste Metropolitano</option>
+        <option value="3">Lote 3 · Noroeste</option>
+        <option value="4">Lote 4 · Corredor del Henares</option>
+        <option value="5">Lote 5 · Sierra Norte (esp. dificultad)</option>
+      </select>
+      <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </div>
+    <div class="fsel">
+      <span>Municipio</span>
+      <select id="f-municipio"><option value="">Todos</option></select>
+      <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </div>
+    <div class="fsel">
+      <span>Grado</span>
+      <select id="f-grado">
+        <option value="">Todos</option>
+        <option value="1">Grado I</option><option value="2">Grado II</option><option value="3">Grado III</option>
+      </select>
+      <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </div>
+    <div class="fsel">
+      <span>Antigüedad</span>
+      <select id="f-antig">
+        <option value="">Todas</option>
+        <option value="lt45">&lt; 45 días</option>
+        <option value="45-90">45–90 días</option>
+        <option value="gt90">&gt; 90 días</option>
+      </select>
+      <svg class="chev" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </div>
+    <div class="fspace"></div>
+    <button class="btn-ghost" onclick="limpiarFiltros()">Limpiar</button>
+    <button class="btn-outline" onclick="exportarCSV()">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Exportar CSV
+    </button>
+  </div>
+</header>
+
+<div class="main-grid">
+
+  <!-- ───── FUNNEL ───── -->
+  <div class="fcol">
+    <div class="section-title">Funnel de proceso — Lista de espera</div>
+    <div class="section-sub">Reconstrucción por cambios de estado (fecha de efectos SIDEMA) · 967 expedientes activos</div>
+
+    <div class="pf-flow">
+
+      <div class="pf-node">
+        <div class="pf-ic"><div class="pf-circ start"></div><div class="pf-line"></div></div>
+        <div class="pf-body">
+          <div class="pf-name">Inicio — Resolución PIA</div>
+          <div class="pf-stat"><span class="cnt">967</span> expedientes</div>
+        </div>
+      </div>
+
+      <div class="pf-node">
+        <div class="pf-ic"><div class="pf-circ"></div><div class="pf-line"></div></div>
+        <div class="pf-body">
+          <div class="pf-name">Alta en lista de espera</div>
+          <div class="pf-stat"><span class="cnt">967</span> altas · <strong>T. medio: 2 días</strong></div>
+          <div class="pf-alerts">
+            <span class="pf-alert warn">⚠ 148 excluidos · 15,3%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pf-node">
+        <div class="pf-ic"><div class="pf-circ"></div><div class="pf-line"></div></div>
+        <div class="pf-body">
+          <div class="pf-name">Gestión y contacto</div>
+          <div class="pf-stat"><span class="cnt">819</span> en proceso · <strong>T. medio acum.: 38 días</strong></div>
+          <div class="pf-alerts">
+            <span class="pf-alert warn">⚠ 900 en espera activa (backlog)</span>
+            <span class="pf-alert info">↻ 34 reingresan al proceso</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pf-node">
+        <div class="pf-ic"><div class="pf-circ"></div><div class="pf-line"></div></div>
+        <div class="pf-body">
+          <div class="pf-name">Asignación de servicio</div>
+          <div class="pf-stat"><span class="cnt">219</span> asignados · <strong>T. medio acum.: 61 días</strong></div>
+        </div>
+      </div>
+
+      <div class="pf-node">
+        <div class="pf-ic"><div class="pf-circ solid"></div></div>
+        <div class="pf-body">
+          <div class="pf-name">Alta del servicio</div>
+          <div class="pf-stat"><span class="cnt">219</span> activaciones · <strong style="color:var(--red)">T. medio total: 67 días</strong></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ───── TABLE ───── -->
+  <div class="tcol">
+    <div class="tbl-hdr">
+      <div class="tbl-title">Lista de espera <span class="pill" title="Las listas de espera de Ayuda a Domicilio (SAD) y Teleasistencia son independientes; usa el filtro «Servicio» para verlas por separado.">listas independientes por servicio · filtro «Servicio»</span></div>
+      <div class="tbl-hint">
+        <span class="legend-dot"><i style="background:var(--green)"></i>&lt;45d</span>
+        <span class="legend-dot"><i style="background:var(--amber)"></i>45–90d</span>
+        <span class="legend-dot"><i style="background:var(--red)"></i>&gt;90d</span>
+      </div>
+    </div>
+
+    <!-- Pestañas -->
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('territorio', this)">
+        Por territorio <span class="tab-pill" id="pill-territorio">11</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('persona', this)">
+        Por persona <span class="tab-pill" id="pill-persona">928</span>
+      </button>
+    </div>
+
+    <!-- Pestaña: Por territorio -->
+    <div class="tab-panel active" id="tab-territorio">
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Municipio</th>
+              <th>Lote</th>
+              <th>Servicio</th>
+              <th class="r">En espera</th>
+              <th class="r">G3 esp.</th>
+              <th class="r">T. medio</th>
+              <th class="r">Excl. %</th>
+              <th class="r">Backlog</th>
+              <th class="r">Tend.</th>
+            </tr>
+          </thead>
+          <tbody id="tbl-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Pestaña: Por persona -->
+    <div class="tab-panel" id="tab-persona">
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Nº expediente</th>
+              <th>Municipio</th>
+              <th>Lote</th>
+              <th>Servicio</th>
+              <th>Grado</th>
+              <th>Estado</th>
+              <th>Última acción<br><span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--g400);font-size:8px;">fecha de efectos</span></th>
+              <th class="r">Días en espera</th>
+              <th class="r">T. medio ref.<br><span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--g400);font-size:8px;">media del resto de usuarios</span></th>
+            </tr>
+          </thead>
+          <tbody id="tbl-persona-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ───── BOTTOM 3 BLOCKS ───── -->
+<div class="bottom-grid">
+
+  <div class="bg-col">
+    <div class="panel-hdr">Motivos de exclusión <span class="sub">148 casos · periodo activo</span></div>
+    <div class="mot-body">
+      <div style="display:flex;gap:12px;margin-bottom:2px;font-size:9px;color:var(--g500);font-weight:600;">
+        <span style="display:inline-flex;align-items:center;gap:4px;"><i style="width:8px;height:8px;border-radius:2px;background:var(--amber2);display:inline-block;"></i>Requiere verificación</span>
+        <span style="display:inline-flex;align-items:center;gap:4px;"><i style="width:8px;height:8px;border-radius:2px;background:var(--g600);display:inline-block;"></i>Exclusión directa</span>
+      </div>
+      <div class="mot-row">
+        <div class="mot-top"><span class="mot-lbl">No localizado tras 6 intentos <span style="font-size:8.5px;color:var(--amber2);font-weight:700;">● verif.</span></span><span class="mot-pct">34%</span></div>
+        <div class="mot-track"><div class="mot-fill" style="width:34%;background:var(--amber2)"></div></div>
+      </div>
+      <div class="mot-row">
+        <div class="mot-top"><span class="mot-lbl">Renuncia voluntaria (verbal) <span style="font-size:8.5px;color:var(--amber2);font-weight:700;">● verif.</span></span><span class="mot-pct">24%</span></div>
+        <div class="mot-track"><div class="mot-fill" style="width:24%;background:var(--amber)"></div></div>
+      </div>
+      <div class="mot-row">
+        <div class="mot-top"><span class="mot-lbl">Ingreso en residencia <span style="font-size:8.5px;color:var(--g600);font-weight:700;">● directa</span></span><span class="mot-pct">16%</span></div>
+        <div class="mot-track"><div class="mot-fill mf-1" style="width:16%"></div></div>
+      </div>
+      <div class="mot-row">
+        <div class="mot-top"><span class="mot-lbl">Traslado <span style="font-size:8.5px;color:var(--g600);font-weight:700;">● directa</span></span><span class="mot-pct">11%</span></div>
+        <div class="mot-track"><div class="mot-fill mf-2" style="width:11%"></div></div>
+      </div>
+      <div class="mot-row">
+        <div class="mot-top"><span class="mot-lbl">Demora atribuible al usuario <span style="font-size:8.5px;color:var(--amber2);font-weight:700;">● verif.</span></span><span class="mot-pct">9%</span></div>
+        <div class="mot-track"><div class="mot-fill mf-3" style="width:9%"></div></div>
+      </div>
+      <div class="mot-row">
+        <div class="mot-top"><span class="mot-lbl">Datos de contacto incorrectos en SIDEMA <span style="font-size:8.5px;color:var(--g600);font-weight:700;">● directa</span></span><span class="mot-pct">6%</span></div>
+        <div class="mot-track"><div class="mot-fill mf-4" style="width:6%"></div></div>
+      </div>
+      <div class="mot-foot">
+        <strong>Tasa de reingreso:</strong> 34 usuarios excluidos por «no localizado» han solicitado reincorporación (23% de los excluidos por este motivo). Al reingresar ocupan nueva posición en lista, no la previa.
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-col">
+    <div class="panel-hdr">Tiempo medio por grado vs. objetivo
+      <span class="sub" style="display:inline-flex;align-items:center;gap:4px;">Objetivo:
+        <input id="obj-input" type="number" min="1" max="365" value="45"
+          style="width:42px;border:1px solid var(--g300);border-radius:4px;padding:2px 4px;font-size:11px;font-weight:700;font-family:var(--f);color:var(--g800);text-align:center;background:var(--white);"
+          aria-label="Objetivo en días (editable)"> días
+      </span>
+    </div>
+    <div class="grado-body" id="grado-body"></div>
+  </div>
+
+  <div class="bg-col">
+    <div class="panel-hdr">Evolución
+      <span class="sub" style="display:inline-flex;align-items:center;gap:4px;padding:0;border:none;background:none;">
+        <select id="evo-gran" style="border:1px solid var(--g200);border-radius:4px;padding:2px 5px;font-size:9px;font-weight:600;font-family:var(--f);color:var(--g600);background:var(--white);cursor:pointer;">
+          <option value="sem">Semanal</option>
+          <option value="mes" selected>Mensual</option>
+          <option value="trim">Trimestral</option>
+          <option value="ano">Anual</option>
+        </select>
+      </span>
+    </div>
+    <div class="chart-body">
+      <div class="chart-sub">Entradas sistemáticamente por encima de activaciones desde marzo · Backlog creciente · Exclusiones en alza desde abril. <span style="color:var(--amber2);font-weight:600;">Nota: periodos vacacionales y climatología (verano, olas de frío/calor, Navidad) afectan la gestión de llamadas.</span></div>
+      <div class="chart-wrap"><canvas id="chart-evolucion"></canvas></div>
+      <div class="chart-legend">
+        <div class="cl-item"><div class="cl-line" style="background:#2563EB"></div>Entradas en lista</div>
+        <div class="cl-item"><div class="cl-line" style="background:#2A9D5C"></div>Activaciones</div>
+        <div class="cl-item"><div class="cl-line" style="background:#C01828"></div>Exclusiones</div>
+        <div class="cl-item" style="color:#E8A33D"><div class="cl-line dashed"></div>Reingresos</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="attr">
+  <span><strong>CU2 — Adjudicación de Servicios Comunitarios</strong> · Gestión de Lista de Espera SAD y Teleasistencia · Dirección General de Atención al Mayor y a la Dependencia</span>
+  <span>Fuente: SIDEMA · SAP · Corte de datos: 30/06/2025 · Process Intelligence v1.0</span>
+</div>
+
+</div>
+
+<script>
+const LISTA = [
+  { municipio:'Fuenlabrada',       lote:'1', srv:'TEL', espera:178, g3:41, tmedio:98,  excl:18.2, backlog:67, antig:'gt90',  tend:'up'   },
+  { municipio:'Móstoles',          lote:'2', srv:'AD',  espera:164, g3:38, tmedio:92,  excl:16.8, backlog:58, antig:'gt90',  tend:'up'   },
+  { municipio:'Alcorcón',          lote:'2', srv:'AD',  espera:142, g3:31, tmedio:84,  excl:15.1, backlog:49, antig:'45-90', tend:'up'   },
+  { municipio:'Alcalá de Henares', lote:'4', srv:'AD',  espera:128, g3:27, tmedio:71,  excl:14.3, backlog:38, antig:'45-90', tend:'flat' },
+  { municipio:'Getafe',            lote:'1', srv:'AD',  espera:113, g3:22, tmedio:58,  excl:12.4, backlog:31, antig:'45-90', tend:'flat' },
+  { municipio:'Leganés',           lote:'1', srv:'TEL', espera:97,  g3:18, tmedio:52,  excl:11.8, backlog:24, antig:'45-90', tend:'down' },
+  { municipio:'Aranjuez',          lote:'1', srv:'TEL', espera:74,  g3:15, tmedio:88,  excl:17.5, backlog:29, antig:'gt90',  tend:'up'   },
+  { municipio:'Colmenar Viejo',    lote:'3', srv:'AD',  espera:61,  g3:11, tmedio:47,  excl:9.8,  backlog:16, antig:'45-90', tend:'flat' },
+  { municipio:'Pozuelo',           lote:'2', srv:'TEL', espera:48,  g3:6,  tmedio:38,  excl:7.2,  backlog:9,  antig:'lt45',  tend:'down' },
+  { municipio:'Las Rozas',         lote:'3', srv:'AD',  espera:42,  g3:5,  tmedio:34,  excl:6.5,  backlog:7,  antig:'lt45',  tend:'down' },
+  { municipio:'Bustarviejo',       lote:'5', srv:'TEL', espera:31,  g3:9,  tmedio:112, excl:21.4, backlog:18, antig:'gt90',  tend:'up'   },
+];
+
+/* ── DATOS POR PERSONA ── */
+const PERSONAS = [
+  { exp:'DEP-2025-00118', mun:'Fuenlabrada',       lote:'1', srv:'TEL', grado:3, estado:'espera',  accion:'Alta en lista',           fecha:'12/01/2025', dias:168, tmRef:98  },
+  { exp:'DEP-2025-00234', mun:'Móstoles',           lote:'2',  srv:'AD',  grado:3, estado:'espera',  accion:'Alta en lista',           fecha:'15/01/2025', dias:165, tmRef:92  },
+  { exp:'DEP-2025-00341', mun:'Alcorcón',           lote:'2',  srv:'AD',  grado:2, estado:'gestion', accion:'Llamada sin respuesta',   fecha:'03/06/2025', dias:127, tmRef:84  },
+  { exp:'DEP-2025-00412', mun:'Alcalá de Henares',  lote:'4',  srv:'AD',  grado:2, estado:'gestion', accion:'Visita concertada',       fecha:'18/06/2025', dias:114, tmRef:71  },
+  { exp:'DEP-2025-00503', mun:'Getafe',             lote:'1',  srv:'AD',  grado:3, estado:'espera',  accion:'Alta en lista',           fecha:'28/02/2025', dias:122, tmRef:58  },
+  { exp:'DEP-2025-00617', mun:'Leganés',            lote:'1', srv:'TEL', grado:2, estado:'visita',  accion:'Instalación programada',  fecha:'25/06/2025', dias:89,  tmRef:52  },
+  { exp:'DEP-2025-00728', mun:'Fuenlabrada',        lote:'1', srv:'TEL', grado:3, estado:'gracia',  accion:'Demora usuario activa',    fecha:'10/06/2025', dias:142, tmRef:98  },
+  { exp:'DEP-2025-00831', mun:'Aranjuez',           lote:'1', srv:'TEL', grado:2, estado:'espera',  accion:'Alta en lista',           fecha:'05/03/2025', dias:117, tmRef:88  },
+  { exp:'DEP-2025-00944', mun:'Colmenar Viejo',     lote:'3',  srv:'AD',  grado:1, estado:'gestion', accion:'Contacto telefónico OK',  fecha:'20/06/2025', dias:62,  tmRef:47  },
+  { exp:'DEP-2025-01052', mun:'Pozuelo',            lote:'2', srv:'TEL', grado:1, estado:'visita',  accion:'Firma acuerdo pendiente', fecha:'27/06/2025', dias:38,  tmRef:38  },
+  { exp:'DEP-2025-01163', mun:'Las Rozas',          lote:'3',  srv:'AD',  grado:1, estado:'visita',  accion:'Visita realizada',        fecha:'24/06/2025', dias:31,  tmRef:34  },
+  { exp:'DEP-2025-01274', mun:'Bustarviejo',        lote:'5', srv:'TEL', grado:3, estado:'espera',  accion:'Alta en lista',           fecha:'04/01/2025', dias:176, tmRef:112 },
+  { exp:'DEP-2025-01385', mun:'Móstoles',           lote:'2',  srv:'AD',  grado:3, estado:'gestion', accion:'2º intento localización', fecha:'15/06/2025', dias:141, tmRef:92  },
+  { exp:'DEP-2025-01496', mun:'Alcorcón',           lote:'2',  srv:'AD',  grado:2, estado:'espera',  accion:'Alta en lista',           fecha:'18/03/2025', dias:104, tmRef:84  },
+  { exp:'DEP-2025-01507', mun:'Getafe',             lote:'1',  srv:'AD',  grado:2, estado:'gestion', accion:'Visita domiciliaria OK',  fecha:'22/06/2025', dias:78,  tmRef:58  },
+  { exp:'DEP-2025-01618', mun:'Fuenlabrada',        lote:'1', srv:'TEL', grado:2, estado:'espera',  accion:'Alta en lista',           fecha:'22/02/2025', dias:128, tmRef:98  },
+  { exp:'DEP-2025-01729', mun:'Leganés',            lote:'1', srv:'TEL', grado:1, estado:'visita',  accion:'Firma acuerdo enviada',   fecha:'29/06/2025', dias:44,  tmRef:52  },
+  { exp:'DEP-2025-01840', mun:'Aranjuez',           lote:'1', srv:'TEL', grado:3, estado:'gracia',  accion:'Hospitalización activa',  fecha:'01/06/2025', dias:151, tmRef:88  },
+  { exp:'DEP-2025-01951', mun:'Colmenar Viejo',     lote:'3',  srv:'AD',  grado:2, estado:'gestion', accion:'Contacto telefónico OK',  fecha:'26/06/2025', dias:57,  tmRef:47  },
+  { exp:'DEP-2025-02062', mun:'Alcalá de Henares',  lote:'4',  srv:'AD',  grado:3, estado:'espera',  accion:'Alta en lista',           fecha:'10/03/2025', dias:112, tmRef:71  },
+];
+
+function estadoLabel(e) {
+  const map = { espera:'Lista espera', gestion:'Gestión/contacto', visita:'Visita/firma', gracia:'Demora usuario' };
+  return map[e] || e;
+}
+function estadoClass(e) {
+  const map = { espera:'est-espera', gestion:'est-gestion', visita:'est-visita', gracia:'est-gracia' };
+  return map[e] || '';
+}
+function gradoClass(g) { return g===3?'gr-3':g===2?'gr-2':'gr-1'; }
+function diasClass(d) { return d < 45 ? 'tm-g' : d <= 90 ? 'tm-a' : 'tm-r'; }
+
+function renderPersonas() {
+  document.getElementById('tbl-persona-body').innerHTML = PERSONAS.map(p => {
+    const crit = p.dias > 90;
+    return `<tr${crit?' class="row-crit"':''}>
+      <td style="font-family:monospace;font-size:10.5px;color:var(--g500)">${p.exp}</td>
+      <td class="nm">${p.mun}</td>
+      <td><span class="badge b-lote">Lote ${p.lote}</span></td>
+      <td><span class="badge ${p.srv==='AD'?'b-ad':'b-tel'}">${p.srv==='AD'?'SAD':'TA'}</span></td>
+      <td><span class="grado-badge ${gradoClass(p.grado)}">G${p.grado}</span></td>
+      <td><span class="est-badge ${estadoClass(p.estado)}">${estadoLabel(p.estado)}</span></td>
+      <td style="font-size:10.5px;color:var(--g700)">${p.accion}<br><span style="font-size:9px;color:var(--g400)">${p.fecha}</span></td>
+      <td class="r"><span class="dias-cell ${diasClass(p.dias)}">${p.dias}d</span></td>
+      <td class="r"><span class="tm ${tmClass(p.tmRef)}">${p.tmRef}d</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+}
+
+function tmClass(d) { return d < 45 ? 'tm-g' : d <= 90 ? 'tm-a' : 'tm-r'; }
+function g3Class(n) { return n >= 25 ? 'g3-hi' : 'g3-lo'; }
+
+function renderTable(data) {
+  document.getElementById('tbl-body').innerHTML = data.map(r => {
+    const crit = r.tmedio > 90;
+    return `<tr${crit ? ' class="row-crit"' : ''}>
+      <td class="nm">${r.municipio}</td>
+      <td><span class="badge b-lote">Lote ${r.lote}</span></td>
+      <td><span class="badge ${r.srv==='AD'?'b-ad':'b-tel'}">${r.srv==='AD'?'SAD':'TA'}</span></td>
+      <td class="r" style="font-weight:700;">${r.espera}</td>
+      <td class="r"><span class="g3-pill ${g3Class(r.g3)}">${r.g3}</span></td>
+      <td class="r"><span class="tm ${tmClass(r.tmedio)}">${r.tmedio}d</span></td>
+      <td class="r">${r.excl.toLocaleString('es-ES',{minimumFractionDigits:1})}%</td>
+      <td class="r bk-cell">${r.backlog}</td>
+      <td class="r">${r.tend==='up'?'<span class="trend-up">↑</span>':r.tend==='down'?'<span class="trend-down">↓</span>':'<span class="trend-flat">→</span>'}</td>
+    </tr>`;
+  }).join('');
+  const cnt = document.getElementById('tbl-count');
+  if (cnt) cnt.textContent = data.length + ' municipios';
+}
+
+(function(){
+  const sel = document.getElementById('f-municipio');
+  [...new Set(LISTA.map(r=>r.municipio))].sort().forEach(m=>{
+    const o=document.createElement('option'); o.value=m; o.textContent=m; sel.appendChild(o);
+  });
+})();
+
+function getFiltered() {
+  const srv = document.getElementById('f-servicio').value;
+  const lot = document.getElementById('f-lote').value;
+  const mun = document.getElementById('f-municipio').value;
+  const ant = document.getElementById('f-antig').value;
+  return LISTA.filter(r => {
+    if (srv && r.srv !== srv) return false;
+    if (lot && r.lote !== lot) return false;
+    if (mun && r.municipio !== mun) return false;
+    if (ant && r.antig !== ant) return false;
+    return true;
+  });
+}
+
+function applyFilters() {
+  const data = getFiltered();
+  renderTable(data);
+  document.getElementById('k-backlog').textContent = data.reduce((s,r)=>s+r.backlog,0);
+}
+
+function limpiarFiltros() {
+  ['f-servicio','f-lote','f-municipio','f-grado','f-antig'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  renderTable(LISTA);
+  document.getElementById('k-backlog').textContent = '312';
+}
+
+function exportarCSV() {
+  const rows = [['Municipio','Lote','Servicio','En espera','G3 espera','T. medio','Exclusion %','Backlog','Tendencia']];
+  getFiltered().forEach(r => rows.push([r.municipio,r.lote,r.srv==='AD'?'SAD':'TA',r.espera,r.g3,r.tmedio+'d',r.excl+'%',r.backlog,r.tend]));
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,﻿' + encodeURIComponent(rows.map(r=>r.join(',')).join('\n'));
+  a.download = 'cu2-asignacion-' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+}
+
+['f-servicio','f-lote','f-municipio','f-grado','f-antig'].forEach(id => {
+  const el = document.getElementById(id); if (el) el.addEventListener('change', applyFilters);
+});
+
+renderPersonas();
+
+/* Datos de evolución por granularidad (elegible por el usuario) */
+const EVO = {
+  sem:  { labels:['S1','S2','S3','S4','S5','S6','S7','S8'],
+          entradas:[38,42,45,48,52,55,58,61], activaciones:[40,41,43,44,46,47,49,50], exclusiones:[4,5,4,6,7,9,10,11], reingresos:[2,3,3,5,6,7,8,9] },
+  mes:  { labels:['Ene','Feb','Mar','Abr','May','Jun'],
+          entradas:[148,162,184,201,218,234], activaciones:[151,158,167,176,189,198], exclusiones:[16,18,17,24,31,42], reingresos:[9,12,14,21,27,34] },
+  trim: { labels:['Q3 2024','Q4 2024','Q1 2025','Q2 2025'],
+          entradas:[402,455,494,653], activaciones:[420,448,476,563], exclusiones:[38,44,51,97], reingresos:[22,28,35,82] },
+  ano:  { labels:['2021','2022','2023','2024','2025*'],
+          entradas:[1420,1580,1720,1810,1147], activaciones:[1450,1520,1650,1740,1078], exclusiones:[120,145,168,190,148], reingresos:[60,78,95,110,107] },
+};
+let evoChart = new Chart(document.getElementById('chart-evolucion').getContext('2d'), {
+  type: 'line',
+  data: {
+    labels: EVO.mes.labels,
+    datasets: [
+      { label:'Entradas',    data:EVO.mes.entradas,    borderColor:'#2563EB', borderWidth:2.5, pointRadius:3.5, pointBackgroundColor:'#2563EB', tension:.35, fill:false },
+      { label:'Activaciones',data:EVO.mes.activaciones, borderColor:'#2A9D5C', borderWidth:2.5, pointRadius:3.5, pointBackgroundColor:'#2A9D5C', tension:.35, fill:false },
+      { label:'Exclusiones', data:EVO.mes.exclusiones,  borderColor:'#C01828', borderWidth:2.5, pointRadius:3.5, pointBackgroundColor:'#C01828', tension:.35, fill:false },
+      { label:'Reingresos',  data:EVO.mes.reingresos,   borderColor:'#E8A33D', borderWidth:2, pointRadius:3, pointBackgroundColor:'#E8A33D', borderDash:[5,4], tension:.35, fill:false },
+    ]
+  },
+  options: {
+    responsive:true, maintainAspectRatio:false,
+    interaction:{ mode:'index', intersect:false },
+    plugins:{
+      legend:{ display:false },
+      tooltip:{ backgroundColor:'#1F2937', titleColor:'#F9FAFB', bodyColor:'#D1D5DB', padding:11, cornerRadius:5, titleFont:{family:'Inter',size:11,weight:'600'}, bodyFont:{family:'Inter',size:11} }
+    },
+    scales:{
+      x:{ grid:{display:false}, ticks:{font:{family:'Inter',size:10},color:'#9CA3AF'}, border:{color:'#E5E5E5'} },
+      y:{ grid:{color:'#F3F4F6'}, ticks:{font:{family:'Inter',size:10},color:'#9CA3AF',maxTicksLimit:5}, border:{display:false} }
+    }
+  }
+});
+function updateEvo(gran){
+  const d = EVO[gran] || EVO.mes;
+  evoChart.data.labels = d.labels;
+  evoChart.data.datasets[0].data = d.entradas;
+  evoChart.data.datasets[1].data = d.activaciones;
+  evoChart.data.datasets[2].data = d.exclusiones;
+  evoChart.data.datasets[3].data = d.reingresos;
+  evoChart.update();
+}
+document.getElementById('evo-gran').addEventListener('change', e => updateEvo(e.target.value));
+
+renderTable(LISTA);
+
+/* ── Tiempo medio por grado vs. objetivo (objetivo editable) ── */
+const GRADOS = [
+  { lbl:'Grado III — Gran dependencia',   personas:348, dias:91, meta:' · 89 superan los 90 días' },
+  { lbl:'Grado II — Dependencia severa',  personas:583, dias:68, meta:'' },
+  { lbl:'Grado I — Dependencia moderada', personas:312, dias:52, meta:'' },
+];
+
+function renderGrados(obj) {
+  obj = Math.max(1, obj || 45);
+  const maxDias = Math.max(...GRADOS.map(g => g.dias));
+  const scaleMax = Math.max(maxDias, obj);           // el marcador nunca se sale de la barra
+  const objLeft = (obj / scaleMax) * 100;
+
+  document.getElementById('grado-body').innerHTML = GRADOS.map(g => {
+    const pct = Math.round(((g.dias - obj) / obj) * 100);   // desviación vs objetivo
+    // color según cumple / se pasa poco / se pasa mucho
+    let col, pillCls, valCls;
+    if (g.dias <= obj)      { col = 'var(--green)'; pillCls = 'go-ok';   valCls = 'tm-g'; }
+    else if (pct <= 75)     { col = 'var(--amber)'; pillCls = 'go-warn'; valCls = 'tm-a'; }
+    else                    { col = 'var(--red)';   pillCls = 'go-bad';  valCls = 'tm-r'; }
+    const sign = pct >= 0 ? '+' : '';
+    const fillW = (g.dias / scaleMax) * 100;
+    return `<div class="grado-row">
+      <div class="grado-top">
+        <span class="grado-lbl">${g.lbl}</span>
+        <span class="grado-val ${valCls}">${g.dias} días <span class="grado-over ${pillCls}">${sign}${pct}%</span></span>
+      </div>
+      <div class="grado-meta"><strong>${g.personas} personas</strong>${g.meta}</div>
+      <div class="grado-track">
+        <div class="grado-fill" style="width:${fillW.toFixed(1)}%;background:${col};"></div>
+        <div class="grado-obj" data-obj="${obj}" style="left:${objLeft.toFixed(1)}%;"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+const objInput = document.getElementById('obj-input');
+if (objInput) {
+  renderGrados(parseInt(objInput.value, 10));
+  objInput.addEventListener('input', e => renderGrados(parseInt(e.target.value, 10)));
+}
+</script>
+</body>
+</html>

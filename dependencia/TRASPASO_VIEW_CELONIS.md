@@ -81,12 +81,13 @@ Todo lo anterior está **guardado con Save (borrador)**. No se ha hecho Create v
 
 **24/11: llegaron las tablas de SIDEMA para el CU1 y el CU2.** Son 29 tablas en la extracción «Extraccion Dependencia» (data job «Dependencia VASOCIAL_SIDM»).
 - Mapeo: `dependencia/MAPEO_TABLAS_SIDEMA.md`.
-- Script de vistas para Roberto: `dependencia/sql/VistasSIDMPRODv2.sql`.
+- Script de vistas para Roberto: `dependencia/sql/VistasSIDMPRODv3.sql` (se genera con `dependencia/sql/generador/gen_vistas_v3.py`).
 - La extracción **sigue fallando por Snappy** (20/11): en Celonis solo están las muestras de siempre.
-- La sección 4 del mapeo dice qué elementos del mockup se podrán montar con las tablas nuevas.
+- Las secciones 5 y 6 del mapeo dicen qué elementos de los mockups CU1 y CU2 se podrán montar con las tablas nuevas.
+- Las tablas del CU2 y de citación existen en SIDEMA, pero el usuario de Celonis no puede leerlas: el bloque 3 del script pide a Roberto sus columnas para hacer la v4.
 
 Pendiente, en este orden:
-0. **Roberto** revisa el script v2 y las preguntas (sección 6 del mapeo).
+0. **Roberto** revisa el script v3, ejecuta el bloque 3 y contesta las preguntas (sección 8 del mapeo).
    - Cuando estén las vistas en PROD y funcione la extracción, se apunta la extracción a `SIDM_V_DEP_*` con «Rename target table», para no cambiar los nombres de las tablas.
    - Después: nuevos eventos y atributos en Objects & Events (valoración, comisión, resolución del grado, estados del PIA, subsanación, requerimientos, llamadas; municipio, edad, origen y grado en el objeto) y cambiar los marcadores de las fases 2 y 3.
 1. Mientras falle la extracción: **cargar el histórico de las mismas 100 solicitudes de 2025** (enciende subsanación, AVC, citación, dictamen, grado, plazo total, SLA y la tabla de Subsanación): en «Pruebas Anthony», tabla `SIDM_HIST_ESTADO`, filtro `IDSOLICITUD IN (…)` por **lotes de 10** (el Preview solo trae 100 filas; si un lote devuelve justo 100, partirlo). Anthony tiene el fichero de lotes (los IDs **no** están en el repo). Me pega el Preview → genero `INSERT INTO "SIDM_HIST_ESTADO"` en el scratchpad → él lo ejecuta → recargar. Después, revisar que los «–» y los «There's data missing» se llenan.
@@ -181,12 +182,14 @@ COUNT(CASE WHEN "o_custom_SolicitudDependencia"."FechaAlta" > ADD_DAYS(PU_MAX(CO
 
 - `dependencia/MEMORIA_DEPENDENCIA_CELONIS.md`: memoria viva del proyecto (tablas, estados y fases, decisiones, SQL, pendientes).
 - `dependencia/MAPEO_MOCKUP_CU1.md`: mockup elemento a elemento (✅/🟡/❌) y revisión completa del 05/11 (tooltips, selectores, datos del JS, definiciones del mockup).
-- `dependencia/MAPEO_TABLAS_SIDEMA.md` (24/11): las 29 tablas de la extracción, claves de unión, uso en CU1 y CU2, qué columnas van en las vistas y preguntas para Roberto.
-- `dependencia/sql/VistasSIDMPRODv2.sql` (24/11): script Oracle de las 29 vistas `SIDM_V_DEP_*` con lista de columnas, para Roberto.
+- `dependencia/MAPEO_TABLAS_SIDEMA.md` (24/11): las 29 tablas de la extracción, claves de unión, lo que hay además en el origen, los mockups CU1 y CU2 elemento a elemento, qué columnas van en las vistas y preguntas para Roberto.
+- `dependencia/sql/VistasSIDMPRODv3.sql` (24/11): script Oracle para Roberto. 29 vistas `SIDM_V_DEP_*` con lista de columnas, 28 catálogos, consulta de columnas del CU2 y comprobación final.
+- `dependencia/sql/generador/`: los scripts Python que generan el script de vistas (`gen_vistas_v2.py` tiene las columnas de cada tabla y el motivo de las que quedan fuera; `gen_vistas_v3.py` monta el v3). Se ejecutan con `python gen_vistas_v3.py <ruta del v1> <salida>`.
 - `dependencia/sql/01…04_*.sql`: SQL del objeto y de los 3 eventos (Objects & Events).
 - `dependencia/celonis/DependenciaView.yaml`: YAML v2 de la View (referencia; ahora se trabaja en el editor visual). Se generaba con un script del scratchpad que ya no existe en sesiones nuevas.
 - `dependencia/celonis/logo_comunidad_madrid.png`: logo para el componente Imagen.
-- `mockups/MockupCU1_v2.html`: el mockup.
+- `mockups/MockupCU1_v2.html`: el mockup del CU1.
+- `mockups/MockupCU2.html`: el mockup del CU2 (lista de espera de SAD y teleasistencia).
 
 ## 8. Lista de datos que faltan (enviada al grupo de Teams «Minería de Procesos - Dependencia», 05/11)
 
