@@ -36,7 +36,7 @@ Ojo: los nombres con espacios (`Fecha Inicio Etapa`, `Fecha Notificacion`…) ti
 
 ## Pendiente (con Roberto)
 
-1. Perspectiva «Natalidad»: objeto principal `NatExpedientes`, event log con los 8 eventos.
-2. Test changes, solo con esa perspectiva.
-3. Create version y Deploy.
-4. Knowledge Model y View.
+1. ✅ (23/11, borrador) Perspectiva «Natalidad»: objetos NatExpedientes, NatEtapas y NatInteresados; event log `EventosNatalidad` (Default, objeto principal NatExpedientes, 8 eventos, sin dividir la actividad por atributos).
+2. ✅ (23/11, con el visto bueno de Roberto) Test changes, solo con esa perspectiva. Data model `test:perspective_custom_Natalidad`.
+3. Create version y Deploy (con Roberto).
+4. ▶ Knowledge Model «Natalidad KM» y View «Natalidad View» en «Familia Natalidad» (borrador). Se abren desde ella dos Views enlazadas: «Natalidad Explorador de procesos» y «Natalidad Comparativa de periodos». Ver `MAPA_DATOS_CUADRO_NATALIDAD.md`, sección 7.

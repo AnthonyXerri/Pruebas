@@ -6,6 +6,8 @@ Filtro en todo: `CDAPLICACION = 'D032'` y `CDPROCEDIMIENTO = '3163'`.
 Data Source en todas las transformaciones: **OCPM DataPool IMPLEMENTACION _Conexión Producción PRATLX_RO**.
 Prefijo `Nat` y etiqueta **Natalidad**. Memoria detallada: `natalidad/MEMORIA_NATALIDAD_CELONIS.md`. SQL: `natalidad/sql/`.
 
+**Mapa de datos del mockup v32 con PQL de partida (23/11):** `natalidad/MAPA_DATOS_CUADRO_NATALIDAD.md`. Visto en Celonis el 23/11 por la mañana: no había perspectiva ni data model de Natalidad, y el paquete «Familia Natalidad» estaba vacío. Por la tarde ya están la perspectiva, el Test changes, el KM y la View en borrador (MAPA, sección 7).
+
 ## Bloques de trabajo
 
 | Bloque | Qué | Tabla origen | Para el mockup | Estado |
@@ -17,7 +19,7 @@ Prefijo `Nat` y etiqueta **Natalidad**. Memoria detallada: `natalidad/MEMORIA_NA
 | E ✅ | `NatInteresados` (edad en tramos, nacionalidad, país, municipio; sin nombres ni DNI) | `GSTA_V_INTERESADOS` | Composición | Pendiente |
 | F ✅ | Completar `NatExpedientes`: `REF_SOLICITUD`, año y nombre de la convocatoria (`GSTA_V_EXPEDIENTE`), nombre del procedimiento | `GSTA_V_CEL_EXPEDIENTE`, `GSTA_V_EXPEDIENTE`, `GSTA_V_CEL_CAT_PROC` | Filtros, enlace futuro con eReg | Pendiente |
 | G ✅ (no están: se piden) | Búsquedas: revisión de conformidad, fichero o tercero de Nexus, plazo de requerimiento (`LIKE` en la bitácora y en los hitos) | Bitácora, hitos | «Revisados sin proponer», subestados de terceros | Pendiente |
-| H ▶ siguiente | Test changes, perspectiva («Natalidad»), Knowledge Model (KPIs en PQL) y View | — | El cuadro | Con Roberto |
+| H ▶ en curso | Perspectiva «Natalidad» ✅ (23/11, borrador). Test changes ✅ (23/11, con OK de Roberto). «Natalidad KM» ✅ y «Natalidad View» ▶ en «Familia Natalidad» (borrador). Hechos: cabecera, barra de filtros, entradas/salidas/stock con «Ver por», tiempo por fase (las 5 fases del mockup, con expedientes en la fase ahora), stock por antigüedad (colores del mockup), composición (selector de 10 dimensiones: 5 con datos y 5 «Pendiente de datos»), rejilla 2 × 2 como en el mockup, botones a «Natalidad Explorador de procesos» (Process Explorer) y «Natalidad Comparativa de periodos» (en preparación), y expedientes sin actividad (23/11: tabla de 9 columnas con selectores de etapa, días y «Depende de» sobre variables del KM, probada en el lienzo). Falta: contenido de la comparativa, tipo y canal con datos reales, decidir si se exporta la tabla de sin actividad, y revisar con Roberto las variables del KM (valor compartido entre usuarios; borrar las antiguas sin uso) (ver `MAPA_DATOS_CUADRO_NATALIDAD.md`, sección 7) | — | El cuadro | Create version y Deploy, solo con Roberto |
 
 Para cada evento de PnC que se copie: ver su SQL, atributos y relaciones; crear el evento Nat (tipos bien puestos); relaciones; transformación con PRATLX_RO; Preview; Save with Validation.
 
@@ -47,6 +49,8 @@ Para cada evento de PnC que se copie: ver su SQL, atributos y relaciones; crear 
 - **18/11: un solo evento de solicitud.** De 53.375 expedientes, solo 140 tienen la fecha de eReg distinta de la de presentación y 157 la de Consejería; a 408 les falta la de eReg. **No se crean** `NatSolicitudRegistrada` ni `NatSolicitudRecibidaConsejeria`: basta `NatSolicitudPresentada` (`FC_SOL_INTERESADO`).
 
 ## Dimensiones de «Composición» del mockup (18/11)
+
+Montado el 23/11 en la View: las 5 dimensiones con ✅ o ⚠; las ❌ salen como «Pendiente de datos». Se cuenta la solicitante (`EsSolicitante = 'S'`). Detalle y PQL en `MAPA_DATOS_CUADRO_NATALIDAD.md`, secciones 4 y 7.
 
 | Dimensión | De dónde sale | Estado |
 |---|---|---|

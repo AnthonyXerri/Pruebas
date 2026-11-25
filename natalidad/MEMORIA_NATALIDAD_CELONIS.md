@@ -660,3 +660,144 @@ Esta lista es la base de la tabla final de lo que falta (Atlantix, eReg, Nexus y
 - [ ] `NatProcedimiento`, `NatEtapa`, `NatDocumento` (y `NatExpediente`): atributos, transformación con el filtro y relaciones.
 - [ ] Eventos `Nat…`: todos los de Atlantix, con el mismo filtro.
 - [ ] Revisar con Roberto antes de Create version / Deploy.
+
+## 5. El cuadro en Studio (23/11)
+
+Lo construido y su PQL está en `MAPA_DATOS_CUADRO_NATALIDAD.md`, sección 7. Aquí, lo aprendido del editor.
+
+**Montaje**
+- **Para crear la View hace falta un KM.** El formulario *Create View* pide un Knowledge Model existente.
+  - En Dependencia ya existía cuando se creó el paquete.
+  - Aquí hubo que crear antes **«Natalidad KM»** y una variable de paquete (Package Settings → Variables → Perspective) que apunta a `test:perspective_custom_Natalidad`.
+- **Variables de la View:** icono *Variables* de la barra del editor → **VIEW** → «+» → nombre, tipo (*Number*) y valor por defecto. En el PQL se usan como `${plazo_dias}`.
+  - También desde el PQL Editor: *Variables* → *View* → *Add*.
+  - Para cambiarla: icono *Variables* → lápiz de la variable (al lado está la papelera). Tiene *Default value* y *Current value*; la flecha circular junto al actual lo devuelve al de por defecto.
+- **Filtros guardados en el KM:** pestaña *Filters* del KM → *Create Knowledge* → *Filter*.
+  - Se escriben en PQL: `FILTER …;`.
+  - **Global Filter apagado.** Encendido se aplicaría a todo el KM.
+  - En un componente se usan con el embudo de *Data* → *Add Filter* → *Saved filters*.
+  - Es la única forma de filtrar por algo calculado, como la fecha de resolución.
+- **Attribute filter de un componente:** marcar un valor lo **incluye**. Para quitar los vacíos hay que marcar todos los demás valores. La lista queda fija.
+
+**PQL**
+- **`RUNNING_TOTAL(agregación)`** funciona para acumulados por mes, por ejemplo el stock.
+- **Gráficos con dos fechas** (altas y resoluciones en el mismo eje): usar el **event log** como tabla común. Cada métrica cuenta su tipo de evento. La primera resolución se reconoce con `TIMESTAMP = PU_MIN(…)`.
+- **«Pendiente de datos»:** con `/* Pendiente de datos: … */` + `AVG(CASE WHEN "o_custom_NatExpedientes"."ID" IS NULL THEN 0.0 END)` el KPI muestra «–». Así queda listo para cambiar solo la fórmula.
+- **Filtros y funciones `PU_`.** Las `PU_` (`PU_MIN`, `PU_LAST`…) agregan solo las filas que dejan los filtros. Es el comportamiento documentado de PQL; aquí no se probó, se evitó.
+  - Un filtro de **eventos** (p. ej. «solo eventos de las fases 2–5») haría que `RES` no viera los eventos de resolución. Todos parecerían pendientes.
+  - Un filtro de **expedientes**, como «Expedientes pendientes», quita expedientes enteros. A los que quedan no les quita eventos, así que no rompe nada.
+- **Quitar la categoría «null» de un gráfico sin filtrar:** no hay opción para ocultarla, y sigue saliendo aunque todas sus métricas sean NULL.
+  - La solución es un **«cubo»**: la dimensión manda lo sobrante a una categoría que sí se muestra (`ELSE '1. Entrada…'`).
+  - Cada métrica excluye esas filas con su propio `CASE`.
+- **Dejar vacío un punto de la línea en vez de 0:** `CASE WHEN COUNT(…) = 0 THEN NULL ELSE COUNT(…) END`. `COUNT` nunca da NULL; `AVG` sobre todo NULL, sí.
+- Los comentarios `/* … */` también funcionan dentro de métricas y dimensiones de gráficos.
+- **Una dimensión elegible con un selector** (Composición): `CASE WHEN '${comp_dim}' = 'Edad de la solicitante' THEN … WHEN … END`. Studio sustituye la variable antes de ejecutar, y cada rama puede usar tablas distintas si todas acaban a nivel expediente (`PU_`).
+  - Que la variable guarde el **nombre visible** («Sentido de la resolución») y no un código: así el título del eje puede ser `${comp_dim}`.
+  - Para probar el PQL, escribir primero el valor fijo (`'Edad de la solicitante' = …`) y cambiarlo por la variable al final.
+- **Atributo de un objeto hijo con condición:** `PU_FIRST("o_custom_NatExpedientes", "o_custom_NatInteresados"."TramoEdad", "o_custom_NatInteresados"."EsSolicitante" = 'S')`. Con una sola fila por expediente que cumpla la condición, da igual el orden.
+- **Una categoría sin barra:** `SUM(CASE WHEN … THEN NULL ELSE 1 END)` da NULL si todas sus filas son NULL (`COUNT` daría 0). La categoría sigue saliendo, pero vacía.
+- **% sobre el total del gráfico:** `100.0 * X / GLOBAL(X)`. `GLOBAL` calcula la misma agregación sin repartir por la dimensión.
+
+**Componentes**
+- **KPI list:** «Add data or drag it here» solo se ve con el componente seleccionado. Cada KPI nuevo baja el siguiente hueco unos 55 px.
+- **Column and line:** una métrica de columnas y varias líneas.
+- **Grouped column:** varias métricas de columnas.
+  - En el engranaje de una métrica → *Data settings* → *Mark type* = *Line* (y *Show on secondary axis*), esa métrica pasa a línea en el eje derecho.
+  - Si solo queda una columna más una línea, Studio lo convierte en *Column and line*.
+- **Stacked bar:** una dimensión y varias métricas apiladas, una por tramo.
+- **Colores:** sección *Coloring*, al final de *Settings*. El círculo junto al nombre de la métrica abre su PQL Editor, no el color.
+  - Solo hay tokens de la paleta, sin hex libre: Primary, Secondary, Context, tres Custom, Negative, Warning y Positive.
+  - **Context (20) = #464C6A**, el gris pizarra del mockup.
+  - El lápiz del final **no es color a medida: es Transparent**.
+- **Color mapping** (pestaña del selector de color): colorea por valores de la dimensión.
+  - Regla con nombre, categorías con su color y un color para el resto (*Not Mapped*).
+  - La leyenda pasa a mostrar las categorías de la regla, no el nombre de la métrica. Se le puede quitar el título con *Show legend title*.
+- **Axis settings:** etiquetas de Y, X e Y secundario. Aceptan variables (`${ver_por}`).
+- **Data settings de una dimensión:** solo nombre, unidad, formato y PQL. No hay opción para ocultar nulos.
+- **Bar (Composición):**
+  - *Tooltips*: una métrica que solo sale al pasar el ratón (aquí, el %).
+  - *Sorting*: elegir la métrica; asc. o desc. en sus *Data settings*.
+  - Etiquetas de valor: engranaje de la métrica → *Data settings* → *Data labels* → *Show data labels*.
+  - *Allow scrolling*: con muchas categorías (municipios) se ven unas 10 y el resto con scroll.
+  - Quitar la leyenda: *Style* → *Legend* → *Hide*.
+- **Add Filter de un componente:** solo *Attribute*, *Process flow*, *Event*, *Throughput time*, *Event count* y *Saved filters*. **No admite PQL libre**: para eso, un filtro guardado en el KM.
+- **Color mapping con una dimensión PQL:** el desplegable de valores dice «No values available». Con el icono *fx* se escribe el valor a mano.
+- **Context (70)** es el gris más claro de la paleta: #A9AED1.
+- **Títulos de los ejes:** son editores Monaco pequeños; se pueden escribir con `executeEdits` como el PQL.
+
+**Filtros y parámetros de pantalla**
+- **Filter dropdown:** aplica un **filtro real** a toda la View. Sin nada elegido, muestra el nombre de la dimensión como etiqueta.
+- **Input dropdown:** **no filtra**, solo escribe una variable: de la View o del KM. En *Save user selection to* el picker tiene casillas y deja marcar varias; dejar marcada solo una.
+  - Con *Manual input → Free text*, cada opción tiene un texto visible y un valor.
+  - Cada opción: *Add Item* → texto → clic en «Add value» → valor → *Save*. Si el valor queda vacío sale un error en rojo, y el botón *Save* baja de sitio.
+  - **Al cambiar la variable**, las opciones se quedan sin valor («No value provided for …», borde rojo): el valor se guarda por variable. Para cada opción: lápiz (*Edit*; la papelera *Delete* está justo al lado) → clic en «Add value» → esperar a que sea una caja de texto → escribir → *Save*. Un clic en «Add value» sin el lápiz no hace nada.
+  - Con *Load items* la lista sale de un dato (PQL, admite *Add Filter* con filtros guardados). Las opciones nuevas del dato aparecen solas.
+    - En *Single* **no se puede deseleccionar**: no hay botón para borrar, y pulsar otra vez la opción no la quita. No sirve para «todas».
+    - En *Multiple* hay casillas, buscador y «Select all». La variable llega al PQL como **lista entre comillas** (`'A', 'B'`, también con una sola). Si se desmarca todo, vuelve a su **valor por defecto**.
+    - Receta: valor por defecto `'Todas'` (con las comillas) y en el PQL `('Todas' IN (${var}) OR dato IN (${var}))`.
+  - El «Label» de *Style* es solo un placeholder y desaparece al elegir un valor. Para que se lea qué es, la etiqueta va dentro del texto de cada opción («Plazo: 90 días»).
+- **Date range:** filtra por defecto. En *Style* hay selecciones rápidas, uno o dos calendarios y texto del placeholder.
+- **Input box:** se puede dejar vacío, y entonces el PQL que use la variable falla. Para números con pocas opciones, mejor un Input dropdown.
+- **Button**, interacciones posibles:
+  - *Add Action* (Action Flow o correo);
+  - *Switch container tabs*;
+  - *Open linked view*;
+  - *Go to view or URL* (pide una URL fija, que cambia entre entornos);
+  - *Update variable* (varias reglas variable = valor);
+  - *Open message*.
+
+**Variables en filtros guardados del KM (sin actividad, 23/11)**
+- **Una variable de la View NO llega a un filtro guardado del KM en el lienzo**, aunque se llame igual que una variable del KM. El filtro usa el valor de la variable del KM.
+  - La vista previa del PQL Editor sí usa el valor de la View, y eso **engaña**: parecía que funcionaba.
+  - Probar siempre **en el lienzo, en modo lectura**, cambiando el selector y mirando si cambian el número y las filas.
+- La solución es una **variable del KM moderna**: icono *Variables* de la View → **KNOWLEDGE MODEL** → «+» (*Create knowledge model Variable*). El Input dropdown puede escribir en ella.
+  - Las variables antiguas del KM (pestaña *Variables* de la experiencia antigua) no salen en ese picker.
+  - Al editarla tiene *Default Value* y *Current Value*. Para que tome el valor por defecto, la flecha junto al actual. Studio avisa: «el valor actual se aplica a todos los usuarios». Pendiente de comprobar con Roberto qué ve cada usuario.
+- Un *placeholder* que cuenta con un filtro guardado se recalcula al cambiar el selector si su PQL nombra las variables en un comentario (`/* … ${sa_umbral} · ${sa_etapa} … */`).
+
+**Text box**
+- Es texto enriquecido; no tiene API. Al escribir `${` sale «Insert placeholders», con los *placeholders* PQL y las variables de la View y del KM.
+  - Al elegir una variable entra como ficha, pero el `${` que se escribió **se queda como texto** delante: hay que borrarlo.
+  - Junto a un *placeholder* del menú hay lápiz (editar su PQL) y **X, que lo borra**.
+- Para cambiar una ficha: poner el cursor justo detrás (por código, con `Range.setStartAfter(ficha)`) → Retroceso → `${` → elegir la nueva.
+
+**Lienzo y tabla**
+- Para mover un componente, arrastrarlo desde su cuerpo. La barra con el nombre puede quedar debajo de otro componente y moverías el otro.
+- Los tiradores para cambiar el tamaño son `.vc-grid-item-resize--visible .drag-container` (lados y esquinas). La rejilla tiene 36 columnas; los componentes pueden solaparse y Studio no los empuja.
+- Columna de una tabla: engranaje → *Data settings* → *Data display*, *Column behaviour*, *Interactions*, *Coloring* e *Icons*.
+  - *Coloring* → *Visual mapping* → *Thresholds* (cortes y un color por tramo). *Color Style*: *Background color* (toda la celda) o *Value highlight* (pastilla).
+- **Exportar una tabla:** *Interactions* → *Export settings* → «Allow exporting from table». Sin marcar, el menú ⋮ de la tabla en modo lectura no ofrece exportar.
+- Studio **sale solo del modo edición** tras un rato sin actividad (guarda antes). Se vuelve con el lápiz de arriba a la derecha.
+
+  **No hay acción «quitar filtros».** El ✕ solo devuelve las variables a su valor inicial.
+- **Open linked view → Create view** crea una View nueva en el paquete:
+  - mismo KM;
+  - se abre como *Modal overlay* o *Side panel*;
+  - *Sync view filters*: *Forwards* (de la principal a la nueva), *Both* o *Backwards*;
+  - queda oculta en la navegación (ojo tachado).
+
+  Es la forma de tener «otra página» sin URLs fijas.
+
+**Editor**
+- **Mover componentes:** con el componente seleccionado sale «Click & drag to arrange components».
+  - Arrastrarlo **desde su centro** funciona también en saltos largos (hasta 72 filas), si origen y destino se ven a la vez en pantalla. Antes, subir o bajar el lienzo.
+  - Con el asa (⠿) solo iban bien los saltos cortos.
+  - La rejilla tiene 36 columnas y filas de 8 px. La posición exacta se lee en el `grid-area` del DOM (`.bp-board__grid .grid-items`).
+- **Redimensionar** arrastrando las asas laterales sí funciona, incluso en arrastres largos.
+- **Componentes nuevos:** caen centrados en el cursor y estrechan a los vecinos de la fila.
+  - El *Text box* nace con 3 filas de alto y se monta sobre lo que haya.
+  - Si algo sale mal, el **Undo** de la barra del editor deshace paso a paso.
+- **⚠ Ctrl+A con el foco fuera de un campo selecciona todos los componentes del lienzo** («12 Selected»), y lo que se escriba va al lienzo. Para vaciar un campo, triple clic dentro.
+- **Campos ya rellenos** (p. ej. el valor de *Update variable*): triple clic antes de escribir, o el texto se suma («MesMes»).
+- **En modo lectura el lienzo se estira** al ancho de la ventana, y un desplegable puede salirse de su celda y montarse sobre el vecino. Revisar siempre la View fuera del editor.
+- **Vista previa del PQL Editor:** se corta en unas 50 filas.
+- **Leer o probar PQL sin teclear:** los editores son Monaco. `window.monaco.editor.getModels()` da el texto de cada uno desde la consola.
+  - Para escribir: `editor.executeEdits(…)` dentro de un `setTimeout`. Llamado directo, la consola se quedó colgada.
+  - Después, **Ctrl+Enter** ejecuta la vista previa.
+- **PQL Editor de un gráfico:** la vista previa enseña todas las columnas, pero solo se edita la que se abrió. Las métricas («MET») se abren desde su campo.
+  - ⚠ El ⋮ de cada cabecera tiene «Remove Column».
+- **Tras un apagado:** la View puede abrir en «Read only Mode! This View is already opened in a different tab». Se arregla con *Exit Edit mode* y volviendo a `/edit`, o cerrando las otras pestañas de Celonis.
+- **`scrollIntoView` desde la consola mueve la página entera** (`.ce-burger-content__body-container`) y el lienzo desaparece. Se arregla volviendo su `scrollTop` a 0.
+- En modo lectura sale a veces una **encuesta de Celonis** abajo a la derecha. Se cierra con la ✕, sin contestar.
+
+**Hallazgos de datos (preguntas para la unidad):** MAPA, sección 7.

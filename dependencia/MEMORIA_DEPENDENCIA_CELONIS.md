@@ -1,6 +1,6 @@
 # Memoria · Dependencia en Celonis
 
-Documento vivo. Se actualiza cada vez que se aprende o se decide algo. Última actualización: 06/11/2026.
+Documento vivo. Se actualiza cada vez que se aprende o se decide algo. Última actualización: 24/11/2026.
 
 ## 1. Cómo trabajar con Anthony
 
@@ -17,7 +17,8 @@ Documento vivo. Se actualiza cada vez que se aprende o se decide algo. Última a
 - **Casos de uso** (deck `deck/PainPoints_Dependencia_Discapacidad.pptx`, 29/09):
   - **CU1 · Reconocimiento del grado y PIA:** 1) Grabación (registro, alta, subsanación) · 2) Valoración (citación, visita, dictamen, comisión, resolución del grado) · 3) Resolución del PIA. Objetivos: 30 / 120 / 180 días (180 = plazo legal total).
   - **CU2 · Adjudicación de servicios comunitarios (EELL):** lista de espera → contacto → asignación → alta del servicio. Después del CU1. Sistemas SIDEMA y SAP.
-- **Mockup de referencia:** `mockups/MockupCU1_v2.html` («Cuadro de Mando de Gestión de Equipo · CU1», 01/10). El archivo `20261001_MineriaDeProcesos_DependenciaMockup.html` que tiene Anthony es idéntico.
+- **Mockup de referencia:** `mockups/MockupCU1_v2.html` («Cuadro de Mando de Gestión de Equipo · CU1», 01/10). El archivo `20261001_MineriaDeProcesos_DependenciaMockup.html` que tiene Anthony es idéntico (comprobado otra vez el 24/11).
+- **Mockup del CU2:** `mockups/MockupCU2.html` (lista de espera de SAD y teleasistencia, 24/11).
 - **Canal:** grupo de Teams «Minería de Procesos - Dependencia» (creado por Andrés el 04/11) para pedir datos y resolver dudas.
 - **Equipo:** Andrés Esteban Zambrana Valle (lidera), Roberto Samir Astudillo Chehab (Celonis; hace PNC con Atlantix y discapacidad), Javi/Javier (natalidad), Javier Olmeda (soporte Celonis, para errores de extracción).
 
@@ -264,12 +265,59 @@ Fuentes: lo visto montando la Dependencia View y la documentación y el foro de 
 - **No (o no sin desarrollo a medida):** barras dibujadas a mano con marcadores (tipo «banda de tramos»), pasos con flechas, botones colocados bajo el eje de un gráfico, rellenos con rayas, barras proporcionales hechas con divs, columnas de cifras pegadas a una barra, chips con contadores, enlaces a la aplicación de origen, árboles o embudos dibujados (el explorador nativo muestra actividades y pasos), celdas editables que se guardan (hoja de validación), mostrar u ocultar bloques según una selección.
 - En los mockups: todo lo de «No» se quita o se sustituye por el componente equivalente (pestaña, desplegable, KPI card, tabla).
 
+## 9f. Las 29 tablas de la extracción y el script de vistas v3 (24/11)
+
+Detalle completo en **`dependencia/MAPEO_TABLAS_SIDEMA.md`** (tablas, claves, inventario del origen y los dos mockups elemento a elemento). Script para Roberto: **`dependencia/sql/VistasSIDMPRODv3.sql`**; se genera con `dependencia/sql/generador/gen_vistas_v3.py` (lee la lista de columnas de `gen_vistas_v2.py`).
+
+- **Origen:** extracción «Extraccion Dependencia» del data job «Dependencia VASOCIAL_SIDM» (pool IMPLEMENTACION). Tiene las 29 tablas de `VistasSIDMPRODv1`:
+  - 27 de `DBA_SIDM`;
+  - 2 de `DBA_SUCA`.
+- **Cómo se miraron:** con «Configure columns» (nombres y tipos), la vista previa (100 filas de validación) y el diálogo «Add Table» para buscar más tablas por nombre (siempre con Cancel). No se guardó nada.
+- **La extracción sigue fallando por Snappy** (última ejecución, 20/11). La vista previa sí funciona.
+- **Lo que hay además en el origen:**
+  - de `DBA_SIDM`, el usuario de Celonis solo puede leer 32 tablas (las 29 y 3 más);
+  - el resto sale como sinónimo público: existe, pero no se ven sus columnas;
+  - así están las tablas del CU2 (`SIDM_V_RI_WEBEL_*`, `SIDM_RI_SAD`, `SIDM_RI_TA` y sus históricos, `SIDM_RI_DOC_GENERADO`, `SIDM_LE_*`), las de citación (`SIDM_CITAS`, `SIDM_CITA_VALORADOR`) y 28 catálogos.
+- **Script v3** (sustituye al v2, que se ha borrado):
+  - **criterio:** se deja todo lo que puede explicar el proceso; solo se quita lo que identifica a la persona o no aporta al análisis;
+  - vuelven, respecto a la v2: nacionalidad, estado civil, puntuaciones del baremo, `IT_ELA`, motivos de traslado y de baja en texto, códigos externos del traslado y el nombre del valorador;
+  - lo sensible que se deja va marcado con «Ojo» en cada vista; lo que se quita, con «Fuera:» y el motivo;
+  - `CREATE OR REPLACE VIEW` en lugar de `DROP` + `CREATE`: no da error la primera vez y no pierde los permisos;
+  - 4 bloques: las 29 vistas; 28 catálogos con `SELECT *`; una consulta a `ALL_TAB_COLUMNS` para que Roberto nos pase las columnas de las tablas del CU2 y de citación; una comprobación final (estado de las vistas y permisos).
+- **Claves:**
+  - `IDSOLICITUD`, o `ID_SOLICITUD` en las `RI_*`, es entero en todas las tablas de este origen. El objeto usa `CAST(IDSOLICITUD AS VARCHAR)`: los eventos nuevos, igual;
+  - el PIA se une por `ID_PIA`;
+  - la bandeja, por `NMREFERENCIA`;
+  - la capacidad económica, por `NMSOLICITUD` = `NM_SOLICITUD`.
+  - `CDGRADO` es entero en `DICTAMEN` y texto en `DICTAMEN_TECNICO`.
+  - `CDMUNI` necesita `LPAD(…, 3, '0')`.
+- **Lo hecho con las 3 tablas sigue valiendo:** los códigos de estado son de 2 cifras y la regla `RIGHT(…, 2)` funciona; las 3 vistas del v1 llevan las mismas columnas.
+- **Hitos que ya tienen columna:**
+  - comisión: `DICTAMEN_TECNICO.FCVALIDACION_COMISION`;
+  - resolución del grado: `MR_RESOLUCIONES.FCRESOLUCION` con su tipo;
+  - visita: `FCVALORACION`;
+  - grabación de la valoración: `FCFIN_SISTEMA` (vacía en la muestra);
+  - estados del PIA: `RI_TRAMITES` y el catálogo de 12 estados;
+  - origen: `BANDEJA_RECEPCIONADOS.DSORIGENDOC`;
+  - valoración telemática: `IT_VALORACION_ONLINE`.
+- **El dictamen (⑦) sigue saliendo del histórico** (entrada en el estado 47): `DICTAMEN_TECNICO` no tiene fecha del dictamen.
+- **Rol del técnico del PIA** (gestión, elaboración, supervisión): se puede deducir del estado que registra en `RI_TRAMITES.IDALTA` (10, 20, 30/40). Por confirmar con Andrés.
+- **Mockup CU2** (`mockups/MockupCU2.html`, lista de espera de SAD y teleasistencia): casi todo depende del bloque 3. Lo de la empresa (contacto, visita, firma, instalación) no está en SIDEMA; el lote tampoco.
+- **Sigue faltando:**
+  - el lote del servicio y el municipio → mancomunidad;
+  - la tabla de usuarios (nombre, tipo, equipo);
+  - los catálogos de `CD_ESTADO_UDAI` y `CDMOTBAJA`;
+  - los efectivos por fase.
+
 ## 10. Pendientes y preguntas abiertas
 
-- [ ] Roberto o Javier Olmeda: error de Snappy en la extracción.
+- [ ] Roberto: revisar el script de vistas v3 y las 8 preguntas de `MAPEO_TABLAS_SIDEMA.md` (sección 8).
+- [ ] Roberto: ejecutar el bloque 3 del script y pasarnos las columnas de las tablas del CU2 y de citación (para la v4).
+- [ ] Andrés: dónde va el origen «Presencial», roles del PIA por estado, criterios de prelación, motivos de exclusión que «requieren verificación» y objetivos del CU2.
+- [ ] Roberto o Javier Olmeda: error de Snappy en la extracción (sigue igual el 20/11).
 - [ ] Roberto: ¿los códigos casan por los 2 últimos dígitos en SIDEMA? ¿Puede darnos una muestra **coherente** (el histórico de las mismas solicitudes)?
 - [ ] Roberto: ¿existe ya el objeto de solicitud de dependencia en Objects & Events? ¿Qué nombre usar?
 - [ ] ¿`IDMODI` es el usuario que hace el cambio?
 - [ ] Andrés: qué son AVC y RA; validar las fases; empezar el proceso en `FCREGENTRADA` (el plazo legal cuenta desde ahí: `FC_FIN_PLAZO` ≈ registro + 6 meses) y no en `FCALTA`; qué es `CDTIPO` = «RS».
 - [ ] 04/11: enviada al grupo la lista de lo que falta del mockup CU1 (grado, municipio, edad, tipo de valoración, canal, PIA, valorador, asignaciones, usuarios y equipos). Esperando respuesta.
-- [ ] Pedir tablas para lo que falta: personas (edad, municipio), asignaciones o valoradores, grado, PIA.
+- [x] Pedir tablas para lo que falta: personas (edad, municipio), asignaciones o valoradores, grado, PIA. Llegaron el 24/11 (sección 9f).
