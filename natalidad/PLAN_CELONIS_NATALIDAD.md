@@ -65,6 +65,35 @@ Montado el 23/11 en la View: las 5 dimensiones con ✅ o ⚠; las ❌ salen como
 | Requisito incumplido | Tabla propia (motivo de denegación) | ❌ Pedir |
 | Respuesta de la Intervención | Etapas (FAVORABLE / CON OBS / ACTUACIÓN INTERESADA / DEV. A INSTANCIA) e hito CONCESIÓN APROBADA | ✅ |
 
+## Tablas propias de Natalidad (respuesta de Soluciones, 24/11)
+
+Script de vistas: `natalidad/sql/VistasNatalidadv1.sql` (con comentarios) y `_sin_comentarios.sql`. Se genera con `natalidad/sql/generador/gen_vistas_natalidad.py`. Vistas `D032_V_NAT_*`.
+
+| Dato | Tabla y columna |
+|---|---|
+| Unión con Atlantix | `D032_3163_SOL_EXP.NUM_EXPEDIENTE` (= `CDEXPEDIENTE`, por confirmar) |
+| Tipo de solicitud | `SOL_EXP.ID_TIPO_SOL` → `CAT_TIPOS_SOL.DS_TIPO_SOL` |
+| Número de hijos | `SOL_EXP.NUM_HIJOS` |
+| Propuesta favorable (inicio del pago) e importe total | `SOL_EXP.FC_PRO_FAVORABLE`, `SOL_EXP.NM_TOTAL_CUANTIA` |
+| Pagos por mes | `CALENDARIO_PAGOS` (`NM_ANO`, `NM_MES`, `NM_IMPORTE`, `FC_PAGO`) → `EXP_HIJOS.ID_EXP_HIJO` → `SOL_EXP.ID_SOL_EXP` |
+| Última nómina | `EXP_HIJOS.FC_FIN_PAGO` (por hijo) |
+| Motivo de denegación | `EXP_DES_DEN` (`ID_SOL_EXP`, `ID_DES_DEN`) → `CAT_DES_DEN.DS_CASUISTICA` |
+| Bajas | `PROPUESTA_MOD_EXP` con `ID_MOD_EXP_ACTIVA` 8, 9, 10, 11 y 14, `BL_DESHECHA = 'N'`, `BL_MODI_TERMINADA = 'S'`, `BL_RECEPCIONADO = 'S'`; fecha de efecto `FC_BAJA`; tipo en `CAT_TIPOS_MOD_EXP.DS_NOMBRE_PARAM`; resolución en `SOL_EXP.FC_RESOL_BAJA` |
+| Nacimiento del menor o parto | `SOL_EXP.FC_NACIMIENTO` |
+| Solicitante | `EXP_SOLICIT_BENEFIC`: `CD_NACIONALIDAD`, `CD_NACIONALIDAD_ORIGEN` (SUCA_PAIS), `CD_PROVINCIA_RESI`, `CD_MUNICIPIO_RESI`, `CD_PAIS_RESI`, `FC_NACIMIENTO` |
+| Revisión de conformidad | Pendiente (FARO del 24/11) |
+
+Decisiones:
+- **Texto libre de la baja fuera:** `DS_OBSERVACIONES` y `DS_MOTIVO_BAJA` no entran (puede llevar datos personales). El motivo sale del tipo de modificación.
+- **País de nacimiento:** no existe. Se usa la nacionalidad de origen.
+- **Catálogos:** con lista de columnas, no con `SELECT *`, para no arrastrar logins de auditoría. Los SUCA no se crean como vista.
+
+Por confirmar:
+- el rol de Celonis en Atlantix;
+- si `NUM_EXPEDIENTE` es `CDEXPEDIENTE`;
+- si `EXP_SOLICIT_BENEFIC` tiene una fila por expediente;
+- la clave propia de `CALENDARIO_PAGOS` y de `PROPUESTA_MOD_EXP`.
+
 ## Petición de datos (18/11)
 
 - **Para enviar a la Comunidad:** `mockups/Datos_que_faltan_Natalidad.xlsx`, una sola tabla sencilla con solo lo que falta: 21 datos por sistema (Nº | Qué necesitamos | Para qué lo usamos | Prioridad | ¿Dónde está?, esta última en amarillo para que la rellenen). Se genera con `natalidad/gen_tabla_peticion.py`.
