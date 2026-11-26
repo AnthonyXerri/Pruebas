@@ -1386,6 +1386,7 @@ td.hi-d{color:var(--cred);font-weight:600;}
 #stBars .sb-row{grid-template-columns:minmax(150px,32%) 1fr 40px;}
 #compBars .sb-row{grid-template-columns:minmax(150px,32%) 1fr 48px 44px;}
 #compBars .sb-track i{background:var(--cnavy);}
+.kt-sub2{font-size:10.5px;color:var(--cgy);margin-top:2px;}
 .sb-p{font-size:11px;color:var(--cgy);text-align:right;font-variant-numeric:tabular-nums;}
 .ph-btns button.b-gap{border-color:#E8B27A;background:#FFF8EE;}
 .ph-btns button.b-gap span{color:#9A5A12;}
@@ -1542,7 +1543,7 @@ table.mat td.neg{color:var(--cred);}
         </div>
       </div>
       <div class="section">
-        <div class="sec-title">Composición <i class="ii" data-t="Qué es: el reparto de los procedimientos del periodo por la dimensión que elijas, en número y en %.&#10;Cómo se usa: «Dimensión» cambia el reparto. Los filtros de arriba también se aplican.&#10;Ojo: el motivo del cese solo cuenta ceses.">i</i></div>
+        <div class="sec-title">Composición <i class="ii" data-t="Qué es: el reparto de los procedimientos grabados en AME en el periodo por la dimensión que elijas, en número y en %.&#10;Cómo se usa: «Dimensión» cambia el reparto. Los filtros de arriba también se aplican.&#10;Ojo: el motivo del cese solo cuenta ceses.">i</i></div>
         <div class="sec-chart">
           <div class="chart-head">
             <div class="chart-ttl" id="c6Ttl"></div>
@@ -1919,7 +1920,7 @@ function calcK(){
   K.camb = co.filter(c => c.h === 'inc' || c.h === 'sal').length; K.urg = co.filter(c => c.h === 'urg').length;
   K.prop0 = media(co.filter(c => c.prop0 !== undefined).map(c => c.ef - c.prop0));
   K.plenos = PLENOS.filter(enP).length;
-  const pend = co.filter(c => c.ame > P1); K.pend = pend.length;
+  const pend = CASES.filter(c => okc(c) && PROT(c) && c.ef <= P1 && c.ame > P1); K.pend = pend.length;   /* v11: foto a la fecha de corte, como la tabla de acuerdos sin grabar */
   K.pendDias = media(pend.map(c => P1 - c.ef));
   const gra = co.filter(c => c.ame <= P1); K.gra = gra.length;
   const graP = gra.filter(PROT); K.graP = graP.length; K.sem = graP.filter(c => c.ame - c.ef <= 7).length;
@@ -1941,22 +1942,27 @@ function calcK(){
   /* gestión económica */
   let mB = ymOf(P1); while (nominaDe(mB) > P1) mB--; K.mB = mB;
   K.activos = activosEn(mB); K.activosAnt = activosEn(mB - 12);
-  const altas = nom.filter(c => c.proc === 'rec'); K.altas = altas.length; K.atr = sum(altas.map(c => c.atr));
+  const altas = CASES.filter(c => okc(c) && enP(c.pag) && c.proc === 'rec'); K.altas = altas.length; K.atr = sum(altas.map(c => c.atr));   /* v11: primer pago en el periodo */
   K.atrMeses = media(altas.map(c => (ymStart(c.ymPag) - c.ef)/30.44));
-  const ind = co.filter(c => c.indeb > 0 && c.prop <= P1); K.ind = ind.length; K.indeb = sum(ind.map(c => c.indeb));
+  const ind = CASES.filter(c => okc(c) && c.indeb > 0 && enP(c.pag)); K.ind = ind.length; K.indeb = sum(ind.map(c => c.indeb));   /* v11: pago cortado en el periodo */
   K.extCese = co.filter(c => (c.h === 'cese' || c.h === 'sal') && c.prop <= P1).length;
   const RE = REINT.filter(r => (!F.tipo || r.tipo === F.tipo) && r.est === 'pdt' && r.ef <= P1);
   K.reN = RE.length; K.reImp = sum(RE.map(r => r.imp));
   const y = dateOf(P1).getUTCFullYear(), fy = dayOf(y + 1, 1, 1);
   K.re26 = RE.filter(r => r.presc < fy).length; K.reY = y;
   /* v8 · por procedimiento, sobre los resueltos del periodo que ya tienen efecto en nómina */
-  const porP = ps => nom.filter(c => ps.includes(c.proc));
+  /* v11 · con efecto en nómina en el periodo (por la fecha de la nómina), no solo de los hechos del periodo: así vale para cualquier periodo */
+  const nomP = CASES.filter(c => okc(c) && enP(c.pag)), porP = ps => nomP.filter(c => ps.includes(c.proc));
   const A = porP(['rec']); K.aN = A.length; K.aDias = A.length ? media(A.map(c => c.pag - c.ef)) : 0;
   const E = porP(['ext']); K.eN = E.length; const Ec = E.filter(c => c.h !== 'may'); K.eDias = Ec.length ? media(Ec.map(c => c.pag - c.ef)) : 0; K.eNc = Ec.length;
   const M = porP(['mpos','mneg']); K.mN = M.length; K.mDias = M.length ? media(M.map(c => c.pag - c.ef)) : 0;
   /* v11 · totales del periodo (reunión del 25/11): hechos del periodo ya grabados en AME, hayan llegado o no a la nómina */
-  const porG = ps => gra.filter(c => ps.includes(c.proc));
+  /* totales: grabados en AME en el periodo (la entrada, como la cuenta el servicio) y, aparte, lo que hoy sigue pendiente de nómina */
+  const graP2 = CASES.filter(c => okc(c) && enP(c.ame)), porG = ps => graP2.filter(c => ps.includes(c.proc));
   K.aTot = porG(['rec']).length; K.eTot = porG(['ext']).length; K.mTot = porG(['mpos','mneg']).length;
+  const abiertoAME = c => (s => s && s.f !== 'ame')(sitAt(c, P1));
+  const pteN = ps => CASES.filter(c => okc(c) && ps.includes(c.proc) && abiertoAME(c)).length;
+  K.aPte = pteN(['rec']); K.ePte = pteN(['ext']); K.mPte = pteN(['mpos','mneg']);
   return K;
 }
 
@@ -2026,7 +2032,7 @@ function tiles(K){
   return t;
 }
 const tileHTML = (o, ini, fin) => `<div class="kt${o.side ? ' side' : ''}${ini ? ' kl' : ''}${fin ? ' kr' : ''}">` +
-  `<div class="kt-l"><span>${o.l}</span> <i class="ii" data-t="${esc(o.tip)}">i</i></div><div class="kt-v"><span>${o.v}</span></div>` +
+  `<div class="kt-l"><span>${o.l}</span> <i class="ii" data-t="${esc(o.tip)}">i</i></div><div class="kt-v"><span>${o.v}</span></div>` + (o.sub ? `<div class="kt-sub2">${o.sub}</div>` : '') +
   (o.pl ? `<div class="kt-pc"><b>${pcs(o.p, 0)}</b><span>${o.pl}</span><i class="ii" data-t="${esc(o.pt)}">i</i></div><div class="kt-bar"><i style="width:${Math.min(100, o.p).toFixed(1)}%"></i></div>` : '') + `</div>`;
 function grupos(el, G){
   el.innerHTML = G.map(fila => `<div class="kg-row">` + fila.map(([k, t, d, ts, gt], gi) =>
@@ -2043,22 +2049,19 @@ function renderCabeceras(K){
   const t = tiles(K), d = v => v ? f1(v) + U(' d') : '—';
   const T = (l, v, ...tip) => ({ l, v, tip:L(...tip) });
   const a = {
-    aTot: T('Altas nuevas', nf(K.aTot), 'Qué es: reconocimientos (formalizaciones y programas de urgencia) de hechos del periodo ya grabados en AME, hayan cobrado o no.', `Ahora: ${nf(K.aN)} ya en nómina y ${nf(K.aTot - K.aN)} pendientes del primer pago.`, 'Fuente: AME.'),
-    aN: { ...T('Ya en nómina', nf(K.aN), 'Qué es: de las altas nuevas, las que ya han cobrado su primer pago.', 'Cómo leerlo: no todo lo que se graba en un mes entra en la nómina de ese mes; si no da tiempo a tramitarlo, entra en la siguiente.', 'Fuente: AME.'),
-      p:pc(K.aN, K.aTot), pl:'del total', pt:L(`Cómo se calcula: ya en nómina ÷ altas nuevas (${nf(K.aN)} ÷ ${nf(K.aTot)}).`) },
+    aTot: { ...T('Altas nuevas', nf(K.aTot), 'Qué es: reconocimientos (formalizaciones y programas de urgencia) grabados en AME en el periodo.', `Debajo: las altas que a ${fdate(P1)} siguen pendientes del primer pago, sean de la fecha que sean.`, 'Fuente: AME.'), sub:`${nf(K.aPte)} pendientes del primer pago` },
+    aN: T('Altas en nómina', nf(K.aN), 'Qué es: reconocimientos que han cobrado su primer pago en una nómina del periodo.', 'Cómo leerlo: no todo lo que se graba en un mes entra en la nómina de ese mes; si no da tiempo, entra en la siguiente.', 'Fuente: AME.'),
     aDias: T('Días hasta el primer pago', d(K.aDias), 'Qué es: días de media desde la fecha de efectos hasta la nómina del primer pago.', 'Fuente: AME.'),
     atr: T('Atrasos pagados', t.atr.v, 'Qué es: lo que se paga de golpe en el primer pago: las mensualidades desde la fecha de efectos (Anexo I).', 'Fuente: AME.'),
-    eTot: T('Extinciones', nf(K.eTot), 'Qué es: extinciones de hechos del periodo ya grabadas en AME (ceses, mayoría de edad…), hayan cortado o no el pago.', `Ahora: ${nf(K.eN)} con efecto en nómina y ${nf(K.eTot - K.eN)} todavía cobrando.`, 'Fuente: AME.'),
-    eN: { ...T('Con efecto en nómina', nf(K.eN), 'Qué es: de esas extinciones, las que ya han dejado de cobrar.', 'Cómo leerlo: se puede contar entre dos fechas cualesquiera, no solo mes a mes.', 'Fuente: AME.'),
-      p:pc(K.eN, K.eTot), pl:'del total', pt:L(`Cómo se calcula: con efecto en nómina ÷ extinciones (${nf(K.eN)} ÷ ${nf(K.eTot)}).`) },
+    eTot: { ...T('Extinciones', nf(K.eTot), 'Qué es: extinciones (ceses, mayoría de edad…) grabadas en AME en el periodo.', `Debajo: las extinciones que a ${fdate(P1)} todavía no han cortado el pago, sean de la fecha que sean.`, 'Fuente: AME.'), sub:`${nf(K.ePte)} aún sin efecto en nómina` },
+    eN: T('Con efecto en nómina', nf(K.eN), 'Qué es: extinciones que han dejado de cobrar en una nómina del periodo.', 'Cómo leerlo: se puede contar entre dos fechas cualesquiera, no solo mes a mes.', 'Fuente: AME.'),
     eDias: T('Días del cese al fin del pago', d(K.eDias), 'Qué es: días de media desde la fecha de efectos del cese hasta la nómina en la que se deja de pagar. No cuenta la mayoría de edad, que AME prevé sola.', 'Por qué importa: cada mes de más es un pago indebido.', 'Fuente: AME.'),
     ind: T('Pagado de más tras el cese', t.indeb.v, 'Qué es: nóminas pagadas entre el cese (o la salida de un menor) y la propuesta que cortó el pago.', 'Fuente: AME (Anexo II).'),
-    mTot: T('Modificaciones', nf(K.mTot), 'Qué es: cambios de importe de hechos del periodo ya grabados en AME (entra o sale un menor, discapacidad comunicada), con efecto en nómina o no.', `Ahora: ${nf(K.mN)} con efecto en nómina y ${nf(K.mTot - K.mN)} pendientes.`, 'Fuente: AME.'),
-    mN: { ...T('Con efecto en nómina', nf(K.mN), 'Qué es: de esas modificaciones, las que ya cobran con el nuevo importe.', 'Fuente: AME.'),
-      p:pc(K.mN, K.mTot), pl:'del total', pt:L(`Cómo se calcula: con efecto en nómina ÷ modificaciones (${nf(K.mN)} ÷ ${nf(K.mTot)}).`) },
+    mTot: { ...T('Modificaciones', nf(K.mTot), 'Qué es: cambios de importe (entra o sale un menor, discapacidad comunicada) grabados en AME en el periodo.', `Debajo: las que a ${fdate(P1)} aún no cobran con el nuevo importe, sean de la fecha que sean.`, 'Fuente: AME.'), sub:`${nf(K.mPte)} aún sin efecto en nómina` },
+    mN: T('Con efecto en nómina', nf(K.mN), 'Qué es: modificaciones que cobran con el nuevo importe desde una nómina del periodo.', 'Fuente: AME.'),
     mDias: T('Días hasta el nuevo importe', d(K.mDias), 'Qué es: días de media desde la fecha de efectos hasta la nómina con el nuevo importe.', 'Fuente: AME.'),
-    pend: T('Sin grabar en AME', t.pend.v, 'Qué es: acuerdos del pleno y programas de urgencia del periodo que aún no están en AME: el servicio no sabe que existen.', 'Fuente: necesita GPME (fecha del pleno).'),
-    tram: T('En trámite en AME', nf(CASES.filter(c => okc(c) && (s => s && s.f !== 'ame')(sitAt(c, P1))).length), 'Qué es: procedimientos abiertos en AME a la fecha de corte, de cualquier fecha, hasta que llegan a la nómina.', 'Cómo leerlo: son los mismos de «Pendientes por antigüedad» y de «Procedimientos en curso».', 'Fuente: AME.'),
+    pend: T('Sin grabar en AME', t.pend.v, 'Qué es: acuerdos del pleno y programas de urgencia que a la fecha de corte aún no están en AME, sean de la fecha que sean: el servicio no sabe que existen.', 'Cómo leerlo: son los mismos de la tabla «Acuerdos del pleno sin grabar en AME».', 'Fuente: necesita GPME (fecha del pleno).'),
+    tram: T('En trámite en AME', nf(K.aPte + K.ePte + K.mPte), 'Qué es: procedimientos abiertos en AME a la fecha de corte, de cualquier fecha, hasta que llegan a la nómina.', `Cómo leerlo: son los pendientes de debajo de altas, extinciones y modificaciones (${nf(K.aPte)} + ${nf(K.ePte)} + ${nf(K.mPte)}), y los mismos de «Pendientes por antigüedad» y de «Procedimientos en curso».`, 'Fuente: AME.'),
     fuera: T('Resueltos fuera de plazo', t.fuera.v, 'Qué es: resueltos que tardaron más del plazo desde el acuerdo de inicio (90 días por defecto; se cambia en «Plazo», por confirmar).', 'Fuente: AME.'),
     rein: T('Pagado de más sin reintegro iniciado', t.rein.v, 'Qué es: importe pagado de más, de cualquier año, que aún no tiene acuerdo de inicio de reintegro. Prescribe a los 4 años.', `Ahora: ${nf(K.re26)} prescriben antes de que acabe ${K.reY}.`, 'Fuente: relación de reintegros del servicio (fuera de AME).'),
     act: T('Prestaciones en mantenimiento', t.act.v, 'Qué es: expedientes que cobran en la última nómina sin que haya pasado nada (listado de mantenimiento de AME).', 'Fuente: AME.') };
@@ -2179,7 +2182,7 @@ function renderFlujo(){
     let i = bIdx(B, c.ef); if (i >= 0) H[i]++;
     i = bIdx(B, c.ame); if (i >= 0) G[i]++;
     i = bIdx(B, c.res); if (i >= 0) R[i]++;
-    B.forEach((b, j) => { if (c.ef <= b.b && c.ame > b.b && PROT(c)) PG[j]++; if (c.ame <= b.b && c.res > b.b) TR[j]++; }); });
+    B.forEach((b, j) => { if (c.ef <= b.b && c.ame > b.b && PROT(c)) PG[j]++; const s = sitAt(c, b.b); if (s && s.f !== 'ame') TR[j]++; }); });   /* v11: lo abierto en AME hasta la nómina, como la cabecera */
   chFlujo.data.labels = B.map(b => b.l + (b.parcial ? '*' : ''));
   chFlujo.$t = B.map(b => `${fdate(b.a)} – ${fdate(b.b)}${b.parcial ? ' (mes incompleto)' : ''}`);
   chFlujo.$after = i => ['', `Al final del mes: ${nf(PG[i])} sin grabar y ${nf(TR[i])} en trámite en AME`];
@@ -2289,13 +2292,13 @@ const CDIM = {
 };
 function renderComp(){
   const dk = document.getElementById('compDim').value, D = CDIM[dk], o = {};
-  CASES.forEach(c => { if (!okc(c) || !enP(c.ef) || !(c.ame <= P1)) return; const k = D.v(c); if (k == null) return; o[k] = (o[k] || 0) + 1; });
+  CASES.forEach(c => { if (!okc(c) || !enP(c.ame)) return; const k = D.v(c); if (k == null) return; o[k] = (o[k] || 0) + 1; });
   const items = Object.entries(o).sort((a, b) => b[1] - a[1]), tot = sum(items.map(x => x[1])), mx = Math.max(1, ...items.map(x => x[1]));
   document.getElementById('compBars').innerHTML = items.map(([k, n]) =>
     `<div class="sb-row" data-tip="${esc(`${k}: ${nf(n)} (${pcs(pc(n, tot), 0)})`)}"><div class="sb-l">${k}</div><div class="sb-track"><i style="width:${n/mx*100}%;"></i></div>` +
     `<div class="sb-n">${nf(n)}</div><div class="sb-p">${pcs(pc(n, tot), 0)}</div></div>`).join('');
   document.getElementById('c6Ttl').textContent = `↑ ${nf(tot)} ${dk === 'mot' ? 'ceses' : 'procedimientos'} del periodo, por ${D.n}`;
-  document.getElementById('c6Sub').innerHTML = tot ? `Hechos con fecha de efectos en el periodo ya grabados en AME · el más frecuente: <b>${items[0][0].toLowerCase()}</b> (${pcs(pc(items[0][1], tot), 0)})` : 'Nada en el periodo con estos filtros.';
+  document.getElementById('c6Sub').innerHTML = tot ? `Grabados en AME en el periodo (los mismos de altas nuevas, extinciones y modificaciones) · el más frecuente: <b>${items[0][0].toLowerCase()}</b> (${pcs(pc(items[0][1], tot), 0)})` : 'Nada en el periodo con estos filtros.';
 }
 
 /* ════════ GESTIÓN ECONÓMICA · una tabla por tipo de acogimiento ════════ */
@@ -2312,10 +2315,10 @@ function renderEco(K){
   const ii = t => ` <i class="ii" data-t="${esc(t)}">i</i>`;
   document.getElementById('ecoTbl').innerHTML = `<thead><tr><th>Tipo de acogimiento</th><th class="r">Prestaciones en mantenimiento${ii('Expedientes que cobran en la última nómina pagada del periodo (' + ymLargo(K.mB) + ').')}</th>` +
     `<th class="r">Nómina del mes${ii('Lo que se paga cada mes a esas prestaciones: 500 € por menor en carácter general, 1.000 € en especial y 2.000 € por programa de urgencia. Aproximado con el importe medio de cada tipo.')}</th>` +
-    `<th class="r">Altas nuevas en nómina${ii('Reconocimientos de hechos del periodo que ya cobran.')}</th><th class="r">Atrasos pagados${ii('Pagados de golpe en la primera nómina de esas altas (Anexo I).')}</th>` +
-    `<th class="r">Ceses con pago de más${ii('Ceses y salidas de menores del periodo en los que se siguió pagando después de la fecha de efectos.')}</th><th class="r">Pagado de más${ii('Nóminas pagadas entre la fecha de efectos y la propuesta que cortó el pago (Anexo II). Hay que reclamarlas.')}</th>` +
+    `<th class="r">Altas en nómina${ii('Reconocimientos con su primer pago en una nómina del periodo.')}</th><th class="r">Atrasos pagados${ii('Pagados de golpe en la primera nómina de esas altas (Anexo I).')}</th>` +
+    `<th class="r">Ceses con pago de más${ii('Ceses y salidas de menores que dejaron de cobrar en una nómina del periodo y cobraron después de la fecha de efectos.')}</th><th class="r">Pagado de más${ii('Nóminas pagadas entre la fecha de efectos y la propuesta que cortó el pago (Anexo II). Hay que reclamarlas.')}</th>` +
     `<th class="r">Reintegros sin iniciar${ii('Pagos de más, de cualquier año, sin acuerdo de inicio de reintegro notificado.')}</th><th class="r">Prescriben en ${K.reY}${ii('De esos, los que prescriben antes de que acabe el año: hay que notificar el acuerdo de inicio antes de diciembre.')}</th></tr></thead>` +
-    `<tbody>${tipos.map(t => fila(t, R[t], F.tipo && F.tipo !== t ? 'dim' : '')).join('')}${fila('Total', T, 'sum')}</tbody>`;
+    `<tbody>${tipos.map(t => fila(t, R[t], F.tipo && F.tipo !== t ? 'dim' : '')).join('')}${fila(F.tipo ? 'Total de los tres tipos' : 'Total', T, 'sum')}</tbody>`;
 }
 
 /* ════════ PARTE 1 · ANTES DEL PLENO ════════ */
