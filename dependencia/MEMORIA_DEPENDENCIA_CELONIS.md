@@ -30,7 +30,7 @@ Documento vivo. Se actualiza cada vez que se aprende o se decide algo. Última a
   - El editor ofrece «Translate to SparkSQL»: el dialecto por defecto es el clásico (Vertica). Funcionan `||`, `CAST`, `RIGHT`, `LENGTH`, `TO_CHAR`, `CASE`.
 - **Data source:** las tablas locales están en **None (Global Schema)**. Las reales vendrán de la **conexión «Dependencia»** (entorno de **validación** de SIDEMA, no productivo; las tablas deberían ser iguales).
 - **Filtros de extracción** (Table Configuration → Filtering): el *Filter Statement* es el `WHERE` sin la palabra WHERE, pero su intérprete **no admite funciones** (`TO_DATE` da «Error parsing filter»). Para fechas, usar el **Time Filter** (creation date / change date, eligiendo columna y fecha de inicio) o probar la fecha como texto (`FCALTA >= '2025-01-01'`, que depende de cómo la lea Oracle). Muestra pedida el 04/11: SOLICITUD con FCALTA ≥ 01/01/2025; HIST_ESTADO con FCMODI ≥ 01/12/2024; ESTADO_SOLICITUD entera. Esquema en origen: `DBA_SIDM.`
-- **Fechas en el filtro (Oracle):** `'2025-01-01'` da ORA-01861 y `'01/01/2025'` da ORA-01843 (el formato de Oracle es `DD-MON-RR`, con el mes en letras). El 04/11 el preview filtrado ya funcionó (pendiente de anotar con qué formato). La vista previa trae solo 100 filas (`FETCH FIRST 100 ROWS ONLY`) y no prueba la extracción completa.
+- **Fechas en el filtro (Oracle):** `'2025-01-01'` da ORA-01861 y `'01/01/2025'` da ORA-01843 (el formato de Oracle es `DD-MON-RR`, con el mes en letras). **Formato que funciona (27/11): `FCALTA >= '01-JAN-25'`** (día, mes en inglés con 3 letras, año con 2 cifras). Tampoco admite `UPPER` ni `TRIM`. La vista previa trae solo 100 filas (`FETCH FIRST 100 ROWS ONLY`) y no prueba la extracción completa.
 - **Los datos del entorno de validación de SIDEMA son de PRUEBA:** casi siempre el mismo usuario genérico, DNIs y referencias inventados, unas 400 solicitudes en el 1.er semestre de 2025. Sirven para construir y probar, **no para concluir** tiempos ni cuellos de botella.
 - **Revisiones de grado:** cada revisión es una **fila nueva** de `SIDM_SOLICITUD` con el mismo `NMSOLICITUD`, `NMREVISION` = 1, 2…, `IDSOLICITUD_ORIG_REVISION` = la original e `IDSOLICITUD_REVISION` = la siguiente. Conviene añadir `IDSOLICITUD_ORIG_REVISION` al objeto para poder agruparlas.
 - **Extracción:** Data Integration → Extractions. Las tablas nuevas se buscan en MAYÚSCULAS o entre `%`. Solo sirven las del esquema DBA de SIDEMA (las `public.` dan error de permisos). Para tablas nuevas, ejecutar extracción **full**.
@@ -313,14 +313,57 @@ Detalle completo en **`dependencia/MAPEO_TABLAS_SIDEMA.md`** (tablas, claves, in
   - los catálogos de `CD_ESTADO_UDAI` y `CDMOTBAJA`;
   - los efectivos por fase.
 
+## 9g. Modelo con las tablas nuevas en Objects & Events (27/11, borrador)
+
+Mientras esperamos a Roberto, se ha montado el modelo con una **muestra coherente** (las solicitudes de 2025 que ya estaban cargadas).
+
+**Carga de la muestra** (Roberto lo aprobó):
+- Las filas salen de la vista previa de «Extraccion Dependencia» (pool IMPLEMENTACION), filtrada por esas solicitudes. Los filtros se quitaron al salir con Cancel: no se guardó ninguno.
+- Se cargaron en el Global del pool de validación con la transformación **«Dependencia muestra 27 tablas (Claude)»** del data job «Testing»: `CREATE` + `INSERT`, solo columnas del v3.
+- `SIDM_HIST_ESTADO` ya tenía filas de Roberto: se añadieron las nuevas sin borrar nada.
+- `SUCA_MUNICIPIO` se cargó solo con la provincia de Madrid.
+
+**Modelo** (SQL en `dependencia/sql/05…21`; todas «Passed» con Save with Validation; sin Test changes, Create version ni Deploy):
+
+| Tipo | Nombre | Relaciones |
+|---|---|---|
+| Objeto | `SolicitudDependencia` (v2, 12 atributos más: nacimiento, sexo, municipio, zona, distrito, fallecimiento, motivo de alta, grado y nivel, baremo, tipo y fecha de la resolución de grado) | — |
+| Objeto | `ValoracionDependencia` (BVD y EVE juntas; el ID lleva el baremo delante) | N:1 Solicitud, N:1 Valorador |
+| Objeto | `ValoradorDependencia` (maestro + códigos sin maestro, columna `Fuente`) | — |
+| Objeto | `PIADependencia` | N:1 Solicitud |
+| Evento | `RecepcionBandeja`, `ComisionValidada`, `ResolucionGrado`, `SolicitudUrgencia`, `TrasladoEntrada`, `TrasladoSalida` | Solicitud |
+| Evento | `ValoracionRealizada`, `ValoracionGrabada` | Solicitud y Valoracion |
+| Evento | `CambioEstadoPIA`, `RequerimientoPIA`, `LlamadaPIA`, `ResolucionPIA`, `RevisionPIA` | PIA y Solicitud |
+
+- Todas las relaciones de evento son «involves one». Las de objeto son 1:N y se rellenan con una columna en el script de atributos, con el nombre del objeto destino.
+- La edad no se calcula en SQL: se hará en PQL con `YEARS_BETWEEN` desde `FechaNacimiento` hasta la fecha de corte.
+- El CU2 espera a la v4 del script de vistas.
+
+**Lecciones del editor:**
+- Orden que funciona: tipo → relaciones → transformación. Así la plantilla ya trae la clave ajena.
+- Las transformaciones de **eventos** se abren con *Data Source* = «OCPM Schema». Hay que cambiarlo a None (Global); en los objetos ya venía bien.
+- Save with Validation compara tipos. `NMBAREMO` es DOUBLE, así que `Baremo` (ComisionValidada) es **Floating point**, no String.
+
+**Lo que enseña la muestra** (datos de prueba; sin conclusiones):
+- La bandeja no cruza con solicitudes: son entradas registradas **sin grabar**. Su relación con la solicitud queda vacía hasta que se graban.
+- Hay muy pocos valoradores, y uno no está en `DATOS_VALORADOR`. Por eso el objeto incluye los códigos «Sin maestro».
+- `FCFIN_SISTEMA` sí viene en 2025 (en la muestra antigua estaba vacía).
+- Algunas solicitudes no tienen municipio, probablemente porque son de fuera de Madrid.
+- Urgencias, traslados, llamadas y requerimientos del PIA no tienen filas para estas solicitudes. Los eventos quedan preparados («Pendiente de datos»).
+
+**Siguiente:** con Roberto, *Test changes* y añadir los 13 eventos nuevos al event log de la perspectiva «Dependencia» (ahora solo tiene 3). Después, los KPIs de las fases 2 y 3 de la View.
+
 ## 10. Pendientes y preguntas abiertas
+
+- [ ] Roberto: revisar el modelo del 27/11 (sección 9g), *Test changes*, perspectiva con los eventos nuevos y Create version.
+- [ ] Andrés: ¿la resolución del PIA se fecha con `FCRESOLUCION_PIA` o con `FCRESOLUCION`? ¿Por qué hay valoradores que no están en `DATOS_VALORADOR`?
 
 - [ ] Roberto: revisar el script de vistas v3 y las 8 preguntas de `MAPEO_TABLAS_SIDEMA.md` (sección 8).
 - [ ] Roberto: ejecutar el bloque 3 del script y pasarnos las columnas de las tablas del CU2 y de citación (para la v4).
 - [ ] Andrés: dónde va el origen «Presencial», roles del PIA por estado, criterios de prelación, motivos de exclusión que «requieren verificación» y objetivos del CU2.
 - [ ] Roberto o Javier Olmeda: error de Snappy en la extracción (sigue igual el 20/11).
 - [ ] Roberto: ¿los códigos casan por los 2 últimos dígitos en SIDEMA? ¿Puede darnos una muestra **coherente** (el histórico de las mismas solicitudes)?
-- [ ] Roberto: ¿existe ya el objeto de solicitud de dependencia en Objects & Events? ¿Qué nombre usar?
+- [x] Roberto: ¿existe ya el objeto de solicitud de dependencia en Objects & Events? Sí: `SolicitudDependencia`.
 - [ ] ¿`IDMODI` es el usuario que hace el cambio?
 - [ ] Andrés: qué son AVC y RA; validar las fases; empezar el proceso en `FCREGENTRADA` (el plazo legal cuenta desde ahí: `FC_FIN_PLAZO` ≈ registro + 6 meses) y no en `FCALTA`; qué es `CDTIPO` = «RS».
 - [ ] 04/11: enviada al grupo la lista de lo que falta del mockup CU1 (grado, municipio, edad, tipo de valoración, canal, PIA, valorador, asignaciones, usuarios y equipos). Esperando respuesta.

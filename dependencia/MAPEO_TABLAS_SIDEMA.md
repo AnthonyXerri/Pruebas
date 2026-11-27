@@ -38,6 +38,7 @@ Notación: «I» entero, «S» texto, «D» fecha. Los códigos `CD*` son texto 
 Otros puntos de la extracción:
 - **Avisos «potential issues»:** hay uno por tabla y todos dicen lo mismo: sin filtro de fecha de cambio, la tabla no puede cargarse en *delta*. Solo importa si se pasa a carga delta.
 - **`SIDM_MR_RESOLUCIONES`:** su vista previa no termina, porque guarda el PDF de cada resolución en `DSCONTENIDOFICHERO`. `SIDM_MR_TIPOS_DOCUMENTOS` (`PLANTILLA`) y `SIDM_DICTAMEN_TECNICO` (`LOB_*`) también llevan ficheros. Las vistas los dejan fuera.
+- **Filtros de la extracción (27/11):** el *Filter Statement* es Oracle sin funciones (`UPPER`, `TRIM` o `TO_DATE` dan «Error parsing filter»). Las fechas van como texto en formato `DD-MON-RR`: `FCALTA >= '01-JAN-25'`.
 - **Cuando la extracción lea las vistas,** las tablas se llamarán `SIDM_V_DEP_*`. Hay que marcar «Rename target table» con el nombre de siempre (`SIDM_SOLICITUD`…) para no tocar las SQL de Objects & Events.
 
 ## 2. Claves de unión
@@ -73,6 +74,7 @@ Otros puntos de la extracción:
 - `CDGRADO` es entero en `SIDM_DICTAMEN` y texto en `SIDM_DICTAMEN_TECNICO`. Al compararlos hay que convertir uno de los dos.
 - `CDMUNI` viene a veces sin los ceros de la izquierda (`'79'` frente a `'079'`, en `SIDM_DATOS_VALORADOR`). Antes de cruzar con SUCA hay que normalizarlo con `LPAD(CDMUNI, 3, '0')`.
 - En validación, `SIDM_ESTADO_SOLICITUD` tiene los códigos de **2 cifras** (la copia local tenía de 4). Además, `CDESTADO_GEST_VAL` viene relleno en una parte de los estados. La regla `RIGHT(…, 2)` de las SQL de noviembre sigue valiendo en los dos casos.
+- Las puntuaciones del baremo (`NMBAREMO`, `NMBAREMO_COGNITIVO`, `NMBAREMO_FISICO`) son DOUBLE: en Objects & Events, atributos *Floating point*.
 - `SUCA_MUNICIPIO` es de toda España. Hace falta así, porque los traslados traen municipios de otras comunidades.
 
 ## 3. Tabla por tabla

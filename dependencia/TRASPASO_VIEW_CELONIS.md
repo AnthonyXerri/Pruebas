@@ -18,6 +18,7 @@ Anthony (Madrid Digital, primera vez con Celonis) está montando en **Celonis St
 - Objeto: **`"o_custom_SolicitudDependencia"`** con atributos `ID`, `NumeroSolicitud`, `FechaSolicitud`, `FechaRegistroEntrada`, `FechaAlta`, `FechaFinPlazo`, `FechaBaja`, `CodigoEstadoActual`, `EstadoActual`, `TipoSolicitud`, `Urgente`, `Traslado`, `Extinguido`, `NumeroRevision`, `IdSolicitudOriginal`, `UsuarioAlta`, `IdSolicitante`.
 - Eventos: **a través del event log `"el__EventosDependencia"`** (perspectiva «Dependencia», event log EventosDependencia, objeto principal SolicitudDependencia, eventos Registro, Alta y CambioEstado). Columnas (comprobadas en el KM el 06/11): `ID`, `ACTIVITY`, `TIMESTAMP`, `CodigoEstado`, `Estado`, `Fase`, `Usuario`, `SolicitudDependencia_ID`, `LEAD_OBJECT_ID`, `epoch`, `_CELONIS_CHANGE_DATE`.
 - Las tablas `"e_custom_…"` existen pero **no están conectadas** al objeto (PU_MIN da «tables are not connected»): no usarlas.
+- **27/11: modelo ampliado en Objects & Events (borrador):** 4 objetos (Solicitud v2, Valoracion, Valorador, PIA) y 13 eventos nuevos, con muestra coherente de 2025. Detalle en la sección 9g de la memoria. **Todavía no están en la perspectiva ni en el KM:** hasta que Roberto haga *Test changes* y añada los eventos al event log, en PQL solo existen los de arriba.
 - El KM tiene también **`"el_custom_SolicitudDependencia"`** («SolicitudDependencia Event Log»), con las mismas columnas y marcado como **Default**. No se usa: en los PQL, nombrar siempre `"el__EventosDependencia"` de forma explícita.
 
 ### Revisión en el navegador (06/11, solo lectura)
@@ -86,10 +87,12 @@ Todo lo anterior está **guardado con Save (borrador)**. No se ha hecho Create v
 - Las secciones 5 y 6 del mapeo dicen qué elementos de los mockups CU1 y CU2 se podrán montar con las tablas nuevas.
 - Las tablas del CU2 y de citación existen en SIDEMA, pero el usuario de Celonis no puede leerlas: el bloque 3 del script pide a Roberto sus columnas para hacer la v4.
 
+**27/11: modelo de las tablas nuevas montado en Objects & Events (borrador).** Muestra coherente de 2025 cargada en el Global de validación; 4 objetos y 13 eventos nuevos, todos «Passed». SQL en `dependencia/sql/05…21`; detalle en la sección 9g de la memoria.
+
 Pendiente, en este orden:
 0. **Roberto** revisa el script v3, ejecuta el bloque 3 y contesta las preguntas (sección 8 del mapeo).
    - Cuando estén las vistas en PROD y funcione la extracción, se apunta la extracción a `SIDM_V_DEP_*` con «Rename target table», para no cambiar los nombres de las tablas.
-   - Después: nuevos eventos y atributos en Objects & Events (valoración, comisión, resolución del grado, estados del PIA, subsanación, requerimientos, llamadas; municipio, edad, origen y grado en el objeto) y cambiar los marcadores de las fases 2 y 3.
+   - Con Roberto: *Test changes* del modelo del 27/11 y añadir los 13 eventos al event log de la perspectiva. Después, cambiar los marcadores de las fases 2 y 3.
 1. Mientras falle la extracción: **cargar el histórico de las mismas 100 solicitudes de 2025** (enciende subsanación, AVC, citación, dictamen, grado, plazo total, SLA y la tabla de Subsanación): en «Pruebas Anthony», tabla `SIDM_HIST_ESTADO`, filtro `IDSOLICITUD IN (…)` por **lotes de 10** (el Preview solo trae 100 filas; si un lote devuelve justo 100, partirlo). Anthony tiene el fichero de lotes (los IDs **no** están en el repo). Me pega el Preview → genero `INSERT INTO "SIDM_HIST_ESTADO"` en el scratchpad → él lo ejecuta → recargar. Después, revisar que los «–» y los «There's data missing» se llenan.
 2. Con los datos nuevos que pidió el grupo (sección 8), cambiar los marcadores de las fases 2 y 3 (buscar el comentario `/* Pendiente de datos */` en cada PQL).
 3. Fase 2 · Personas involucradas: cambiar la aproximación por el valorador real cuando llegue.
@@ -186,6 +189,7 @@ COUNT(CASE WHEN "o_custom_SolicitudDependencia"."FechaAlta" > ADD_DAYS(PU_MAX(CO
 - `dependencia/sql/VistasSIDMPRODv3.sql` (24/11): script Oracle para Roberto. 29 vistas `SIDM_V_DEP_*` con lista de columnas, 28 catálogos, consulta de columnas del CU2 y comprobación final.
 - `dependencia/sql/generador/`: los scripts Python que generan el script de vistas (`gen_vistas_v2.py` tiene las columnas de cada tabla y el motivo de las que quedan fuera; `gen_vistas_v3.py` monta el v3). Se ejecutan con `python gen_vistas_v3.py <ruta del v1> <salida>`.
 - `dependencia/sql/01…04_*.sql`: SQL del objeto y de los 3 eventos (Objects & Events).
+- `dependencia/sql/05…21_*.sql` (27/11): objeto `SolicitudDependencia` v2, los objetos Valoracion, Valorador y PIA, y 13 eventos. Se pegan sin punto y coma, con *Data Source* None (Global).
 - `dependencia/celonis/DependenciaView.yaml`: YAML v2 de la View (referencia; ahora se trabaja en el editor visual). Se generaba con un script del scratchpad que ya no existe en sesiones nuevas.
 - `dependencia/celonis/logo_comunidad_madrid.png`: logo para el componente Imagen.
 - `mockups/MockupCU1_v2.html`: el mockup del CU1.
