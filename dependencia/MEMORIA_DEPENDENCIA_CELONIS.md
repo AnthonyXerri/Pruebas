@@ -323,17 +323,18 @@ Mientras esperamos a Roberto, se ha montado el modelo con una **muestra coherent
 - `SIDM_HIST_ESTADO` ya tenía filas de Roberto: se añadieron las nuevas sin borrar nada.
 - `SUCA_MUNICIPIO` se cargó solo con la provincia de Madrid.
 
-**Modelo** (SQL en `dependencia/sql/05…21`; todas «Passed» con Save with Validation; sin Test changes, Create version ni Deploy):
+**Modelo** (SQL en `dependencia/sql/05…22`; todas «Passed» con Save with Validation; *Test changes* hecho por la tarde con permiso de Roberto; sin Create version ni Deploy):
 
 | Tipo | Nombre | Relaciones |
 |---|---|---|
-| Objeto | `SolicitudDependencia` (v2, 12 atributos más: nacimiento, sexo, municipio, zona, distrito, fallecimiento, motivo de alta, grado y nivel, baremo, tipo y fecha de la resolución de grado) | — |
+| Objeto | `SolicitudDependencia` (v2, 13 atributos más: nacimiento, sexo, municipio, zona, distrito, fallecimiento, motivo de alta, grado y nivel, baremo, tipo y fecha de la resolución de grado, y origen) | — |
 | Objeto | `ValoracionDependencia` (BVD y EVE juntas; el ID lleva el baremo delante) | N:1 Solicitud, N:1 Valorador |
 | Objeto | `ValoradorDependencia` (maestro + códigos sin maestro, columna `Fuente`) | — |
 | Objeto | `PIADependencia` | N:1 Solicitud |
 | Evento | `RecepcionBandeja`, `ComisionValidada`, `ResolucionGrado`, `SolicitudUrgencia`, `TrasladoEntrada`, `TrasladoSalida` | Solicitud |
 | Evento | `ValoracionRealizada`, `ValoracionGrabada` | Solicitud y Valoracion |
 | Evento | `CambioEstadoPIA`, `RequerimientoPIA`, `LlamadaPIA`, `ResolucionPIA`, `RevisionPIA` | PIA y Solicitud |
+| Evento | `SubsanacionRequerida` (27/11 tarde, SQL 22) | Solicitud |
 
 - Todas las relaciones de evento son «involves one». Las de objeto son 1:N y se rellenan con una columna en el script de atributos, con el nombre del objeto destino.
 - La edad no se calcula en SQL: se hará en PQL con `YEARS_BETWEEN` desde `FechaNacimiento` hasta la fecha de corte.
@@ -351,12 +352,69 @@ Mientras esperamos a Roberto, se ha montado el modelo con una **muestra coherent
 - Algunas solicitudes no tienen municipio, probablemente porque son de fuera de Madrid.
 - Urgencias, traslados, llamadas y requerimientos del PIA no tienen filas para estas solicitudes. Los eventos quedan preparados («Pendiente de datos»).
 
-**Siguiente:** con Roberto, *Test changes* y añadir los 13 eventos nuevos al event log de la perspectiva «Dependencia» (ahora solo tiene 3). Después, los KPIs de las fases 2 y 3 de la View.
+**Auditoría del 27/11 (tarde) y carga en desarrollo** (Roberto aprobó *Test changes*, la perspectiva y el KM; **Create version y Deploy siguen sin hacerse**):
+- Mockup: el que pasó Anthony es idéntico a `mockups/MockupCU1_v2.html` (solo cambian los saltos de línea).
+- `SolicitudDependencia` tenía en la cabecera del SQL «origen», pero no la columna. Añadido **`Origen`** (`DSORIGENDOC` de la bandeja por `NMREFERENCIA`, prefiriendo la bandeja de altas iniciales `INI`). En la muestra sale vacío porque la bandeja cargada son entradas sin grabar.
+- Nuevo evento **`SubsanacionRequerida`** (SQL 22): `SIDM_SUBSANACION_DOCUMENTACION`, Time = `FCINICIOSUBSANACION`, ID `SUB_<solicitud>_<n.º subsanación>`. `NumeroSubsanacion` es Long integer y `FechaDesistimiento` Datetime. `EstadoExpediente` traduce `CDESTADO_EXPEDIENTE` con `SIDM_ESTADO_SOLICITUD` (mismo cruce por 2 dígitos).
+- Comprobado en el SQL sandbox, con todos los SQL 05–22: **ningún ID repetido** (`COUNT(*)` = `COUNT(DISTINCT "ID")`) y todas las subsanaciones cruzan con una solicitud.
+- Perspectiva «Dependencia»: ahora con los **4 objetos** enlazados (PIA → Solicitud, Valoración → Solicitud, Valoración → Valorador) y el event log `EventosDependencia` con los **17 eventos** (3 de antes + 14 nuevos). Guardada.
+- *Test changes*: target Development, «Execute Data Job after deployment» marcado, **solo la perspectiva Dependencia**, sin «Force full deployment». Las transformaciones de Dependencia salieron en Success.
+
+**Lecciones:**
+- El SQL sandbox de O&E no acepta `GROUP BY 1, 2`: hay que escribir las columnas.
+- En la perspectiva, al añadir un objeto hay que elegir el enlace en «Linked objects» (+ Add y marcar la relación). Si no, sale «Not all objects are connected» y los filtros no pasan de un objeto a otro.
+- El event log se edita en la pestaña Event logs → ⋮ → Edit → marcar eventos → «Save event log», y después **Save** de la perspectiva.
+- El diálogo de *Test changes* tiene un botón que se llama «Deploy», pero despliega al entorno **Development**: no es el Deploy de producción.
+
+**Studio, 27/11 (tarde)** (todo con Save, en borrador; PQL y detalle en `TRASPASO_VIEW_CELONIS.md`, secciones 4 y 6):
+- **Auditoría de la View:** ya no queda ningún objetivo fijo en los PQL (se cambiaron los 180 de la cabecera y los 120 de «Valorados en plazo / fuera»), ni `TODAY()`. Todas las variables existen (`objetivo_dias`, `objetivo_f2`, `objetivo_f3`).
+- **Filtros con datos reales** (antes, marcadores «pendiente»):
+  - Territorio (municipio);
+  - Edad (tramos del mockup, edad al solicitar);
+  - Origen (bandeja);
+  - Resolución de grado;
+  - Tipo de valoración (tabla de valoraciones, etiqueta combinada);
+  - Estado fase 3 y Tipo de prestación (tabla de PIA).
+- **Pendientes de grabar** sale ahora de la bandeja (`RecepcionBandeja` sin solicitud).
+- **Fase 3 · «ESTA FASE»** completa: personas, Tiempo E2E, vs objetivo, Entran / Resuelven por semana y Previsión. Solo falta «% del equipo total» (efectivos).
+- **Plazo proceso completo** = suma de los Tiempo E2E de las tres fases, como dice el mockup.
+
+**Decisiones:**
+- **Tiempo E2E de la fase 3:** del primer trámite del PIA (`CambioEstadoPIA`) a la primera resolución del PIA (`ResolucionPIA`). Es la definición del mockup: «del primer al último cambio de estado dentro de la fase».
+  - No empieza en la resolución del grado: en la muestra, grado y PIA se resuelven **el mismo día** en todas las solicitudes con PIA, y saldría 0.
+  - `FechaConsultaBeneficiario` viene vacía.
+- **Opciones del mockup que se solapan** (Tipo de valoración: presencial / telemática, BVD / EVE e inicial a la vez): un desplegable da un valor por fila, así que se usa una etiqueta combinada por valoración.
+- **Edad:** «Mayores de 18» y «Mayores de 90» se solapan en el mockup. Aquí son «De 18 a 89» y «90 y más».
+
+**Lo que enseña la muestra** (sin conclusiones):
+- La bandeja cargada es toda de origen Internet: ORVE y Presencial no salen.
+- Ninguna solicitud tiene SAD ni centro de día.
+- Los códigos de estado del PIA que aparecen son 00, 10 (consulta al beneficiario) y 90 (expediente resuelto).
+
+**Lecciones:**
+- `TO_STRING` solo acepta enteros; `TO_INT` no acepta decimales (usar `FLOOR`).
+- Un `||` con un nulo deja nula toda la cadena.
+- Un desplegable sobre otra tabla cambia la tabla común y filtra las solicitudes por la relación.
+- Detalle en la sección 3 del TRASPASO.
+
+**Siguiente:** componentes reales en lugar de los textos «pendiente»:
+- fase 3: PIA resueltos / en plazo / fuera, productividad y Detalle por Trabajador PIA;
+- fase 2: Detalle por Trabajador — Valoración, con el valorador, y los hitos con los eventos nuevos;
+- fase 1: subsanación por motivo, cuando llegue el catálogo.
 
 ## 10. Pendientes y preguntas abiertas
 
-- [ ] Roberto: revisar el modelo del 27/11 (sección 9g), *Test changes*, perspectiva con los eventos nuevos y Create version.
+- [x] Roberto: *Test changes* y perspectiva con los eventos nuevos (aprobado y hecho el 27/11, sección 9g).
+- [ ] Roberto: revisar el modelo del 27/11 y, si le parece bien, Create version.
 - [ ] Andrés: ¿la resolución del PIA se fecha con `FCRESOLUCION_PIA` o con `FCRESOLUCION`? ¿Por qué hay valoradores que no están en `DATOS_VALORADOR`?
+- [ ] Andrés: en `SIDM_SUBSANACION_DOCUMENTACION`, ¿`FCDESISTIMIENTO` es la fecha límite para subsanar o la del desistimiento real? (viene en todas las filas). ¿`CDESTADO_EXPEDIENTE` es una foto del momento o el estado actual? (sale «Expediente Resuelto»).
+- [ ] Roberto: el catálogo de motivos de subsanación (`SIDM_ESTADO_SUBSANACION`, bloque 2 del script) no está cargado. Sin él, «Subsanación por motivo» solo enseña códigos.
+- [ ] `ComisionValidada` solo recoge dictámenes técnicos con fecha de comisión: la «variabilidad de criterio» por valorador hay que medirla con `ValoracionRealizada`, no con la comisión.
+- [ ] Andrés: en la muestra, la resolución del grado y la del PIA tienen la misma fecha. ¿Es una resolución conjunta? ¿El estado 90 del PIA es «expediente resuelto»? De eso depende dónde empieza la fase 3. Hoy empieza en el primer trámite del PIA.
+- [ ] Andrés: ¿qué estados cierran un expediente? Hace falta para «Solicitudes activas» de la cabecera, que sigue con la definición antigua.
+- [ ] Andrés o Roberto: el SLA global de la cabecera usa hoy el objetivo de la fase 3 (180 días). ¿Debe ser el plazo legal de cada expediente (`FC_FIN_PLAZO`) o un objetivo propio?
+- [ ] Andrés: ¿quién registra los trámites del PIA (`IDALTA` de `SIDM_RI_TRAMITES`)? Hoy «Personas involucradas» de la fase 3 cuenta esos usuarios.
+- [ ] Faltan los efectivos de cada unidad para «% del equipo total» (las tres fases).
 
 - [ ] Roberto: revisar el script de vistas v3 y las 8 preguntas de `MAPEO_TABLAS_SIDEMA.md` (sección 8).
 - [ ] Roberto: ejecutar el bloque 3 del script y pasarnos las columnas de las tablas del CU2 y de citación (para la v4).

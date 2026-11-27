@@ -1,6 +1,8 @@
 -- Objeto SolicitudDependencia · v2 (27/11/2026): la 01 + persona, territorio, origen, grado y resolución.
 -- Pegar en Objects & Events sin el punto y coma final. Data Source: None (Global).
 -- Los alias son los nombres de los atributos: declararlos igual en el tipo de objeto.
+-- 27/11 (auditoría): añadido Origen (DSORIGENDOC de la bandeja, preferida la de altas iniciales "INI").
+-- En la muestra no cruza (la bandeja cargada son entradas sin grabar), pero en producción sí.
 -- La edad NO se calcula aquí: se guarda FechaNacimiento y la View la calcula en PQL
 -- (YEARS_BETWEEN), así se puede elegir "edad al solicitar" o "edad hoy" sin tocar el modelo.
 SELECT
@@ -33,7 +35,8 @@ SELECT
     d."DSGRADO_NIVEL" AS "GradoNivel",
     d."CDTIPO_BAREMO" AS "TipoBaremo",                      -- BVD o EVE
     r."DSTIPODOCUMENTO" AS "TipoResolucionGrado",
-    r."FCRESOLUCION"  AS "FechaResolucionGrado"
+    r."FCRESOLUCION"  AS "FechaResolucionGrado",
+    o."DSORIGENDOC"   AS "Origen"                           -- canal: ORVE / Presencial / Internet (bandeja)
 FROM "SIDM_SOLICITUD" s
 LEFT JOIN "SIDM_ESTADO_SOLICITUD" e
        ON RIGHT(e."CDESTADO", 2) = RIGHT(s."CDESTADO", 2)
@@ -59,3 +62,12 @@ LEFT JOIN (                                                 -- última resoluci�
     WHERE y."FCBAJA" IS NULL
 ) r
        ON CAST(r."IDSOLICITUD" AS VARCHAR) = CAST(s."IDSOLICITUD" AS VARCHAR) AND r."rn" = 1
+LEFT JOIN (                                                 -- origen: la entrada de la bandeja con su referencia
+    SELECT CAST(b."NMREFERENCIA" AS VARCHAR) AS "NMREFERENCIA", b."DSORIGENDOC",
+           ROW_NUMBER() OVER (PARTITION BY CAST(b."NMREFERENCIA" AS VARCHAR)
+                              ORDER BY CASE WHEN b."CD_BANDEJA" = 'INI' THEN 0 ELSE 1 END,
+                                       COALESCE(b."FC_RECEPCION", b."FCALTA")) AS "rn"
+    FROM "SIDM_BANDEJA_RECEPCIONADOS" b
+    WHERE b."DSORIGENDOC" IS NOT NULL
+) o
+       ON o."NMREFERENCIA" = CAST(s."NMREFERENCIA" AS VARCHAR) AND o."rn" = 1
