@@ -1,6 +1,6 @@
 # Traspaso · Cuadro de mando de Dependencia en Celonis (View)
 
-Documento para que una conversación nueva siga exactamente donde se quedó la anterior (06/11/2026; tablas nuevas, 24/11; modelo nuevo cargado en desarrollo y View ampliada, 27/11). Leer **antes** que nada: `CLAUDE.md`, `dependencia/MEMORIA_DEPENDENCIA_CELONIS.md`, `dependencia/MAPEO_MOCKUP_CU1.md` y `dependencia/MAPEO_TABLAS_SIDEMA.md`.
+Documento para que una conversación nueva siga exactamente donde se quedó la anterior (06/11/2026; tablas nuevas, 24/11; modelo nuevo cargado en desarrollo y View ampliada, 27/11; View completa con todos los bloques del mockup, 27/11 por la noche). Leer **antes** que nada: `CLAUDE.md`, `dependencia/MEMORIA_DEPENDENCIA_CELONIS.md`, `dependencia/MAPEO_MOCKUP_CU1.md` y `dependencia/MAPEO_TABLAS_SIDEMA.md`.
 
 **Regla de oro:** datos de la Comunidad de Madrid, nunca a GitHub ni a nada público (artifacts incluidos). Ni logins, ni IDs de solicitud reales, ni filas. Los ficheros con datos van solo al scratchpad. En el repositorio, solo SQL, PQL, estructura y decisiones.
 
@@ -81,100 +81,132 @@ Anthony (Madrid Digital, primera vez con Celonis) está montando en **Celonis St
 - Reordenar columnas con teclado: foco en el chip, Espacio, flechas **de una en una**, Espacio.
 - Guardar con **Save** (borrador). Cancelar un editor con cambios pide «Close Editor» y descarta todo lo del editor.
 
-## 4. Cómo está la View ahora (revisada en el navegador el 06/11 y el 27/11, guardada como borrador)
+## 4. Cómo está la View ahora (revisada y auditada el 27/11 por la noche, guardada como borrador)
 
-**Auditoría del 27/11:** ya no queda ningún número fijo de objetivo en los PQL, ni `TODAY()` / `NOW()`. Todas las variables que se usan existen. Los 6 desplegables que eran marcadores «(pendiente)» tienen ya PQL real.
+**27/11 (noche): la View tiene todos los bloques del mockup CU1 con componentes reales.** Ya no queda ningún texto «⚠ Pendiente de datos» ocupando el sitio de un componente. Lo que aún falta (catálogos, efectivos, umbrales) está explicado en el comentario `/* */` de cada PQL. En algunas columnas sale el valor «Sin dato» o «Pendiente de datos» porque la muestra no trae ese campo (Tipo y Zona del valorador, Perfil de gestión del tramitador). No hay números fijos de objetivo ni `TODAY()` / `NOW()`. Todo está guardado con **Save**: no se ha hecho Create version ni Deploy.
 
 **Cabecera (fuera de las pestañas):**
 - Logo de la Comunidad de Madrid y texto de la DG.
+- **Actualizado** (27/11): Text box alineado a la derecha, junto al título: «Actualizado: {fecha_corte}». Muestra la fecha y la hora del último evento cargado.
+  - Ojo: respeta los filtros activos.
+  - En la muestra, el último evento es un alta de prueba.
 - Solicitudes activas: sin cambios. Falta que Andrés diga qué estados cierran un expediente.
-- **Plazo proceso completo** (27/11) = Tiempo E2E de la fase 1 + el de la fase 2 + el de la fase 3, como dice el mockup («suma E2E fases 1→3»).
-- **Cumplimiento SLA global y Fuera de plazo:** de la solicitud al grado resuelto (90/34/36) frente a `${objetivo_f3}`. El 27/11 se quitó el 180 fijo. **Ojo:** si se cambia el objetivo de la fase 3, cambia también el SLA global. Hay que decidir si el SLA global es el plazo legal (`FechaFinPlazo`) o una variable propia.
+- **Plazo proceso completo** = Tiempo E2E de la fase 1 + el de la fase 2 + el de la fase 3, como dice el mockup («suma E2E fases 1→3»).
+- **Cumplimiento SLA global y Fuera de plazo:** miden de la solicitud al grado resuelto (estados 90/34/36), frente a `${objetivo_f3}`.
+  - Ojo: si se cambia el objetivo de la fase 3, cambia también el SLA global.
+  - Hay que decidir si el SLA global es el plazo legal (`FechaFinPlazo`) o una variable propia.
 - Altas / mes y vs mes anterior.
 
 **Título** «Cuadro de Mando de Gestión de Equipo» y **barra de filtros común:**
-- Periodo: Date range sobre `"o_custom_SolicitudDependencia"."FechaAlta"`, display name «Periodo».
-- **Territorio** (27/11): municipio del solicitante. La mancomunidad del mockup necesita el catálogo municipio → mancomunidad.
-- **Edad** (27/11): edad al presentar la solicitud, en los tramos del mockup. El mockup tiene «Mayores de 18» y «Mayores de 90», que se solapan: aquí son «De 18 a 89 años» y «90 años y más».
-- Planeados también: botón **Limpiar** y KPI **Actualizado** (`MAX("el__EventosDependencia"."TIMESTAMP")`).
+- Periodo: Date range sobre `"o_custom_SolicitudDependencia"."FechaAlta"`, con display name «Periodo».
+- **Territorio:** municipio del solicitante. Para la mancomunidad del mockup hace falta el catálogo municipio → mancomunidad.
+- **Edad:** edad al presentar la solicitud, en los tramos del mockup.
+- **Limpiar** = el embudo de la propia View (arriba a la derecha, «N filters applied») → **Reset filters**. El componente Button de Studio no tiene ninguna acción para borrar filtros. La *Filter bar* lateral se probó y se dejó apagada, como estaba.
 
-**Contenedor con 3 pestañas:**
+**Contenedor con 3 pestañas.** En las tres, «ESTA FASE» tiene ya el **% del equipo total** (27/11): «% del equipo total · de {personas_total}». Las personas se cuentan así:
+- Fase 1: usuarios de alta.
+- Fase 2: usuarios de los eventos de citación y valoración (fases 2a y 2b).
+- Fase 3: técnicos PIA (usuarios de `CambioEstadoPIA`).
+
+Es una aproximación con usuarios del sistema. Faltan los efectivos reales por fase, y quien trabaja en dos fases cuenta dos veces.
+
 - **Fase 1 · Grabación de solicitudes:**
-  - Filtros propios: Estado (4 grupos), Objetivo (Input box → `objetivo_dias`) y **Origen** (27/11), el canal de la bandeja: Internet → «Telemática», ORVE → «ORBE / presencial». En la muestra todo sale «Sin dato» porque la bandeja cargada no cruza con las solicitudes grabadas.
-  - **Pendientes de grabar** (27/11): entradas de la bandeja sin solicitud grabada (`"e_custom_RecepcionBandeja"`). Antes era una aproximación con las fechas de la solicitud.
-  - «ESTA FASE»: Personas involucradas, Tiempo E2E, vs objetivo, % del equipo total (pendiente), Previsión carga, Entran/sem, Resuelven/sem.
-  - Plazos de tramitación (KPIs y gráfico dentro/fuera de plazo con Plazo medio y Objetivo SLA): leen `${objetivo_dias}`.
-  - Subsanaciones y AVC (KPIs por los estados del histórico; la muestra coherente del 27/11 ya trae el histórico de las mismas solicitudes).
-  - **Tabla «AVC · Reproceso en bucle»** (antes gráfico): Nº de vueltas AVC (0 / 1 / 2 / 3+, `PU_COUNT` de los estados 05/20/15) · Exp. · % · Plazo +. Ordenada por nº de vueltas.
-  - Textos «pendiente de datos»: Subsanación por motivo y Flujo por atributo. Para la primera ya está el evento `SubsanacionRequerida`, pero sin el catálogo de motivos (bloque 2 del script) solo saldrían códigos.
-  - **Detalle por Trabajador — Equipo de Grabación** (arriba, como en el mockup; antes gráfico): Trabajador (`UsuarioAlta`) · Expedientes · Carga (% frente a la media del equipo) · Plazo medio · vs equipo · Subsanaciones · Estado (Crítico — sobrecarga > 115 %, Subcarga — reasignar < 70 %, Óptimo). Ordenada por Carga.
-  - **Detalle por Trabajador — Equipo de Subsanación** (debajo): Trabajador (`Usuario` del evento) · Exp. subsanados (60/30/25) · Subsanaciones/día · AVC en bucle · Carga · Estado («Sin subsanaciones» si 0). Ordenada por Carga.
+  - Filtros propios: Estado (4 grupos), Objetivo (Input box → `objetivo_dias`), Origen y **Atributo** (27/11).
+    - Origen es el canal de la bandeja. En la muestra todo sale «Sin dato», porque la bandeja cargada no cruza con las solicitudes grabadas.
+    - Atributo es un desplegable Territorio / Edad / Origen que guarda la variable `atributo_f1` (por defecto «Territorio»). Lo usa la tabla «Flujo por atributo».
+  - **Pendientes de grabar:** entradas de la bandeja sin solicitud grabada. Ojo: es un `COUNT` aislado de la tabla `e_custom_` y no responde a los filtros.
+  - «ESTA FASE»: Personas involucradas, Tiempo E2E, vs objetivo, % del equipo total, Previsión carga, Entran/sem y Resuelven/sem.
+  - Plazos de tramitación: KPIs y gráfico dentro / fuera de plazo, con Plazo medio y Objetivo SLA. Leen `${objetivo_dias}`.
+  - **Subsanaciones y AVC** (27/11): la Tasa de subsanación y el Número de subsanaciones cuentan una vez cada expediente. Un expediente cuenta como subsanado si tiene un requerimiento (evento `SubsanacionRequerida`) o si pasó por los estados 60/30/25.
+  - **Tabla «Subsanación · por motivo»** (27/11): Motivo (código) · Exp. · % · Plazo +.
+    - El motivo es el código del primer requerimiento. Para poner el texto del motivo falta el catálogo (bloque 2 del script).
+    - La fila «0 · sin subsanación (referencia)» es la base con la que se compara el Plazo +.
+  - **Tabla «Flujo por atributo»** (27/11): Atributo · Exp. · % sub. · Plazo + · Días bloq. subs.
+    - La primera columna cambia según el desplegable Atributo.
+    - Días bloq. subs. es el antiguo pendiente «KPI días bloqueado en subsanación».
+  - Tabla «AVC · Reproceso en bucle»: Nº de vueltas AVC · Exp. · % · Plazo +.
+  - Detalle por Trabajador: dos tablas, Equipo de Grabación y Equipo de Subsanación.
 - **Fase 2 · Valoración:**
-  - Filtros propios (27/11):
-    - **Resolución de grado:** tipo de la última resolución de grado y grado del último dictamen, en las opciones del mockup (Grado 0 / Grado I-III con PIA / Desistimiento / Denegatoria / Caducidad). Lo que no está en el mockup sale con su nombre.
-    - **Tipo de valoración:** sobre la tabla de valoraciones, con etiqueta combinada (BVD · Presencial o Telemática, o EVE) + (Inicial o Revisión). La EVE no tiene telemática.
-  - «ESTA FASE» con PQL propios (ya no es copia de la fase 1): Personas involucradas (usuarios distintos en eventos de fase 2a/2b; aproximación por el usuario que modifica), Tiempo E2E (alta → grado resuelto 90/34/36), vs objetivo (`- ${objetivo_f2}`), Entran/sem y Resuelven/sem (últimas 4 semanas sobre el último dato), Previsión (Alta/Media/Baja ±10 %).
-  - Borrados los bloques repetidos (Previsión dentro de Variabilidad BVD, Tiempo E2E dentro de Plazos, texto Personas en Productividad) y subido el contenido para cerrar el hueco. Queda un hueco pequeño encima de «% en plazo / % fuera» (el editor no deja moverlo).
-  - Gráfico «Expedientes valorados: dentro vs fuera del plazo objetivo» (por mes de dictamen, estado 47) y KPIs «% en plazo / % fuera»: **con `${objetivo_f2}`** (tenían 120 fijo). El 27/11, lo mismo en los KPIs «Valorados en plazo» y «Valorados fuera de plazo», que aún tenían el 120.
-  - Hitos ① a ⑨, ⑤ Fecha de valoración y «Detalle por Trabajador — Valoración» como textos «pendiente de datos». Ya hay datos para montarlos (sección 5).
+  - Filtros propios: Resolución de grado y Tipo de valoración.
+  - «ESTA FASE» con PQL propios y % del equipo total.
+  - **Productividad y carga** (27/11): Total valoradores · Media exp/persona · Sobrecargados (>115 %), y el gráfico «# Valoradores» por tramo de carga.
+  - **Variabilidad del criterio BVD** (27/11):
+    - KPIs: Valoradores activos (BVD) · Criterio sesgado (>10 pp) · % Alineación.
+    - Tabla «Distribución de grados BVD por valorador»: G0 · G1 · G2 · G3 · Desv. (pp) · Criterio.
+    - El grado de cada valoración es la banda del mayor baremo (físico o cognitivo): <25 G0, 25–49 G1, 50–74 G2, ≥75 G3.
+  - Plazos: gráfico «Expedientes valorados: dentro vs fuera del plazo objetivo» y KPIs «% en plazo (≤ ${objetivo_f2} d)» / «% fuera (> ${objetivo_f2} d)». El nombre del KPI enseña el objetivo que se está usando.
+  - **Hitos** (27/11): tres tramos.
+    - ④ Citación → ⑤ Valoración: no imputable al valorador, depende de la agenda.
+    - ⑤ Valoración → ⑥ Grabación.
+    - ⑥ Grabación → ⑦ Dictamen.
+  - **Detalle por Trabajador — Valoración** (27/11): Trabajador · Tipo · Zona · Expedientes · Carga · Plazo medio · vs equipo · Variab. criterio · Estado. Tipo y Zona salen «Sin dato» porque vienen vacíos en la muestra.
+  - **Evaluación individual del valorador** (27/11): Valoraciones · Cita → visita (no imputable) · Días a grabación · Días a dictamen · Total imputable · Nivel (bandas del mockup: <15 d, 15–25 d, ≥26 d; por confirmar).
 - **Fase 3 · Resolución de PIA:**
-  - Filtros propios (27/11):
-    - **Estado fase 3:** estado actual de cada PIA, agrupado: En propuesta (00-20), En resolución (30-40) y PIA resuelto (90). Los demás códigos salen con código y nombre.
-    - **Tipo de prestación:** agrupación de la prestación del PIA, con las etiquetas del mockup. SAD y centro de día no salen en la muestra.
-  - Los dos van sobre la tabla de PIA: filtran las solicitudes que tienen algún PIA con ese valor (revisiones incluidas).
-  - «ESTA FASE» (completa el 27/11):
-    - Personas involucradas: técnicos distintos que registran trámites del PIA (`Usuario` de `CambioEstadoPIA`). Es una aproximación: el rol, por confirmar.
-    - **Tiempo E2E:** del primer trámite del PIA a la primera resolución del PIA («del primer al último cambio de estado dentro de la fase», como en el mockup).
-    - vs objetivo: lo mismo `- ${objetivo_f3}`.
-    - Entran/sem: grados resueltos en las últimas 4 semanas / 4.
-    - Resuelven/sem: PIA resueltos en las últimas 4 semanas / 4.
-    - Previsión carga: Alta / Media / Baja (±10 %).
-    - % del equipo total: sigue pendiente (faltan los efectivos de cada unidad).
-  - **Por qué el E2E no empieza en la resolución del grado:** en la muestra, grado y PIA se resuelven el mismo día en todas las solicitudes con PIA, y saldría 0. Pregunta a Andrés.
-  - Siguen como textos «pendiente» (hacen falta componentes nuevos, sección 5): PIA resueltos / en plazo / fuera, Productividad y carga, Variabilidad de la prestación, Detalle por Trabajador PIA y Evaluación del tramitador.
+  - Filtros propios: Estado fase 3 y Tipo de prestación. Van sobre la tabla de PIA: filtran las solicitudes que tienen algún PIA con ese valor.
+  - «ESTA FASE» completa, con % del equipo total. El Tiempo E2E va del primer trámite del PIA a la primera resolución del PIA. No empieza en la resolución del grado porque en la muestra grado y PIA se resuelven el mismo día y saldría 0 (pregunta a Andrés).
+  - **Plazos de tramitación** (27/11): PIA resueltos · Resueltos en plazo · Resueltos fuera de plazo, y el gráfico por mes de `ResolucionPIA` con Plazo medio y Objetivo SLA (`${objetivo_f3}`).
+    - Ojo: aquí el plazo va de la solicitud a la resolución del PIA (proceso completo).
+    - El E2E de «ESTA FASE» solo mide la fase 3, pero los dos se comparan con el mismo `objetivo_f3`. Pregunta a Andrés.
+  - **Productividad y carga** (27/11): Técnicos PIA · Media exp/técnico · Sobrecargados (>115 %), y el gráfico «# Técnicos PIA por tramo de carga».
+  - **Variabilidad de la prestación** (27/11):
+    - Tabla «Prestación prescrita por territorio»: Territorio · PIA · Resid. · SAD · Teleas. · Desv. CM.
+    - KPIs: Territorios con PIA · Territorios atípicos (>10 pp) · Mayor dispersión.
+    - El territorio es el municipio hasta que llegue el catálogo de mancomunidades.
+  - **Detalle por Trabajador — Resolución de PIA** (27/11): Técnico PIA · Expedientes · Carga · Plazo medio · vs equipo · Territorio principal · Estado · Variab. prescrip. (pp de Residencia frente al equipo).
+  - **Evaluación individual del tramitador — Gestión del PIA** (27/11): Exp. resueltos · Plazo imputable · vs equipo · % con requerimiento · Llamadas/exp · Perfil de gestión.
+    - % con requerimiento y Llamadas/exp necesitan los eventos de requerimiento y de llamada del PIA, que el modelo aún no tiene.
+    - Perfil de gestión sale «Pendiente de datos».
+
+**Auditoría del 27/11 (noche):** se comprobó en el navegador que los KPIs, las tablas y los gráficos de cada fase cuadran entre sí. Las cifras no se apuntan aquí. Observaciones para Roberto y Andrés:
+- Fase 3: el E2E mide solo la fase, mientras que «Resueltos en plazo» y el gráfico miden de la solicitud al PIA. Los dos se comparan con `${objetivo_f3}`.
+- Fase 3: «Exp. resueltos» de la evaluación del tramitador cuenta el expediente para cada tramitador que interviene en él, así que la suma de la columna puede ser mayor que «PIA resueltos».
+- Fase 2: «Media exp/persona» cuenta pares expediente–valorador. Si dos valoradores valoran el mismo expediente, cuenta para los dos.
+- Origen sale vacío en la muestra (la bandeja no cruza con las solicitudes).
+- La muestra trae unas filas de prueba. Se notan en un mes antiguo del gráfico de la fase 1, en «Sin dato de edad» y en «Actualizado». Con los datos reales desaparecen.
+- Pendientes de grabar no responde a los filtros (`COUNT` aislado de la bandeja).
+- Umbrales que se han puesto por el mockup y hay que confirmar:
+  - carga: 115 % sobrecarga, 70 % subcarga y 130 % en el gráfico de tramos;
+  - criterio BVD: sesgo >10 pp, leve 5–10 pp y alineado ≤5 pp;
+  - territorios atípicos: >10 pp;
+  - nivel del valorador: <15 días, 15–25 días y ≥26 días.
 
 ## 5. Dónde nos quedamos (siguiente paso exacto)
 
 Todo lo anterior está **guardado con Save (borrador)**. No se ha hecho Create version ni Deploy (eso, con Roberto).
 
-**24/11: llegaron las tablas de SIDEMA para el CU1 y el CU2.** Son 29 tablas en la extracción «Extraccion Dependencia» (data job «Dependencia VASOCIAL_SIDM»).
-- Mapeo: `dependencia/MAPEO_TABLAS_SIDEMA.md`.
-- Script de vistas para Roberto: `dependencia/sql/VistasSIDMPRODv3.sql` (se genera con `dependencia/sql/generador/gen_vistas_v3.py`).
-- La extracción **sigue fallando por Snappy** (20/11): en Celonis solo están las muestras de siempre.
-- Las secciones 5 y 6 del mapeo dicen qué elementos de los mockups CU1 y CU2 se podrán montar con las tablas nuevas.
-- Las tablas del CU2 y de citación existen en SIDEMA, pero el usuario de Celonis no puede leerlas: el bloque 3 del script pide a Roberto sus columnas para hacer la v4.
-
-**27/11: modelo de las tablas nuevas montado en Objects & Events.** Muestra coherente de 2025 cargada en el Global de validación, con el histórico de las mismas solicitudes. 4 objetos y 14 eventos nuevos, todos «Passed». SQL en `dependencia/sql/05…22`; detalle en la sección 9g de la memoria.
-
-**27/11 (tarde): *Test changes* hecho** con el OK de Roberto. La perspectiva con los 4 objetos y los 17 eventos está cargada en desarrollo y la View ya lee las tablas nuevas. Después se auditó la View y se montaron los filtros que faltaban y la «ESTA FASE» de la fase 3 (sección 4). Todo guardado con Save; **sin Create version ni Deploy**.
+Historia corta:
+- **24/11:** llegaron las tablas de SIDEMA para el CU1 y el CU2: 29 tablas en la extracción «Extraccion Dependencia» (data job «Dependencia VASOCIAL_SIDM»).
+  - Mapeo: `dependencia/MAPEO_TABLAS_SIDEMA.md`.
+  - Script de vistas para Roberto: `dependencia/sql/VistasSIDMPRODv3.sql`.
+  - La extracción **sigue fallando por Snappy**, así que en Celonis solo están las muestras.
+- **27/11 (mañana):** modelo de las tablas nuevas en Objects & Events: 4 objetos y 14 eventos, todos «Passed» (SQL en `dependencia/sql/05…22`, detalle en la sección 9g de la memoria).
+- **27/11 (tarde):** *Test changes* hecho con el OK de Roberto. La View lee las tablas nuevas, y se montaron los filtros que faltaban y la «ESTA FASE» de la fase 3.
+- **27/11 (noche):** la View está completa (sección 4): se sustituyeron todos los textos «pendiente» de las fases 1, 2 y 3 por componentes reales, y se añadieron el % del equipo total, Actualizado y Limpiar. Se auditó.
 
 Pendiente, en este orden:
-0. **Roberto** revisa el script v3, ejecuta el bloque 3 y contesta las preguntas (sección 8 del mapeo).
-   - Cuando estén las vistas en PROD y funcione la extracción, se apunta la extracción a `SIDM_V_DEP_*` con «Rename target table», para no cambiar los nombres de las tablas.
-   - Pasarle el catálogo de motivos de subsanación (bloque 2).
-1. **Fase 3:** sustituir los textos «pendiente» por componentes reales.
-   - Primero, «PIA resueltos / en plazo / fuera»: KPIs y gráfico por mes de `ResolucionPIA`, con `${objetivo_f3}`.
-   - Después, Productividad y carga, y Detalle por Trabajador PIA (`Usuario` de `CambioEstadoPIA`).
-   - Variabilidad de la prestación y Evaluación del tramitador, al final.
-2. **Fase 2:**
-   - «Detalle por Trabajador — Valoración» con `"o_custom_ValoradorDependencia"`.
-   - Hitos con los eventos `ValoracionRealizada` (⑤), `ValoracionGrabada`, `ComisionValidada` (⑧) y `ResolucionGrado` (⑨).
-   - Personas involucradas: cambiar la aproximación por el valorador real.
-3. **Fase 1:** Subsanación por motivo con `SubsanacionRequerida`, cuando llegue el catálogo de motivos, y Flujo por atributo.
-4. **Preguntas a Andrés** (sección 10 de la memoria):
+1. **Enseñarle la View a Roberto** y, si le parece bien, hacer **Create version** (solo con su OK).
+2. **Roberto:** revisar el script v3, ejecutar el bloque 3 y contestar las preguntas (sección 8 del mapeo).
+   - Cuando las vistas estén en PROD y funcione la extracción, se apunta la extracción a `SIDM_V_DEP_*` con «Rename target table», para no cambiar los nombres de las tablas.
+   - Pasarle el catálogo de motivos de subsanación (bloque 2), para poner el texto del motivo en la tabla «Subsanación · por motivo».
+3. **Preguntas a Andrés** (sección 10 de la memoria):
    - ¿Grado y PIA se resuelven a la vez? ¿El estado 90 del PIA es «expediente resuelto»?
    - ¿Qué estados cierran un expediente? (Solicitudes activas)
    - ¿Dónde va el origen «Presencial»?
-5. **SLA global:** hoy usa `${objetivo_f3}`. Decidir con Andrés si debe ser el plazo legal (`FechaFinPlazo`) o una variable propia.
-6. **Interactions:** que la cabecera solo escuche los filtros comunes y que los filtros de cada fase no se queden puestos en las otras.
+   - SLA global: ¿plazo legal (`FechaFinPlazo`) o una variable propia?
+   - Fase 3: ¿el objetivo se mide sobre la fase (E2E) o sobre el proceso completo (solicitud → PIA)?
+4. **Datos que faltan para terminar de afinar:**
+   - catálogo municipio → mancomunidad (Territorio y Variabilidad de la prestación);
+   - Origen que cruce con las solicitudes;
+   - efectivos reales por fase (% del equipo total);
+   - Tipo y Zona del valorador (vienen vacíos);
+   - eventos de requerimiento y de llamada del PIA (evaluación del tramitador).
+5. **Confirmar los umbrales** de la auditoría (sección 4).
+6. **Interactions:** que la cabecera solo escuche los filtros comunes, y que los filtros de cada fase no se queden puestos en las otras.
 7. Detalles:
-   - botón Limpiar y KPI Actualizado;
    - formato del mes del gráfico de la fase 1 (sale MM/AAAA; el mockup usa `%b %Y`);
-   - hueco pequeño de «% en plazo» en la fase 2;
-   - KPI días bloqueado en subsanación;
+   - hueco pequeño encima de «% en plazo» en la fase 2;
    - tabla «Ver por expediente» con los 9 hitos;
    - comprobar que Tipo de valoración permite selección múltiple.
-8. Enseñárselo a Roberto y, si le parece bien, Create version.
 
 ## 6. PQL listos para usar
 
@@ -389,6 +421,238 @@ COUNT(CASE WHEN P > ADD_DAYS(CORTE, -28) AND P <= CORTE THEN S."ID" END) / 4.0
 ```
 - Entran/sem: igual, con el `PU_MIN(…)` de los estados 90/34/36 (grados resueltos, lo que entra en PIA).
 - Previsión carga: el mismo `CASE` de la fase 2 (±10 %), con los Entran y Resuelven de esta fase.
+
+### PQL del 27/11 (noche): cabecera y fases 1, 2 y 3 (todos guardados en la View)
+
+En la View cada PQL va **escrito entero**, sin abreviaturas, con su comentario `/* */`. Aquí se usan nombres cortos para que se lea mejor. Abreviaturas de tablas, además de S y EL:
+- V = `"o_custom_ValoracionDependencia"`
+- VD = `"o_custom_ValoradorDependencia"`
+- P = `"o_custom_PIADependencia"`
+
+Un nombre en MAYÚSCULAS (RPIA, SUBN…) es un trozo de PQL que se pega entero donde aparece. Si va en una suma o en una comparación, se pega entre paréntesis.
+
+#### Cabecera y «% del equipo total»
+
+```
+P1 = COUNT(DISTINCT S."UsuarioAlta")
+P2 = COUNT(DISTINCT CASE WHEN EL."Fase" IN ('2a · Citación', '2b · Valoración') THEN EL."Usuario" END)
+P3 = COUNT(DISTINCT CASE WHEN EL."ACTIVITY" = 'e_custom_CambioEstadoPIA' THEN EL."Usuario" END)
+```
+- `personas_total` = `(P1 + P2 + P3)`, con la unidad « personas». La misma persona en dos fases cuenta dos veces.
+- `pct_equipo_f1` = `P1 * 100.0 / (P1 + P2 + P3)`, con la unidad « %» y el formato Rounded. Lo mismo con P2 y P3 para `pct_equipo_f2` y `pct_equipo_f3`.
+- El texto de cada fase es «% del equipo total · de {personas_total}», y la cifra va en Heading 2.
+- **Actualizado** (`fecha_corte`), en un Text box:
+```
+TO_STRING(PU_MAX(CONSTANT(), "el__EventosDependencia"."TIMESTAMP"), FORMAT('%d/%m/%Y %H:%M'))
+```
+
+#### Fase 1 · Subsanación
+
+```
+EVN   = PU_COUNT(S, EL."TIMESTAMP", EL."ACTIVITY" = 'e_custom_SubsanacionRequerida')
+SUBN  = (EVN + PU_COUNT(S, EL."TIMESTAMP", EL."CodigoEstado" IN ('60','30','25')))
+D1    = DAYS_BETWEEN(S."FechaSolicitud", S."FechaAlta")
+START = PU_MIN(S, EL."TIMESTAMP", EL."ACTIVITY" = 'e_custom_SubsanacionRequerida' OR EL."CodigoEstado" IN ('60','30','25'))
+END   = PU_MIN(S, EL."TIMESTAMP", EL."TIMESTAMP" > START AND EL."CodigoEstado" IS NOT NULL AND EL."CodigoEstado" NOT IN ('60','30','25'))
+```
+- Tasa subsanación: `AVG(CASE WHEN SUBN > 0 THEN 100.0 ELSE 0.0 END)`.
+- Número de subsanaciones: `COUNT(CASE WHEN SUBN > 0 THEN S."ID" END)`.
+
+**Tabla «Subsanación · por motivo»:**
+
+| Columna | PQL |
+|---|---|
+| Motivo (código) | `CASE WHEN SUBN = 0 THEN '0 · sin subsanación (referencia)' WHEN EVN = 0 THEN 'Sin requerimiento (solo estado)' ELSE CONCAT('Código ', PU_FIRST(S, EL."CodigoEstadoDocumentacion", EL."ACTIVITY" = 'e_custom_SubsanacionRequerida')) END` |
+| Exp. | `COUNT(DISTINCT S."ID")` |
+| % | `COUNT(DISTINCT CASE WHEN SUBN > 0 THEN S."ID" END) * 100.0 / GLOBAL(COUNT(DISTINCT CASE WHEN SUBN > 0 THEN S."ID" END))` |
+| Plazo + | `AVG(D1) - GLOBAL(AVG(CASE WHEN SUBN = 0 THEN D1 END))` |
+
+**Tabla «Flujo por atributo»**: usa la variable `atributo_f1` (String, por defecto «Territorio»). EDAD, ORIGEN y TERRITORIO son los mismos `CASE` de los filtros (más arriba).
+
+| Columna | PQL |
+|---|---|
+| Atributo | `CASE WHEN '${atributo_f1}' = 'Edad' THEN EDAD WHEN '${atributo_f1}' = 'Origen' THEN ORIGEN ELSE TERRITORIO END` |
+| Exp. | `COUNT(DISTINCT S."ID")` |
+| % sub. | `COUNT(DISTINCT CASE WHEN SUBN > 0 THEN S."ID" END) * 100.0 / COUNT(DISTINCT S."ID")` |
+| Plazo + | `AVG(CASE WHEN SUBN > 0 THEN D1 END) - GLOBAL(AVG(CASE WHEN SUBN = 0 THEN D1 END))`, con formato `+,.0f` |
+| Días bloq. subs. | `AVG(DAYS_BETWEEN(START, END))` (si aún no hay END, no cuenta) |
+
+#### Fase 2 · Valoración
+
+```
+VS     = V."SolicitudDependencia_ID"
+VV     = V."ValoradorDependencia_ID"
+DICT   = PU_MIN(S, EL."TIMESTAMP", EL."CodigoEstado" = '47')          (dictamen)
+CIT    = PU_MIN(S, EL."TIMESTAMP", EL."CodigoEstado" = '43')          (citación)
+EXPVAL = PU_COUNT_DISTINCT(DOMAIN_TABLE(VV), VS)                       (expedientes de cada valorador)
+MEDIAV = (PU_COUNT_DISTINCT(CONSTANT(), CONCAT(VS, '|', VV)) * 1.0 / PU_COUNT_DISTINCT(CONSTANT(), VV))
+B      = GREATEST(COALESCE(V."BaremoFisico", 0.0), COALESCE(V."BaremoCognitivo", 0.0))
+ISBVD  = V."TipoBaremo" = 'BVD' AND (V."BaremoFisico" IS NOT NULL OR V."BaremoCognitivo" IS NOT NULL)
+```
+
+**Productividad y carga:**
+- Total valoradores: `COUNT(DISTINCT VV)`.
+- Media exp/persona: `COUNT(DISTINCT CONCAT(VS, '|', VV)) * 1.0 / COUNT(DISTINCT VV)`.
+- Sobrecargados (>115 %): `COUNT(DISTINCT CASE WHEN EXPVAL * 100.0 / MEDIAV > 115 THEN VV END)`.
+- El gráfico «# Valoradores» se hace igual que el de los técnicos PIA (fase 3, más abajo), con EXPVAL y MEDIAV.
+
+**Variabilidad del criterio BVD:**
+```
+BAND   = CASE WHEN ISBVD THEN (CASE WHEN B >= 75 THEN 'G3' WHEN B >= 50 THEN 'G2' WHEN B >= 25 THEN 'G1' ELSE 'G0' END) END
+XG(k)  = CASE WHEN (BAND) IS NOT NULL THEN (CASE WHEN (BAND) = 'Gk' THEN 100.0 ELSE 0.0 END) END
+PVG(k) = PU_AVG(DOMAIN_TABLE(VV), XG(k))          (% de Gk del valorador)
+PCG(k) = PU_AVG(CONSTANT(), XG(k))                (% de Gk del equipo)
+DESVV  = GREATEST(ABS(PVG(0) - PCG(0)), ABS(PVG(1) - PCG(1)), ABS(PVG(2) - PCG(2)), ABS(PVG(3) - PCG(3)))
+```
+- Valoradores activos (BVD): `COUNT(DISTINCT CASE WHEN ISBVD THEN VV END)`.
+- Criterio sesgado (>10 pp): `COUNT(DISTINCT CASE WHEN ISBVD AND DESVV > 10 THEN VV END)`.
+- % Alineación: `COUNT(DISTINCT CASE WHEN ISBVD AND DESVV <= 5 THEN VV END) * 100.0 / COUNT(DISTINCT CASE WHEN ISBVD THEN VV END)`.
+
+**Tabla «Distribución de grados BVD por valorador»** (una fila por valorador):
+```
+AG(k) = AVG(XG(k))                      columnas G0…G3, con la unidad « %»
+DG(k) = (AG(k) - GLOBAL(AG(k)))         diferencia con el equipo
+DTAB  = GREATEST(ABS DG(0), ABS DG(1), ABS DG(2), ABS DG(3))        columna Desv. (pp)
+```
+Columna Criterio (en la View, los cuatro `WHEN` van escritos enteros):
+```
+CASE WHEN DTAB IS NULL THEN 'Sin BVD'
+     WHEN DTAB > 10 THEN (CASE WHEN ABS DG(0) = DTAB THEN (CASE WHEN DG(0) > 0 THEN 'Sesgo G0 ↑' ELSE 'Sesgo G0 ↓' END)
+                               … lo mismo con G1 y G2 …
+                               ELSE (CASE WHEN DG(3) > 0 THEN 'Sesgo G3 ↑' ELSE 'Sesgo G3 ↓' END) END)
+     WHEN DTAB > 5 THEN 'Leve'
+     ELSE 'Alineado' END
+```
+
+**Hitos** (KPIs):
+```
+H4 = PU_MIN(S, EL."TIMESTAMP", EL."CodigoEstado" IN ('43'))
+H5 = PU_MIN(S, V."FechaValoracion")
+H6 = PU_MIN(S, V."FechaFinGrabacion")
+H7 = PU_MIN(S, EL."TIMESTAMP", EL."CodigoEstado" IN ('47'))
+```
+- ④ → ⑤: `AVG(DAYS_BETWEEN(H4, H5))`.
+- ⑤ → ⑥: `AVG(DAYS_BETWEEN(H5, H6))`.
+- ⑥ → ⑦: `AVG(DAYS_BETWEEN(H6, H7))`.
+
+**Detalle por Trabajador — Valoración:**
+```
+d     = DAYS_BETWEEN(S."FechaAlta", DICT)
+cnt   = PU_COUNT(DOMAIN_TABLE(VS, VV), V."ID")      (valoraciones del par expediente–valorador)
+PLZ2E = (SUM(d / cnt) / SUM(CASE WHEN d IS NOT NULL THEN 1.0 / cnt END))
+PLZ2T = (GLOBAL(SUM(d / cnt)) / GLOBAL(SUM(CASE WHEN d IS NOT NULL THEN 1.0 / cnt END)))
+```
+`PLZ2E` es la media por expediente: cada expediente cuenta una vez aunque tenga varias valoraciones del mismo valorador. `PLZ2T` es lo mismo para todo el equipo.
+
+| Columna | PQL |
+|---|---|
+| Trabajador | `VV` |
+| Tipo | `CASE WHEN VD."Encomienda" IS NULL OR VD."Encomienda" = '' THEN 'Sin dato' ELSE VD."Encomienda" END` |
+| Zona | `CASE WHEN VD."Zona" IS NULL OR VD."Zona" = '' THEN 'Sin dato' ELSE VD."Zona" END` |
+| Expedientes | `COUNT(DISTINCT VS)` |
+| Carga | `COUNT(DISTINCT VS) * 100.0 / MEDIAV` |
+| Plazo medio | `PLZ2E` |
+| vs equipo | `CASE WHEN ABS(PLZ2E - PLZ2T) < 0.5 THEN 0.0 ELSE (PLZ2E - PLZ2T) END` |
+| Variab. criterio | el mismo `CASE` de la columna Criterio |
+| Estado | `CASE WHEN carga > 115 THEN 'Crítico — sobrecarga' WHEN carga < 70 THEN 'Subcarga — reasignar' ELSE 'Óptimo' END` |
+
+**Evaluación individual del valorador** (FV = `V."FechaValoracion"`, FG = `V."FechaFinGrabacion"`):
+
+| Columna | PQL |
+|---|---|
+| Valoraciones | `COUNT(DISTINCT V."ID")` |
+| Cita → visita (no imputable) | `AVG(CASE WHEN CIT <= FV THEN DAYS_BETWEEN(CIT, FV) END)` |
+| Días a grabación | `AVG(DAYS_BETWEEN(FV, FG))` |
+| Días a dictamen | `AVG(CASE WHEN FG <= DICT THEN DAYS_BETWEEN(FG, DICT) END)` |
+| Total imputable (TOTI) | días a grabación + días a dictamen |
+| Nivel | `CASE WHEN TOTI IS NULL THEN 'Sin dictamen' WHEN TOTI < 15 THEN 'Óptimo (<15 d)' WHEN TOTI < 26 THEN 'Aceptable (15–25 d)' ELSE 'Crítico (≥26 d)' END` |
+
+#### Fase 3 · Resolución de PIA
+
+```
+RPIA = PU_MIN(S, EL."TIMESTAMP", EL."ACTIVITY" = 'e_custom_ResolucionPIA')
+CEP  = PU_MIN(S, EL."TIMESTAMP", EL."ACTIVITY" = 'e_custom_CambioEstadoPIA')
+D3   = DAYS_BETWEEN(S."FechaSolicitud", RPIA)
+CEPC = EL."ACTIVITY" = 'e_custom_CambioEstadoPIA'
+MARK = EL."ID" = PU_FIRST(DOMAIN_TABLE(EL."SolicitudDependencia_ID", EL."Usuario"), EL."ID", CEPC, ORDER BY EL."TIMESTAMP" ASC)
+```
+MARK marca un solo evento por par expediente–técnico. Así, un técnico con varios trámites en el mismo expediente no pesa más en las medias.
+
+**Plazos de tramitación:**
+
+| Componente | PQL |
+|---|---|
+| PIA resueltos | `COUNT(RPIA)` |
+| Resueltos en plazo | `COUNT(CASE WHEN D3 <= ${objetivo_f3} THEN S."ID" END)` |
+| Resueltos fuera de plazo | `COUNT(CASE WHEN D3 > ${objetivo_f3} THEN S."ID" END)` |
+| Gráfico: dimensión | `ROUND_MONTH(RPIA)` |
+| Gráfico: Plazo medio | `AVG(D3)` |
+| Gráfico: Objetivo SLA (días) | `AVG(CASE WHEN RPIA IS NOT NULL THEN ${objetivo_f3} * 1.0 END)` |
+
+**Productividad y carga:**
+```
+TECS    = COUNT(DISTINCT CASE WHEN CEPC THEN EL."Usuario" END)                                       (KPI Técnicos PIA)
+PAIRS   = COUNT(DISTINCT CASE WHEN CEPC THEN CONCAT(EL."SolicitudDependencia_ID", '|', EL."Usuario") END)
+EXPTEC  = PU_COUNT_DISTINCT(DOMAIN_TABLE(EL."Usuario"), EL."SolicitudDependencia_ID", CEPC)
+MEDIAPU = PU_COUNT_DISTINCT(CONSTANT(), CONCAT(EL."SolicitudDependencia_ID", '|', EL."Usuario"), CEPC) * 1.0
+          / PU_COUNT_DISTINCT(CONSTANT(), EL."Usuario", CEPC)
+R       = EXPTEC * 100.0 / MEDIAPU
+```
+- Media exp/técnico: `PAIRS * 1.0 / TECS`.
+- Sobrecargados (>115 %): `COUNT(DISTINCT CASE WHEN CEPC AND EXPTEC > 1.15 * MEDIAPU THEN EL."Usuario" END)`.
+- Gráfico «# Técnicos PIA por tramo de carga». La dimensión es:
+```
+CASE WHEN CEPC THEN (CASE WHEN R < 70 THEN '1 · Baja (<70 %)' WHEN R <= 115 THEN '2 · Media (70–115 %)'
+                          WHEN R <= 130 THEN '3 · Alta (115–130 %)' ELSE '4 · Sobrecarga (>130 %)' END) END
+```
+  El KPI es `COUNT(DISTINCT EL."Usuario")`.
+
+**Variabilidad de la prestación:** A = `P."AgrupacionPrestacion"`, y TIPO es el `CASE` del filtro Tipo de prestación.
+```
+PCT(t) = AVG(CASE WHEN A IS NOT NULL THEN (CASE WHEN (TIPO) = 't' THEN 100.0 ELSE 0.0 END) END)
+X(t)   = CASE WHEN A IS NOT NULL THEN (CASE WHEN (TIPO) = 't' THEN 100.0 ELSE 0.0 END) END
+TR(t)  = PU_AVG(DOMAIN_TABLE(S."Municipio"), X(t))        (% del territorio)
+CM(t)  = PU_AVG(CONSTANT(), X(t))                         (% de la Comunidad)
+```
+- Tabla «Prestación prescrita por territorio»:
+  - Territorio: `S."Municipio"`.
+  - PIA: `COUNT(CASE WHEN A IS NOT NULL THEN P."ID" END)`.
+  - Resid. / SAD / Teleas.: `PCT('Residencia')`, `PCT('SAD')` y `PCT('Teleasistencia')`.
+  - Desv. CM: `GREATEST(ABS(PCT_R - GLOBAL(PCT_R)), ABS(PCT_S - GLOBAL(PCT_S)), ABS(PCT_T - GLOBAL(PCT_T)))`.
+- Territorios con PIA: `COUNT(DISTINCT CASE WHEN A IS NOT NULL THEN S."Municipio" END)`.
+- Territorios atípicos (>10 pp): territorios en los que `ABS(TR(t) - CM(t)) > 10` para alguno de los tres tipos. El umbral 10 está por confirmar.
+- Mayor dispersión: `GREATEST(PU_MAX(CONSTANT(), TR(t)) - PU_MIN(CONSTANT(), TR(t)))` para Residencia, SAD y Teleasistencia.
+
+**Detalle por Trabajador — Resolución de PIA.** El filtro del componente deja solo los eventos `CambioEstadoPIA`.
+```
+MEDIA3 = GLOBAL(COUNT(DISTINCT CONCAT(EL."SolicitudDependencia_ID", '|', EL."Usuario"))) * 1.0 / GLOBAL(COUNT(DISTINCT EL."Usuario"))
+PLZ3   = AVG(CASE WHEN MARK THEN DAYS_BETWEEN(CEP, RPIA) END)
+RESX   = CASE WHEN PU_COUNT(S, P."ID", UPPER(A) LIKE '%RESIDENCIA%' AND NOT UPPER(A) LIKE '%VINCULADA%') > 0 THEN 100.0 ELSE 0.0 END
+PRES   = AVG(CASE WHEN MARK THEN RESX END)
+```
+
+| Columna | PQL |
+|---|---|
+| Técnico PIA | `EL."Usuario"` |
+| Expedientes | `COUNT(DISTINCT EL."SolicitudDependencia_ID")` |
+| Carga | `COUNT(DISTINCT EL."SolicitudDependencia_ID") * 100.0 / MEDIA3` |
+| Plazo medio | `PLZ3` |
+| vs equipo | `PLZ3 - GLOBAL(PLZ3)` |
+| Territorio principal | `MAX(PU_MODE(DOMAIN_TABLE(EL."Usuario"), BIND(EL, S."Municipio"), CEPC))` |
+| Estado | `CASE WHEN carga > 115 THEN 'Crítico — sobrecarga' WHEN carga < 70 THEN 'Subcarga — reasignar' ELSE 'Óptimo' END` |
+| Variab. prescrip. | `PRES - GLOBAL(PRES)`, en pp de Residencia; una diferencia de menos de 0,5 se muestra como 0 |
+
+**Evaluación individual del tramitador — Gestión del PIA:**
+```
+ANTES = ROUND_DAY(EL."TIMESTAMP") <= ROUND_DAY(RPIA)            (trámite anterior o igual a la resolución)
+RES3  = MARK AND RPIA IS NOT NULL AND ANTES
+INI   = COALESCE(PU_MIN(S, P."FechaConsultaBeneficiario"), EL."TIMESTAMP")
+```
+- Exp. resueltos: `COUNT(DISTINCT CASE WHEN RPIA IS NOT NULL AND ANTES THEN EL."SolicitudDependencia_ID" END)`.
+- Plazo imputable: `AVG(CASE WHEN RES3 THEN DAYS_BETWEEN(ROUND_DAY(INI), ROUND_DAY(RPIA)) END)`.
+- vs equipo: el plazo imputable menos su `GLOBAL`.
+- % con requerimiento y Llamadas/exp: se calculan solo si el modelo tiene los eventos de requerimiento y de llamada del PIA. Hoy no los tiene.
+- Perfil de gestión: «Pendiente de datos» si hay PIA resueltos y «Sin PIA resueltos» si no los hay.
 
 ## 7. Ficheros del repositorio
 

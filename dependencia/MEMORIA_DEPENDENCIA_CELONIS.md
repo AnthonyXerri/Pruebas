@@ -397,15 +397,53 @@ Mientras esperamos a Roberto, se ha montado el modelo con una **muestra coherent
 - Un desplegable sobre otra tabla cambia la tabla común y filtra las solicitudes por la relación.
 - Detalle en la sección 3 del TRASPASO.
 
-**Siguiente:** componentes reales en lugar de los textos «pendiente»:
-- fase 3: PIA resueltos / en plazo / fuera, productividad y Detalle por Trabajador PIA;
-- fase 2: Detalle por Trabajador — Valoración, con el valorador, y los hitos con los eventos nuevos;
-- fase 1: subsanación por motivo, cuando llegue el catálogo.
+## 9h. View completa (27/11, noche, borrador)
+
+Se sustituyeron por componentes reales todos los textos «⚠ Pendiente de datos» de la View. Todo está guardado con Save, sin Create version ni Deploy. El detalle de cada bloque está en la sección 4 del TRASPASO y el PQL en la sección 6.
+
+**Qué se montó:**
+- **Cabecera:**
+  - «Actualizado: {fecha}»: último evento cargado; respeta los filtros.
+  - % del equipo total en las tres fases: usuarios de cada fase sobre la suma de las tres.
+  - Limpiar = «Reset filters» de la propia View.
+- **Fase 1:**
+  - Subsanación y AVC cuentan una vez cada expediente.
+  - Tabla «Subsanación · por motivo» (por código).
+  - Tabla «Flujo por atributo» con desplegable Territorio / Edad / Origen (variable `atributo_f1`) y días bloqueado en subsanación.
+- **Fase 2:**
+  - Productividad y carga de los valoradores.
+  - Variabilidad del criterio BVD: KPIs y tabla de grados G0–G3 por valorador.
+  - Hitos ④→⑤→⑥→⑦.
+  - Detalle por Trabajador — Valoración.
+  - Evaluación individual del valorador.
+- **Fase 3:**
+  - Plazos de tramitación del PIA: KPIs y gráfico.
+  - Productividad y carga de los técnicos PIA.
+  - Variabilidad de la prestación por territorio.
+  - Detalle por Trabajador — Resolución de PIA.
+  - Evaluación individual del tramitador.
+
+**Decisiones:**
+- **Carga** = expedientes de la persona frente a la media del equipo (100 % = media). Estado: >115 % «Crítico — sobrecarga», <70 % «Subcarga — reasignar», y «Óptimo» en medio. El gráfico de tramos añade un corte en el 130 %. Umbrales del mockup, por confirmar.
+- **Grado de una valoración BVD** = banda del mayor baremo, físico o cognitivo (<25, 25–49, 50–74, ≥75). Criterio: sesgo si se aleja más de 10 pp de la media del equipo en algún grado, leve entre 5 y 10 pp, alineado con 5 pp o menos. Por confirmar.
+- **Plazos por persona sin dobles cuentas:** en la fase 2, cada expediente pesa una vez por valorador aunque tenga varias valoraciones. En la fase 3, un solo trámite por par expediente–técnico.
+- **Tramos del valorador:** «Cita → visita» se enseña pero no cuenta como imputable (depende de la agenda). El total imputable es grabación + dictamen.
+- **Variabilidad de la prestación:** por municipio hasta que llegue el catálogo de mancomunidades.
+- **Limpiar:** un Button de Studio no puede borrar filtros; se usa el menú de filtros de la View.
+
+**Lo que enseñó la auditoría** (sin cifras):
+- Las cuentas cuadran entre los KPIs, las tablas y los gráficos de las tres fases.
+- En la fase 3, el E2E mide solo la fase, mientras que «en plazo» y el gráfico miden de la solicitud al PIA, y los dos usan `objetivo_f3`.
+- Hay columnas que cuentan pares expediente–persona («Exp. resueltos» del tramitador, «Media exp/persona» de la fase 2).
+- Las filas de prueba de la muestra se notan en el gráfico de la fase 1, en «Sin dato de edad» y en «Actualizado».
+- Pendientes de grabar no responde a los filtros.
+
+**Siguiente:** enseñarle la View a Roberto y hacer Create version solo si da el OK. Mientras tanto, las preguntas y los datos de la sección 10.
 
 ## 10. Pendientes y preguntas abiertas
 
 - [x] Roberto: *Test changes* y perspectiva con los eventos nuevos (aprobado y hecho el 27/11, sección 9g).
-- [ ] Roberto: revisar el modelo del 27/11 y, si le parece bien, Create version.
+- [ ] Roberto: revisar el modelo y la View completa del 27/11 (sección 9h) y, si le parece bien, Create version.
 - [ ] Andrés: ¿la resolución del PIA se fecha con `FCRESOLUCION_PIA` o con `FCRESOLUCION`? ¿Por qué hay valoradores que no están en `DATOS_VALORADOR`?
 - [ ] Andrés: en `SIDM_SUBSANACION_DOCUMENTACION`, ¿`FCDESISTIMIENTO` es la fecha límite para subsanar o la del desistimiento real? (viene en todas las filas). ¿`CDESTADO_EXPEDIENTE` es una foto del momento o el estado actual? (sale «Expediente Resuelto»).
 - [ ] Roberto: el catálogo de motivos de subsanación (`SIDM_ESTADO_SUBSANACION`, bloque 2 del script) no está cargado. Sin él, «Subsanación por motivo» solo enseña códigos.
@@ -414,7 +452,11 @@ Mientras esperamos a Roberto, se ha montado el modelo con una **muestra coherent
 - [ ] Andrés: ¿qué estados cierran un expediente? Hace falta para «Solicitudes activas» de la cabecera, que sigue con la definición antigua.
 - [ ] Andrés o Roberto: el SLA global de la cabecera usa hoy el objetivo de la fase 3 (180 días). ¿Debe ser el plazo legal de cada expediente (`FC_FIN_PLAZO`) o un objetivo propio?
 - [ ] Andrés: ¿quién registra los trámites del PIA (`IDALTA` de `SIDM_RI_TRAMITES`)? Hoy «Personas involucradas» de la fase 3 cuenta esos usuarios.
-- [ ] Faltan los efectivos de cada unidad para «% del equipo total» (las tres fases).
+- [ ] Faltan los efectivos de cada unidad para «% del equipo total». Hoy se aproxima con los usuarios del sistema de cada fase (27/11, sección 9h).
+- [ ] Andrés: en la fase 3, ¿el objetivo se mide sobre la fase (primer trámite del PIA → resolución) o sobre el proceso completo (solicitud → resolución del PIA)? Hoy el E2E usa lo primero y «en plazo» lo segundo, con el mismo `objetivo_f3`.
+- [ ] Roberto o Andrés: confirmar los umbrales del mockup que usa la View (carga 115 / 70 / 130 %, criterio BVD 10 / 5 pp, territorios atípicos 10 pp, nivel del valorador 15 / 26 días).
+- [ ] Roberto: catálogo municipio → mancomunidad (Territorio y Variabilidad de la prestación); Tipo (encomienda) y Zona del valorador, que vienen vacíos; eventos de requerimiento y de llamada del PIA para la evaluación del tramitador.
+- [ ] Quitar de la muestra las filas de prueba, o esperar a los datos reales.
 
 - [ ] Roberto: revisar el script de vistas v3 y las 8 preguntas de `MAPEO_TABLAS_SIDEMA.md` (sección 8).
 - [ ] Roberto: ejecutar el bloque 3 del script y pasarnos las columnas de las tablas del CU2 y de citación (para la v4).
