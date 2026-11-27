@@ -268,6 +268,10 @@ Fuentes: lo visto montando la Dependencia View y la documentación y el foro de 
 ## 9f. Las 29 tablas de la extracción y el script de vistas v3 (24/11)
 
 Detalle completo en **`dependencia/MAPEO_TABLAS_SIDEMA.md`** (tablas, claves, inventario del origen y los dos mockups elemento a elemento). Script para Roberto: **`dependencia/sql/VistasSIDMPRODv3.sql`**; se genera con `dependencia/sql/generador/gen_vistas_v3.py` (lee la lista de columnas de `gen_vistas_v2.py`).
+- **27/11: el script que se envía es `dependencia/sql/VistasSIDMPRODv3_V3.sql`.**
+  - Laura (DBA) rechazó los `SELECT *`. Se han quitado las 28 vistas de catálogos que los usaban y las tres consultas finales (diccionario de columnas y comprobaciones), que Roberto pidió quitar.
+  - Quedan las 29 vistas de v1, con lista de columnas, `GRANT` y sinónimo.
+  - Los catálogos que hagan falta (por ejemplo, `SIDM_ESTADO_CITA` para la citación) se piden después, con sus columnas explícitas.
 
 - **Origen:** extracción «Extraccion Dependencia» del data job «Dependencia VASOCIAL_SIDM» (pool IMPLEMENTACION). Tiene las 29 tablas de `VistasSIDMPRODv1`:
   - 27 de `DBA_SIDM`;
